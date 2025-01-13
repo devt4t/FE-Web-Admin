@@ -2,8 +2,8 @@
   <div>
     <v-row>
       <v-col>
-        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
-          <v-data-table :headers="headerBibits" :items="bibits" :search="''" class="rounded-xl elevation-1 "
+        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-1">
+          <v-data-table :headers="headerBibits" :items="data.seed_detail" :search="''" class="rounded-xl elevation-1 "
             :footer-props="{
               showCurrentPage: false,
               showFirstLastPage: false,
@@ -46,9 +46,103 @@
 
               </div>
             </template>
+            <template v-slot:item.planted="{ item }">
+              <div class="ml-2">
+                <v-card
+                  color="blue pa-5 rounded-xl text-center white--text"
+                >
+                  <v-icon color="white" x-large>mdi-sprout</v-icon>
+                  {{ item.planted }}
+                </v-card>
+              </div>
+            </template>
+            <template v-slot:item.unplanted="{ item }">
+              <div class="ml-2">
+                <v-card
+                  color="orange pa-5 rounded-xl text-center white--text"
+                >
+                  <v-icon color="white" x-large>mdi-alert</v-icon>
+                  {{ item.unplanted }}
+                </v-card>
+              </div>
+            </template>
+            <template v-slot:item.alive="{ item }">
+              <div class="ml-2">
+                <v-card
+                  color="green pa-5 rounded-xl text-center white--text"
+                >
+                  <v-icon color="white" x-large>mdi-check-bold</v-icon>
+                  {{ item.alive }}
+                </v-card>
+              </div>
+            </template>
+            <template v-slot:item.die="{ item }">
+              <div class="ml-2">
+                <v-card
+                  color="red pa-5 rounded-xl text-center white--text"
+                >
+                  <v-icon color="white" x-large>mdi-close-box</v-icon>
+                  {{ item.die }}
+                </v-card>
+              </div>
+            </template>
+            <template v-slot:item.gone="{ item }">
+              <div class="ml-2">
+                <v-card
+                  color="red pa-5 rounded-xl text-center white--text"
+                >
+                  <v-icon color="white" x-large>mdi-magnify-close</v-icon>
+                  {{ item.gone }}
+                </v-card>
+              </div>
+            </template>
+            <template v-slot:item.life_photo="{ item }">
+              <div class="d-flex flex-row lahan-photo" style="max-width: 100px">
+                <v-img
+                  :src="$_config.baseUrlUpload + '/' + item.life_photo"
+                  alt="Foto Pohon Hidup"
+                  :width="100"
+                  @click="showLightbox($_config.baseUrlUpload + '/' + item.life_photo)"
+                  class="tree-life-monitoring-img"
+                >
+                  <template v-slot:placeholder>
+                    <div class="tree-life-monitoring-placeholder">
+                      <v-progress-circular
+                        color="primary"
+                        indeterminate
+                        :size="20"
+                      ></v-progress-circular>
+                    </div>
+                  </template>
+                </v-img>
+              </div>
+            </template>
+            <template v-slot:item.death_photo="{ item }">
+              <div class="d-flex flex-row lahan-photo" style="max-width: 100px">
+                <v-img
+                  :src="$_config.baseUrlUpload + '/' + item.death_photo"
+                  alt="Foto Pohon Hidup"
+                  :width="100"
+                  @click="showLightbox($_config.baseUrlUpload + '/' + item.death_photo)"
+                  class="tree-life-monitoring-img"
+                >
+                  <template v-slot:placeholder>
+                    <div class="tree-life-monitoring-placeholder">
+                      <v-progress-circular
+                        color="primary"
+                        indeterminate
+                        :size="20"
+                      ></v-progress-circular>
+                    </div>
+                  </template>
+                </v-img>
+              </div>
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
 
@@ -111,16 +205,16 @@ export default {
   },
   mounted() {
     this.initializeMap()
-    this.getBibits()
+    // this.getBibits()
   },
   methods: {
-    getBibits() {
-      this.$_api.get('first-monitorings/main/detail-seed', {
-        id: this.data.result.id
-      }).then(res => {
-        this.bibits = res.data
-      })
-    },
+    // async getBibits() {
+    //   this.$_api.get('first-monitorings/main/detail-seed', {
+    //     id: this.data.result.id
+    //   }).then(res => {
+    //     this.bibits = res.data
+    //   })
+    // },
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
 
@@ -170,7 +264,7 @@ export default {
   },
   data() {
     return {
-      bibits: [],
+      // bibits: [],
       headerBibits: [
         {
           text: 'No',
@@ -183,7 +277,7 @@ export default {
           value: 'tree_name',
         },
         {
-          text: 'Kode Bibit',
+          text: 'Kode Pohon',
           key: 'tree_code',
           value: 'tree_code',
         },
@@ -203,9 +297,19 @@ export default {
           value: 'alive',
         },
         {
+          text: 'Foto Hidup',
+          key: 'life_photo',
+          value: 'life_photo',
+        },
+        {
           text: 'Mati',
           key: 'die',
           value: 'die',
+        },
+        {
+          text: 'Foto Mati',
+          key: 'death_photo',
+          value: 'death_photo',
         },
         {
           text: 'Hilang',
@@ -213,126 +317,6 @@ export default {
           value: 'gone',
         },
       ],
-      configKehadiranPetani: {
-        table: {
-          header: [
-            {
-              key: "index",
-              sortable: false,
-              text: "No",
-              value: "index",
-            },
-            {
-              key: "farmer_no",
-              sortable: false,
-              text: "No. Petani",
-              value: "farmer_no",
-            },
-            {
-              key: "nickname",
-              sortable: false,
-              text: "Nama Panggilan",
-              value: "nickname",
-            },
-            {
-              key: "farmer_name",
-              sortable: false,
-              text: "Nama",
-              value: "farmer_name",
-            },
-            {
-              key: "ff_name",
-              sortable: false,
-              text: "Nama FF",
-              value: "ff_name",
-            },
-          ],
-        }
-      },
-      configKontribusiFF: {
-        table: {
-          header: [
-            {
-              key: "index",
-              sortable: false,
-              text: "No",
-              value: "index",
-            },
-            {
-              key: "ff_additional",
-              sortable: false,
-              text: "No. FF",
-              value: "ff_additional",
-            },
-            {
-              key: "name",
-              sortable: false,
-              text: "Nama",
-              value: "name",
-            },
-          ]
-        }
-      },
-      configKehadiranFC: {
-        table: {
-          header: [
-            {
-              key: "index",
-              sortable: false,
-              text: "No",
-              value: "index",
-            },
-            {
-              key: "fc_no",
-              sortable: false,
-              text: "No. FC",
-              value: "fc_no",
-            },
-            {
-              key: "name",
-              sortable: false,
-              text: "Nama",
-              value: "name",
-            }
-          ]
-        }
-      },
-      configPesertaUmum: {
-        table: {
-          header: [
-            {
-              key: "index",
-              sortable: false,
-              text: "No",
-              value: "index",
-            },
-            {
-              key: "name",
-              sortable: false,
-              text: "Nama",
-              value: "name",
-            },
-            {
-              key: "address",
-              sortable: false,
-              text: "Alamat",
-              value: "address",
-            },
-            {
-              key: "phone",
-              sortable: false,
-              text: "Kontak",
-              value: "phone",
-            },
-            {
-              key: "gender",
-              sortable: false,
-              text: "Jenis Kelamin",
-              value: "gender",
-            },
-          ]
-        }
-      }
     }
   }
 }
