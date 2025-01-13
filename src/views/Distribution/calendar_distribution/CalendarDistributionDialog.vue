@@ -223,8 +223,22 @@
             >
               Peringatan: Terdapat
               <b>{{ lahanMissDistributionDateNMS.length }} lahan</b> dengan
-              tanggal yang belum diperbarui di NMS. Harap lakukan verifikasi
-              ulang untuk melanjutkan proses distribusi.
+              <b>tanggal</b> yang belum diperbarui di NMS. Harap lakukan
+              verifikasi ulang untuk melanjutkan proses distribusi.
+            </v-alert>
+            <!-- Alert: Distribution Coordinates comparation -->
+            <v-alert
+              v-if="lahanMissDistributionCoordinateNMS.length"
+              class="mt-5 py-3"
+              outlined
+              type="warning"
+              border="left"
+              icon="mdi-alert-circle-outline"
+            >
+              Peringatan: Terdapat
+              <b>{{ lahanMissDistributionCoordinateNMS.length }} lahan</b>
+              dengan <b>koordinat</b> yang belum diperbarui di NMS. Harap
+              lakukan verifikasi ulang untuk melanjutkan proses distribusi.
             </v-alert>
             <!-- Tabs -->
             <v-tabs v-model="tab" color="green" class="mt-3">
@@ -302,7 +316,9 @@
                     <span
                       :class="`mb-0 ${
                         item.total_penlub === item.total_penlub_nms &&
-                        sostam.data.distribution_date === item.penlub_nms_date
+                        sostam.data.distribution_date ===
+                          item.penlub_nms_date &&
+                        item.sostam_coordinates === item.penlub_nms_coordinates
                           ? 'green'
                           : 'font-weight-bold red'
                       }--text`"
@@ -367,6 +383,7 @@
                       <!-- Alert: Distribution Date comparation -->
                       <v-alert
                         v-if="
+                          item.penlub_nms_date &&
                           sostam.data.distribution_date != item.penlub_nms_date
                         "
                         class="mt-5 py-3"
@@ -375,8 +392,41 @@
                         border="left"
                         icon="mdi-alert-circle-outline"
                       >
-                        Tanggal Distribusi Di NMS belum diperbarui. Harap
+                        <b>Tanggal distribusi</b> di NMS belum diperbarui. Harap
                         verifikasi ulang data penilikan lubang!<v-tooltip
+                          v-if="item.penlub_id && item.ph_form_no"
+                          top
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              class="ml-3"
+                              color="warning"
+                              small
+                              @click="openPagePenlub(item)"
+                              icon
+                            >
+                              <v-icon left>mdi-page-next</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Buka Halaman Penilikan Lubang Lahan</span>
+                        </v-tooltip>
+                      </v-alert>
+                      <!-- Alert: Distribution Coordinate comparation -->
+                      <v-alert
+                        v-if="
+                          item.penlub_nms_coordinates &&
+                          item.sostam_coordinates != item.penlub_nms_coordinates
+                        "
+                        class="mt-5 py-3"
+                        outlined
+                        type="warning"
+                        border="left"
+                        icon="mdi-alert-circle-outline"
+                      >
+                        <b>Koordinat</b> distribusi di NMS belum diperbarui.
+                        Harap verifikasi ulang data penilikan lubang!<v-tooltip
                           v-if="item.penlub_id && item.ph_form_no"
                           top
                         >
@@ -715,6 +765,10 @@ export default {
             penlub_nms_date: lahanPenlubNMS
               ? lahanPenlubNMS.distribution_date
               : null,
+            penlub_nms_coordinates: lahanPenlubNMS
+              ? lahanPenlubNMS.distribution_coordinates
+              : null,
+            sostam_coordinates: sostam.distribution_coordinates,
           };
         })
         .sort((a, b) => b.total_sostam - a.total_sostam);
@@ -736,7 +790,17 @@ export default {
     lahanMissDistributionDateNMS() {
       if (!this.sostam || !this.sostam.data) return [];
       return this.listLahanMixed.filter(
-        (v) => v.penlub_nms_date != this.sostam.data.distribution_date
+        (v) =>
+          v.penlub_nms_date &&
+          v.penlub_nms_date != this.sostam.data.distribution_date
+      );
+    },
+    lahanMissDistributionCoordinateNMS() {
+      if (!this.sostam || !this.sostam.data) return [];
+      return this.listLahanMixed.filter(
+        (v) =>
+          v.penlub_nms_coordinates &&
+          v.penlub_nms_coordinates != v.sostam_coordinates
       );
     },
   },
