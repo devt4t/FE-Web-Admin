@@ -23,6 +23,12 @@
 
                 <span>Export Excel</span>
             </v-btn>
+            <v-btn variant="success" small class="d-block mt-2" @click="onExportProofInsentiveExcel(item)">
+                <v-icon v-if="!exportProofInsentiveIds.includes(item.id)">mdi-microsoft-excel</v-icon>
+                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
+
+                <span>Proof Insentive</span>
+            </v-btn>
         </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
@@ -77,6 +83,7 @@ export default {
             refreshKey: 1,
             exportUnloadKey: 0,
             exportIds: [],
+            exportProofInsentiveIds: [],
             config: {
                 title: "Distribution Unload",
                 model_api: null,
@@ -186,7 +193,66 @@ export default {
                 let idx = this.exportIds.findIndex(x => x === item.id)
                 if (idx > -1) this.exportIds.splice(idx, 1)
             }
+        },
+        async onExportProofInsentiveExcel(item) {
+            try {
+                if (this.exportProofInsentiveIds.includes(item.id)) return
+                this.exportProofInsentiveIds.push(item.id)
+                const distribution_unload = await this.$_api.get('distribution/export/proof-for-insentive', {
+                    id: item.id
+                })
+
+                if (!distribution_unload.result) throw "err"
+                //EXPORT DATA
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/distribution-proof-insentive/excel`
+                const exportPayload = {
+                    data: distribution_unload.result,
+                    program_year: this.$store.state.tmpProgramYear
+                }
+                const exportFilename = `Export-Distribution-Unload-${distribution_unload.result.id}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+
+
+                const axiosConfig = {
+                    method: "POST",
+                    url: exportEndpoint,
+                    responseType: "arraybuffer",
+                    data: exportPayload,
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                if (!exported) throw "ERR"
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = exportFilename;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                let idx = this.exportProofInsentiveIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportProofInsentiveIds.splice(idx, 1)
+
+            }
+
+            catch (err) {
+                console.log('err', err);
+
+                let idx = this.exportProofInsentiveIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportProofInsentiveIds.splice(idx, 1)
+            }
         }
+
     },
 };
 </script>

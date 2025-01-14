@@ -260,7 +260,7 @@ export default [
       id: "pohon_mpts",
       label: "Total Pohon MPTS",
       methods: {
-        list: true,
+        list: false,
         detail: true,
         create: {
           type: "text",
