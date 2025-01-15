@@ -275,18 +275,5 @@ export default [
           filter: false
         },
       },
-    {
-      id: "total_holes",
-      label: "Status Lubang Tanam",
-      methods: {
-        list: {
-          type: 'row-slot'
-        },
-        detail: {
-          view_data: "total_holes",
-          type: 'slot'
-        }
-      },
-    },
   ];
   

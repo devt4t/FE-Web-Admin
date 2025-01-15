@@ -1,5 +1,21 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
+        <template v-slot:list-total_holes="{ item }">
+            <span v-if="item.total_holes == 0" class="badge bg-danger min-w-10px d-flex">
+                <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Belum Terdaftar</strong>
+            </span>
+            <span v-else class="badge bg-success min-w-10px d-flex">
+                <v-icon size="small">mdi-check-bold</v-icon> &nbsp; <strong>Terdaftar</strong>
+            </span>
+        </template>
+        <template v-slot:detail-total_holes="{ item }">
+            <span v-if="item.total_holes == 0" class="badge bg-danger">
+                <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Belum Terdaftar</strong>
+            </span>
+            <span v-else class="badge bg-success">
+                <v-icon size="small">mdi-check-bold</v-icon> &nbsp; <strong>Terdaftar</strong>
+            </span>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <lahan-umum-detail-map
               :long="data.result.longitude"

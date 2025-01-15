@@ -48,6 +48,12 @@ export default [
       value: "user_accepted",
     },
     {
+      key: "acceptance_progress",
+      sortable: false,
+      text: "Progress Penerimaan",
+      value: "acceptance_progress",
+    },
+    {
       key: "total_pupuk",
       sortable: false,
       text: "Total Pupuk",

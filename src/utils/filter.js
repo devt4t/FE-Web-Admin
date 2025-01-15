@@ -143,8 +143,15 @@ Vue.filter("parse", (value, id) => {
         _value = "Terpopulasi";
       }
       break;
-      case "capitalize":
+    case "capitalize":
       _value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+      break;
+    case "general-land-penlub-status":
+      if (value == 0) {
+        _value = "Belum Terdaftar";
+      } else if (value > 0) {
+        _value = "Terdaftar";
+      }
       break;
     default:
       _value = value;

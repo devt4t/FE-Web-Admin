@@ -92,7 +92,8 @@
                   color="red pa-5 rounded-xl text-center white--text"
                 >
                   <v-icon color="white" x-large>mdi-magnify-close</v-icon>
-                  {{ item.gone }}
+                  <p v-if="item.gone <= 0">0</p>
+                  <p v-else>{{ item.gone }}</p>
                 </v-card>
               </div>
             </template>

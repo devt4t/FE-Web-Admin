@@ -163,227 +163,318 @@
                       <p v-if="item.is_pupuk_load == 0" >0</p>
                       <p v-else>{{item.total_pupuk}}</p>
                     </template>
+                    <template v-slot:item.acceptance_progress="{ item }">
+                      <v-progress-circular
+                        :rotate="90"
+                        :size="50"
+                        :width="8"
+                        :value="item.farmer_acceptance_percentage"
+                        :color="progressColorFormat(item.farmer_acceptance_percentage)"
+                      >
+                        {{ item.farmer_acceptance_percentage }}
+                      </v-progress-circular>
+                    </template>
                     <template v-slot:expanded-item="{ headers, item }">
                       <td :colspan="headers.length">
-                        <div class="list-header py-3 mt-1">
-                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                              <h4>Detail Label Petani {{ item.farmer_name }}</h4>
+                        <v-card class="geko-base-detail-card mb-5 px-8">
+                          <div class="list-header py-3 mt-1">
+                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                <h4>Detail Penerimaan Petani {{ item.farmer_name }}</h4>
+                            </div>
+                            <div class="d-flex flex-row geko-list-header-action">
+                                <div class="geko-list-header-toolbar"></div>
+                            </div>
                           </div>
-                          <div class="d-flex flex-row geko-list-header-action">
-                              <div class="geko-list-header-toolbar"></div>
+                          <h3>  </h3>
+                          <!-- detail penerimaan -->
+                          <!-- Total Bibit Terdistribusi: {{ item.farmer_seed_loaded }} -->
+                          <v-col cols="12">
+                            <v-simple-table>
+                              <template v-slot:default>
+                                <tbody>
+                                  <tr>
+                                    <th
+                                      class="text-left"
+                                      style="width: 300px; font-size: 14px"
+                                    >
+                                    Total Bibit Terdistribusi
+                                    </th>
+                                    <td class="text-left" style="font-size: 14px">
+                                      <strong>{{
+                                        item.farmer_seed_loaded
+                                      }}</strong>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      class="text-left"
+                                      style="width: 300px; font-size: 14px"
+                                    >
+                                      Total Bibit Diterima
+                                    </th>
+                                    <td class="text-left" style="font-size: 14px">
+                                      <strong>{{ item.farmer_seed_received }}</strong>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      class="text-left"
+                                      style="width: 300px; font-size: 14px"
+                                    >
+                                      Total Bibit Rusak
+                                    </th>
+                                    <td class="text-left" style="font-size: 14px">
+                                      <strong>{{ item.farmer_seed_broken }}</strong>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      class="text-left"
+                                      style="width: 300px; font-size: 14px"
+                                    >
+                                      Total Bibit Hilang
+                                    </th>
+                                    <td class="text-left" style="font-size: 14px">
+                                      <strong>{{ item.farmer_seed_missing }}</strong>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      class="text-left"
+                                      style="width: 300px; font-size: 14px"
+                                    >
+                                      Total Pupuk Terdistribusi
+                                    </th>
+                                    <td class="text-left" style="font-size: 14px">
+                                      <strong v-if="item.is_pupuk_load == 0">0</strong>
+                                      <strong v-else>{{ item.total_pupuk }}</strong>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </template>
+                            </v-simple-table>
+                          </v-col>
+    
+                          <div class="list-header py-3 mt-1">
+                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                <h4>Detail Label Petani {{ item.farmer_name }}</h4>
+                            </div>
+                            <div class="d-flex flex-row geko-list-header-action">
+                                <div class="geko-list-header-toolbar"></div>
+                            </div>
                           </div>
-                        </div>
-                        <h3>  </h3>
-                        <!-- detail lable -->
-                        <tr>
-                          <!-- total label -->
-                           <td>
-
-                           </td>
-                          <td>
-                            <v-card color="#26c6da" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLablePrintedDetail.table.header" :items-per-page="3" :items="item.printed_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Tercetak</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
+                          <h3>  </h3>
+                          <!-- detail lable -->
+                          <tr>
+                            <!-- total label -->
+                             <td>
+    
+                             </td>
+                            <td>
+                              <v-card color="#26c6da" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                                <v-data-table :headers="configLablePrintedDetail.table.header" :items-per-page="3" :items="item.printed_lable"
+                                        :search="''" class="rounded-xl elevation- pa-1 px-5">
+    
+                                        <template v-slot:item.index="{ index }">
+                                        {{ index + 1 }}
+                                        </template>
+    
+                                        <template v-slot:top>
+                                        <div class="list-header py-3 mt-1">
+                                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                            <h4>Label Tercetak</h4>
+                                            </div>
+                                            <div class="d-flex flex-row geko-list-header-action">
+                                            <div class="geko-list-header-toolbar"></div>
+                                            </div>
+                                        </div>
+    
+                                        <div class="statistics mb-3">
+                                            <div class="statistic-item light">
+                                              <v-icon>mdi-list-status</v-icon>
+                                              <div class="statistic-data">
+                                                  <p class="mb-0 label">Total Label</p>
+                                                  <p class="mb-0 value">{{ item.printed_lable.length ?? '' }}</p>
+    
+                                              </div>
+                                            </div>
+                                        </div>
+                                        </template>
+    
+                                    </v-data-table>
+                              </v-card>
+                            </td>
+                            <!-- total loaded -->
+                            <td>
+                              <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                                <v-data-table :headers="configLableLoadedDetail.table.header" :items-per-page="3" :items="item.loaded_lable"
+                                        :search="''" class="rounded-xl elevation- pa-1 px-5">
+    
+                                        <template v-slot:item.index="{ index }">
+                                        {{ index + 1 }}
+                                        </template>
+    
+                                        <template v-slot:top>
+                                        <div class="list-header py-3 mt-1">
+                                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                            <h4>Label Loaded</h4>
+                                            </div>
+                                            <div class="d-flex flex-row geko-list-header-action">
+                                            <div class="geko-list-header-toolbar"></div>
+                                            </div>
+                                        </div>
+    
+                                        <div class="statistics mb-3">
+                                            <div class="statistic-item light">
                                             <v-icon>mdi-list-status</v-icon>
                                             <div class="statistic-data">
-                                                <p class="mb-0 label">Total Label</p>
-                                                <p class="mb-0 value">{{ item.printed_lable.length ?? '' }}</p>
-
+                                                <p class="mb-0 label">Total Label Loaded</p>
+                                                <p class="mb-0 value">{{ item.loaded_lable.length ?? '' }}</p>
+    
                                             </div>
-                                          </div>
-                                      </div>
-                                      </template>
-
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                          <!-- total loaded -->
-                          <td>
-                            <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableLoadedDetail.table.header" :items-per-page="3" :items="item.loaded_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Loaded</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Loaded</p>
-                                              <p class="mb-0 value">{{ item.loaded_lable.length ?? '' }}</p>
-
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                        </tr>
-                        <tr>
-                          <!-- total distributed -->
-                          <td>
-                            
-                          </td>
-                          <td>
-                            <v-card color="#1cd104" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableDistributedDetail.table.header" :items-per-page="3" :items="item.distributed_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Terdistribusi</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Terdistribusi</p>
-                                              <p class="mb-0 value">{{ item.distributed_lable.length ?? '' }}</p>
-
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                          <!-- total missing -->
-                          <td>
-                            <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableMissingDetail.table.header" :items-per-page="3" :items="item.missing_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Hilang</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Hilang</p>
-                                              <p class="mb-0 value">{{ item.missing_lable.length ?? '' }}</p>
-
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-
-                          </td>
-                          <td>
-                            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
-
-                                <div class="list-header py-3 mt-1">
-                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                      <h4>Foto Penerimaan Petani</h4>
-                                  </div>
-                                  <div class="d-flex flex-row geko-list-header-action">
-                                      <div class="geko-list-header-toolbar"></div>
-                                  </div>
-                                </div>
-
-                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_accept != null">
-                                    <div class="absent-photo-item"
-                                        @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
-                                        v-bind:style="{
-                                        backgroundImage:
-                                            'url(' +
-                                            item.file_accept.url ?? '/images/noimage.png' +
-                                            ')',
-                                        }">
-                                        <h6>Foto Dokumentasi Distribusi</h6>
+                                            </div>
+                                        </div>
+                                        </template>
+    
+                                    </v-data-table>
+                              </v-card>
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- total distributed -->
+                            <td>
+                              
+                            </td>
+                            <td>
+                              <v-card color="#1cd104" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                                <v-data-table :headers="configLableDistributedDetail.table.header" :items-per-page="3" :items="item.distributed_lable"
+                                        :search="''" class="rounded-xl elevation- pa-1 px-5">
+    
+                                        <template v-slot:item.index="{ index }">
+                                        {{ index + 1 }}
+                                        </template>
+    
+                                        <template v-slot:top>
+                                        <div class="list-header py-3 mt-1">
+                                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                            <h4>Label Terdistribusi</h4>
+                                            </div>
+                                            <div class="d-flex flex-row geko-list-header-action">
+                                            <div class="geko-list-header-toolbar"></div>
+                                            </div>
+                                        </div>
+    
+                                        <div class="statistics mb-3">
+                                            <div class="statistic-item light">
+                                            <v-icon>mdi-list-status</v-icon>
+                                            <div class="statistic-data">
+                                                <p class="mb-0 label">Total Label Terdistribusi</p>
+                                                <p class="mb-0 value">{{ item.distributed_lable.length ?? '' }}</p>
+    
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </template>
+    
+                                    </v-data-table>
+                              </v-card>
+                            </td>
+                            <!-- total missing -->
+                            <td>
+                              <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                                <v-data-table :headers="configLableMissingDetail.table.header" :items-per-page="3" :items="item.missing_lable"
+                                        :search="''" class="rounded-xl elevation- pa-1 px-5">
+    
+                                        <template v-slot:item.index="{ index }">
+                                        {{ index + 1 }}
+                                        </template>
+    
+                                        <template v-slot:top>
+                                        <div class="list-header py-3 mt-1">
+                                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                            <h4>Label Hilang</h4>
+                                            </div>
+                                            <div class="d-flex flex-row geko-list-header-action">
+                                            <div class="geko-list-header-toolbar"></div>
+                                            </div>
+                                        </div>
+    
+                                        <div class="statistics mb-3">
+                                            <div class="statistic-item light">
+                                            <v-icon>mdi-list-status</v-icon>
+                                            <div class="statistic-data">
+                                                <p class="mb-0 label">Total Label Hilang</p>
+                                                <p class="mb-0 value">{{ item.missing_lable.length ?? '' }}</p>
+    
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </template>
+    
+                                    </v-data-table>
+                              </v-card>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+    
+                            </td>
+                            <td>
+                              <v-card class="geko-base-detail-card mb-5 px-4">
+    
+                                  <div class="list-header py-3 mt-1">
+                                    <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                        <h4>Foto Penerimaan Petani</h4>
                                     </div>
-                                </div>
-
-                            </v-card>
-                          </td>
-                          <td>
-                            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
-
-                                <div class="list-header py-3 mt-1">
-                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                      <h4>Tanda Tangan Petani</h4>
-                                  </div>
-                                  <div class="d-flex flex-row geko-list-header-action">
-                                      <div class="geko-list-header-toolbar"></div>
-                                  </div>
-                                </div>
-
-                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_signature != null">
-                                    <div class="absent-photo-item"
-                                        @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
-                                        v-bind:style="{
-                                        backgroundImage:
-                                            'url(' +
-                                            item.file_signature.url ?? '/images/noimage.png' +
-                                            ')',
-                                        }">
-                                        <h6>Tanda Tangan Petani</h6>
+                                    <div class="d-flex flex-row geko-list-header-action">
+                                        <div class="geko-list-header-toolbar"></div>
                                     </div>
-                                </div>
-
-                            </v-card>
-                          </td>
-                        </tr>
+                                  </div>
+    
+                                  <div class="absent-photo-list d-flex flex-row" v-if="item.file_accept != null">
+                                      <div class="absent-photo-item"
+                                          @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
+                                          v-bind:style="{
+                                          backgroundImage:
+                                              'url(' +
+                                              item.file_accept.url ?? '/images/noimage.png' +
+                                              ')',
+                                          }">
+                                          <h6>Foto Dokumentasi Distribusi</h6>
+                                      </div>
+                                  </div>
+    
+                              </v-card>
+                            </td>
+                            <td>
+                              <v-card class="geko-base-detail-card mb-5 px-4">
+    
+                                  <div class="list-header py-3 mt-1">
+                                    <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                        <h4>Tanda Tangan Petani</h4>
+                                    </div>
+                                    <div class="d-flex flex-row geko-list-header-action">
+                                        <div class="geko-list-header-toolbar"></div>
+                                    </div>
+                                  </div>
+    
+                                  <div class="absent-photo-list d-flex flex-row" v-if="item.file_signature != null">
+                                      <div class="absent-photo-item"
+                                          @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
+                                          v-bind:style="{
+                                          backgroundImage:
+                                              'url(' +
+                                              item.file_signature.url ?? '/images/noimage.png' +
+                                              ')',
+                                          }">
+                                          <h6>Tanda Tangan Petani</h6>
+                                      </div>
+                                  </div>
+    
+                              </v-card>
+                            </td>
+                          </tr>
+                        </v-card>
                       </td>
                     
                     </template>
@@ -416,16 +507,6 @@
       data: {
         required: true,
         default: [],
-      },
-    },
-    methods: {
-      showLightbox(imgs, index) {
-        if (imgs) this.$store.state.lightbox.imgs = imgs;
-
-        if (index) this.$store.state.lightbox.index = index;
-        else this.$store.state.lightbox.index = 0;
-
-        this.$store.state.lightbox.show = true;
       },
     },
     data() {
@@ -464,6 +545,19 @@
       }
     },
     methods: {
+      showLightbox(imgs, index) {
+        if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+        if (index) this.$store.state.lightbox.index = index;
+        else this.$store.state.lightbox.index = 0;
+
+        this.$store.state.lightbox.show = true;
+      },
+      progressColorFormat(val){
+        if(val <= 30) return "red"
+        else if (val > 30 && val <= 80) return "orange"
+        else if (val > 80) return "green"
+      },
       async updateVerifikasiReportNursery(item, type){
         let User = JSON.parse(localStorage.getItem("User"))
         let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg"

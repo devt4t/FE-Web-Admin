@@ -86,29 +86,6 @@ export default reactive({
       //   },
       // },
       {
-        id: "target_areas_name",
-        label: "Target Area",
-        methods: {
-          list: true,
-          detail: true,
-
-          filter: {
-            main: true,
-            type: "select",
-            getter: "GetTargetAreaAdmin",
-            setter: "target_area",
-            option: {
-              getterKey: "data.result",
-              list_pointer: {
-                code: "area_code",
-                label: "name",
-                display: ["name", "area_code"],
-              },
-            },
-          },
-        },
-      },
-      {
         id: "managementunits_name",
         label: "Management Unit",
         methods: {
@@ -137,7 +114,29 @@ export default reactive({
           },
         },
       },
+      {
+        id: "target_areas_name",
+        label: "Target Area",
+        methods: {
+          list: true,
+          detail: true,
 
+          filter: {
+            main: true,
+            type: "select",
+            getter: "GetTargetAreaAdmin",
+            setter: "target_area",
+            option: {
+              getterKey: "data.result",
+              list_pointer: {
+                code: "area_code",
+                label: "name",
+                display: ["name", "area_code"],
+              },
+            },
+          },
+        },
+      },
       {
         id: "desas_name",
         label: "Nama Desa",

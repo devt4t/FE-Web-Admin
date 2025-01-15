@@ -1,3 +1,5 @@
+import { icon } from "leaflet";
+
 const menu = [
   {
     title: "Dashboard",
@@ -129,23 +131,15 @@ const menu = [
         prevent_route_validation: true,
         third: true,
       },
-      {
-        title: "Lahan Umum",
-        to: "/LahanUmum",
-        component: "Lahan/LahanUmum",
-        name: "LahanUmum",
-        permission: "LahanUmum",
-        icon: "mdi-square-rounded-badge",
-      },
-      {
-        title: "Lahan Umum",
-        to: "/LahanUmumV2",
-        component: "LahanUmum/LahanUmum",
-        name: "LahanUmumV2",
-        permission: "LahanUmum",
-        icon: "mdi-square-rounded-badge",
-        update: true,
-      },
+      // {
+      //   title: "Lahan Umum",
+      //   to: "/LahanUmum",
+      //   component: "Lahan/LahanUmum",
+      //   name: "LahanUmum",
+      //   permission: "LahanUmum",
+      //   icon: "mdi-square-rounded-badge",
+      // },
+      
       {
         title: "Donor",
         to: "/Donor",
@@ -211,6 +205,30 @@ const menu = [
   //     },
   //   ],
   // },
+  {
+    title: "Lahan Umum / Event",
+    icon: "mdi-square-rounded-badge",
+    items:[
+      {
+        title: "Lahan Umum",
+        to: "/LahanUmumV2",
+        component: "LahanUmum/LahanUmum",
+        name: "LahanUmumV2",
+        permission: "LahanUmum",
+        icon: "mdi-square-rounded-badge",
+        update: true,
+      },
+      {
+        title: "Penilikan Lubang Lahan Umum / Event",
+        to: "/PenilikanLubangLahanUmumV2",
+        component: "LahanUmum/LahanUmumPlantingHole/LahanUmumPlantingHole",
+        name: "LahanUmumPlantingHoleV2",
+        permission: "LubangTanam",
+        icon: "mdi-check-underline-circle",
+        update: true,
+      },
+    ]
+  },
   {
     title: "Activities",
     icon: "mdi-calendar-check",
