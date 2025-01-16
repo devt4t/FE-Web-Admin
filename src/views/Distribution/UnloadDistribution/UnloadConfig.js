@@ -147,5 +147,25 @@ export default [
           filter: false
         },
       },
+      {
+        id: "distribution_date",
+        label: "Waktu Distribusi",
+        methods: {
+          list: {
+            transform: "date",
+          },
+          detail: true,
+          filter: {
+            label: "Tanggal Distribusi",
+            validation: ["required"],
+            type: "date",
+            col_size: 6,
+            getter: "updated_at",
+            setter: "distribution_date",
+            icon: "calendar-edit",
+            main: true,
+          },
+        },
+      },
   ];
   

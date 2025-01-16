@@ -73,6 +73,10 @@
                   {
                     label: '2024',
                     code: 2024,
+                  },
+                  {
+                    label: '2025',
+                    code: 2025,
                   }
                 ],
               },
@@ -632,7 +636,7 @@ export default {
         peserta_tambahan: [],
         status: 1,
         user_id: this.user.email,
-        program_year: '2024',
+        program_year: '2025',
         farmers: []
       }
     }
