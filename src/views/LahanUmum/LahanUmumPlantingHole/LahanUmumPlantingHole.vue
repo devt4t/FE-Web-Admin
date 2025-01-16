@@ -1,13 +1,13 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
-        <!-- <template v-slot:detail-slave-raw="{ data }">
-            <lahan-umum-planting-hole-detail-map
+        <template v-slot:detail-slave-raw="{ data }">
+            <!-- <lahan-umum-planting-hole-detail-map
               :long="data.result.longitude"
               :lat="data.result.latitude"
               :section="`LahanUmum`"
-            />
+            /> -->
             <lahan-umum-planting-hole-detail :data="data"></lahan-umum-planting-hole-detail>
-        </template> -->
+        </template>
         <template v-slot:create-form>
             <lahan-umum-planting-hole-create :user="user"></lahan-umum-planting-hole-create>
         </template>
@@ -42,10 +42,10 @@ export default {
                 getter: "lahan-umum/planting-hole/list",
                 getterDataKey: "result",
                 totalDataKey: 'total',
-                // detail: "lahan-umum/main/detail",
-                // detailIdKey: "id",
-                // detailKey: "result",
-                // deleteKey: "id",
+                detail: "lahan-umum/planting-hole/detail",
+                detailIdKey: "id",
+                detailKey: "result",
+                deleteKey: "id",
                 pk_field: null,
                 globalFilter: {
                     program_year: {

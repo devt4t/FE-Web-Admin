@@ -171,7 +171,7 @@
                         :value="item.farmer_acceptance_percentage"
                         :color="progressColorFormat(item.farmer_acceptance_percentage)"
                       >
-                        {{ item.farmer_acceptance_percentage }}
+                        {{ item.farmer_acceptance_percentage.toFixed(0) }}%
                       </v-progress-circular>
                     </template>
                     <template v-slot:expanded-item="{ headers, item }">
@@ -188,71 +188,164 @@
                           <h3>  </h3>
                           <!-- detail penerimaan -->
                           <!-- Total Bibit Terdistribusi: {{ item.farmer_seed_loaded }} -->
+                           <v-row>
+                             <v-col>
+                               <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+                                 <v-simple-table>
+                                   <template v-slot:default>
+                                     <tbody>
+                                       <tr>
+                                         <th
+                                           class="text-left"
+                                           style="width: 300px; font-size: 14px"
+                                         >
+                                         Total Bibit Terdistribusi
+                                         </th>
+                                         <td class="text-left" style="font-size: 14px">
+                                           <strong>{{
+                                             item.farmer_seed_loaded
+                                           }}</strong>
+                                         </td>
+                                       </tr>
+                                       <tr>
+                                         <th
+                                           class="text-left"
+                                           style="width: 300px; font-size: 14px"
+                                         >
+                                           Total Bibit Diterima
+                                         </th>
+                                         <td class="text-left" style="font-size: 14px">
+                                           <strong>{{ item.farmer_seed_received }}</strong>
+                                         </td>
+                                       </tr>
+                                       <tr>
+                                         <th
+                                           class="text-left"
+                                           style="width: 300px; font-size: 14px"
+                                         >
+                                           Total Bibit Rusak
+                                         </th>
+                                         <td class="text-left" style="font-size: 14px">
+                                           <strong>{{ item.farmer_seed_broken }}</strong>
+                                         </td>
+                                       </tr>
+                                       <tr>
+                                         <th
+                                           class="text-left"
+                                           style="width: 300px; font-size: 14px"
+                                         >
+                                           Total Bibit Hilang
+                                         </th>
+                                         <td class="text-left" style="font-size: 14px">
+                                           <strong>{{ item.farmer_seed_missing }}</strong>
+                                         </td>
+                                       </tr>
+                                       <tr>
+                                         <th
+                                           class="text-left"
+                                           style="width: 300px; font-size: 14px"
+                                         >
+                                           Total Pupuk Terdistribusi
+                                         </th>
+                                         <td class="text-left" style="font-size: 14px">
+                                           <strong v-if="item.is_pupuk_load == 0">0</strong>
+                                           <strong v-else>{{ item.total_pupuk }}</strong>
+                                         </td>
+                                       </tr>
+                                     </tbody>
+                                   </template>
+                                 </v-simple-table>
+                               </v-card>
+                              </v-col>
+                              <v-col>
+                                <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+                                  <div class="list-header py-3 mt-1">
+                                    <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between; margin-left: 5%;">
+                                        <h4>Foto Penerimaan Petani</h4>
+                                    </div>
+                                    <div class="d-flex flex-row geko-list-header-action">
+                                        <div class="geko-list-header-toolbar"></div>
+                                    </div>
+                                  </div>
+    
+                                  <div class="absent-photo-list d-flex flex-row" v-if="item.file_accept != null">
+                                      <div class="absent-photo-item"
+                                          @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
+                                          v-bind:style="{
+                                          backgroundImage:
+                                              'url(' +
+                                              item.file_accept.url ?? '/images/noimage.png' +
+                                              ')',
+                                          }">
+                                          <h6>Foto Dokumentasi Distribusi</h6>
+                                      </div>
+                                  </div>
+                                  <div class="list-header py-3 mt-1">
+                                    <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between; margin-left: 5%;">
+                                        <h4>Tanda Tangan Petani</h4>
+                                    </div>
+                                    <div class="d-flex flex-row geko-list-header-action">
+                                        <div class="geko-list-header-toolbar"></div>
+                                    </div>
+                                  </div>
+    
+                                  <div class="absent-photo-list d-flex flex-row" v-if="item.file_signature != null">
+                                      <div class="absent-photo-item"
+                                          @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
+                                          v-bind:style="{
+                                          backgroundImage:
+                                              'url(' +
+                                              item.file_signature.url ?? '/images/noimage.png' +
+                                              ')',
+                                          }">
+                                          <h6>Tanda Tangan Petani</h6>
+                                      </div>
+                                  </div>
+                                </v-card>
+                              </v-col>
+                           </v-row>
+
+                          <!-- detail seed farmer -->
+                          <div class="list-header py-3 mt-1">
+                            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                <h4>Detail Bibit Petani {{ item.farmer_name }}</h4>
+                            </div>
+                            <div class="d-flex flex-row geko-list-header-action">
+                                <div class="geko-list-header-toolbar"></div>
+                            </div>
+                          </div>
+                          <h3>  </h3>
+                          <!-- detail penerimaan -->
+                          <!-- Total Bibit Terdistribusi: {{ item.farmer_seed_loaded }} -->
                           <v-col cols="12">
-                            <v-simple-table>
-                              <template v-slot:default>
-                                <tbody>
-                                  <tr>
-                                    <th
-                                      class="text-left"
-                                      style="width: 300px; font-size: 14px"
-                                    >
-                                    Total Bibit Terdistribusi
-                                    </th>
-                                    <td class="text-left" style="font-size: 14px">
-                                      <strong>{{
-                                        item.farmer_seed_loaded
-                                      }}</strong>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th
-                                      class="text-left"
-                                      style="width: 300px; font-size: 14px"
-                                    >
-                                      Total Bibit Diterima
-                                    </th>
-                                    <td class="text-left" style="font-size: 14px">
-                                      <strong>{{ item.farmer_seed_received }}</strong>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th
-                                      class="text-left"
-                                      style="width: 300px; font-size: 14px"
-                                    >
-                                      Total Bibit Rusak
-                                    </th>
-                                    <td class="text-left" style="font-size: 14px">
-                                      <strong>{{ item.farmer_seed_broken }}</strong>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th
-                                      class="text-left"
-                                      style="width: 300px; font-size: 14px"
-                                    >
-                                      Total Bibit Hilang
-                                    </th>
-                                    <td class="text-left" style="font-size: 14px">
-                                      <strong>{{ item.farmer_seed_missing }}</strong>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th
-                                      class="text-left"
-                                      style="width: 300px; font-size: 14px"
-                                    >
-                                      Total Pupuk Terdistribusi
-                                    </th>
-                                    <td class="text-left" style="font-size: 14px">
-                                      <strong v-if="item.is_pupuk_load == 0">0</strong>
-                                      <strong v-else>{{ item.total_pupuk }}</strong>
-                                    </td>
-                                  </tr>
-                                </tbody>
+                            <v-data-table
+                              hide-default-footer
+                              :items-per-page="-1"
+                              :headers="detailSeedFarmer.table.header"
+                              :items="item.detail_seed_farmers"
+                              dense
+                            >
+                              <!-- No Column -->
+                              <template v-slot:item.index="{ index }">
+                                {{ index + 1 }}
                               </template>
-                            </v-simple-table>
+                              <template v-slot:item.total_seed="{ item }">
+                                <p>
+                                  {{ parseInt(item.total_received) + parseInt(item.total_damaged) + parseInt(item.total_missing) }} Bibit
+                                </p>
+                              </template>
+                              <template v-slot:item.seed_received_percentage="{ item }">
+                                <v-progress-circular
+                                  :rotate="90"
+                                  :size="50"
+                                  :width="8"
+                                  :value="item.seed_received_percentage"
+                                  :color="progressColorFormat(item.seed_received_percentage)"
+                                >
+                                  {{ item.seed_received_percentage.toFixed(0) }}%
+                                </v-progress-circular>
+                              </template>
+                            </v-data-table>
                           </v-col>
     
                           <div class="list-header py-3 mt-1">
@@ -265,8 +358,83 @@
                           </div>
                           <h3>  </h3>
                           <!-- detail lable -->
-                          <tr>
-                            <!-- total label -->
+                          <v-col cols="12">
+                            <v-data-table
+                              :items-per-page="10"
+                              :footer-props="{
+                                itemsPerPageOptions: [10, 25, 40, -1],
+                              }"
+                              :headers="configLablePrintedDetail.table.header"
+                              :items="getTableLableItem(lable_table_key, item)"
+                              dense
+                            >
+                              <!-- No Column -->
+                              <template v-slot:item.index="{ index }">
+                                {{ index + 1 }}
+                              </template>
+                              <template v-slot:top>
+                                <div class="statistics mb-3">
+                                    <div class="statistic-item info">
+                                      <v-icon>mdi-list-status</v-icon>
+                                      <div class="statistic-data">
+                                          <p class="mb-0 label">Total Label Tercetak</p>
+                                          <p class="mb-0 value">{{ item.printed_lable.length ?? 0 }}</p>
+
+                                      </div>
+                                    </div>
+                                    <div class="statistic-item warning">
+                                      <v-icon>mdi-truck-cargo-container</v-icon>
+                                      <div class="statistic-data">
+                                          <p class="mb-0 label">Total Label Ter-Load</p>
+                                          <p class="mb-0 value">{{ item.loaded_lable.length ?? 0 }}</p>
+
+                                      </div>
+                                    </div>
+                                    <div class="statistic-item success">
+                                      <v-icon>mdi-check-bold</v-icon>
+                                      <div class="statistic-data">
+                                          <p class="mb-0 label">Total Label Diterima</p>
+                                          <p class="mb-0 value">{{ item.distributed_lable.length ?? 0 }}</p>
+
+                                      </div>
+                                    </div>
+                                    <div class="statistic-item danger">
+                                      <v-icon>mdi-magnify-close</v-icon>
+                                      <div class="statistic-data">
+                                          <p class="mb-0 label">Total Label Hilang</p>
+                                          <p class="mb-0 value">{{ item.missing_lable.length ?? 0 }}</p>
+
+                                      </div>
+                                    </div>
+                                </div>
+                                <v-row class="align-center justify-center pa-2 pt-3 mx-0 mb-3">
+                                <!-- Table Data Switch -->
+                                  <v-select
+                                    v-model="lable_table_key"
+                                    :items="[
+                                      {text: 'Label Tercetak', value: 0},
+                                      {text: 'Label Ter-Load', value: 1},
+                                      {text: 'Label Diterima', value: 2},
+                                      {text: 'Label Hilang', value: 3},
+                                    ]"
+                                    outlined
+                                    dense
+                                    hide-details
+                                    :menu-props="{
+                                      bottom: true,
+                                      offsetY: true,
+                                      rounded: 'xl',
+                                      transition: 'slide-y-transition',
+                                    }"
+                                    label="Data Tabel 'Label'"
+                                    class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+                                    style="max-width: 200px"
+                                  ></v-select>
+                                  </v-row>
+                              </template>
+                            </v-data-table>
+                          </v-col>
+                          <!-- <tr>
                              <td>
     
                              </td>
@@ -304,7 +472,6 @@
                                     </v-data-table>
                               </v-card>
                             </td>
-                            <!-- total loaded -->
                             <td>
                               <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
                                 <v-data-table :headers="configLableLoadedDetail.table.header" :items-per-page="3" :items="item.loaded_lable"
@@ -341,7 +508,6 @@
                             </td>
                           </tr>
                           <tr>
-                            <!-- total distributed -->
                             <td>
                               
                             </td>
@@ -379,7 +545,6 @@
                                     </v-data-table>
                               </v-card>
                             </td>
-                            <!-- total missing -->
                             <td>
                               <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
                                 <v-data-table :headers="configLableMissingDetail.table.header" :items-per-page="3" :items="item.missing_lable"
@@ -473,7 +638,7 @@
     
                               </v-card>
                             </td>
-                          </tr>
+                          </tr> -->
                         </v-card>
                       </td>
                     
@@ -511,6 +676,7 @@
     },
     data() {
       return {
+        lable_table_key: 0,
         configAllocationTransportDetail: {
           table: {
             header: DetailUnloadAllocationTransportField
@@ -521,6 +687,23 @@
             header: DetailUnloadAllocationFarmersField
           }
 
+        },
+        detailSeedFarmer: {
+          table: {
+            header: [
+              {text: 'No', value: 'index', align:'center'},
+              {text: 'Nomor Lahan', value: 'lahan_no', align:'center'},
+              {text: 'Nama Bibit', value: 'tree_name', align:'center'},
+              {text: 'Tipe Pohon Bibit', value: 'tree_type_name', align:'center'},
+              {text: 'Total Bibit Ter-Load', value: 'total_load', align:'center'},
+              {text: 'Total Bibit Diterima', value: 'total_received', align:'center'},
+              {text: 'Total Bibit Rusak', value: 'total_damaged', align:'center'},
+              {text: 'Total Bibit Hilang', value: 'total_missing', align:'center'},
+              {text: 'Total Bibit Terdistribusi', value: 'total_seed', align:'center'},
+              {text: 'Persentase Penerimaan Bibit', value: 'seed_received_percentage', align:'center'},
+
+            ]
+          }
         },
         configLablePrintedDetail: {
           table: {
@@ -603,6 +786,12 @@
             }
         }
         await this.getData();
+      },
+      getTableLableItem(itemKey, item){
+        if(itemKey == 0) return item.printed_lable
+        if(itemKey == 1) return item.loaded_lable
+        if(itemKey == 2) return item.distributed_lable
+        if(itemKey == 3) return item.missing_lable
       },
       async getData() {
         const result = await this.$_api.get("distribution/loading-line/detail", {

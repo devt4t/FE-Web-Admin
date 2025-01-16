@@ -54,24 +54,6 @@
             </geko-input>
           </v-col>
         </v-row>
-        <div class="list-header py-3 mt-1">
-          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-              <h4>Adjustment Bibit Lahan Umum</h4>
-              <h4>Status Adjustment: 
-                <div class="statistic-item success">
-                  <v-icon>mdi-check-bold</v-icon>
-                  <div class="statistic-data">
-                      <p class="mb-0 label">Test</p>
-                      <p class="mb-0 value">{{ 0 }}</p>
-
-                  </div>
-                </div>  
-              </h4>
-          </div>
-          <div class="d-flex flex-row geko-list-header-action">
-              <div class="geko-list-header-toolbar"></div>
-          </div>
-        </div>
         <v-row>
           <!-- Seed Adjustment -->
           <v-col cols="12" sm="12">
@@ -80,7 +62,27 @@
                 :headers="seedAdjustment.headers"
                 :items="seedAdjustment.items"
               >
-                
+              <template v-slot:top>
+                    <div class="list-header py-3 mt-1">
+                        <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                        <h4>Adjustment Bibit Lahan Umum</h4>
+                        </div>
+                        <div class="d-flex flex-row geko-list-header-action">
+                        <div class="geko-list-header-toolbar"></div>
+                        </div>
+                    </div>
+
+                    <div class="statistics mb-3">
+                        <div :class="`statistic-item ${statisticConditionFormat('color')}`">
+                          <v-icon>{{ statisticConditionFormat('icon') }}</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Status Adjustment</p>
+                              <p class="mb-0 value">{{ seedAdjustment.total_seed_amount ?? 0 }}</p>
+
+                          </div>
+                        </div>
+                    </div>
+                    </template>
                 <template v-slot:item.index="{index}">{{ index+1 }}</template>
                 
                 <template v-slot:item.amount="{item, index}">
@@ -96,6 +98,9 @@
                             type="number"
                             min="0"
                             v-model="seedAdjustment.items[index].amount"
+                            @change="updateTotalSeedlingAdjustment"
+                            @keyup="updateTotalSeedlingAdjustment"
+                            @click="updateTotalSeedlingAdjustment"
                         ></v-text-field>
                     </v-row>
                 </template>
@@ -110,11 +115,44 @@
           <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar"></div>
           </div>
+          <v-col md="12">
+            <geko-input v-model="formData.photo_near" :item="{
+              label: 'Foto Dokumentasi Penilikan Lubang (Dekat)',
+              type: 'upload',
+              api: '/general-lands/upload1.php',
+              directory: 'photos',
+              upload_type: 'image/*',
+              setter: 'photo_near',
+              view_data: 'photo_near',
+              option: {
+                label_hint:
+                  'Klik untuk memilih berkas yang akan diunggah',
+                max_size: 0.5,
+              },
+            }" />
+          </v-col>
+          <v-col md="12">
+            <geko-input v-model="formData.photo_far" :item="{
+              label: 'Foto Dokumentasi Penilikan Lubang (Jauh)',
+              validation: ['required'],
+              type: 'upload',
+              api: '/general-lands/upload1.php',
+              directory: 'photos',
+              upload_type: 'image/*',
+              setter: 'photo_far',
+              view_data: 'photo_far',
+              option: {
+                label_hint:
+                  'Klik untuk memilih berkas yang akan diunggah',
+                max_size: 0.5,
+              },
+            }" />
+          </v-col>
         </div>
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="$router.go(-1)" class="mr-3">Batal</v-btn>
-            <v-btn type="submit" variant="success" :disabled="loading">
+            <v-btn @click="inputData()" variant="success" :disabled="inputCondition()">
               <v-icon>mdi-check-bold</v-icon>
               <span>Input Data</span>
             </v-btn>
@@ -151,8 +189,10 @@ export default {
           { text: "Kode Pohon", value: "tree_code", align: 'center' },
           { text: "Nama Pohon", value: "tree_name", align: 'center' },
           { text: "Jumlah", value: "amount", align: 'center'},
+          { text: "PIC Bibit", value: "pic_name", align: 'center'},
         ],
-        items: []
+        items: [],
+        total_seed_amount: 0
       },
       formData: {
         lahan_no: '',
@@ -232,8 +272,43 @@ export default {
         res = resTreeDetail.data.result.DetailLahanUmum
       } 
       this.seedAdjustment.items = res
-      console.log(this.seedAdjustment.items)
 
+      this.updateTotalSeedlingAdjustment()
+      // console.log(this.seedAdjustment.items)
+
+    },
+    updateTotalSeedlingAdjustment() {
+      this.seedAdjustment.total_seed_amount = 0
+      this.seedAdjustment.items.forEach(val => {
+        this.seedAdjustment.total_seed_amount += parseInt(val.amount)
+      })
+    },
+    statisticConditionFormat(type){
+      
+      if(type == 'color'){
+        if(this.seedAdjustment.total_seed_amount > this.formData.total_hole)return 'danger'
+        else return 'success'
+      }
+      if(type == 'icon'){
+        if(this.seedAdjustment.total_seed_amount > this.formData.total_hole)return 'mdi-alert-minus'
+        else return 'mdi-check-circle'
+      }
+    },
+    inputData(){
+      console.log(this.formData)
+      console.log(this.seedAdjustment.items)
+      let KAYU = 0
+      let MPTS = 0
+      let CROPS = 0
+      this.seedAdjustment.items.forEach(val => {
+        if (val.tree_category == 'KAYU') KAYU += parseInt(val.amount)
+        if (val.tree_category == 'MPTS') MPTS += parseInt(val.amount)
+        if (val.tree_category == 'CROPS') CROPS += parseInt(val.amount)
+      })
+    },
+    inputCondition(){
+      if(this.formData.lahan_no != '' && this.formData.total_hole > 0 && this.formData.photo_far != '' && this.formData.photo_near != '' && this.formData.qty_std_hole > 0 && this.seedAdjustment.items.length > 0) return false
+      return true
     },
     dateFormat(date, format) {
       return moment(date).format(format);

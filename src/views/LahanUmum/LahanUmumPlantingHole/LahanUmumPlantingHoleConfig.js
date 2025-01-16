@@ -108,85 +108,8 @@ export default [
       },
     },
     {
-      id: "pattern_planting",
-      label: "Pola Tanam",
-      methods: {
-        list: true,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false
-      },
-    },
-    {
-      id: "projects_project_name",
-      label: "Project",
-      methods: {
-        list: false,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false
-      },
-    },
-    {
         id: "program_year",
         label: "Tahun Program",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "goals",
-        label: "Tujuan Penanaman",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "access_lahan",
-        label: "Akses Transportasi",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "jarak_lahan",
-        label: "Jarak Lahan",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "status",
-        label: "Status Pemeliharaan",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "coordinate",
-        label: "Koordinat Lahan",
         methods: {
             list: false,
             detail: true,
@@ -239,41 +162,5 @@ export default [
             filter: false
         },
     },
-    {
-        id: "planting_realization_date",
-        label: "Tanggal Penanaman",
-        methods: {
-            list: false,
-            detail: true,
-            create: false,
-            update: false,
-            filter: false
-        },
-    },
-    {
-        id: "is_verified",
-        label: "Status Verifikasi",
-        methods: {
-          list: {
-            view_data: "is_verified",
-            class: {
-              0: "badge bg-danger",
-              1: "badge bg-success",
-            },
-            transform: "simple-status",
-          },
-          detail: {
-            view_data: "is_verified",
-            class: {
-              0: "badge bg-danger",
-              1: "badge bg-success",
-            },
-            transform: "simple-status",
-          },
-          create: false,
-          update: false,
-          filter: false
-        },
-      },
   ];
   
