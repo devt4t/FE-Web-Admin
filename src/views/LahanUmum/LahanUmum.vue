@@ -16,6 +16,18 @@
                 <v-icon size="small">mdi-check-bold</v-icon> &nbsp; <strong>Terdaftar</strong>
             </span>
         </template>
+        <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
+            <v-btn v-if="item.is_verified == 1 && $_sys.isAllowed('lahan-umum-update')" variant="danger" small
+                class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
+            <v-btn v-else-if="item.is_verified == 0 && $_sys.isAllowed('lahan-umum-update')" variant="success" small
+                class="mt-2" @click="onVerif(item)">
+                <v-icon left small>mdi-check-bold</v-icon>
+                <span>Verifikasi</span>
+            </v-btn>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <lahan-umum-detail-map
               :long="data.result.longitude"

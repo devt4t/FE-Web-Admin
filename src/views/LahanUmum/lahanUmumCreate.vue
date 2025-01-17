@@ -404,24 +404,27 @@
           <v-col>
             <geko-input v-model="formData.village"
               :disabled="!formData.program_year || !formData.mu_no || !formData.province || !formData.kabupaten || !formData.kecamatan" :item="{
-                label: 'Desa',
-                validation: ['required'],
-                col_size: 6,
-                type: 'select',
-                api: 'new-utilities/desas',
-                param: {
-                  kode_kecamatan: formData.kecamatan
+              label: 'Desa',
+              validation: ['required'],
+              col_size: 6,
+              type: 'select',
+              setter: 'village',
+              param: {
+                page: 1,
+                per_page: 10,
+                kode_kecamatan: formData.kecamatan
+              },
+              api: 'new-utilities/desas/option',
+              default_label: formData.village,
+              option: {
+                getterKey: 'data',
+                list_pointer: {
+                  code: 'kode_desa',
+                  label: 'name',
+                  display: ['name', 'kode_desa'],
                 },
-                setter: 'village',
-                option: {
-                  getterKey: 'data',
-                  list_pointer: {
-                    label: 'name',
-                    code: 'kode_desa',
-                    display: ['name', 'kode_desa'],
-                  },
-                },
-              }"/>
+              },
+            }"/>
           </v-col>
           <v-col>
             <geko-input v-model="formData.address" :item="{
