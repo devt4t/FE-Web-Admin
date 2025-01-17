@@ -1,14 +1,5 @@
 export default [
     {
-      id: "indicator",
-      label: " ",
-      methods: {
-        list: {
-          type: "row-slot",
-        },
-      },
-    },
-    {
       id: "mou_no",
       label: "MoU No",
       methods: {

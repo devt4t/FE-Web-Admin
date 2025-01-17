@@ -1,5 +1,17 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
+        <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
+            <v-btn v-if="item.is_verified == 2 && $_sys.isAllowed('lahan-umum-update')" variant="danger" small
+                class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
+            <v-btn v-else-if="item.is_verified == 1 && $_sys.isAllowed('lahan-umum-update')" variant="success" small
+                class="mt-2" @click="onVerif(item)">
+                <v-icon left small>mdi-check-bold</v-icon>
+                <span>Verifikasi</span>
+            </v-btn>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <!-- <lahan-umum-planting-hole-detail-map
               :long="data.result.longitude"
@@ -73,7 +85,38 @@ export default {
         this.user = user;
     },
     methods: {
-        
+        async onVerif(item){
+            const prompt = await this.$_alert.confirm('Verifikasi Data Penilikan Lubang Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Penilikan Lubang Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
+            if (prompt.isConfirmed) {
+                this.$_api.post('PlantingHoleVerificationLahanUmum', {
+                lahan_no: item.lahan_no,
+                verified_by: this.user.email,
+                })
+                .then(() => {
+                    this.$_alert.success('Berhasil Melakukan Verifikasi Penilikan Lubang Lahan Umum, Silahkan Melanjutkan Proses Distribusi & BAST (Hubungi Nursery)')
+                    this.refreshKey += 1
+                })
+
+            }
+        },
+        async onUnverif(item){
+            // let payload = {
+            //     "lahan_no": item.lahan_no
+            // }
+            // console.log(payload);
+            const prompt = await this.$_alert.confirm('Verifikasi Data Penilikan Lubang Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Penilikan Lubang Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
+            if (prompt.isConfirmed) {
+                this.$_api.post('UnverificationLahanUmum', {
+                lahan_no: item.lahan_no,
+                verified_by: this.user.email,
+                })
+                .then(() => {
+                    this.$_alert.success('Berhasil Melakukan Verifikasi Penilikan Lubang Lahan Umum, Silahkan Melanjutkan Proses Distribusi & BAST (Hubungi Nursery)')
+                    this.refreshKey += 1
+                })
+
+            }
+        }
     },
 };
 </script>
