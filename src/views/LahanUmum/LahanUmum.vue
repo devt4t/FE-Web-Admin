@@ -101,7 +101,38 @@ export default {
         this.user = user;
     },
     methods: {
-        
+        async onVerif(item){
+            const prompt = await this.$_alert.confirm('Verifikasi Data Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
+            if (prompt.isConfirmed) {
+                this.$_api.post('VerificationLahanUmum', {
+                lahan_no: item.lahan_no,
+                verified_by: this.user.email,
+                })
+                .then(() => {
+                    this.$_alert.success('Berhasil Melakukan Verifikasi Lahan Umum, Silahkan Lanjutkan Ke Proses Penilikan Lubang')
+                    this.refreshKey += 1
+                })
+
+            }
+        },
+        async onUnverif(item){
+            // let payload = {
+            //     "lahan_no": item.lahan_no
+            // }
+            // console.log(payload);
+            const prompt = await this.$_alert.confirm('Unverifikasi Data Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
+            if (prompt.isConfirmed) {
+                this.$_api.post('general-land/main/unverification', {
+                lahan_no: item.lahan_no,
+                verified_by: this.user.email,
+                })
+                .then(() => {
+                    this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
+                    this.refreshKey += 1
+                })
+
+            }
+        }
     },
 };
 </script>
