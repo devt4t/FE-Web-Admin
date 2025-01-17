@@ -104,14 +104,14 @@ export default {
             //     "lahan_no": item.lahan_no
             // }
             // console.log(payload);
-            const prompt = await this.$_alert.confirm('Verifikasi Data Penilikan Lubang Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Penilikan Lubang Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Unverifikasi Data Penilikan Lubang Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Penilikan Lubang Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('UnverificationLahanUmum', {
+                this.$_api.post('general-land/planting-hole/unverification', {
                 lahan_no: item.lahan_no,
                 verified_by: this.user.email,
                 })
                 .then(() => {
-                    this.$_alert.success('Berhasil Melakukan Verifikasi Penilikan Lubang Lahan Umum, Silahkan Melanjutkan Proses Distribusi & BAST (Hubungi Nursery)')
+                    this.$_alert.success('Berhasil Melakukan Unverifikasi Penilikan Lubang Lahan Umum')
                     this.refreshKey += 1
                 })
 
