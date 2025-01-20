@@ -488,16 +488,16 @@ const menu = [
         icon: "mdi-truck-delivery",
         type: ["non-carbon"],
       },
-      // {
-      //   title: "Pengiriman Ulang",
-      //   to: "/distribution/reallocation",
-      //   component: "ActivityNew/reallocation/Reallocation",
-      //   name: "Pengiriman Ulang",
-      //   update: true,
-      //   permission: "Reallocation",
-      //   icon: "mdi-truck-delivery",
-      //   type: ["non-carbon"],
-      // },
+      {
+        title: "Pengiriman Ulang",
+        to: "/distribution/reallocation",
+        component: "ActivityNew/reallocation/Reallocation",
+        name: "Pengiriman Ulang",
+        update: true,
+        permission: "Reallocation",
+        icon: "mdi-truck-delivery",
+        type: ["non-carbon"],
+      },
     ]
   },
   {
