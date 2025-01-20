@@ -4,6 +4,20 @@
       {{ item.created_by }}
     </template>
 
+    <template v-slot:list-bottom-action="{ item }">
+      <div>
+        <v-btn v-if="item.after_qty_seed <= item.before_qty_seed" variant="success" small class="mt-2"
+          @click="onVerifDetail(item)">
+          <v-icon small>mdi-check-bold</v-icon>
+          <span>Sudah Diterima</span>
+        </v-btn>
+        <v-btn v-else variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
+          <v-icon left small>mdi-undo</v-icon>
+          <span>Belum Diterima</span>
+        </v-btn>
+      </div>
+    </template>
+
     <template v-slot:list-farmer_name="{ item }">
       <div class="min-w-150px">
         <span class="d-block">{{ item.farmer_name }}</span>
@@ -151,6 +165,9 @@ export default {
           project_modul: "purpose",
         },
         deleteKey: "code",
+        detail: "nursery/addendum/detail",
+        detailIdKey: "adendum_id",
+        detailKey: "data.result",
         pk_field: null,
         filter_api: {
           project_modul: "purpose",
