@@ -119,7 +119,7 @@
             <geko-input v-model="formData.photo_near" :item="{
               label: 'Foto Dokumentasi Penilikan Lubang (Dekat)',
               type: 'upload',
-              api: '/general-lands/upload1.php',
+              api: '/general-lands/upload.php',
               directory: 'photos',
               upload_type: 'image/*',
               setter: 'photo_near',
@@ -136,7 +136,7 @@
               label: 'Foto Dokumentasi Penilikan Lubang (Jauh)',
               validation: ['required'],
               type: 'upload',
-              api: '/general-lands/upload1.php',
+              api: '/general-lands/upload.php',
               directory: 'photos',
               upload_type: 'image/*',
               setter: 'photo_far',
@@ -241,7 +241,25 @@ export default {
   methods: {
     async onSubmit() {
       console.log(this.formData);
-      this.$_api.post('lahan-umum/main/create', this.formData)
+      let KAYU = 0
+      let MPTS = 0
+      let CROPS = 0
+      this.seedAdjustment.items.forEach(val => {
+        if (val.tree_category == 'KAYU') KAYU += parseInt(val.amount)
+        if (val.tree_category == 'MPTS') MPTS += parseInt(val.amount)
+        if (val.tree_category == 'CROPS') CROPS += parseInt(val.amount)
+      })
+      let payload = {
+        total_holes: this.formData.total_hole,
+        counter_hole_standard: this.formData.total_hole,
+        pohon_kayu: KAYU,
+        pohon_mpts: MPTS,
+        tanaman_bawah: CROPS,
+        photo_hole1: this.formData.photo_near,
+        photo_hole2: this.formData.photo_far,
+        tree_details: this.seedAdjustment.items
+      }
+      this.$_api.post('general-land/planting-hole/create', payload)
       .then(response => {
         this.$router.go(-1);
         this.$refreshKey += 1;
@@ -297,14 +315,7 @@ export default {
     inputData(){
       console.log(this.formData)
       console.log(this.seedAdjustment.items)
-      let KAYU = 0
-      let MPTS = 0
-      let CROPS = 0
-      this.seedAdjustment.items.forEach(val => {
-        if (val.tree_category == 'KAYU') KAYU += parseInt(val.amount)
-        if (val.tree_category == 'MPTS') MPTS += parseInt(val.amount)
-        if (val.tree_category == 'CROPS') CROPS += parseInt(val.amount)
-      })
+      
     },
     inputCondition(){
       if(this.formData.lahan_no != '' && this.formData.total_hole > 0 && this.formData.photo_far != '' && this.formData.photo_near != '' && this.formData.qty_std_hole > 0 && this.seedAdjustment.items.length > 0) return false
