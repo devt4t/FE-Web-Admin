@@ -153,5 +153,32 @@ export default [
             filter: false
         },
     },
+    {
+      id: "is_verified",
+      label: "Status Verifikasi Lubang Tanam",
+      methods: {
+        list: {
+          view_data: "is_verified",
+          class: {
+            0: "badge bg-danger",
+            1: "badge bg-danger",
+            2: "badge bg-success",
+          },
+          transform: "general-land-planting-hole-status",
+        },
+        detail: {
+          view_data: "is_verified",
+          class: {
+            0: "badge bg-info",
+            1: "badge bg-danger",
+            2: "badge bg-success",
+          },
+          transform: "general-land-planting-hole-status",
+        },
+        create: false,
+        update: false,
+        filter: false
+      },
+    },
   ];
   

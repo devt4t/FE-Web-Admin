@@ -116,6 +116,16 @@ Vue.filter("parse", (value, id) => {
         _value = "Terverifikasi";
       }
       break;
+    case "general-land-planting-hole-status":
+      if (value == 0) {
+        _value = "Silahkan Verifikasi Lahan Terlebih Dahulu";
+      }else if (value === 1) {
+        _value = "Belum Terverifikasi";
+      }else if (value === 2) {
+        _value = "Terverifikasi";
+      }
+      break;
+
 
     case "distribution-status-bast":
       if (value == 0) {
