@@ -163,6 +163,12 @@ Vue.filter("parse", (value, id) => {
         _value = "Terdaftar";
       }
       break;
+    case "status-acceptance":
+      _value = value === 0 ? "Belum Diterima" : "Sudah Diterima";
+      break;
+    case "status-allocation":
+      _value = value === 0 ? "Belum Dialokasi" : "Sudah Dialokasi";
+      break;
     default:
       _value = value;
       break;
