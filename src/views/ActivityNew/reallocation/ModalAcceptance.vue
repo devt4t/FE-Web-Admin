@@ -14,20 +14,20 @@
                                 <v-col>
                                     <div style="display: inline-block; margin: 0px 10px 10px 0px"
                                         v-for="(item, key) of reallocationList">
-                                        <v-btn :variant="selectedFarmer === item.farmer_no ? 'success' : 'light'"
-                                            @click="selectedFarmer = item.farmer_no">
-                                            {{ item.farmer_name }} - {{ item.farmer_no }}
+                                        <v-btn :variant="selectedFarmer === item.farmer_no + item.rel_tree_id + item.lahan_no ? 'success' : 'light'"
+                                            @click="selectedFarmer = item.farmer_no + item.rel_tree_id + item.lahan_no">
+                                            {{ item.farmer_name }} - {{ item.lahan_no }} - {{ item.rel_tree_id }}
 
                                             <div>
-                                                <v-badge v-if="formData[item.farmer_no].received"
+                                                <v-badge v-if="formData[item.farmer_no].received != '0'"
                                                     style="display: inline-block;" small color="primary"
                                                     :content="formData[item.farmer_no].received" inline>
                                                 </v-badge>
-                                                <v-badge v-if="formData[item.farmer_no].damaged"
+                                                <v-badge v-if="formData[item.farmer_no].damaged != '0'"
                                                     style="display: inline-block;" small color="red"
                                                     :content="formData[item.farmer_no].damaged" inline>
                                                 </v-badge>
-                                                <v-badge v-if="formData[item.farmer_no].missing"
+                                                <v-badge v-if="formData[item.farmer_no].missing != '0'"
                                                     style="display: inline-block;" small color="grey"
                                                     :content="formData[item.farmer_no].missing" inline>
                                                 </v-badge>
@@ -36,7 +36,7 @@
                                     </div>
                                 </v-col>
                             </v-row>
-                            <v-row v-if="selectedFarmer === item.farmer_no" v-for="(item, index) in reallocationList"
+                            <v-row v-if="selectedFarmer === item.farmer_no + item.rel_tree_id + item.lahan_no" v-for="(item, index) in reallocationList"
                                 :key="index">
                                 <v-col lg="12">
                                     <geko-input v-model="formData[item.farmer_no].received" :item="{
@@ -127,19 +127,20 @@ export default {
 
             const params = this.reallocationList.map(
                 adendum => {
-                    return adendum.detail_seed_farmer.map(seed => {
-                        return {
-                            detail_seed_farmer_id: seed.detail_seed_farmer_id,
-                            lahan_no: adendum.lahan_no,
-                            tree_id: adendum.tree_id,
-                            total_load: adendum.after_qty_seed,
-                            total_received: this.formData[adendum.farmer_no].received,
-                            total_damaged: this.formData[adendum.farmer_no].damaged,
-                            total_missing: this.formData[adendum.farmer_no].missing,
-                        }
-                    })
-                }
-            )
+                    return {
+                        detail_seed_farmer_id: adendum.detail_seed_farmer,
+                        lahan_no: adendum.lahan_no,
+                        tree_id: adendum.tree_id,
+                        total_load: adendum.after_qty_seed,
+                        total_received: this.formData[adendum.farmer_no].received,
+                        total_damaged: this.formData[adendum.farmer_no].damaged,
+                        total_missing: this.formData[adendum.farmer_no].missing,
+                    }
+                })
+
+
+            console.log(params);
+            return;
 
             this.$_api
                 .post("nursery/reallocation/acceptance", {
@@ -171,9 +172,9 @@ export default {
         },
 
         async getReallocationList() {
-            const url = "nursery/addendum/reallocation/list";
+            const url = "nursery/addendum/reallocation/list/staging";
             let params = {
-                adendum_id: this.data.id
+                addendum_id: this.data.id
             };
             const allocationLists = await this.$_api.get(url, params);
 
@@ -185,9 +186,9 @@ export default {
             let formData = new Object();
             for (const allocation of this.reallocationList) {
                 formData[allocation.farmer_no] = {};
-                formData[allocation.farmer_no].received = Math.floor(Math.random() * 100);
-                formData[allocation.farmer_no].damaged = 0;
-                formData[allocation.farmer_no].missing = 0;
+                formData[allocation.farmer_no].received = allocation.after_qty_seed;
+                formData[allocation.farmer_no].damaged = '0';
+                formData[allocation.farmer_no].missing = '0';
             }
 
             this.formData = formData

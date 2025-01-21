@@ -168,7 +168,7 @@ export default {
           model: "2024",
         },
         model_api: null,
-        getter: "nursery/addendum/list",
+        getter: "nursery/addendum/list/staging",
         setter: "addProjectUtils",
         setter_ext_payload: {
           project_modul: "purpose",
