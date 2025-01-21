@@ -119,8 +119,8 @@
             <geko-input v-model="formData.photo_near" :item="{
               label: 'Foto Dokumentasi Penilikan Lubang (Dekat)',
               type: 'upload',
-              api: '/general-lands/upload.php',
-              directory: 'photos',
+              api: '/general-lands/planting-hole/upload.php',
+              directory: 'photo',
               upload_type: 'image/*',
               setter: 'photo_near',
               view_data: 'photo_near',
@@ -136,8 +136,8 @@
               label: 'Foto Dokumentasi Penilikan Lubang (Jauh)',
               validation: ['required'],
               type: 'upload',
-              api: '/general-lands/upload.php',
-              directory: 'photos',
+              api: '/general-lands/planting-hole/upload.php',
+              directory: 'photo',
               upload_type: 'image/*',
               setter: 'photo_far',
               view_data: 'photo_far',
@@ -152,7 +152,7 @@
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="$router.go(-1)" class="mr-3">Batal</v-btn>
-            <v-btn @click="inputData()" variant="success" :disabled="inputCondition()">
+            <v-btn @click="onSubmit()" variant="success" :disabled="inputCondition()">
               <v-icon>mdi-check-bold</v-icon>
               <span>Input Data</span>
             </v-btn>
@@ -250,6 +250,7 @@ export default {
         if (val.tree_category == 'CROPS') CROPS += parseInt(val.amount)
       })
       let payload = {
+        lahan_no: this.formData.lahan_no,
         total_holes: this.formData.total_hole,
         counter_hole_standard: this.formData.total_hole,
         pohon_kayu: KAYU,
@@ -311,11 +312,6 @@ export default {
         if(this.seedAdjustment.total_seed_amount > this.formData.total_hole)return 'mdi-alert-minus'
         else return 'mdi-check-circle'
       }
-    },
-    inputData(){
-      console.log(this.formData)
-      console.log(this.seedAdjustment.items)
-      
     },
     inputCondition(){
       if(this.formData.lahan_no != '' && this.formData.total_hole > 0 && this.formData.photo_far != '' && this.formData.photo_near != '' && this.formData.qty_std_hole > 0 && this.seedAdjustment.items.length > 0) return false
