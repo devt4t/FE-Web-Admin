@@ -1,8 +1,5 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
-        <template v-slot:list-before-create>
-            <unload-import-excel-modal :dataKey="exportUnloadKey" />
-        </template>
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="info" small class="mt-2" @click="onBASTCheck(item)">
                 <v-icon left small>mdi-information-box-outline</v-icon>
@@ -33,49 +30,22 @@
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>
-        <!-- <template v-slot:list-after-filter>
-            <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="success" @click="exportUnloadKey += 1">
-                    <v-icon>mdi-table</v-icon>
-                    <span>Export Excel</span>
-                </v-btn>
-            </div>
-        </template> -->
     </geko-base-crud>
-
-
-    <!-- <div class="under-development">
-        <div class="wrapper">
-        <div class="text-wrapper">
-            <h3>{{ $route.name.replace(/([a-z])([A-Z])/g, "$1 $2") }} Module</h3>
-            <p class="mb-0 pb-0">is Under Development</p>
-        </div>
-        <LottieAnimation
-            ref="anim"
-            :animationData="lottie"
-            :loop="true"
-            style="height: 70vh"
-        />
-        </div>
-    </div> -->
 </template>
 
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
-import UnloadConfig from "./UnloadConfig";
-import UnloadAllocationDetail from "./UnloadAllocationDetail.vue";
+import UnloadConfig from "./LahanUmumDistributionLoadingLineConfig";
+import UnloadAllocationDetail from "./LahanUmumDistributionLoadingLineDetail.vue";
 import LottieAnimation from "lottie-web-vue";
-import UnloadImportExcelModal from "./UnloadImportExcelModal.vue";
-
 import moment from "moment";
 import axios from "axios";
 export default {
     components: {
         LottieAnimation,
         UnloadAllocationDetail,
-        UnloadImportExcelModal
     },
-    name: "crud-distribution-unload",
+    name: "crud-distribution-unload-general-land",
     watch: {},
     data() {
         return {
@@ -85,9 +55,9 @@ export default {
             exportIds: [],
             exportProofInsentiveIds: [],
             config: {
-                title: "Distribution Unload",
+                title: "Distribution Unload - Lahan Umum",
                 model_api: null,
-                getter: "distribution/loading-line/list?land_status=1",
+                getter: "distribution/loading-line/list?land_status=2",
                 getterDataKey: "data",
                 totalDataKey: 'total',
                 detail: "distribution/loading-line/detail",
