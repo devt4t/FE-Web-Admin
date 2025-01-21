@@ -20,7 +20,7 @@
           <v-icon small>mdi-check-bold</v-icon>
           <span>Sudah Diterima</span>
         </v-btn>
-        <v-btn v-else variant="success" small class="mt-2" @click="verifikasi(item)">
+        <v-btn v-else-if="!item.status_verified" variant="success" small class="mt-2" @click="verifikasi(item)">
           <v-icon left small>mdi-check-bold</v-icon>
           <span>Verifikasi</span>
         </v-btn>

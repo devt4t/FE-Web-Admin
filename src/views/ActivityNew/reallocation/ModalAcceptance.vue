@@ -127,19 +127,28 @@ export default {
 
             const params = this.reallocationList.map(
                 adendum => {
-                    return {
-                        detail_seed_farmer_id: adendum.detail_seed_farmer.filter(seed => seed.tree_id === adendum.tree_id),
-                        lahan_no: adendum.lahan_no,
-                        tree_id: adendum.tree_id,
-                        total_load: adendum.after_qty_seed,
-                        total_received: this.formData[adendum.farmer_no].received,
-                        total_damaged: this.formData[adendum.farmer_no].damaged,
-                        total_missing: this.formData[adendum.farmer_no].missing,
-                    }
+                    return adendum.detail_seed_farmer.map(seed => {
+                        return {
+                            detail_seed_farmer_id: seed.detail_seed_farmer_id,
+                            lahan_no: adendum.lahan_no,
+                            tree_id: adendum.tree_id,
+                            total_load: adendum.after_qty_seed,
+                            total_received: this.formData[adendum.farmer_no].received,
+                            total_damaged: this.formData[adendum.farmer_no].damaged,
+                            total_missing: this.formData[adendum.farmer_no].missing,
+                        }
+                    })
                 }
             )
 
-            console.log(params)
+            this.$_api
+                .post("nursery/reallocation/acceptance", {
+                    seeds: params.flat()
+                })
+                .then((res) => {
+                    this.isOpen = false;
+                    this.$_alert.success("Bibit Telah Diterima");
+                });
 
         },
 
@@ -164,7 +173,7 @@ export default {
         async getReallocationList() {
             const url = "nursery/addendum/reallocation/list";
             let params = {
-                adendum_id: this.data.adendum_id
+                adendum_id: this.data.id
             };
             const allocationLists = await this.$_api.get(url, params);
 
@@ -177,8 +186,8 @@ export default {
             for (const allocation of this.reallocationList) {
                 formData[allocation.farmer_no] = {};
                 formData[allocation.farmer_no].received = Math.floor(Math.random() * 100);
-                formData[allocation.farmer_no].damaged = Math.floor(Math.random() * 10);
-                formData[allocation.farmer_no].missing = Math.floor(Math.random() * 5);
+                formData[allocation.farmer_no].damaged = 0;
+                formData[allocation.farmer_no].missing = 0;
             }
 
             this.formData = formData
