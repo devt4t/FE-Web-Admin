@@ -18,7 +18,7 @@
               <template v-slot:item="data">
                 <v-list-item-content>
                   <v-list-item-title v-html="data.item.lahan_no"></v-list-item-title>
-                  <v-list-item-subtitle>{{ data.item.mou_no }} - {{ data.item.pic_lahan }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ data.item.mou_no }} - {{ data.item.employees_name }}</v-list-item-subtitle>
                 </v-list-item-content>
               </template>
             </v-select>
