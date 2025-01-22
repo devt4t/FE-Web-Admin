@@ -49,12 +49,12 @@
 
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                        @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo_hole1 ?? '')"
+                        @click="showLightbox($_config.baseUrlUpload + '/general-lands/planting-hole/' + data.result.photo_hole1 ?? '')"
                         v-bind:style="{
                         backgroundImage:
                             'url(' +
                             $_config.baseUrlUpload +
-                            '/general-lands/' +
+                            '/general-lands/planting-hole/' +
                             data.result.photo_hole1 ?? '' +
                             ')',
                         }">
@@ -63,12 +63,12 @@
                 </div>
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                        @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo_hole2 ?? '')"
+                        @click="showLightbox($_config.baseUrlUpload + '/general-lands/planting-hole/' + data.result.photo_hole2 ?? '')"
                         v-bind:style="{
                         backgroundImage:
                             'url(' +
                             $_config.baseUrlUpload +
-                            '/general-lands/' +
+                            '/general-lands/planting-hole/' +
                             data.result.photo_hole2 ?? '' +
                             ')',
                         }">

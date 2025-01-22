@@ -40,7 +40,7 @@
         <input v-model="tmpValue" v-if="['text', 'number'].includes(item.type)" :id="item.view_data"
           :type="item.type || 'text'" v-on:input="$emit('input', $event.target.value)"
           v-on:change="$emit('change', errors[0] ? '' : $event.target.value)" :placeholder="item.placeholder || ''"
-          v-bind:value="value" :disabled="disabled" />
+          v-bind:value="value" :disabled="disabled" min="0" />
 
         <date-picker v-else-if="['date', 'daterange'].includes(item.type)" v-model="tmpValue" valueType="format"
           class="w-100 date" :placeholder="item.placeholder || ''" :class="{

@@ -210,7 +210,7 @@ const menu = [
     icon: "mdi-square-rounded-badge",
     items:[
       {
-        title: "Lahan Umum",
+        title: "Lahan Umum / Event",
         to: "/LahanUmumV2",
         component: "LahanUmum/LahanUmum",
         name: "LahanUmumV2",
@@ -219,12 +219,21 @@ const menu = [
         update: true,
       },
       {
-        title: "Penilikan Lubang Lahan Umum / Event",
+        title: "Lahan Umum / Event - Penilikan Lubang",
         to: "/PenilikanLubangLahanUmumV2",
         component: "LahanUmum/LahanUmumPlantingHole/LahanUmumPlantingHole",
         name: "LahanUmumPlantingHoleV2",
         permission: "LubangTanam",
         icon: "mdi-check-underline-circle",
+        update: true,
+      },
+      {
+        title: "Lahan Umum / Event - Unload & Report BAST",
+        to: "/UloadLahanUmumV2",
+        component: "LahanUmum/LahanUmumDistributionLoadingLine/LahanUmumDistributionLoadingLine",
+        name: "LahanUmumDistributionLoadingLineV2",
+        permission: "DistributionUnload",
+        icon: "mdi-truck-delivery",
         update: true,
       },
     ]
