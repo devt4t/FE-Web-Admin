@@ -3,7 +3,7 @@
     <div>
       <v-row>
         <v-col>
-            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5" v-if="data.result">
                 <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
                     :search="''" class="rounded-xl elevation- pa-1 px-5">
 

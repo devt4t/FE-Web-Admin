@@ -40,6 +40,8 @@
                     {{ item.status_pupuk == 1 ? 'Pupuk Kurang / Lebih' : 'Pupuk Lengkap' }}
                 </span>
             </div>
+
+            <span class="d-block text-center" v-else>-</span>
         </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
