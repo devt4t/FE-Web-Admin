@@ -216,11 +216,13 @@
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
                         'bg-danger': item.is_validate == 0,
-                        'bg-success': item.is_validate == 1 || item.is_validate == 2,
+                        'bg-warning': item.is_validate == 1, 
+                        'bg-success': item.is_validate == 2,
                     }">
 
                         <span v-if="item.is_validate == 0">Belum Terverifikasi</span>
-                        <span v-else="item.is_validate == 1">Terverifikasi</span>
+                        <span v-else-if="item.is_validate == 1">Terverifikasi FC</span>
+                        <span v-else-if="item.is_validate == 2">Terverifikasi UM</span>
                     </span>
                 </div>
 
@@ -232,10 +234,10 @@
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
                         'bg-danger': item.is_populated == 0,
-                        'bg-success': item.is_populated == 1,
+                        'bg-success': item.is_populated == 1, 
                     }">
 
-                        <span v-if="item.is_populated == 0">Belum / Tidak Terpopulasi</span>
+                        <span v-if="item.is_populated == 0">Belum Terpopulasi</span>
                         <span v-else="item.is_populated == 1">Terpopulasi</span>
                     </span>
                 </div>
@@ -270,60 +272,54 @@
                     class="badge bg-primary"> {{ item.end_monitoring_period | parse('datetime') }}</span>
             </div>
         </template>
-
-        <template v-slot:detail-action="{ item }">
+        <template v-if="$_sys.isAllowed('realisasi-tanam-verification-create')" v-slot:list-bottom-action="{ item }">
             <div>
                 <v-btn v-if="item.is_validate == 0 && $_sys.isAllowed('realisasi-tanam-verification-create')"
-                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
+                    variant="success" small class="mt-2" @click="onVerif(item, 'fc')">
                     <v-icon small>mdi-check-bold</v-icon>
-                    <span>Verifikasi</span>
+                    <span>Verifikasi FC</span>
                 </v-btn>
-                <v-btn v-else-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
-                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
-                    <v-icon left small>mdi-undo</v-icon>
-                    <span>Unverifikasi</span>
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-create')"
+                    variant="success" small class="mt-2" @click="onVerif(item, 'um')">
+                    <v-icon small>mdi-check-bold</v-icon>
+                    <span>Verifikasi UM</span>
                 </v-btn>
-                <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
-                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverif(item)">
                     <v-icon left small>mdi-undo</v-icon>
-                    <span>Unverifikasi</span>
+                    <span>Unverifikasi FC</span>
+                </v-btn>
+                <v-btn v-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi UM</span>
                 </v-btn>
             </div>
         </template>
-        <template v-slot:list-bottom-action="{ item }">
 
-
-            <!-- <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
-                <v-icon left small>mdi-calendar</v-icon>
-                <span>Edit Tgl. Distribusi</span>
-            </v-btn>
-            <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
-                <v-icon left small>mdi-map</v-icon>
-                <span>Edit Koordinat</span>
-            </v-btn>
-            <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
-                <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
-                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
-
-                <span>Export Excel</span>
-            </v-btn> -->
-            <v-btn v-if="!item.is_validate && $_sys.isAllowed('realisasi-tanam-verification-create')"
-                variant="success" small class="mt-2" @click="onVerif(item)">
-                <v-icon small>mdi-check-bold</v-icon>
-                <span>Verifikasi</span>
-            </v-btn>
-            <v-btn v-else-if="item.is_validate && $_sys.isAllowed('realisasi-tanam-unverification-create')"
-                variant="danger" small class="mt-2" @click="onUnverif(item)">
-                <v-icon left small>mdi-undo</v-icon>
-                <span>Unverifikasi</span>
-            </v-btn>
-            <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
-                variant="danger" small class="mt-2" @click="onUnverif(item)">
-                <v-icon left small>mdi-undo</v-icon>
-                <span>Unverifikasi</span>
-            </v-btn>
+        <template v-slot:detail-action="{ item }">
+            <div>
+                <v-btn v-if="item.is_validate == 0 && $_sys.isAllowed('realisasi-tanam-verification-fc-create')"
+                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
+                    <v-icon small>mdi-check-bold</v-icon>
+                    <span>Verifikasi FC</span>
+                </v-btn>
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-um-create')"
+                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
+                    <v-icon small>mdi-check-bold</v-icon>
+                    <span>Verifikasi UM</span>
+                </v-btn>
+                <v-btn v-else-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-fc-delete')"
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi FC</span>
+                </v-btn>
+                <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-verification-um-delete')"
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi UM</span>
+                </v-btn>
+            </div>
         </template>
 
 
@@ -443,10 +439,13 @@ export default {
             }
 
         },
-        async onVerif(item) {
+        async onVerif(item, type) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-            if (prompt.isConfirmed) {
-                this.verifyPenilikan(item);
+            if (prompt.isConfirmed && type == 'fc') {
+                this.verifyPenilikan(item, type);
+            }
+            if (prompt.isConfirmed && type == 'um') {
+                this.verifyPenilikan(item, type);
             }
         },
         async onUnverif(item) {
@@ -462,11 +461,12 @@ export default {
             this.searchColumn = t
             console.log('state ', this.searchColumn)
         },
-        async verifyPenilikan(data) {
+        async verifyPenilikan(data, type) {
 
             let listTrees = [];
             data.detail_monitoring.forEach((tree) => {
                 let pushData = {
+
                     tree_code: tree.tree_code,
                     qty: tree.qty,
                     status: tree.status,
@@ -477,8 +477,10 @@ export default {
                 };
                 listTrees.push(pushData);
             });
-
-            const url = `${this.$_config.baseUrl}MonitoringVerificationUM`;
+            let temp_url = ''
+            if(type == 'fc') temp_url = 'MonitoringVerificationFC'
+            else if(type == 'um') temp_url = 'MonitoringVerificationUM'
+            const url = `${this.$_config.baseUrl}${temp_url}`;
             const postData = {
                 monitoring_no: data.monitoring_no,
                 list_trees: listTrees,

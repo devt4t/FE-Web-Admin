@@ -54,17 +54,17 @@ export default [
         filter: false
       },
     },
-    {
-      id: "pic_lahan",
-      label: "PIC Lahan",
-      methods: {
-        list: true,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false
-      },
-    },
+    // {
+    //   id: "pic_lahan",
+    //   label: "PIC Lahan",
+    //   methods: {
+    //     list: true,
+    //     detail: true,
+    //     create: false,
+    //     update: false,
+    //     filter: false
+    //   },
+    // },
     {
       id: "ktp_no",
       label: "KTP PIC Lahan",
