@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="isOpen" width="50%">
+    <v-dialog v-model="isOpen" width="90%">
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-card-title>
@@ -7,57 +7,129 @@
                 </v-card-title>
 
                 <v-card-text class="farmer-assign-wrapper mt-3">
-                    <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
+                    <!-- <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
 
                         <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
                             <v-row>
                                 <v-col>
                                     <div style="display: inline-block; margin: 0px 10px 10px 0px"
                                         v-for="(item, key) of reallocationList">
-                                        <v-btn :variant="selectedFarmer === item.farmer_no ? 'success' : 'light'"
-                                            @click="selectedFarmer = item.farmer_no">
-                                            {{ item.farmer_name }} - {{ item.farmer_no }}
+                                        <v-btn
+                                            :variant="selectedFarmer == item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id ? 'success' : 'light'"
+                                            @click="selectedFarmer = item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id">
+                                            {{ item.farmer_name }} - {{ item.lahan_no }} - {{ item.rel_tree_id }}
 
                                             <div>
-                                                <v-badge v-if="formData[item.farmer_no].received"
+                                                <v-badge
+                                                    v-if="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].received != '0'"
                                                     style="display: inline-block;" small color="primary"
-                                                    :content="formData[item.farmer_no].received" inline>
+                                                    :content="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].received"
+                                                    inline>
                                                 </v-badge>
-                                                <v-badge v-if="formData[item.farmer_no].damaged"
+                                                <v-badge
+                                                    v-if="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].damaged != '0'"
                                                     style="display: inline-block;" small color="red"
-                                                    :content="formData[item.farmer_no].damaged" inline>
+                                                    :content="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].damaged"
+                                                    inline>
                                                 </v-badge>
-                                                <v-badge v-if="formData[item.farmer_no].missing"
+                                                <v-badge
+                                                    v-if="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].missing != '0'"
                                                     style="display: inline-block;" small color="grey"
-                                                    :content="formData[item.farmer_no].missing" inline>
+                                                    :content="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].missing"
+                                                    inline>
                                                 </v-badge>
                                             </div>
                                         </v-btn>
                                     </div>
                                 </v-col>
                             </v-row>
-                            <v-row v-if="selectedFarmer === item.farmer_no" v-for="(item, index) in reallocationList"
-                                :key="index">
+                            <v-row v-if="selectedFarmer === item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id"
+                                v-for="(item, index) in reallocationList" :key="index">
                                 <v-col lg="12">
-                                    <geko-input v-model="formData[item.farmer_no].received" :item="{
-                                        label: 'Bibit Diterima',
-                                        type: 'number',
-                                        validation: ['required'],
-                                    }" />
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].received"
+                                        :item="{
+                                            label: 'Bibit Diterima',
+                                            type: 'number',
+                                            validation: ['required'],
+                                        }" />
                                 </v-col>
                                 <v-col lg="12">
-                                    <geko-input v-model="formData[item.farmer_no].damaged" :item="{
-                                        label: 'Bibit Rusak',
-                                        type: 'number',
-                                    }" />
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].damaged"
+                                        :item="{
+                                            label: 'Bibit Rusak',
+                                            type: 'number',
+                                        }" />
                                 </v-col>
                                 <v-col lg="12">
-                                    <geko-input v-model="formData[item.farmer_no].missing" :item="{
-                                        label: 'Bibit Hilang',
-                                        type: 'number',
-                                    }" />
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].missing"
+                                        :item="{
+                                            label: 'Bibit Hilang',
+                                            type: 'number',
+                                        }" />
                                 </v-col>
                             </v-row>
+                            <v-row>
+                                <v-col lg="12">
+                                    <v-btn class="float-right" variant="success" type="submit">
+                                        <v-icon small>mdi-seed</v-icon>
+                                        <span class="ml-1">Konfirmasi Diterima</span>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </form>
+                    </ValidationObserver> -->
+                    <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
+                        <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+
+                            <v-data-table :loading="loading" :headers="headerAddendumTable" :items="reallocationList"
+                                :search="search" class="rounded-xl px-1 pt-2" :items-per-page="perPage"
+                                @update:items-per-page="($p) => (perPage = $p)" :footer-props="{
+                                    itemsPerPageOptions: [5, 10, 25, 50, 100, 200],
+                                    showCurrentPage: true,
+                                    showFirstLastPage: true,
+                                }">
+
+                                <template v-slot:top>
+                                    <div class="list-header py-3 mt-1">
+                                        <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                            <div></div>
+                                            <geko-input v-model="search" :item="{
+                                                label: 'Cari Bibit / Lahan',
+                                                type: 'text'
+                                            }" />
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template v-slot:item.index="{ index }">
+                                    {{ index + 1 }}
+                                </template>
+                                <template v-slot:item.received="{ item }">
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].received"
+                                        :item="{
+                                            type: 'number',
+                                        }" />
+                                </template>
+                                <template v-slot:item.damaged="{ item }">
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].damaged"
+                                        :item="{
+                                            type: 'number',
+                                        }" />
+                                </template>
+                                <template v-slot:item.missing="{ item }">
+                                    <geko-input
+                                        v-model="formData[item.farmer_no + '-' + item.lahan_no + '-' + item.rel_tree_id].missing"
+                                        :item="{
+                                            type: 'number',
+                                        }" />
+                                </template>
+
+                            </v-data-table>
                             <v-row>
                                 <v-col lg="12">
                                     <v-btn class="float-right" variant="success" type="submit">
@@ -81,12 +153,127 @@ export default {
     name: "modal-acceptance",
     data() {
         return {
+            loading: false,
+            search: '',
             muNo: null,
             isOpen: false,
             loading: false,
+            perPage: 200,
+            total: 0,
+            page: 1,
             selectedFarmer: null,
             formData: {},
-            reallocationList: []
+            reallocationList: [],
+            headerAddendumTable: [
+                {
+                    key: "index",
+                    sortable: false,
+                    text: "No",
+                    value: "index",
+                },
+                {
+                    key: "lahan_no",
+                    value: "lahan_no",
+                    text: "Nomor Lahan",
+                },
+                {
+                    key: "rel_tree_id",
+                    value: "rel_tree_id",
+                    text: "Nama Bibit",
+                },
+                {
+                    key: "after_qty_seed",
+                    value: "after_qty_seed",
+                    text: "Total Load",
+                },
+
+                {
+                    key: "description_reason",
+                    value: "description_reason",
+                    text: "Keterangan",
+                },
+                {
+                    key: "farmer_name",
+                    value: "farmer_name",
+                    text: "Nama Petani",
+                },
+                {
+                    key: "farmer_no",
+                    value: "farmer_no",
+                    text: "Kode Petani",
+                },
+                {
+                    key: "received",
+                    value: "received",
+                    text: "Diterima"
+                },
+                {
+                    key: "damaged",
+                    value: "damaged",
+                    text: "Rusak"
+                },
+                {
+                    key: "missing",
+                    value: "missing",
+                    text: "Hilang"
+                }
+
+                // {
+                //   key: "id",
+                //   value: "id",
+                //   text: "",
+                // },
+                // {
+                //   key: "tree_id",
+                //   value: "tree_id",
+                //   text: "",
+                // },
+                // {
+                //   key: "updated_at",
+                //   value: "updated_at",
+                //   text: "",
+                // },
+                // {
+                //   key: "updated_by",
+                //   value: "updated_by",
+                //   text: "",
+                // },
+                // {
+                //   key: "rel_adendum_id",
+                //   value: "rel_adendum_id",
+                //   text: "",
+                // },
+                // {
+                //   key: "rel_created_by",
+                //   value: "rel_created_by",
+                //   text: "",
+                // },
+                // {
+                //   key: "before_qty_seed",
+                //   value: "before_qty_seed",
+                //   text: "",
+                // },
+                // {
+                //   key: "category_id",
+                //   value: "category_id",
+                //   text: "",
+                // },
+                // {
+                //   key: "created_at",
+                //   value: "created_at",
+                //   text: "",
+                // },
+                // {
+                //   key: "created_by",
+                //   value: "created_by",
+                //   text: "",
+                // },
+                // {
+                //   key: "rel_updated_by",
+                //   value: "rel_updated_by",
+                //   text: "",
+                // },
+            ]
         };
     },
     props: {
@@ -125,21 +312,38 @@ export default {
                 }
             }
 
-            const params = this.reallocationList.map(
-                adendum => {
-                    return {
-                        detail_seed_farmer_id: adendum.detail_seed_farmer.filter(seed => seed.tree_id === adendum.tree_id),
-                        lahan_no: adendum.lahan_no,
-                        tree_id: adendum.tree_id,
-                        total_load: adendum.after_qty_seed,
-                        total_received: this.formData[adendum.farmer_no].received,
-                        total_damaged: this.formData[adendum.farmer_no].damaged,
-                        total_missing: this.formData[adendum.farmer_no].missing,
-                    }
-                }
-            )
+            let params = [];
+            for (const adendum of this.reallocationList) {
 
-            console.log(params)
+                if (!adendum.detail_seed_farmer.length) {
+                    this.$_alert.error("Bibit belum dimuat di persemaian");
+                    return;
+                }
+
+                params.push({
+                    detail_seed_farmer_id: String(adendum.detail_seed_farmer[0].detail_seed_farmer_id),
+                    lahan_no: adendum.lahan_no,
+                    tree_id: String(adendum.tree_id),
+                    total_load: adendum.after_qty_seed,
+                    total_received: this.formData[adendum.farmer_no + '-' + adendum.lahan_no + '-' + adendum.rel_tree_id].received,
+                    total_damaged: this.formData[adendum.farmer_no + '-' + adendum.lahan_no + '-' + adendum.rel_tree_id].damaged,
+                    total_missing: this.formData[adendum.farmer_no + '-' + adendum.lahan_no + '-' + adendum.rel_tree_id].missing,
+                });
+            }
+
+            this.$_api
+                .post("nursery/reallocation/acceptance", {
+                    seeds: params
+                })
+                .then((res) => {
+                    if (res.message != 'success') {
+                        this.$_alert.error(res.message);
+                        return;
+                    }
+                    
+                    this.isOpen = false;
+                    this.$_alert.success("Bibit Telah Diterima");
+                });
 
         },
 
@@ -162,26 +366,37 @@ export default {
         },
 
         async getReallocationList() {
-            const url = "nursery/addendum/reallocation/list";
+            this.loading = true;
+            const url = "nursery/addendum/reallocation/list/staging";
             let params = {
-                adendum_id: this.data.adendum_id
+                addendum_id: this.data.id,
+                limit: 200,
+                offset: this.page == 1 ? 0 : this.page == 2 ? this.perPage : this.perPage * (this.page - 1)
             };
             const allocationLists = await this.$_api.get(url, params);
 
             this.reallocationList = allocationLists.data;
+            this.total = allocationLists.total;
 
-            this.generateFormDataObject()
+            this.loading = false;
+
+            this.generateFormDataObject();
+
         },
         generateFormDataObject() {
             let formData = new Object();
             for (const allocation of this.reallocationList) {
-                formData[allocation.farmer_no] = {};
-                formData[allocation.farmer_no].received = Math.floor(Math.random() * 100);
-                formData[allocation.farmer_no].damaged = Math.floor(Math.random() * 10);
-                formData[allocation.farmer_no].missing = Math.floor(Math.random() * 5);
+                formData[allocation.farmer_no + '-' + allocation.lahan_no + '-' + allocation.rel_tree_id] = {};
+                formData[allocation.farmer_no + '-' + allocation.lahan_no + '-' + allocation.rel_tree_id].received = allocation.after_qty_seed;
+                formData[allocation.farmer_no + '-' + allocation.lahan_no + '-' + allocation.rel_tree_id].damaged = '0';
+                formData[allocation.farmer_no + '-' + allocation.lahan_no + '-' + allocation.rel_tree_id].missing = '0';
             }
 
             this.formData = formData
+        },
+        onChangePage(page) {
+            this.page = page;
+            this.getReallocationList();
         }
 
     },

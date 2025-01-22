@@ -32,7 +32,7 @@
         required:
           Array.isArray(item.validation) &&
           item.validation.includes('required'),
-      }">{{ item.label || "Tolong Gunakan Label Ya..." }}</label>
+      }">{{ item.label }}</label>
       <div class="d-flex flex-row input-group-wrapper" :class="{
         invalid: errors.length > 0,
       }">

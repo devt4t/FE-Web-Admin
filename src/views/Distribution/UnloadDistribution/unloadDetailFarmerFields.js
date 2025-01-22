@@ -60,6 +60,12 @@ export default [
       value: "total_pupuk",
     },
     {
+      key: "status_pupuk",
+      sortable: false,
+      text: "Status Pupuk",
+      value: "status_pupuk",
+    },
+    {
       key: "distribution_date",
       sortable: false,
       text: "Tanggal Distribusi",

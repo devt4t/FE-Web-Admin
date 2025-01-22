@@ -30,6 +30,19 @@
                 <span>Proof Insentive</span>
             </v-btn>
         </template>
+
+        <template v-slot:list-status_pupuk="{item}" >
+            <div class="d-flex flex-row min-w-100px" v-if="item.status_bast > 0">
+                <span class="badge" :class="{
+                    'bg-warning' : item.status_pupuk == 1,
+                    'bg-success' : item.status_pupuk == 0
+                }">
+                    {{ item.status_pupuk == 1 ? 'Pupuk Kurang / Lebih' : 'Pupuk Lengkap' }}
+                </span>
+            </div>
+
+            <span class="d-block text-center" v-else>-</span>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>
