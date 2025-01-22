@@ -17,12 +17,17 @@
     <template v-slot:list-bottom-action="{ item }">
       <div>
         <v-btn v-if="!item.status_received" variant="success" small class="mt-2" @click="openModalAcceptance(item)">
-          <v-icon small>mdi-check-bold</v-icon>
-          <span>Sudah Diterima</span>
+          <v-icon left small>mdi-hand-extended</v-icon>
+          <span>Diterima</span>
         </v-btn>
-        <v-btn v-else-if="!item.status_verified" variant="success" small class="mt-2" @click="verifikasi(item)">
+
+        <v-btn v-if="!item.status_verified" variant="success" small class="mt-2" @click="verifikasi(item)">
           <v-icon left small>mdi-check-bold</v-icon>
           <span>Verifikasi</span>
+        </v-btn>
+        <v-btn v-else variant="danger" small class="mt-2" @click="unverifikasi(item)">
+          <v-icon left small>mdi-undo</v-icon>
+          <span>Unverifikasi</span>
         </v-btn>
       </div>
     </template>
@@ -168,7 +173,7 @@ export default {
           model: "2024",
         },
         model_api: null,
-        getter: "nursery/addendum/list/staging",
+        getter: "nursery/addendum/list",
         setter: "addProjectUtils",
         setter_ext_payload: {
           project_modul: "purpose",
@@ -381,6 +386,19 @@ export default {
       if (prompt.isConfirmed) {
         this.$_api.post('nursery/addendum/verify', {
           id: item.id
+        })
+          .then(() => {
+            this.$_alert.success('Pengiriman ulang berhasil diverifikasi')
+            this.refreshKey += 1
+          })
+      }
+    },
+    async unverifikasi(item) {
+      const prompt = await this.$_alert.confirm('Verifikasi Pengiriman Ulang?', 'Apakah anda yakin akan memverifikasi pengiriman ulang ini?', 'Ya, Verifikasi', 'Batal', true)
+      if (prompt.isConfirmed) {
+        this.$_api.post('nursery/addendum/verify', {
+          id: item.id,
+          action: 'unverification'
         })
           .then(() => {
             this.$_alert.success('Pengiriman ulang berhasil diverifikasi')
