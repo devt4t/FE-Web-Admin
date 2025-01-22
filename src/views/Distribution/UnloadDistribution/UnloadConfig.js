@@ -148,6 +148,30 @@ export default [
         },
       },
       {
+          id: "status_pupuk",
+          label: "Status Pupuk",
+          methods: {
+            list: {
+              type: 'row-slot',
+              view_data: "status_pupuk",
+            },
+            detail: {
+              show: false,
+              view_data: "status_bast",
+              class: {
+                0: "badge bg-danger",
+                1: "badge bg-warning",
+                2: "badge bg-info",
+                3: "badge bg-success",
+              },
+              transform: "distribution-status-bast",
+            },
+            create: false,
+            update: false,
+            filter: false
+          },
+        },
+      {
         id: "distribution_date",
         label: "Waktu Distribusi",
         methods: {

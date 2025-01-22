@@ -3,7 +3,7 @@
     <div>
       <v-row>
         <v-col>
-            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5" v-if="data.result">
                 <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
                     :search="''" class="rounded-xl elevation- pa-1 px-5">
 
@@ -158,10 +158,33 @@
                       >
                         <v-icon class="mr-1">mdi-clock-alert </v-icon> Proses Distribusi Belum Selesai!
                       </v-btn>
+                      <!-- <v-btn
+                        v-if="true"
+                        variant="warning" small class="mt-2"
+                      >
+                        <v-icon class="mr-1">mdi-clock-alert </v-icon> Proses Distribusi Belum Selesai!
+                      </v-btn> -->
                     </template>
                     <template v-slot:item.total_pupuk="{ item }">
                       <p v-if="item.is_pupuk_load == 0" >0</p>
                       <p v-else>{{item.total_pupuk}}</p>
+                    </template>
+                    <template v-slot:item.status_pupuk="{ item }">
+                      <div class="d-flex flex-row align-items-center">
+                        <span class="badge"
+                          :class="{
+                            'bg-light': item.is_pupuk_distributed == 0,
+                            'bg-success': item.is_pupuk_distributed == 1,
+                            'bg-warning': item.is_pupuk_distributed == 2,
+                            'bg-danger': item.is_pupuk_distributed == 3,
+                          }"
+                        >
+                          <span v-if="item.is_pupuk_distributed == 0">Belum Diterima</span>
+                          <span v-if="item.is_pupuk_distributed == 1">Pupuk Lengkap</span>
+                          <span v-if="item.is_pupuk_distributed == 2">Pupuk Kurang</span>
+                          <span v-if="item.is_pupuk_distributed == 3">Pupuk Kelebihan</span>
+                        </span>
+                      </div>
                     </template>
                     <template v-slot:item.acceptance_progress="{ item }">
                       <v-progress-circular
