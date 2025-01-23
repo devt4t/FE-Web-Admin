@@ -1,5 +1,5 @@
 <template>
-  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :hideDelete="true">
+  <geko-base-crud :config="config" :refreshKey="refreshKey" :hideCreate="true" :hideUpdate="true" :hideDelete="true">
 
     <template v-slot:list-before-create>
       <modal-acceptance @success="refreshKey += 1" :dataKey="modalAcceptanceKey"
@@ -21,7 +21,7 @@
           <span>Diterima</span>
         </v-btn>
 
-        <v-btn v-if="!item.status_verified" variant="success" small class="mt-2" @click="verifikasi(item)">
+        <v-btn v-if="!item.status_received" variant="success" small class="mt-2" @click="verifikasi(item)">
           <v-icon left small>mdi-check-bold</v-icon>
           <span>Verifikasi</span>
         </v-btn>
@@ -165,6 +165,7 @@ export default {
   data() {
     return {
       dataAddendum: {},
+      refreshKey: 0,
       modalAcceptanceKey: 0,
       config: {
         title: "Pengiriman Ulang",
@@ -394,14 +395,14 @@ export default {
       }
     },
     async unverifikasi(item) {
-      const prompt = await this.$_alert.confirm('Verifikasi Pengiriman Ulang?', 'Apakah anda yakin akan memverifikasi pengiriman ulang ini?', 'Ya, Verifikasi', 'Batal', true)
+      const prompt = await this.$_alert.confirm('Unverifikasi Pengiriman Ulang?', 'Apakah anda yakin akan unverifikasi pengiriman ulang ini?', 'Ya, Unverifikasi', 'Batal', true)
       if (prompt.isConfirmed) {
         this.$_api.post('nursery/addendum/verify', {
           id: item.id,
           action: 'unverification'
         })
           .then(() => {
-            this.$_alert.success('Pengiriman ulang berhasil diverifikasi')
+            this.$_alert.success('Pengiriman ulang berhasil diunverifikasi')
             this.refreshKey += 1
           })
       }
