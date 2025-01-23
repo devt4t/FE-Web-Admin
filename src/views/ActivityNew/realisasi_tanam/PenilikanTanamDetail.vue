@@ -346,7 +346,7 @@ export default {
           value: 'tree_code',
         },
         {
-          text: 'Total Tertanam',
+          text: 'Tertanam',
           key: 'planted_status',
           value: 'planted_status',
         },
@@ -361,12 +361,12 @@ export default {
           value: 'alive',
         },
         {
-          text: 'Mati',
+          text: 'Total Mati',
           key: 'die',
           value: 'die',
         },
         {
-          text: 'Hilang',
+          text: 'Total Hilang',
           key: 'gone',
           value: 'gone',
         },
