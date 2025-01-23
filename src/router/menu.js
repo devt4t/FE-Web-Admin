@@ -407,16 +407,15 @@ const menu = [
       //   icon: "mdi-truck-fast",
       //   type: ["non-carbon"],
       // },
-      
-      {
-        title: "Realisasi Tanam",
-        to: "/PenilikanTanam",
-        component: "Activity/PenilikanTanam",
-        name: "PenilikanTanam",
-        permission: "PenilikanTanam",
-        icon: "mdi-spa",
-        type: ["non-carbon"],
-      },
+      // {
+      //   title: "Realisasi Tanam",
+      //   to: "/PenilikanTanam",
+      //   component: "Activity/PenilikanTanam",
+      //   name: "PenilikanTanam",
+      //   permission: "PenilikanTanam",
+      //   icon: "mdi-spa",
+      //   type: ["non-carbon"],
+      // },
       {
         title: "Realisasi Tanam",
         to: "/PenilikanTanamV2",

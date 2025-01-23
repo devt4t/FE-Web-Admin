@@ -3,39 +3,60 @@
     <v-row>
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-1">
-          <v-data-table :headers="headerBibits" :items="data.seed_detail" :search="''" class="rounded-xl elevation-1 "
+          <v-data-table :headers="headerBibits" :items="data.seed_detail" :search="''" class="rounded-xl elevation- pa-1 px-5"
             :footer-props="{
               showCurrentPage: false,
               showFirstLastPage: false,
             }">
             <template v-slot:top>
-              <div class="geko-list-header mb-3 d-flex flex-row justify-content-between px-5 py-3 mt-1">
-                <div class="pr-5 mr-5">
-                  <h4>Detail Bibit</h4>
-                </div>
-
-
+              <div class="list-header py-3 mt-1">
+                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                  <h4>Detail Bibit
+                  </h4>
+                  </div>
+                  <div class="d-flex flex-row geko-list-header-action">
+                  <div class="geko-list-header-toolbar"></div>
+                  </div>
               </div>
-              <!-- <div class="flex flex-col justify-content-between"> -->
-              <!-- <div class="statistics mb-3 mx-3">
+              <div class="statistics mb-3">
                 <div class="statistic-item success">
-                  <v-icon>mdi-list-status</v-icon>
+                  <v-icon>mdi-seed</v-icon>
                   <div class="statistic-data">
-                    <p class="mb-0 label">Total Tertanam</p>
-                    <p class="mb-0 value">{{ '1' }}</p>
+                      <p class="mb-0 label">Total Tertanam</p>
+                      <p class="mb-0 value">{{ assignStatisticData('planted') ?? 0 }}</p>
+                  </div>
+                </div>
+                <div class="statistic-item warning">
+                  <v-icon>mdi-seed-plus</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Belum Ditanam</p>
+                      <p class="mb-0 value">{{ assignStatisticData('unplanted') ?? 0 }}</p>
+
+                  </div>
+                </div>
+                <div class="statistic-item info">
+                  <v-icon>mdi-sprout</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Hidup</p>
+                      <p class="mb-0 value">{{ assignStatisticData('alive') ?? 0 }}</p>
+
+                  </div>
+                </div>
+                <div class="statistic-item danger">
+                  <v-icon>mdi-seed-off</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Mati</p>
+                      <p class="mb-0 value">{{ assignStatisticData('die') ?? 0 }}</p>
+                  </div>
+                </div>
+                <div class="statistic-item danger">
+                  <v-icon>mdi-eye-remove</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Hilang</p>
+                      <p class="mb-0 value">{{ assignStatisticData('gone') ?? 0 }}</p>
                   </div>
                 </div>
               </div>
-              <div class="statistics mb-3 mx-3">
-                <div class="statistic-item danger">
-                  <v-icon>mdi-list-status</v-icon>
-                  <div class="statistic-data">
-                    <p class="mb-0 label"> Belum Tertanam</p>
-                    <p class="mb-0 value">{{ bibits.planted }}</p>
-                  </div>
-                </div>
-              </div> -->
-              <!-- </div> -->
             </template>
 
 
@@ -223,6 +244,13 @@ export default {
       else this.$store.state.lightbox.index = 0;
 
       this.$store.state.lightbox.show = true;
+    },
+    assignStatisticData(type){
+      if(type == 'planted') return this.data.seed_detail.reduce((n, {planted}) => n + planted, 0)
+      if(type == 'unplanted') return this.data.seed_detail.reduce((n, {unplanted}) => n + unplanted, 0)
+      if(type == 'gone') return this.data.seed_detail.reduce((n, {gone}) => n + gone, 0)
+      if(type == 'alive') return this.data.seed_detail.reduce((n, {alive}) => n + alive, 0)
+      if(type == 'die') return this.data.seed_detail.reduce((n, {die}) => n + die, 0)
     },
     async initializeMap() {
       mapboxgl.accessToken = this.$_config.mapBoxApi;

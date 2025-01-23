@@ -309,7 +309,8 @@ export default reactive({
           detail: {
             transform: "status-verification",
             class: {
-              1: "badge bg-success",
+              2: "badge bg-success",
+              1: "badge bg-warning",
               0: "badge bg-danger",
             },
           },
