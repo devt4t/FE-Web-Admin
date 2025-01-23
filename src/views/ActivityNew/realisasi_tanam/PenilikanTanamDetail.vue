@@ -67,56 +67,91 @@
 
               </div>
             </template>
-            <template v-slot:item.planted="{ item }">
-              <div class="ml-2">
-                <v-card
-                  color="blue pa-5 rounded-xl text-center white--text"
-                >
-                  <v-icon color="white" x-large>mdi-sprout</v-icon>
-                  {{ item.planted }}
-                </v-card>
+            <template v-slot:item.planted_status="{ item }">
+              <div class="d-flex flex-row min-w-100px mb-3" style="justify-content: space-around">
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-info">
+                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Tertanam</span>
+                </v-tooltip>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-success">
+                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_life ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Tertanam Hidup</span>
+                </v-tooltip>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-danger">
+                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_dead ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Tertanam Mati</span>
+                </v-tooltip>
+              </div>
+              <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
+                <v-btn variant="success" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_life_photo)">
+                      <v-icon>mdi-camera</v-icon>
+                  </v-btn>
+                <v-btn variant="danger" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_death_photo)">
+                    <v-icon>mdi-camera</v-icon>
+                </v-btn>
               </div>
             </template>
-            <template v-slot:item.unplanted="{ item }">
-              <div class="ml-2">
-                <v-card
-                  color="orange pa-5 rounded-xl text-center white--text"
-                >
-                  <v-icon color="white" x-large>mdi-alert</v-icon>
-                  {{ item.unplanted }}
-                </v-card>
-              </div>
-            </template>
-            <template v-slot:item.alive="{ item }">
-              <div class="ml-2">
-                <v-card
-                  color="green pa-5 rounded-xl text-center white--text"
-                >
-                  <v-icon color="white" x-large>mdi-check-bold</v-icon>
-                  {{ item.alive }}
-                </v-card>
-              </div>
-            </template>
-            <template v-slot:item.die="{ item }">
-              <div class="ml-2">
-                <v-card
-                  color="red pa-5 rounded-xl text-center white--text"
-                >
-                  <v-icon color="white" x-large>mdi-close-box</v-icon>
-                  {{ item.die }}
-                </v-card>
+            <template v-slot:item.unplanted_status="{ item }">
+              <div class="d-flex flex-row min-w-100px max-w-200px" style="justify-content: space-around">
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-info">
+                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Belum Tertanam</span>
+                </v-tooltip>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-success">
+                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_life ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Belum Tertanam Hidup</span>
+                </v-tooltip>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-danger">
+                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_dead ?? 0 }}
+                        </span>
+                    </template>
+
+                    <span>Total Belum Tertanam Mati</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <v-btn variant="light" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_death_photo)">
+                      <v-icon>mdi-table-arrow-right</v-icon>
+                      <span>Belum Tertanam Mati </span>
+                  </v-btn>
+                </v-tooltip>
               </div>
             </template>
             <template v-slot:item.gone="{ item }">
-              <div class="ml-2">
-                <v-card
-                  color="red pa-5 rounded-xl text-center white--text"
-                >
-                  <v-icon color="white" x-large>mdi-magnify-close</v-icon>
-                  <p v-if="item.gone <= 0">0</p>
-                  <p v-else>{{ item.gone }}</p>
-                </v-card>
-              </div>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-danger">
+                        <v-icon size="small">mdi-magnify-close</v-icon> {{ item.gone ?? 0 }}
+                    </span>
+                </template>
+                <span>Total Hilang</span>
+              </v-tooltip>
             </template>
             <template v-slot:item.life_photo="{ item }">
               <div class="d-flex flex-row lahan-photo" style="max-width: 100px">
@@ -312,33 +347,23 @@ export default {
         },
         {
           text: 'Total Tertanam',
-          key: 'planted',
-          value: 'planted',
+          key: 'planted_status',
+          value: 'planted_status',
         },
         {
           text: 'Belum Ditanam',
-          key: 'unplanted',
-          value: 'unplanted',
+          key: 'unplanted_status',
+          value: 'unplanted_status',
         },
         {
-          text: 'Hidup',
+          text: 'Total Hidup',
           key: 'alive',
           value: 'alive',
-        },
-        {
-          text: 'Foto Hidup',
-          key: 'life_photo',
-          value: 'life_photo',
         },
         {
           text: 'Mati',
           key: 'die',
           value: 'die',
-        },
-        {
-          text: 'Foto Mati',
-          key: 'death_photo',
-          value: 'death_photo',
         },
         {
           text: 'Hilang',

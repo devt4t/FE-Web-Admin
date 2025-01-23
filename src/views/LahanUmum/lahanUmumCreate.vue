@@ -242,7 +242,7 @@
             }" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.land_status" :item="{
+            <geko-input v-model="formData.status" :item="{
               label: 'Status Lahan',
               validation: ['required'],
               col_size: 6,
@@ -294,6 +294,94 @@
             }" />
           </v-col>
         </v-row>
+        <!-- <div class="list-header py-3 mt-1">
+          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+              <h4>Data PIC Lahan Utama</h4>
+          </div>
+          <div class="d-flex flex-row geko-list-header-action">
+              <div class="geko-list-header-toolbar"></div>
+          </div>
+        </div>
+        <v-row>
+          <v-col>
+            <geko-input v-model="formData.pic_lahan" :item="{
+              label: 'Nama PIC Lahan',
+              validation: ['required'],
+              col_size: 6,
+              type: 'text',
+            }" />
+          </v-col>
+          <v-col>
+            <geko-input v-model="formData.ktp_no" :item="{
+              label: 'KTP PIC Lahan',
+              validation: ['required'],
+              col_size: 6,
+              type: 'text',
+            }" />
+          </v-col>
+          <v-col>
+            <geko-input v-model="formData.pic_contact" :item="{
+              label: 'No Hp/WA PIC Lahan',
+              validation: ['required'],
+              col_size: 6,
+              type: 'text',
+            }" />
+          </v-col>
+          <v-col md="3">
+            <geko-input v-model="formData.pic_project_no"
+              :item="{
+              label: 'Project',
+              validation: ['required'],
+              col_size: 6,
+              type: 'select',
+              api: 'GetProjectAllAdmin',
+              param: {
+              },
+              setter: 'project_no',
+              option: {
+                getterKey: 'data',
+                list_pointer: {
+                  label: 'project_name',
+                  code: 'project_no',
+                  display: ['project_name', 'project_no'],
+                },
+              },
+            }"/>
+          </v-col>
+          
+        </v-row>
+        <v-row>
+          <v-col md="2">
+            <geko-input v-model="formData.goals" :item="{
+              label: 'Tujuan Penanaman',
+              validation: ['required'],
+              col_size: 6,
+              type: 'select',
+              setter: 'plannting_goals',
+              option: {
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
+                },
+                default_options: [
+                  {
+                    label: 'Penanaman Biasa',
+                    code: 'planting',
+                  },
+                  {
+                    label: 'Penanaman Ulang',
+                    code: 're-planting',
+                  },
+                  {
+                    label: 'Optimalisasi',
+                    code: 'optimalization',
+                  },
+                ],
+              },
+            }" />
+          </v-col>
+        </v-row> -->
         <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
                 <h4>Data Lokasi</h4>
@@ -442,6 +530,7 @@
           </div>
           <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar"></div>
+              Data 1 Adalah PIC Lahan Utama
           </div>
         </div>
         <v-row>
@@ -938,11 +1027,16 @@ export default {
         pic_no: 0,
         mou_no: '',
         t4t_employees: '',
+        ktp_no: '',
+        pic_lahan: '',
+        project_no: '',
+        goals: '',
         land_area: 0,
         land_coverage: 0,
         planting_area: 0,
         opsi_pola_tanam: '',
         land_status: '',
+        status: '',
         land_distance: '',
         land_access: '',
         mu_no: '',
@@ -950,7 +1044,16 @@ export default {
         kabupaten: '',
         village: '',
         detailSeed: [],
-        pic_list:[],
+        pic_list:[
+          {
+            name: '',
+            ktp: '',
+            contact: '',
+            project_no: '',
+            plannting_goals: '',
+            pic_no: ''
+          }
+        ],
         user_id: this.user.email,
         program_year: '2025',
         distribution_date: '',
@@ -1002,9 +1105,14 @@ export default {
     async onSubmit() {
       if(this.form < 4){
         // console.log("current form: " + this.form);
-        
         this.form++;
-
+        this.formData.ktp_no = this.formData.pic_list[0].ktp
+        this.formData.pic_lahan = this.formData.pic_list[0].name
+        this.formData.project_no = this.formData.pic_list[0].project_no
+        this.formData.goals = this.formData.pic_list[0].plannting_goals
+        this.formData.pic_list[0].pic_no = this.tempLastPicNo + 1
+        console.log(this.formData)
+        
       }else if(this.form == 4){
         this.formData.surviellance_hole_date = this.dateFormat(this.formData.surviellance_hole_date,"YYYY MM DD")
         this.formData.planting_date = this.dateFormat(this.formData.planting_date,"YYYY MM DD")
@@ -1042,7 +1150,7 @@ export default {
           contact: '',
           project_no: '',
           plannting_goals: '',
-          pic_no: this.tempLastPicNo + this.formData.pic_no++
+          pic_no: this.tempLastPicNo + 2 + this.formData.pic_no++
         });
       }else{
         console.log("cannot add lahan umum PIC, Temp PIC: ", this.tempLastPicNo)
