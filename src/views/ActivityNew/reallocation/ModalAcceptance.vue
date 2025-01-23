@@ -307,9 +307,14 @@ export default {
             for (const [farmer_no, farmer] of Object.entries(this.formData)) {
                 if (farmer.received == "0") {
                     this.$_alert.error("Semua petani harus menerima bibit");
-
+                    
                     return;
                 }
+            }
+
+            if (!item.status_allocation) {
+                this.$_alert.error("Bibit belum dialokasi");
+                return;
             }
 
             let params = [];
@@ -340,7 +345,7 @@ export default {
                         this.$_alert.error(res.message);
                         return;
                     }
-                    
+
                     this.isOpen = false;
                     this.$_alert.success("Bibit Telah Diterima");
                 });

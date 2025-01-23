@@ -1,6 +1,7 @@
 export default {
   version: "2.4.0",
   baseUrl: "https://api.t4t-api.org/api/",
+  // baseUrl: "https://api-stager.t4t-api.org/api/",
   baseUrlUpload: "https://geko-asset.t4t-api.org",
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
