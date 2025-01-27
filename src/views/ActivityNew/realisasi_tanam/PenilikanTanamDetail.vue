@@ -22,19 +22,34 @@
                 <div class="statistic-item success">
                   <v-icon>mdi-seed</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Tertanam</p>
-                      <p class="mb-0 value">{{ assignStatisticData('planted') ?? 0 }}</p>
+                      <p class="mb-0 label">Total Tertanam Hidup</p>
+                      <p class="mb-0 value">{{ assignStatisticData('planted_life') ?? 0 }}</p>
+                  </div>
+                </div>
+                <div class="statistic-item danger">
+                  <v-icon>mdi-seed</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Tertanam Mati</p>
+                      <p class="mb-0 value">{{ assignStatisticData('planted_dead') ?? 0 }}</p>
                   </div>
                 </div>
                 <div class="statistic-item warning">
                   <v-icon>mdi-seed-plus</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Belum Ditanam</p>
-                      <p class="mb-0 value">{{ assignStatisticData('unplanted') ?? 0 }}</p>
+                      <p class="mb-0 label">Total Belum Ditanam Hidup</p>
+                      <p class="mb-0 value">{{ assignStatisticData('unplanted_life') ?? 0 }}</p>
 
                   </div>
                 </div>
-                <div class="statistic-item info">
+                <div class="statistic-item danger">
+                  <v-icon>mdi-seed-plus</v-icon>
+                  <div class="statistic-data">
+                      <p class="mb-0 label">Total Belum Ditanam Mati</p>
+                      <p class="mb-0 value">{{ assignStatisticData('unplanted_dead') ?? 0 }}</p>
+
+                  </div>
+                </div>
+                <!-- <div class="statistic-item info">
                   <v-icon>mdi-sprout</v-icon>
                   <div class="statistic-data">
                       <p class="mb-0 label">Total Hidup</p>
@@ -48,7 +63,7 @@
                       <p class="mb-0 label">Total Mati</p>
                       <p class="mb-0 value">{{ assignStatisticData('die') ?? 0 }}</p>
                   </div>
-                </div>
+                </div> -->
                 <div class="statistic-item danger">
                   <v-icon>mdi-eye-remove</v-icon>
                   <div class="statistic-data">
@@ -281,11 +296,13 @@ export default {
       this.$store.state.lightbox.show = true;
     },
     assignStatisticData(type){
-      if(type == 'planted') return this.data.seed_detail.reduce((n, {planted}) => n + planted, 0)
-      if(type == 'unplanted') return this.data.seed_detail.reduce((n, {unplanted}) => n + unplanted, 0)
+      if(type == 'planted_life') return this.data.seed_detail.reduce((n, {planted_life}) => n + planted_life, 0)
+      if(type == 'planted_dead') return this.data.seed_detail.reduce((n, {planted_dead}) => n + planted_dead, 0)
+      if(type == 'unplanted_life') return this.data.seed_detail.reduce((n, {unplanted_life}) => n + unplanted_life, 0)
+      if(type == 'unplanted_dead') return this.data.seed_detail.reduce((n, {unplanted_dead}) => n + unplanted_dead, 0)
       if(type == 'gone') return this.data.seed_detail.reduce((n, {gone}) => n + gone, 0)
-      if(type == 'alive') return this.data.seed_detail.reduce((n, {alive}) => n + alive, 0)
-      if(type == 'die') return this.data.seed_detail.reduce((n, {die}) => n + die, 0)
+      // if(type == 'alive') return this.data.seed_detail.reduce((n, {alive}) => n + alive, 0)
+      // if(type == 'die') return this.data.seed_detail.reduce((n, {die}) => n + die, 0)
     },
     async initializeMap() {
       mapboxgl.accessToken = this.$_config.mapBoxApi;

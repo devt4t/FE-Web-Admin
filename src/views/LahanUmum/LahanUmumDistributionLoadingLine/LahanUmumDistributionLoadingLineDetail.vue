@@ -77,6 +77,7 @@
                 class="rounded-xl elevation- pa-1 px-5"
                 :single-expand="true"
                 :item-key="data.result.detail_farmers.id"
+                @item-expanded="expandTableReport"
                 show-expand
                 >
 
@@ -141,7 +142,7 @@
                     <v-btn
                       v-if="(item.verified_by == null ||item.verified_by == '') &&item.printed_lable.length > 0 && item.loaded_lable.length > 0 && item.distributed_lable.length > 0"
                       @click="updateVerifikasiReportNursery(item, 'verification')"
-                      variant="warning" small class="mt-2"
+                      variant="success" small class="mt-2"
                     >
                       <v-icon class="mr-1">mdi-check-bold </v-icon> Verifikasi
                     </v-btn>
@@ -157,6 +158,12 @@
                       variant="warning" small class="mt-2"
                     >
                       <v-icon class="mr-1">mdi-clock-alert </v-icon> Proses Distribusi Belum Selesai!
+                    </v-btn>
+                    <v-btn
+                      @click="saveDataReportAdjustment(item)"
+                      variant="warning" small class="mt-2"
+                    >
+                      <v-icon class="mr-1">mdi-check-bold </v-icon> Adjust Data Distribusi
                     </v-btn>
                   </template>
                   <template v-slot:item.total_pupuk="{ item }">
@@ -322,7 +329,7 @@
                             hide-default-footer
                             :items-per-page="-1"
                             :headers="detailSeedFarmer.table.header"
-                            :items="item.detail_seed_farmers"
+                            :items="detail_seed_adjusted"
                             dense
                           >
                             <!-- No Column -->
@@ -345,6 +352,36 @@
                                 {{ item.seed_received_percentage.toFixed(0) }}%
                               </v-progress-circular>
                             </template>
+                            <template v-slot:item.total_received="{ item }">
+                              <!-- test Update {{ item.total_received }} -->
+                              <geko-input v-model="item.total_received" :item="{
+                                label: 'Adjust Penerimaan',
+                                validation: ['required'],
+                                col_size: 6,
+                                type: 'number',
+                              }" >
+                              </geko-input>
+                            </template>
+                            <template v-slot:item.total_damaged="{ item }">
+                              <!-- test Update {{ item.total_damaged }} -->
+                              <geko-input v-model="item.total_damaged" :item="{
+                                label: 'Adjust Bibit Rusak',
+                                validation: ['required'],
+                                col_size: 6,
+                                type: 'number',
+                              }" >
+                              </geko-input>
+                            </template>
+                            <template v-slot:item.total_missing="{ item }">
+                              <!-- test Update {{ item.total_missing }} -->
+                              <geko-input v-model="item.total_missing" :item="{
+                                label: 'Adjust Bibit Hilang',
+                                validation: ['required'],
+                                col_size: 6,
+                                type: 'number',
+                              }" >
+                              </geko-input>
+                            </template>
                           </v-data-table>
                         </v-col>
   
@@ -364,7 +401,7 @@
                             :footer-props="{
                               itemsPerPageOptions: [10, 25, 40, -1],
                             }"
-                            :headers="configLablePrintedDetail.table.header"
+                            :headers="getLableTableHeaders(lable_table_key)"
                             :items="getTableLableItem(lable_table_key, item)"
                             dense
                           >
@@ -394,7 +431,7 @@
                                     <v-icon>mdi-check-bold</v-icon>
                                     <div class="statistic-data">
                                         <p class="mb-0 label">Total Label Diterima</p>
-                                        <p class="mb-0 value">{{ item.distributed_lable.length ?? 0 }}</p>
+                                        <p class="mb-0 value">{{ distributed_bag.length ?? 0 }}</p>
 
                                     </div>
                                   </div>
@@ -434,211 +471,6 @@
                             </template>
                           </v-data-table>
                         </v-col>
-                        <!-- <tr>
-                           <td>
-  
-                           </td>
-                          <td>
-                            <v-card color="#26c6da" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLablePrintedDetail.table.header" :items-per-page="3" :items="item.printed_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-  
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-  
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Tercetak</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-  
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                            <v-icon>mdi-list-status</v-icon>
-                                            <div class="statistic-data">
-                                                <p class="mb-0 label">Total Label</p>
-                                                <p class="mb-0 value">{{ item.printed_lable.length ?? '' }}</p>
-  
-                                            </div>
-                                          </div>
-                                      </div>
-                                      </template>
-  
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                          <td>
-                            <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableLoadedDetail.table.header" :items-per-page="3" :items="item.loaded_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-  
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-  
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Loaded</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-  
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Loaded</p>
-                                              <p class="mb-0 value">{{ item.loaded_lable.length ?? '' }}</p>
-  
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-  
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            
-                          </td>
-                          <td>
-                            <v-card color="#1cd104" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableDistributedDetail.table.header" :items-per-page="3" :items="item.distributed_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-  
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-  
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Terdistribusi</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-  
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Terdistribusi</p>
-                                              <p class="mb-0 value">{{ item.distributed_lable.length ?? '' }}</p>
-  
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-  
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                          <td>
-                            <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configLableMissingDetail.table.header" :items-per-page="3" :items="item.missing_lable"
-                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
-  
-                                      <template v-slot:item.index="{ index }">
-                                      {{ index + 1 }}
-                                      </template>
-  
-                                      <template v-slot:top>
-                                      <div class="list-header py-3 mt-1">
-                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                          <h4>Label Hilang</h4>
-                                          </div>
-                                          <div class="d-flex flex-row geko-list-header-action">
-                                          <div class="geko-list-header-toolbar"></div>
-                                          </div>
-                                      </div>
-  
-                                      <div class="statistics mb-3">
-                                          <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label Hilang</p>
-                                              <p class="mb-0 value">{{ item.missing_lable.length ?? '' }}</p>
-  
-                                          </div>
-                                          </div>
-                                      </div>
-                                      </template>
-  
-                                  </v-data-table>
-                            </v-card>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-  
-                          </td>
-                          <td>
-                            <v-card class="geko-base-detail-card mb-5 px-4">
-  
-                                <div class="list-header py-3 mt-1">
-                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                      <h4>Foto Penerimaan Petani</h4>
-                                  </div>
-                                  <div class="d-flex flex-row geko-list-header-action">
-                                      <div class="geko-list-header-toolbar"></div>
-                                  </div>
-                                </div>
-  
-                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_accept != null">
-                                    <div class="absent-photo-item"
-                                        @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
-                                        v-bind:style="{
-                                        backgroundImage:
-                                            'url(' +
-                                            item.file_accept.url ?? '/images/noimage.png' +
-                                            ')',
-                                        }">
-                                        <h6>Foto Dokumentasi Distribusi</h6>
-                                    </div>
-                                </div>
-  
-                            </v-card>
-                          </td>
-                          <td>
-                            <v-card class="geko-base-detail-card mb-5 px-4">
-  
-                                <div class="list-header py-3 mt-1">
-                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                                      <h4>Tanda Tangan Petani</h4>
-                                  </div>
-                                  <div class="d-flex flex-row geko-list-header-action">
-                                      <div class="geko-list-header-toolbar"></div>
-                                  </div>
-                                </div>
-  
-                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_signature != null">
-                                    <div class="absent-photo-item"
-                                        @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
-                                        v-bind:style="{
-                                        backgroundImage:
-                                            'url(' +
-                                            item.file_signature.url ?? '/images/noimage.png' +
-                                            ')',
-                                        }">
-                                        <h6>Tanda Tangan Petani</h6>
-                                    </div>
-                                </div>
-  
-                            </v-card>
-                          </td>
-                        </tr> -->
                       </v-card>
                     </td>
                   
@@ -676,6 +508,8 @@ export default {
   },
   data() {
     return {
+      detail_seed_adjusted: null,
+      distributed_bag: null,
       lable_table_key: 0,
       configAllocationTransportDetail: {
         table: {
@@ -692,7 +526,6 @@ export default {
         table: {
           header: [
             {text: 'No', value: 'index', align:'center'},
-            {text: 'Nomor Lahan', value: 'lahan_no', align:'center'},
             {text: 'Nama Bibit', value: 'tree_name', align:'center'},
             {text: 'Tipe Pohon Bibit', value: 'tree_type_name', align:'center'},
             {text: 'Total Bibit Ter-Load', value: 'total_load', align:'center'},
@@ -742,10 +575,11 @@ export default {
       else if (val > 80) return "green"
     },
     async updateVerifikasiReportNursery(item, type){
+      
       let User = JSON.parse(localStorage.getItem("User"))
       let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg"
       if(type == 'verification'){
-        const prompt = await this.$_alert.confirm('Verifikasi Distribusi Petani?', 'Apakah Anda Yakin Untuk Melakukan VERIFIKASI Data Distribusi Petani?', 'Ya, Verifikasi', 'Batal', true)
+        const prompt = await this.$_alert.confirm('Verifikasi Distribusi?', 'Apakah Anda Yakin Untuk Melakukan VERIFIKASI Data Distribusi?', 'Ya, Verifikasi', 'Batal', true)
           if (prompt.isConfirmed) {
             const params = {
               farmer_no: item.farmer_no,
@@ -761,11 +595,11 @@ export default {
                     }
                   )
                   .then(() => {
-                      this.$_alert.success('Data Distribusi Petani Berhasil Diverifikasi')
+                      this.$_alert.success('Data Distribusi Berhasil Diverifikasi')
                   })
           }
       }else if(type == 'unverification'){
-        const prompt = await this.$_alert.confirm('Unverifikasi Distribusi Petani?', 'Apakah Anda Yakin Untuk Melakukan UNVERIFIKASI Data Distribusi Petani?', 'Ya, Verifikasi', 'Batal', true)
+        const prompt = await this.$_alert.confirm('Unverifikasi Data Distribusi?', 'Apakah Anda Yakin Untuk Melakukan UNVERIFIKASI Data Distribusi?', 'Ya, Verifikasi', 'Batal', true)
           if (prompt.isConfirmed) {
             const params = {
               farmer_no: item.farmer_no,
@@ -781,25 +615,50 @@ export default {
                     }
                   )
                   .then(() => {
-                      this.$_alert.success('Data Distribusi Petani Berhasil Diunverifikasi')
+                      this.$_alert.success('Data Distribusi Berhasil Diunverifikasi')
                   })
           }
       }
       await this.getData();
     },
+    getLableTableHeaders(itemKey){
+      if(itemKey == 0) return this.configLablePrintedDetail.table.header
+      if(itemKey == 1) return this.configLablePrintedDetail.table.header
+      if(itemKey == 2) return this.configLablePrintedDetail.table.header
+      if(itemKey == 3) return this.configLablePrintedDetail.table.header
+    },
     getTableLableItem(itemKey, item){
       if(itemKey == 0) return item.printed_lable
       if(itemKey == 1) return item.loaded_lable
-      if(itemKey == 2) return item.distributed_lable
+      if(itemKey == 2) return this.distributed_bag
       if(itemKey == 3) return item.missing_lable
     },
     async getData() {
       const result = await this.$_api.get("distribution/loading-line/detail", {
         id: this.data.result.id,
       });
-      // console.log(result)
       this.data = result;
+      console.log('get data')
     },
+    expandTableReport(item){
+      this.detail_seed_adjusted = item.item.detail_seed_farmers
+      this.distributed_bag = item.item.distributed_lable
+    },
+    async saveDataReportAdjustment(item) {
+      const params = {
+        farmer_no: item.farmer_no,
+        detail: this.detail_seed_adjusted,
+        bag: this.distributed_bag,
+        // is_pupuk_distributed: this.distributionReport.dialogs.inputAdjustDetailLables.is_pupuk_distributed,
+        // id: this.distributionReport.dialogs.inputAdjustDetailLables.id,
+        // distribution_time: this.distributionReport.dialogs.inputAdjustDetailLables.distribution_date,
+        // user_accepted: this.distributionReport.dialogs.inputAdjustDetailLables.user_accepted,
+        // file_accept: {},
+        // file_signature: {},
+      };
+      console.log(params)
+      // console.log(params)
+    }
   }
 }
 </script>
