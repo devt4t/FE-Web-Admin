@@ -18,6 +18,12 @@ export default [
       value: "index",
     },
     {
+      key: "lahan_no",
+      sortable: false,
+      text: "Nomor Lahan",
+      value: "lahan_no",
+    },
+    {
       key: "farmer_name",
       sortable: false,
       text: "Nama Petani",
