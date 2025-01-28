@@ -121,7 +121,7 @@
                 page: 1,
                 per_page: 10,
               },
-              api: 'getEmployeeList_new',
+              api: 'employees/all/options',
               default_label: formData.t4t_employees,
               option: {
                 getterKey: 'data',

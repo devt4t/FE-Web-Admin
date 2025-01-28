@@ -623,9 +623,9 @@ export default {
     },
     getLableTableHeaders(itemKey){
       if(itemKey == 0) return this.configLablePrintedDetail.table.header
-      if(itemKey == 1) return this.configLablePrintedDetail.table.header
-      if(itemKey == 2) return this.configLablePrintedDetail.table.header
-      if(itemKey == 3) return this.configLablePrintedDetail.table.header
+      if(itemKey == 1) return this.configLableLoadedDetail.table.header
+      if(itemKey == 2) return this.configLableDistributedDetail.table.header
+      if(itemKey == 3) return this.configLableMissingDetail.table.header
     },
     getTableLableItem(itemKey, item){
       if(itemKey == 0) return item.printed_lable
@@ -643,6 +643,7 @@ export default {
     expandTableReport(item){
       this.detail_seed_adjusted = item.item.detail_seed_farmers
       this.distributed_bag = item.item.distributed_lable
+      this.is_pupuk_distributed = item.item.is_pupuk_distributed
     },
     async saveDataReportAdjustment(item) {
       const params = {
