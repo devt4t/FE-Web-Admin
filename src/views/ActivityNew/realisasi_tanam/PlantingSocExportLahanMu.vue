@@ -268,7 +268,7 @@ export default {
         async getFFDataForExport() {
             if (this.ffList.length > 0) return;
             const result = await this.$_api.get("GetFFAllWeb_new", {
-                limit: 1000,
+                limit: 2147,
                 offset: 0,
             });
 
