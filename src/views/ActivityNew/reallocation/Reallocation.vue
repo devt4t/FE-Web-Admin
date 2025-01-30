@@ -63,6 +63,18 @@
       </div>
     </template>
 
+    <template v-slot:list-description="{ item }">
+      <div class="min-w-150px">
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <span v-on="item.description.length > 60 ? on : ''" class="d-block">{{ truncateText(item.description, 60) }}</span>
+          </template>
+
+          <div style="max-width: 250px;">{{ item.description }}</div>
+        </v-tooltip>
+      </div>
+    </template>
+
     <template v-slot:list-tree_code="{ item }">
       <div class="min-w-150px">
         <span class="d-block">{{ item.rel_tree_id }}</span>
@@ -255,7 +267,9 @@ export default {
             id: "description",
             label: "Keterangan",
             methods: {
-              list: true,
+              list: {
+                type: "row-slot",
+              },
               detail: true,
             },
           },
@@ -407,6 +421,9 @@ export default {
           })
       }
     },
+    truncateText(text, length) {
+      return text.length > length ? text.slice(0, length) + '...' : text
+    }
   }
 };
 </script>
