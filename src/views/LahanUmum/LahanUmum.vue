@@ -1,8 +1,6 @@
 <template>
-<<<<<<< HEAD
+
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
-=======
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
         <template v-slot:list-scooping_visits_data_no="{ item }">
             <span v-if="!item.scooping_visits_data_no" class="badge bg-danger min-w-10px d-flex">
                 <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Desa Diluar Program</strong>
@@ -19,7 +17,6 @@
                 <v-icon size="small">mdi-check-bold</v-icon> &nbsp; <strong>Desa Program</strong>
             </span>
         </template>
->>>>>>> cf21667278ac3c173d01f1b1896db984713b415c
         <template v-slot:list-total_holes="{ item }">
             <span v-if="item.total_holes == 0" class="badge bg-danger min-w-10px d-flex">
                 <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Belum Terdaftar</strong>
