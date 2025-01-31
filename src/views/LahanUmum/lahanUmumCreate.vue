@@ -52,10 +52,10 @@
         <v-row>
           <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Data Umum</h4>
+              <h4>Data Umum</h4>
             </div>
             <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
+              <div class="geko-list-header-toolbar"></div>
             </div>
           </div>
           <v-col>
@@ -138,21 +138,21 @@
         <!-- Data Lahan Umum -->
         <div class="list-header py-3 mt-1">
           <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-              <h4>Data Lahan Umum</h4>
+            <h4>Data Lahan Umum</h4>
           </div>
           <div class="d-flex flex-row geko-list-header-action">
-              <div class="geko-list-header-toolbar"></div>
+            <div class="geko-list-header-toolbar"></div>
           </div>
         </div>
         <v-row>
           <v-col>
-              <geko-input v-model="formData.land_area" :item="{
-                  label: 'Luas Area Lahan (Dalam Meter)',
-                  validation: ['required'],
-                  col_size: 6,
-                  type: 'number',
-              }">
-              </geko-input>
+            <geko-input v-model="formData.land_area" :item="{
+              label: 'Luas Area Lahan (Dalam Meter)',
+              validation: ['required'],
+              col_size: 6,
+              type: 'number',
+            }">
+            </geko-input>
           </v-col>
           <v-col>
             <geko-input v-model="formData.land_coverage" :item="{
@@ -198,7 +198,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'number',
-            }" >
+            }">
             </geko-input>
           </v-col>
         </v-row>
@@ -250,16 +250,16 @@
             }" />
           </v-col>
           <v-col>
-              <geko-input v-model="formData.land_distance" :item="{
-                  label: 'Jarak Lahan Dari Rumah (Dalam Meter)',
-                  validation: ['required'],
-                  col_size: 6,
-                  type: 'number',
-              }">
-                <v-btn slot="append" text class="text-lowercase" rounded>
-                  m<sup>2</sup>
-                </v-btn>
-              </geko-input>
+            <geko-input v-model="formData.land_distance" :item="{
+              label: 'Jarak Lahan Dari Rumah (Dalam Meter)',
+              validation: ['required'],
+              col_size: 6,
+              type: 'number',
+            }">
+              <v-btn slot="append" text class="text-lowercase" rounded>
+                m<sup>2</sup>
+              </v-btn>
+            </geko-input>
           </v-col>
         </v-row>
         <v-row>
@@ -383,13 +383,13 @@
           </v-col>
         </v-row> -->
         <div class="list-header py-3 mt-1">
-            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Data Lokasi</h4>
-            </div>
-            <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
-            </div>
+          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+            <h4>Data Lokasi</h4>
           </div>
+          <div class="d-flex flex-row geko-list-header-action">
+            <div class="geko-list-header-toolbar"></div>
+          </div>
+        </div>
         <v-row>
           <v-col>
             <geko-input v-model="formData.mu_no" :disabled="!formData.program_year" :item="{
@@ -464,56 +464,96 @@
             }" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.kecamatan" :disabled="!formData.program_year || !formData.province || !formData.kabupaten" :item="{
-              label: 'Kecamatan',
-              validation: ['required'],
-              col_size: 6,
-              type: 'select',
-              setter: 'kecamatan',
-              param: {
-                page: 1,
-                per_page: 10,
-                kode_kabupaten: formData.kabupaten
-              },
-              api: 'new-utilities/kecamatans',
-              default_label: formData.kecamatan,
-              option: {
-                getterKey: 'data',
-                list_pointer: {
-                  code: 'kode_kecamatan',
-                  label: 'name',
-                  display: ['name', 'kode_kecamatan'],
+            <geko-input v-model="formData.kecamatan"
+              :disabled="!formData.program_year || !formData.province || !formData.kabupaten" :item="{
+                label: 'Kecamatan',
+                validation: ['required'],
+                col_size: 6,
+                type: 'select',
+                setter: 'kecamatan',
+                param: {
+                  page: 1,
+                  per_page: 10,
+                  kode_kabupaten: formData.kabupaten
                 },
-              },
-            }" />
+                api: 'new-utilities/kecamatans',
+                default_label: formData.kecamatan,
+                option: {
+                  getterKey: 'data',
+                  list_pointer: {
+                    code: 'kode_kecamatan',
+                    label: 'name',
+                    display: ['name', 'kode_kecamatan'],
+                  },
+                },
+              }" />
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.village"
-              :disabled="!formData.program_year || !formData.mu_no || !formData.province || !formData.kabupaten || !formData.kecamatan" :item="{
-              label: 'Desa',
-              validation: ['required'],
-              col_size: 6,
-              type: 'select',
-              setter: 'village',
-              param: {
-                page: 1,
-                per_page: 10,
-                kode_kecamatan: formData.kecamatan
-              },
-              api: 'new-utilities/desas/option',
-              default_label: formData.village,
-              option: {
-                getterKey: 'data',
-                list_pointer: {
-                  code: 'kode_desa',
-                  label: 'name',
-                  display: ['name', 'kode_desa'],
-                },
-              },
-            }"/>
+            <geko-input v-model="statusDesa"
+              :disabled="!formData.program_year || !formData.mu_no || !formData.province || !formData.kabupaten || !formData.kecamatan"
+              :item="{
+                label: 'Status Desa',
+                validation: ['required'],
+                col_size: 6,
+                type: 'select',
+                setter: 'village',
+                option: {
+                  list_pointer: {
+                    label: 'label',
+                    code: 'code',
+                    display: ['label'],
+                  },
+                  default_options: [
+                    {
+                      label: 'Semua Desa',
+                      code: 'all',
+                    },
+                    {
+                      label: 'Desa Program',
+                      code: 'desa program',
+                    },
+                    {
+                      label: 'Desa Diluar Program',
+                      code: 'desa diluar program',
+                    },
+                  ],
+                }
+              }" />
           </v-col>
+          <v-col>
+            <geko-input v-model="formData.village"
+              :disabled="!formData.program_year || !formData.mu_no || !formData.province || !formData.kabupaten || !formData.kecamatan"
+              :item="{
+                label: 'Desa',
+                validation: ['required'],
+                col_size: 6,
+                type: 'select',
+                setter: 'village',
+                param: {
+                  page: 1,
+                  per_page: 10,
+                  kode_kecamatan: formData.kecamatan
+                },
+                api: 'new-utilities/desas/option',
+                default_label: formData.village,
+                option: {
+                  getterKey: 'data',
+                  filterBy: {
+                    key: 'statusDesa',
+                    value: statusDesa
+                  },
+                  list_pointer: {
+                    code: 'kode_desa',
+                    label: 'name',
+                    display: ['name', 'kode_desa', 'statusDesa'],
+                  },
+                },
+              }" />
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col>
             <geko-input v-model="formData.address" :item="{
               label: 'Alamat',
@@ -523,14 +563,15 @@
               setter: 'address',
             }" />
           </v-col>
+          <v-col></v-col>
         </v-row>
         <div class="list-header py-3 mt-1">
           <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-              <h4>Data PIC Lahan Umum</h4>
+            <h4>Data PIC Lahan Umum</h4>
           </div>
           <div class="d-flex flex-row geko-list-header-action">
-              <div class="geko-list-header-toolbar"></div>
-              Data 1 Adalah PIC Lahan Utama
+            <div class="geko-list-header-toolbar"></div>
+            Data 1 Adalah PIC Lahan Utama
           </div>
         </div>
         <v-row>
@@ -564,25 +605,24 @@
                   }" />
                 </v-col>
                 <v-col md="3">
-                  <geko-input v-model="person.project_no"
-                     :item="{
-                      label: 'Project',
-                      validation: ['required'],
-                      col_size: 6,
-                      type: 'select',
-                      api: 'GetProjectAllAdmin',
-                      param: {
+                  <geko-input v-model="person.project_no" :item="{
+                    label: 'Project',
+                    validation: ['required'],
+                    col_size: 6,
+                    type: 'select',
+                    api: 'GetProjectAllAdmin',
+                    param: {
+                    },
+                    setter: 'project_no',
+                    option: {
+                      getterKey: 'data',
+                      list_pointer: {
+                        label: 'project_name',
+                        code: 'project_no',
+                        display: ['project_name', 'project_no'],
                       },
-                      setter: 'project_no',
-                      option: {
-                        getterKey: 'data',
-                        list_pointer: {
-                          label: 'project_name',
-                          code: 'project_no',
-                          display: ['project_name', 'project_no'],
-                        },
-                      },
-                    }"/>
+                    },
+                  }" />
                 </v-col>
                 <v-col md="2">
                   <geko-input v-model="person.plannting_goals" :item="{
@@ -717,7 +757,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'number',
-            }" >
+            }">
             </geko-input>
           </v-col>
           <v-col>
@@ -738,13 +778,7 @@
             }" />
           </v-col>
           <v-col>
-            <v-btn
-              class="ma-2"
-              outlined
-              fab
-              color="success"
-              @click="() => addBibitPerPIC()"
-            >
+            <v-btn class="ma-2" outlined fab color="success" @click="() => addBibitPerPIC()">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </v-col>
@@ -753,29 +787,20 @@
         <v-row>
           <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Tabel Bibit Tertambah</h4>
+              <h4>Tabel Bibit Tertambah</h4>
             </div>
             <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
+              <div class="geko-list-header-toolbar"></div>
             </div>
           </div>
           <v-col cols="12" sm="12" md="12">
-            <v-data-table
-              :headers="seedTable.header"
-              :items="formData.detailSeed"
-              class="elevation-3"
-              append-icon="mdi-magnify"
-              :items-per-page="10"
-            >
+            <v-data-table :headers="seedTable.header" :items="formData.detailSeed" class="elevation-3"
+              append-icon="mdi-magnify" :items-per-page="10">
               <template v-slot:item.no="{ index }">
                 {{ ++index }}
               </template>
               <template v-slot:item.actions="{ item }">
-                <v-icon
-                  class="mr-2"
-                  @click="removeBibitPerPIC(item)"
-                  color="red"
-                >
+                <v-icon class="mr-2" @click="removeBibitPerPIC(item)" color="red">
                   mdi-delete
                 </v-icon>
                 <!-- <v-icon @click="removeBibitPerPIC(item)" color="red"> mdi-delete </v-icon> -->
@@ -805,10 +830,10 @@
         <v-row>
           <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Data Koordinat</h4>
+              <h4>Data Koordinat</h4>
             </div>
             <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
+              <div class="geko-list-header-toolbar"></div>
             </div>
           </div>
           <v-col>
@@ -831,10 +856,10 @@
         <v-row>
           <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Data Periode</h4>
+              <h4>Data Periode</h4>
             </div>
             <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
+              <div class="geko-list-header-toolbar"></div>
             </div>
           </div>
           <v-col cols="12" lg="4" class="text-center">
@@ -842,7 +867,7 @@
               <strong>Tanggal Penilikan Lubang Tanam</strong>
             </p>
             <v-btn rounded class="" color="green white--text" disabled>
-              {{dateFormat(formData.surviellance_hole_date,"DD MMMM Y")}}
+              {{ dateFormat(formData.surviellance_hole_date, "DD MMMM Y") }}
             </v-btn>
           </v-col>
           <v-col>
@@ -859,11 +884,11 @@
               <strong>Tanggal Realisasi Tanam</strong>
             </p>
             <v-btn rounded class="" color="green white--text" disabled>
-              {{dateFormat(formData.planting_date,"DD MMMM Y")}}
+              {{ dateFormat(formData.planting_date, "DD MMMM Y") }}
             </v-btn>
           </v-col>
         </v-row>
-        
+
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="form--" class="mr-3">Kembali</v-btn>
@@ -982,7 +1007,7 @@ import moment from "moment";
 
 export default {
   name: "pelatihan-petani-create",
-  components: {  },
+  components: {},
   props: {
     user: {
       required: true,
@@ -992,6 +1017,7 @@ export default {
   },
   data() {
     return {
+      statusDesa: 'desa program',
       allFFByDesa: [],
       isActive: null,
       form: 1,
@@ -1044,7 +1070,7 @@ export default {
         kabupaten: '',
         village: '',
         detailSeed: [],
-        pic_list:[
+        pic_list: [
           {
             name: '',
             ktp: '',
@@ -1094,16 +1120,19 @@ export default {
     "formData.distribution_date": {
       handler(newVal) {
         if (newVal) {
-          this.formData.surviellance_hole_date = moment(newVal).subtract(14,"days");
+          this.formData.surviellance_hole_date = moment(newVal).subtract(14, "days");
           this.formData.planting_date = moment(newVal).add(7, "days");
-          this.formData.planting_date = dateFormat(this.formData.planting_date,"DD MMMM Y")
+          this.formData.planting_date = dateFormat(this.formData.planting_date, "DD MMMM Y")
         }
       },
+    },
+    statusDesa() {
+      this.formData.village = '';
     },
   },
   methods: {
     async onSubmit() {
-      if(this.form < 4){
+      if (this.form < 4) {
         // console.log("current form: " + this.form);
         this.form++;
         this.formData.ktp_no = this.formData.pic_list[0].ktp
@@ -1112,38 +1141,38 @@ export default {
         this.formData.goals = this.formData.pic_list[0].plannting_goals
         this.formData.pic_list[0].pic_no = this.tempLastPicNo + 1
         console.log(this.formData)
-        
-      }else if(this.form == 4){
-        this.formData.surviellance_hole_date = this.dateFormat(this.formData.surviellance_hole_date,"YYYY MM DD")
-        this.formData.planting_date = this.dateFormat(this.formData.planting_date,"YYYY MM DD")
+
+      } else if (this.form == 4) {
+        this.formData.surviellance_hole_date = this.dateFormat(this.formData.surviellance_hole_date, "YYYY MM DD")
+        this.formData.planting_date = this.dateFormat(this.formData.planting_date, "YYYY MM DD")
 
         this.formData.surviellance_hole_date = this.formData.surviellance_hole_date.replaceAll(" ", "-")
         this.formData.planting_date = this.formData.planting_date.replaceAll(" ", "-")
-        
+
         console.log(this.formData);
         this.$_api.post('lahan-umum/main/create', this.formData)
-        .then(response => {
-          this.$router.go(-1);
-          this.$refreshKey += 1;
-          this.$_alert.success("Berhasil Create Data Lahan Umum");
-        }).catch(err => {
-          this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
-        });
+          .then(response => {
+            this.$router.go(-1);
+            this.$refreshKey += 1;
+            this.$_alert.success("Berhasil Create Data Lahan Umum");
+          }).catch(err => {
+            this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
+          });
       }
     },
     firstAccessPage() {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.checkLastPICNo();
     },
-    async checkLastPICNo(){
+    async checkLastPICNo() {
       let url = this.BaseUrlGet + `lahan-umum/create/pic?`;
       let resPicLahanUmum = await this.$_api.get(url);
-      this.tempLastPicNo = resPicLahanUmum.new_pic_no 
+      this.tempLastPicNo = resPicLahanUmum.new_pic_no
       this.tempLastPicNo += 1
       console.log(resPicLahanUmum)
     },
-    addLahanUmumPIC(){
-      if(this.tempLastPicNo > 0){
+    addLahanUmumPIC() {
+      if (this.tempLastPicNo > 0) {
         this.formData.pic_list.push({
           name: '',
           ktp: '',
@@ -1152,11 +1181,11 @@ export default {
           plannting_goals: '',
           pic_no: this.tempLastPicNo + 2 + this.formData.pic_no++
         });
-      }else{
+      } else {
         console.log("cannot add lahan umum PIC, Temp PIC: ", this.tempLastPicNo)
       }
     },
-    removeLahanUmumPIC(i){
+    removeLahanUmumPIC(i) {
       this.formData.pic_list.splice(i, 1);
       this.formData.pic_no--
     },
@@ -1176,20 +1205,20 @@ export default {
       });
       // console.log(this.formData.detailSeed);
     },
-    
-    async getSeedDetailData(tree_code){
+
+    async getSeedDetailData(tree_code) {
       let url = this.BaseUrlGet + `GetTreesDetail_new?tree_code=${tree_code}`;
       let resTreeDetail = await this.$_api.get(url);
       let res = 'tidak dapat memuat data'
-      if(resTreeDetail){
+      if (resTreeDetail) {
         res = resTreeDetail.result.tree_name
-      } 
-      return res  
+      }
+      return res
     },
     dateFormat(date, format) {
       return moment(date).format(format);
     },
-    
+
 
   },
 }
