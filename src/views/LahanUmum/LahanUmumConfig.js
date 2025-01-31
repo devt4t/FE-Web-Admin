@@ -288,5 +288,18 @@ export default [
         }
       },
     },
+    {
+      id: "scooping_visits_data_no",
+      label: "Status Desa",
+      methods: {
+        list: {
+          type: 'row-slot'
+        },
+        detail: {
+          view_data: "scooping_visits_data_no",
+          type: 'slot'
+        }
+      },
+    },
   ];
   
