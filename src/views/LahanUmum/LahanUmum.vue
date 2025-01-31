@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
         <template v-slot:list-total_holes="{ item }">
             <span v-if="item.total_holes == 0" class="badge bg-danger min-w-10px d-flex">
                 <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Belum Terdaftar</strong>
@@ -73,7 +73,8 @@ export default {
                 detail: "lahan-umum/main/detail",
                 detailIdKey: "id",
                 detailKey: "result",
-                // deleteKey: "id",
+                delete: "lahan-umum/main/delete",
+                deleteKey: "lahan_no",
                 pk_field: null,
                 globalFilter: {
                     program_year: {
