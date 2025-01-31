@@ -298,7 +298,7 @@ export default {
 
         async getReallocationList() {
             this.loading = true;
-            const url = "nursery/addendum/reallocation/list/staging";
+            const url = "nursery/addendum/reallocation/list";
             let params = {
                 addendum_id: this.data.id,
                 limit: 200,

@@ -258,7 +258,7 @@ export default {
 
         let payload = {
           program_year: this.$store.state.tmpProgramYear,
-          limit: 1000,
+          limit: 5000,
           offset: 0,
         };
 

@@ -324,11 +324,16 @@ export default {
 
       if (result.error && !result.not_found) return;
 
-      const responseData = result.not_found
+      let responseData = result.not_found
         ? []
         : this.item.option.getterKey
           ? this.getListDataKey(result, this.item.option.getterKey)
           : result.data;
+
+        if (this.item.option.filterBy) {
+          if (this.item.option.filterBy.value != 'all') responseData = responseData
+          .filter((x) => x[this.item.option.filterBy.key] == this.item.option.filterBy.value) 
+        }
 
       let processedData = [];
       for (const _data of responseData) {
