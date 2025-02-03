@@ -85,28 +85,28 @@ export default [
         filter: false
       },
     },
-    {
-      id: "total_kayu",
-      label: "Total Kayu",
-      methods: {
-        list: true,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false
-      },
-    },
-    {
-      id: "total_mpts",
-      label: "Total MPTS",
-      methods: {
-        list: true,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false
-      },
-    },
+    // {
+    //   id: "total_kayu",
+    //   label: "Total Kayu",
+    //   methods: {
+    //     list: true,
+    //     detail: true,
+    //     create: false,
+    //     update: false,
+    //     filter: false
+    //   },
+    // },
+    // {
+    //   id: "total_mpts",
+    //   label: "Total MPTS",
+    //   methods: {
+    //     list: true,
+    //     detail: true,
+    //     create: false,
+    //     update: false,
+    //     filter: false
+    //   },
+    // },
     {
       id: "total_pupuk",
       label: "Total Pupuk",
