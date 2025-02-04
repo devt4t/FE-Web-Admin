@@ -279,12 +279,12 @@
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi FC</span>
                 </v-btn>
-                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-create')"
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-um-create')"
                     variant="success" small class="mt-2" @click="onVerif(item, 'um')">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi UM</span>
                 </v-btn>
-                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-fc-create')"
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
                     variant="danger" small class="mt-2" @click="onUnverif(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi FC</span>
@@ -304,12 +304,12 @@
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi FC</span>
                 </v-btn>
-                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-create')"
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-um-create')"
                     variant="success" small class="mt-2" @click="onVerifDetail(item, 'um')">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi UM</span>
                 </v-btn>
-                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-fc-create')"
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
                     variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi FC</span>
