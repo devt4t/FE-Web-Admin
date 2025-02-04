@@ -507,14 +507,14 @@ export default {
         },
         async onVerifDetail(item, type) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-            if (prompt) {
+            if (prompt.isConfirmed) {
                 await this.verifyPenilikan(item, type);
                 this.$router.go(-1);
             }
         },
         async onUnverifDetail(item) {
             const prompt = await this.$_alert.confirm('Unverifikasi Data realisasi?', 'Apakah anda yakin akan mengurungkan verifikasi data realisasi ini?', 'Ya, Unverifikasi', 'Batal', true)
-            if (prompt) {
+            if (prompt.isConfirmed) {
                 await this.unverifyPenilikan(item);
                 this.$router.go(-1);
             }
