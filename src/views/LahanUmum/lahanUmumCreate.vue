@@ -1081,7 +1081,7 @@ export default {
           }
         ],
         user_id: this.user.email,
-        program_year: '2025',
+        program_year: '2024',
         distribution_date: '',
         surviellance_hole_date: '',
         planting_date: '',
