@@ -300,21 +300,21 @@
         <template v-slot:detail-action="{ item }">
             <div>
                 <v-btn v-if="item.is_validate == 0 && $_sys.isAllowed('realisasi-tanam-verification-fc-create')"
-                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
+                    variant="success" small class="mt-2" @click="onVerifDetail(item, 'fc')">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi FC</span>
                 </v-btn>
-                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-um-create')"
-                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-create')"
+                    variant="success" small class="mt-2" @click="onVerifDetail(item, 'um')">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi UM</span>
                 </v-btn>
-                <v-btn v-else-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-verification-fc-delete')"
+                <v-btn v-if="item.is_validate == 1 && $_sys.isAllowed('realisasi-tanam-unverification-fc-create')"
                     variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi FC</span>
                 </v-btn>
-                <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-verification-um-delete')"
+                <v-btn v-if="item.is_validate == 2 && $_sys.isAllowed('realisasi-tanam-unverification-create')"
                     variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi UM</span>
@@ -505,8 +505,8 @@ export default {
                 this.refreshKey += 1
             })
         },
-        async onVerifDetail(item) {
-            await this.verifyPenilikan(item);
+        async onVerifDetail(item, type) {
+            await this.verifyPenilikan(item, type);
             this.$router.go(-1);
         },
         async onUnverifDetail(item) {
