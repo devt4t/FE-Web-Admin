@@ -51,8 +51,8 @@ export default reactive({
     //     delete_type: "hard_delete",
     //     project_modul: "purpose",
     // },
-    // deleteKey: "soc_no",
-    // delete: "sostam/delete",
+    deleteKey: "monitoring_no",
+    delete: "first-monitorings/main/delete",
     pk_field: null,
     filter_api: {
       typegetdata: "all",

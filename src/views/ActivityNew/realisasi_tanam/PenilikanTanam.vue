@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true" :hideCreate="true"
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true"
         @searchColumChanged="searchColumChanged($event)">
 
         <template v-slot:list-before-create>
