@@ -50,10 +50,10 @@
                     'bg-success' : item.redistribution_status == 0
                 }">
                 <p v-if="item.redistribution_status > 0">
-                    Mengulang {{ item.redistribution_status }} Kali
+                    Susulan {{ item.redistribution_status }} Kali
                 </p>
                 <p v-else>
-                    Tidak Mengulang
+                    Tidak Ada Susulan
                 </p>
                     <!-- {{ item.redistribution_status > 0 ? 'Mengulang': 'Tidak Mengulang' }} -->
                 </span>
