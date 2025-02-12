@@ -6935,18 +6935,11 @@ export default {
         const params = {
           farmer_no: this.distributionReport.dialogs.detailUmum.farmerNo,
           detail: this.distributionReport.dialogs.detailUmum.adjustment,
-          bag: this.distributionReport.dialogs.inputAdjustDetailLables
-            .distributedBag,
-          is_pupuk_distributed:
-            this.distributionReport.dialogs.inputAdjustDetailLables
-              .is_pupuk_distributed,
+          bag: this.distributionReport.dialogs.inputAdjustDetailLables.distributedBag,
+          is_pupuk_distributed:this.distributionReport.dialogs.inputAdjustDetailLables.is_pupuk_distributed,
           id: this.distributionReport.dialogs.inputAdjustDetailLables.id,
-          distribution_time:
-            this.distributionReport.dialogs.inputAdjustDetailLables
-              .distribution_date,
-          user_accepted:
-            this.distributionReport.dialogs.inputAdjustDetailLables
-              .user_accepted,
+          distribution_time:this.distributionReport.dialogs.inputAdjustDetailLables.distribution_date,
+          user_accepted:this.distributionReport.dialogs.inputAdjustDetailLables.user_accepted,
           file_accept: {},
           file_signature: {},
         };

@@ -43,6 +43,22 @@
 
             <span class="d-block text-center" v-else>-</span>
         </template>
+        <template v-slot:list-redistribution_status="{item}" >
+            <div class="d-flex flex-row min-w-100px">
+                <span class="badge" :class="{
+                    'bg-warning' : item.redistribution_status > 0,
+                    'bg-success' : item.redistribution_status == 0
+                }">
+                <p v-if="item.redistribution_status > 0">
+                    Mengulang {{ item.redistribution_status }} Kali
+                </p>
+                <p v-else>
+                    Tidak Mengulang
+                </p>
+                    <!-- {{ item.redistribution_status > 0 ? 'Mengulang': 'Tidak Mengulang' }} -->
+                </span>
+            </div>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>

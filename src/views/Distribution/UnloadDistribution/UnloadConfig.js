@@ -191,5 +191,18 @@ export default [
           },
         },
       },
+      {
+        id: "redistribution_status",
+        label: "Status Distribusi Ulang",
+        methods: {
+          list: {
+            type: 'row-slot'
+          },
+          detail: {
+            view_data: "redistribution_status",
+            type: 'slot'
+          }
+        },
+      },
   ];
   

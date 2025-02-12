@@ -439,7 +439,7 @@
                                     <v-icon>mdi-magnify-close</v-icon>
                                     <div class="statistic-data">
                                         <p class="mb-0 label">Total Label Hilang</p>
-                                        <p class="mb-0 value">{{ item.missing_lable.length ?? 0 }}</p>
+                                        <p class="mb-0 value">{{ missing_lable.length ?? 0 }}</p>
 
                                     </div>
                                   </div>
@@ -510,6 +510,7 @@ export default {
     return {
       detail_seed_adjusted: null,
       distributed_bag: null,
+      missing_lable: null,
       lable_table_key: 0,
       configAllocationTransportDetail: {
         table: {
@@ -631,7 +632,7 @@ export default {
       if(itemKey == 0) return item.printed_lable
       if(itemKey == 1) return item.loaded_lable
       if(itemKey == 2) return this.distributed_bag
-      if(itemKey == 3) return item.missing_lable
+      if(itemKey == 3) return this.missing_lable
     },
     async getData() {
       const result = await this.$_api.get("distribution/loading-line/detail", {
@@ -644,6 +645,7 @@ export default {
       this.detail_seed_adjusted = item.item.detail_seed_farmers
       this.distributed_bag = item.item.distributed_lable
       this.is_pupuk_distributed = item.item.is_pupuk_distributed
+      this.missing_lable = item.item.missing_lable
     },
     async saveDataReportAdjustment(item) {
       const params = {
@@ -659,7 +661,29 @@ export default {
       };
       console.log(params)
       // console.log(params)
-    }
+    },
+    async uploadPhotosNursery(itemFile) {
+      this.$store.state.loadingOverlayText = `Saving photo...`;
+      const url = `https://api-nursery.t4t-api.org/api/upload`;
+      const data = this.generateFormData({
+        file: itemFile,
+      });
+      let responseName = null;
+      console.log(data);
+      await axios
+        .post(url, data, {
+          headers: {
+            Authorization: `Bearer ` + this.apiConfig.nurseryToken,
+          },
+        })
+        .then((res) => {
+          responseName = res.data;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      return responseName;
+    },
   }
 }
 </script>
