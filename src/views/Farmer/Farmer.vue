@@ -1,5 +1,10 @@
 <template>
-  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`">
+  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`" @onExportExcel="onExportExcel($event)">
+    
+    <template v-slot:list-before-create>
+      <export-modal :exportKey="exportKey" format="excel"></export-modal>
+    </template>
+
     <template v-slot:list-action-detail="{ item }">
       <button class="geko-list-action-view" @click="
         $router.push({
@@ -306,13 +311,20 @@ import moment from "moment";
 import "./farmer.scss";
 import FarmerAssignModal from "./FarmerAssignModal.vue";
 import FarmerDetail from "./FarmerDetail.vue";
+import ExportModal from "./ExportModal.vue";
+
 export default {
   name: "farmer-v2",
   components: {
     FarmerAssignModal,
     FarmerDetail,
+    ExportModal
   },
   methods: {
+    onExportExcel(data) {
+      this.exportKey++;
+      
+    },
     getMaskedValue(item) {
       if (!Array.isArray(item.log_farmers) || item.log_farmers.length === 0) {
         return item;
@@ -368,6 +380,7 @@ export default {
   },
   data() {
     return {
+      exportKey: 0,
       farmerAssignModal: 0,
       componentKey: 1,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
@@ -377,7 +390,7 @@ export default {
         title: "Petani",
         model_api: null,
         getter: "GetFarmerAllAdmin_new",
-
+        export: true,
         // getterDataKey: "data.result.data",
         detail: "GetDetailFarmer_new",
         detailIdKey: "farmer_no",
