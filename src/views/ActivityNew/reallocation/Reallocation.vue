@@ -188,33 +188,27 @@ export default {
         model_api: null,
         getter: "nursery/addendum/list",
         setter: "addProjectUtils",
-        setter_ext_payload: {
-          project_modul: "purpose",
-        },
-        update: "updateProjectUtils",
-        update_ext_payload: {
-          project_modul: "purpose",
-        },
-        delete: "deleteProjectUtils",
-        delete_ext_payload: {
-          delete_type: "hard_delete",
-          project_modul: "purpose",
-        },
-        deleteKey: "code",
-        // detail: "nursery/addendum/detail",
-        // detailIdKey: "adendum_id",
-        // detailKey: "data.result",
+        
+        // update: "updateProjectUtils",
+        // update_ext_payload: {
+        //   project_modul: "purpose",
+        // },
+        // delete: "deleteProjectUtils",
+        // delete_ext_payload: {
+        //   delete_type: "hard_delete",
+        //   project_modul: "purpose",
+        // },
+        // deleteKey: "code",
+        detail: "nursery/addendum/detail",
+        detailIdKey: "adendum_id",
+        detailKey: "data.result",
         pk_field: null,
         filter_api: {
           project_modul: "purpose",
         },
         permission: {
-          create: "project-planting-purpose-create",
-          read: "project-planting-purpose-list",
-          update: "project-planting-purpose-update",
-          detail: "project-planting-purpose-detail",
-          lookup: "project-planting-purpose-lookup",
-          delete: "project-planting-purpose-delete",
+          read: "distribution-unload-list",
+          detail: "distribution-unload-detail",
         },
         slave: [],
         fields: [
