@@ -87,7 +87,8 @@ export default {
           url: `${this.$_config.baseUrlExport}export/farmers/excel`,
           responseType: "arraybuffer",
           data: {
-            data: exportData
+            data: exportData,
+            program_year: this.$store.state.tmpProgramYear,
           },
           headers: {
             "content-type": "application/json",
