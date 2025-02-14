@@ -78,6 +78,7 @@ export default {
         this.loading = true;
         const exportData = await this.getExportData().catch(() => false)
         if (!Array.isArray(exportData) || (Array.isArray(exportData) && exportData.length) == 0) {
+          this.loading = false;
           throw "Not Found"
         }
         
@@ -134,6 +135,7 @@ export default {
     return {
       isOpen: false,
       muNo: null,
+      loading: false
     }
   },
   watch: {
