@@ -384,10 +384,10 @@ export default reactive({
           list: {
             type: 'row-slot'
           },
-          detail: {
-            view_data: "redistribution_status",
-            type: 'slot'
-          }
+          // detail: {
+          //   view_data: "redistribution_status",
+          //   type: 'slot'
+          // }
         },
       },
       {
