@@ -158,6 +158,12 @@
                       >
                         <v-icon class="mr-1">mdi-clock-alert </v-icon> Proses Distribusi Belum Selesai!
                       </v-btn>
+                      <v-btn
+                        v-if="farmer_acceptance_percentage < 100"
+                        variant="info" small class="mt-2"
+                      >
+                        <v-icon class="mr-1">mdi-clock-alert </v-icon> Batalkan Request Distribusi
+                      </v-btn>
                       <!-- <v-btn
                         v-if="true"
                         variant="warning" small class="mt-2"
