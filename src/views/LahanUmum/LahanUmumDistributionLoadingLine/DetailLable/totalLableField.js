@@ -22,5 +22,5 @@ export default [
         sortable: false,
         text: "Jumlah Bibit",
         value: "amount",
-    }
+    },
 ]

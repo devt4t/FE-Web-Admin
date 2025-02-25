@@ -22,5 +22,11 @@ export default [
         sortable: false,
         text: "Jumlah Bibit",
         value: "amount",
+      },
+      {
+        key: "action",
+        sortable: false,
+        text: "Opsi",
+        value: "action",
       }
 ]

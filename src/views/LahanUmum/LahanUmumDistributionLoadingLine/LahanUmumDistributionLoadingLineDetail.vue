@@ -252,11 +252,56 @@
                                          class="text-left"
                                          style="width: 300px; font-size: 14px"
                                        >
+                                         Status Distribusi Pupuk
+                                       </th>
+                                       <td class="text-left" style="font-size: 14px">
+                                        <v-checkbox
+                                          v-model="is_pupuk_distributed"
+                                          :label="`${is_pupuk_distributed == 0 ? 'Tidak Menerima' : 'Menerima'}`"
+                                          color="info"
+                                        ></v-checkbox>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th
+                                         class="text-left"
+                                         style="width: 300px; font-size: 14px"
+                                       >
                                          Total Pupuk Terdistribusi
                                        </th>
                                        <td class="text-left" style="font-size: 14px">
                                          <strong v-if="item.is_pupuk_load == 0">0</strong>
                                          <strong v-else>{{ item.total_pupuk }}</strong>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th
+                                         class="text-left"
+                                         style="width: 300px; font-size: 14px"
+                                       >
+                                         Tanggal Penerimaan
+                                       </th>
+                                       <td class="text-left" style="font-size: 14px">
+                                        <v-date-picker
+                                          color="green lighten-1 rounded-xl"
+                                          v-model="distribution_time"
+                                        ></v-date-picker>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th
+                                         class="text-left"
+                                         style="width: 300px; font-size: 14px"
+                                       >
+                                         Nama Penerima
+                                       </th>
+                                       <td class="text-left" style="font-size: 14px">
+                                        <geko-input v-model="user_accepted" :item="{
+                                          label: 'Nama Penerima',
+                                          validation: ['required'],
+                                          col_size: 6,
+                                          type: 'text',
+                                        }" />
                                        </td>
                                      </tr>
                                    </tbody>
@@ -287,6 +332,21 @@
                                         <h6>Foto Dokumentasi Distribusi</h6>
                                     </div>
                                 </div>
+                                <div class="absent-photo-list d-flex flex-row">
+                                  <v-file-input
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    @change="
+                                      (val) => {
+                                        modal_receiver_photo =
+                                          val;
+                                      }
+                                    "
+                                    placeholder="Upload Foto Penerimaan"
+                                    prepend-icon="mdi-camera"
+                                    show-size
+                                    label="Upload Foto Penerimaan"
+                                  ></v-file-input>
+                                </div>
                                 <div class="list-header py-3 mt-1">
                                   <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between; margin-left: 5%;">
                                       <h4>Tanda Tangan Petani</h4>
@@ -307,6 +367,21 @@
                                         }">
                                         <h6>Tanda Tangan Petani</h6>
                                     </div>
+                                </div>
+                                <div class="absent-photo-list d-flex flex-row">
+                                  <v-file-input
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    @change="
+                                      (val) => {
+                                        modal_signature_photo =
+                                          val;
+                                      }
+                                    "
+                                    placeholder="Upload Foto Tanda Tangan Penerima"
+                                    prepend-icon="mdi-camera"
+                                    show-size
+                                    label="Upload Foto Tanda Tangan Penerima"
+                                  ></v-file-input>
                                 </div>
                               </v-card>
                             </v-col>
@@ -409,13 +484,48 @@
                             <template v-slot:item.index="{ index }">
                               {{ index + 1 }}
                             </template>
+                            <template v-if="lable_table_key == 1" v-slot:item.action="{ item }">
+                              <!-- <v-btn
+                                v-if="item.is_loaded == 0 && item.is_distributed == 0"
+                                @click="setLableLoaded(item)"
+                                variant="info" small class="mt-2"
+                              >
+                                <v-icon class="mr-1">mdi-truck-check</v-icon>
+                              </v-btn> -->
+                              <v-btn
+                                v-if="item.is_loaded == 1 && (item.is_distributed == 0 || item.is_distributed == null)"
+                                @click="setLableDistributed(item)"
+                                variant="success" small class="mt-2"
+                              >
+                                <v-icon class="mr-1">mdi-check-bold </v-icon> Terima Label Bibit
+                              </v-btn>
+                              <v-btn
+                                v-if="item.is_loaded == 1 && item.is_distributed == 1"
+                                variant="info" small class="mt-2"
+                              >
+                                <v-icon class="mr-1">mdi-information </v-icon> Telah Terdistribusi
+                              </v-btn>
+                              <v-btn
+                                v-if="item.is_loaded == 1 && item.is_distributed == 2"
+                                variant="warning" small class="mt-2"
+                              >
+                                <v-icon class="mr-1">mdi-information </v-icon> Label Siap Di-Adjust
+                              </v-btn>
+                              <!-- <v-btn
+                                v-if="item.is_loaded == 1 && item.is_distributed == 0"
+                                @click="setLableMissing(item)"
+                                variant="danger" small class="mt-2"
+                              > 
+                                <v-icon class="mr-1">mdi-eye-off-outline</v-icon>
+                              </v-btn>-->
+                            </template>
                             <template v-slot:top>
                               <div class="statistics mb-3">
                                   <div class="statistic-item info">
                                     <v-icon>mdi-list-status</v-icon>
                                     <div class="statistic-data">
                                         <p class="mb-0 label">Total Label Tercetak</p>
-                                        <p class="mb-0 value">{{ item.printed_lable.length ?? 0 }}</p>
+                                        <p class="mb-0 value">{{ printed_bag.length ?? 0 }}</p>
 
                                     </div>
                                   </div>
@@ -423,7 +533,7 @@
                                     <v-icon>mdi-truck-cargo-container</v-icon>
                                     <div class="statistic-data">
                                         <p class="mb-0 label">Total Label Ter-Load</p>
-                                        <p class="mb-0 value">{{ item.loaded_lable.length ?? 0 }}</p>
+                                        <p class="mb-0 value">{{ loaded_bag.length ?? 0 }}</p>
 
                                     </div>
                                   </div>
@@ -439,7 +549,7 @@
                                     <v-icon>mdi-magnify-close</v-icon>
                                     <div class="statistic-data">
                                         <p class="mb-0 label">Total Label Hilang</p>
-                                        <p class="mb-0 value">{{ missing_lable.length ?? 0 }}</p>
+                                        <p class="mb-0 value">{{ missing_bag.length ?? 0 }}</p>
 
                                     </div>
                                   </div>
@@ -494,6 +604,7 @@ import DetailLablePrinted from "./DetailLable/totalLableField";
 import DetailLableLoaded from "./DetailLable/totalLableLoaded";
 import DetailLableDistributed from "./DetailLable/totalLableDistributed";
 import DetailLableMissing from "./DetailLable/totalLableMissing";
+import moment from "moment";
 
 import axios from "axios";
 
@@ -509,9 +620,18 @@ export default {
   data() {
     return {
       detail_seed_adjusted: null,
-      distributed_bag: null,
-      missing_lable: null,
+      printed_bag: [],
+      loaded_bag: [],
+      distributed_bag: [],
+      missing_bag: [],
       lable_table_key: 0,
+      is_pupuk_distributed: 0,
+      user_accepted: '',
+      distribution_time: '',
+      modal_signature_photo: null,
+      modal_receiver_photo: null,
+      farmer_id: 0,
+      nurseryToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg",
       configAllocationTransportDetail: {
         table: {
           header: DetailUnloadAllocationTransportField
@@ -632,7 +752,7 @@ export default {
       if(itemKey == 0) return item.printed_lable
       if(itemKey == 1) return item.loaded_lable
       if(itemKey == 2) return this.distributed_bag
-      if(itemKey == 3) return this.missing_lable
+      if(itemKey == 3) return this.missing_bag
     },
     async getData() {
       const result = await this.$_api.get("distribution/loading-line/detail", {
@@ -643,24 +763,58 @@ export default {
     },
     expandTableReport(item){
       this.detail_seed_adjusted = item.item.detail_seed_farmers
+      this.printed_bag = item.item.printed_lable
       this.distributed_bag = item.item.distributed_lable
+      this.loaded_bag = item.item.loaded_lable
+      this.missing_bag = item.item.missing_lable
       this.is_pupuk_distributed = item.item.is_pupuk_distributed
-      this.missing_lable = item.item.missing_lable
+      this.farmer_id = item.item.id
+      this.user_accepted = item.item.user_accepted
+    },
+    setLableDistributed(item){
+      item.is_distributed = 2
+      this.distributed_bag.push(item)
+      console.log(this.distributed_bag)
     },
     async saveDataReportAdjustment(item) {
+      let bags = [] 
+      this.distributed_bag.map(v => {
+        bags.push(v.id)
+      })
       const params = {
         farmer_no: item.farmer_no,
         detail: this.detail_seed_adjusted,
-        bag: this.distributed_bag,
-        // is_pupuk_distributed: this.distributionReport.dialogs.inputAdjustDetailLables.is_pupuk_distributed,
-        // id: this.distributionReport.dialogs.inputAdjustDetailLables.id,
-        // distribution_time: this.distributionReport.dialogs.inputAdjustDetailLables.distribution_date,
-        // user_accepted: this.distributionReport.dialogs.inputAdjustDetailLables.user_accepted,
-        // file_accept: {},
-        // file_signature: {},
+        bag: bags,
+        is_pupuk_distributed: this.is_pupuk_distributed,
+        id: this.farmer_id,
+        distribution_time: this.dateFormat(this.distribution_time, "YYYY-MM-DD"),
+        user_accepted: this.user_accepted,
+        file_accept: {},
+        file_signature: {},
       };
+      if (this.modal_receiver_photo) {
+        params.file_accept = await this.uploadPhotosNursery(
+          this.modal_receiver_photo
+        );
+      }
+      if (this.modal_signature_photo) {
+        params.file_signature = await this.uploadPhotosNursery(
+          this.modal_signature_photo
+        );
+      }
       console.log(params)
-      // console.log(params)
+      const sendData = await axios.post(
+        "https://api-nursery.t4t-api.org/api/custom/received-mobile-distribution",
+        params,
+        {
+          headers: {
+            Authorization: `Bearer ` + this.nurseryToken,
+          },
+        }
+      ).then(() => {
+            this.$_alert.success('Berhasil Melakukan Adjustment Data Distribusi')
+        })
+      await this.getData();
     },
     async uploadPhotosNursery(itemFile) {
       this.$store.state.loadingOverlayText = `Saving photo...`;
@@ -673,7 +827,7 @@ export default {
       await axios
         .post(url, data, {
           headers: {
-            Authorization: `Bearer ` + this.apiConfig.nurseryToken,
+            Authorization: `Bearer ` + this.nurseryToken,
           },
         })
         .then((res) => {
@@ -683,6 +837,25 @@ export default {
           console.error(err);
         });
       return responseName;
+    },
+    generateFormData(data) {
+      let formData = new FormData();
+
+      const objectArray = Object.entries(data);
+
+      objectArray.forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.map((item) => {
+            formData.append(key + "[]", item);
+          });
+        } else {
+          formData.append(key, value);
+        }
+      });
+      return formData;
+    },
+    dateFormat(date, format) {
+      return moment(date).format(format);
     },
   }
 }
