@@ -67,7 +67,8 @@
       <div class="min-w-150px">
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <span v-on="item.description.length > 60 ? on : ''" class="d-block">{{ truncateText(item.description, 60) }}</span>
+            <span v-on="item.description.length > 60 ? on : ''" class="d-block">{{ truncateText(item.description, 60)
+              }}</span>
           </template>
 
           <div style="max-width: 250px;">{{ item.description }}</div>
@@ -188,7 +189,7 @@ export default {
         model_api: null,
         getter: "nursery/addendum/list",
         setter: "addProjectUtils",
-        
+
         // update: "updateProjectUtils",
         // update_ext_payload: {
         //   project_modul: "purpose",
@@ -279,6 +280,16 @@ export default {
                 type: 'slot',
                 view_data: 'tree_code'
               },
+              filter: {
+                label: "Tanggal Distribusi",
+                validation: ["required"],
+                type: "date",
+                col_size: 6,
+                getter: "updated_at",
+                setter: "distribution_date",
+                icon: "calendar-edit",
+                main: true,
+              },
             },
           },
           {
@@ -301,7 +312,33 @@ export default {
                 }
               },
               detail: true,
-              filter: false,
+              filter: {
+                type: "select",
+                setter: "status_received",
+                icon: "list-status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Sudah Diterima",
+                      code: 1,
+                    },
+                    {
+                      name: "Belum Diterima",
+                      code: 0,
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
@@ -316,7 +353,33 @@ export default {
                 }
               },
               detail: true,
-              filter: false,
+              filter: {
+                type: "select",
+                setter: "status_allocation",
+                icon: "list-status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Sudah Dialokasi",
+                      code: 1,
+                    },
+                    {
+                      name: "Belum Dialokasi",
+                      code: 0,
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
@@ -331,7 +394,33 @@ export default {
                 }
               },
               detail: true,
-              filter: false,
+              filter: {
+                type: "select",
+                setter: "status_verified",
+                icon: "list-status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Terverifikasi",
+                      code: 1,
+                    },
+                    {
+                      name: "Belum Diverifikasi",
+                      code: 0,
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
