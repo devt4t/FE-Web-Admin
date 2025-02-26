@@ -24,7 +24,7 @@ Vue.filter("parse", (value, id) => {
       _value = [null, undefined, ""].includes(value) ? "0" : value;
       break;
     case "date":
-      _value = moment(value).format("D MMMM YYYY");
+      _value = value ? moment(value).format("D MMMM YYYY"): '-';
       break;
     case "gender":
       _value =
