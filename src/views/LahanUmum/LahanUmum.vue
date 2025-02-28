@@ -1,6 +1,6 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey">
         <template v-slot:list-scooping_visits_data_no="{ item }">
             <span v-if="!item.scooping_visits_data_no" class="badge bg-danger min-w-10px d-flex">
                 <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Desa Diluar Program</strong>
@@ -46,11 +46,7 @@
             </v-btn>
         </template>
         <template v-slot:detail-slave-raw="{ data }">
-            <lahan-umum-detail-map
-              :long="data.result.longitude"
-              :lat="data.result.latitude"
-              :section="`LahanUmum`"
-            />
+            <lahan-umum-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`LahanUmum`" />
             <lahan-umum-detail :data="data"></lahan-umum-detail>
         </template>
         <template v-slot:create-form>
@@ -67,13 +63,15 @@ import LahanUmumConfig from "./LahanUmumConfig";
 import LahanUmumDetail from "./LahanUmumDetail.vue";
 import LahanUmumDetailMap from "@/views/Lahan/components/DetailLahanMap";
 import LahanUmumCreate from "./lahanUmumCreate.vue"
+import LahanUmumUpdate from "./lahanUmumUpdate.vue";
 
 export default {
     components: {
         LottieAnimation,
         LahanUmumDetail,
         LahanUmumDetailMap,
-        LahanUmumCreate
+        LahanUmumCreate,
+        LahanUmumUpdate
     },
     name: "crud-public-land",
     watch: {},
@@ -119,21 +117,21 @@ export default {
         this.user = user;
     },
     methods: {
-        async onVerif(item){
+        async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
                 this.$_api.post('VerificationLahanUmum', {
-                lahan_no: item.lahan_no,
-                verified_by: this.user.email,
+                    lahan_no: item.lahan_no,
+                    verified_by: this.user.email,
                 })
-                .then(() => {
-                    this.$_alert.success('Berhasil Melakukan Verifikasi Lahan Umum, Silahkan Lanjutkan Ke Proses Penilikan Lubang')
-                    this.refreshKey += 1
-                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Melakukan Verifikasi Lahan Umum, Silahkan Lanjutkan Ke Proses Penilikan Lubang')
+                        this.refreshKey += 1
+                    })
 
             }
         },
-        async onUnverif(item){
+        async onUnverif(item) {
             // let payload = {
             //     "lahan_no": item.lahan_no
             // }
@@ -141,13 +139,13 @@ export default {
             const prompt = await this.$_alert.confirm('Unverifikasi Data Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
                 this.$_api.post('general-land/main/unverification', {
-                lahan_no: item.lahan_no,
-                verified_by: this.user.email,
+                    lahan_no: item.lahan_no,
+                    verified_by: this.user.email,
                 })
-                .then(() => {
-                    this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
-                    this.refreshKey += 1
-                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
+                        this.refreshKey += 1
+                    })
 
             }
         }
