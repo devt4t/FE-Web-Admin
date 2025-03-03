@@ -157,14 +157,6 @@
                   </v-btn>
                 </v-tooltip>
               </div>
-              <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
-                <v-btn variant="success" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_life_photo)">
-                      <v-icon>mdi-camera</v-icon>
-                  </v-btn>
-                <v-btn variant="danger" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_death_photo)">
-                    <v-icon>mdi-camera</v-icon>
-                </v-btn>
-              </div>
             </template>
             <template v-slot:item.gone="{ item }">
               <v-tooltip top>
@@ -242,6 +234,36 @@
 
 
         </v-card>
+      </v-col>
+      <v-col>
+        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+            <div class="list-header py-3 mt-1">
+            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                <h4>Foto Dokumentasi Monitoring</h4>
+            </div>
+            <div class="d-flex flex-row geko-list-header-action">
+                <div class="geko-list-header-toolbar"></div>
+            </div>
+            </div>
+
+            <div class="absent-photo-list d-flex flex-row" v-if="true">
+                <div class="absent-photo-item"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.gambar3 ?? '')"
+                    v-bind:style="{
+                    backgroundImage:
+                        'url(' +
+                        $_config.baseUrlUpload +
+                        '/' +
+                        data.result.gambar3 ?? '' +
+                        ')',
+                    }">
+                    <h6>Foto Bibit Belum Ditanam</h6>
+                </div>
+            </div>
+
+        </v-card>
+          
       </v-col>
     </v-row>
 
