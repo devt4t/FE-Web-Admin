@@ -80,6 +80,11 @@
                   show-expand
                   >
 
+                    <!-- <cancel-distribution-request
+                      @success="refreshKey = refreshKey + 1"
+                      :data="cancelation_data"
+                      :dataKey="cancelation_data_key"
+                    /> -->
                     <template v-slot:item.index="{ index }">
                     {{ index + 1 }}
                     </template>
@@ -139,7 +144,7 @@
                     </template>
                     <template v-slot:item.detail_actions="{ item }">
                       <v-btn
-                        v-if="(item.verified_by == null ||item.verified_by == '') &&item.printed_lable.length > 0 && item.loaded_lable.length > 0 && item.distributed_lable.length > 0"
+                        v-if="(item.verified_by == null ||item.verified_by == '') && item.printed_lable.length > 0 && item.loaded_lable.length > 0 && item.distributed_lable.length > 0"
                         @click="updateVerifikasiReportNursery(item, 'verification')"
                         variant="warning" small class="mt-2"
                       >
@@ -158,12 +163,12 @@
                       >
                         <v-icon class="mr-1">mdi-clock-alert </v-icon> Proses Distribusi Belum Selesai!
                       </v-btn>
-                      <v-btn
+                      <!-- <v-btn
                         v-if="farmer_acceptance_percentage < 100"
                         variant="info" small class="mt-2"
                       >
                         <v-icon class="mr-1">mdi-clock-alert </v-icon> Batalkan Request Distribusi
-                      </v-btn>
+                      </v-btn> -->
                       <!-- <v-btn
                         v-if="true"
                         variant="warning" small class="mt-2"
@@ -687,6 +692,7 @@
   <script>
   import DetailUnloadAllocationTransportField from "./unloadDetailField";
   import DetailUnloadAllocationFarmersField from "./unloadDetailFarmerFields";
+  import CancelDistributionRequest from "./CancelDistributionRequest.vue";
   import DetailLablePrinted from "./DetailLable/totalLableField";
   import DetailLableLoaded from "./DetailLable/totalLableLoaded";
   import DetailLableDistributed from "./DetailLable/totalLableDistributed";
@@ -697,6 +703,9 @@
   
   export default {
     name: "unload-allocation-detail",
+    components: {
+      CancelDistributionRequest
+    },
     props: {
       data: {
         required: true,
@@ -706,6 +715,8 @@
     data() {
       return {
         lable_table_key: 0,
+        cancelation_data : null,
+        cancelation_data_key: 0,
         configAllocationTransportDetail: {
           table: {
             header: DetailUnloadAllocationTransportField
@@ -828,6 +839,10 @@
         });
         // console.log(result)
         this.data = result;
+      },
+      onDistributionCancelation(item) {
+        this.data = item;
+        this.dataKey = this.dataKey + 1;
       },
     }
   }

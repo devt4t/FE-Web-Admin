@@ -6,7 +6,7 @@ export default {
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   mapBoxApi:
-    "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
+    "pk.eyJ1Ijoiam9oYW5yb2VkIiwiYSI6ImJVYmoyTUEifQ.1xKUxaVIFEmtC7IusBQ88g",
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",
   mapBoxStyleLight: "mapbox://styles/mapbox/light-v11",
   programYear: {
