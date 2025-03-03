@@ -1013,10 +1013,11 @@ export default {
       required: true,
       type: Object,
       default: {},
-    },
+    }
   },
   data() {
     return {
+      isCreate: null,
       statusDesa: 'desa program',
       allFFByDesa: [],
       isActive: null,
@@ -1094,6 +1095,11 @@ export default {
   },
   async mounted() {
     await this.firstAccessPage();
+
+    this.isCreate = this.$route.query.view === "create";
+    if (!this.isCreate) {
+      this.initData();
+    }
   },
   watch: {
     form(t) {
@@ -1131,6 +1137,69 @@ export default {
     },
   },
   methods: {
+    async initData() {
+      const { result } = await this.$_api.get("lahan-umum/main/detail", {
+        id: this.$route.query.id,
+      });
+
+      console.log(result)
+
+      this.formData.mou_no = result.mou_no;
+      this.formData.t4t_employees = result.employee_no;
+      this.formData.land_area = result.luas_lahan;
+      this.formData.land_distance = result.jarak_lahan;
+      this.formData.land_access = result.access_lahan;
+      this.formData.opsi_pola_tanam = result.pattern_planting;
+      this.formData.status = result.status;
+      this.formData.land_coverage = result.tutupan_lahan;
+
+      this.formData.mu_no = result.mu_no;
+      this.formData.province = result.province;
+      this.formData.kabupaten = result.kabupatens_kabupaten_no;
+      this.formData.kecamatan = result.kecamatans_kode_kecamatan;
+      this.formData.village = result.village;
+      this.formData.address = result.address;
+
+      result.detail_pic.map((v, i) => {
+
+        this.formData.pic_list.push({
+          name: v.nama,
+          ktp: v.ktp,
+          contact: v.contact,
+          project_no: v.project_no,
+          plannting_goals: v.planting_goals,
+          pic_no: v.pic_no
+        });
+      });
+
+      result.detail_seed.map(async (v, i) => {
+        this.formData.detailSeed.push({
+          tree_category: v.trees_tree_category,
+          tree_name: v.trees_tree_name,
+          tree_code: v.tree_code,
+          seed_amount: v.amount,
+          seed_PIC: v.pic_no,
+          PIC_name: this.formData.pic_list.filter((x) => x.pic_no == v.pic_no)[0].name
+        });
+      });
+
+      this.formData.distribution_date = result.distribution_date;
+      this.formData.latitude = result.latitude;
+      this.formData.longitude = result.longitude;
+
+      this.formData.mou_photo = result.photo_doc;
+      this.formData.photo1 = result.photo1;
+      this.formData.photo2 = result.photo2;
+      this.formData.photo3 = result.photo3;
+
+      this.formData.lahan_no = result.lahan_no;
+
+      setTimeout(() => {
+        this.removeLahanUmumPIC(0);
+
+      }, 500);
+
+    },
     async onSubmit() {
       if (this.form < 4) {
         // console.log("current form: " + this.form);
@@ -1149,15 +1218,27 @@ export default {
         this.formData.surviellance_hole_date = this.formData.surviellance_hole_date.replaceAll(" ", "-")
         this.formData.planting_date = this.formData.planting_date.replaceAll(" ", "-")
 
-        console.log(this.formData);
-        this.$_api.post('lahan-umum/main/create', this.formData)
-          .then(response => {
-            this.$router.go(-1);
-            this.$refreshKey += 1;
-            this.$_alert.success("Berhasil Create Data Lahan Umum");
-          }).catch(err => {
-            this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
-          });
+        console.log(this.formData, this.isCreate);
+        if (this.isCreate) {
+          this.$_api.post('lahan-umum/main/create', this.formData)
+            .then(response => {
+              this.$router.go(-1);
+              this.$refreshKey += 1;
+              this.$_alert.success("Berhasil Create Data Lahan Umum");
+            }).catch(err => {
+              this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
+            });
+        } else {
+          this.$_api.post('lahan-umum/main/update', this.formData)
+            .then(response => {
+              this.$router.go(-1);
+              this.$refreshKey += 1;
+              this.$_alert.success("Berhasil Update Data Lahan Umum");
+            }).catch(err => {
+              this.$_alert.error({}, "Gagal Melakukan Update Data Lahan Umum");
+            });
+        }
+
       }
     },
     firstAccessPage() {

@@ -50,7 +50,7 @@
             <lahan-umum-detail :data="data"></lahan-umum-detail>
         </template>
         <template v-slot:create-form>
-            <lahan-umum-create :user="user"></lahan-umum-create>
+            <lahan-umum-create :user="user" :type="formType"></lahan-umum-create>
         </template>
     </geko-base-crud>
 
@@ -77,6 +77,7 @@ export default {
     watch: {},
     data() {
         return {
+            formType: 'create',
             user: {},
             refreshKey: 1,
             config: {
