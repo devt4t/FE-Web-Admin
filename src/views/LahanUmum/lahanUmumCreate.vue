@@ -1054,6 +1054,7 @@ export default {
         mou_no: '',
         t4t_employees: '',
         ktp_no: '',
+        contact: '',
         pic_lahan: '',
         project_no: '',
         goals: '',
@@ -1136,6 +1137,7 @@ export default {
         // console.log("current form: " + this.form);
         this.form++;
         this.formData.ktp_no = this.formData.pic_list[0].ktp
+        this.formData.contact = this.formData.pic_list[0].contact
         this.formData.pic_lahan = this.formData.pic_list[0].name
         this.formData.project_no = this.formData.pic_list[0].project_no
         this.formData.goals = this.formData.pic_list[0].plannting_goals

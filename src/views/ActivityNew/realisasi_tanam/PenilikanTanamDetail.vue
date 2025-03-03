@@ -157,6 +157,14 @@
                   </v-btn>
                 </v-tooltip>
               </div>
+              <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
+                <v-btn variant="success" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_life_photo)">
+                      <v-icon>mdi-camera</v-icon>
+                  </v-btn>
+                <v-btn variant="danger" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_death_photo)">
+                    <v-icon>mdi-camera</v-icon>
+                </v-btn>
+              </div>
             </template>
             <template v-slot:item.gone="{ item }">
               <v-tooltip top>

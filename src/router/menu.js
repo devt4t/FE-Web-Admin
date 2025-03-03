@@ -236,6 +236,16 @@ const menu = [
         icon: "mdi-truck-delivery",
         update: true,
       },
+      {
+        title: "Lahan Umum / Event - Realisasi Tanam",
+        to: "/MonitoringLahanUmumV2",
+        component: "LahanUmum/LahanUmumMonitoring/lahanUmumMonitoring",
+        name: "LahanUmumMonitoringV2",
+        permission: "DistributionUnload",
+        icon: "mdi-sprout",
+        update: true,
+      },
+      
     ]
   },
   {
