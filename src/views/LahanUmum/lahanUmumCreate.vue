@@ -565,7 +565,7 @@
           </v-col>
           <v-col></v-col>
         </v-row>
-        <div class="list-header py-3 mt-1 " v-if="isCreate">
+        <div class="list-header py-3 mt-1 ">
           <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
             <h4>Data PIC Lahan Umum</h4>
           </div>
@@ -574,7 +574,7 @@
             Data 1 Adalah PIC Lahan Utama
           </div>
         </div>
-        <v-row v-if="isCreate">
+        <v-row>
           <v-col>
             <div class="pic-person-list ">
               <v-row v-for="(person, i) in formData.pic_list" :key="'persons-' + i">
@@ -656,13 +656,13 @@
                 </v-col>
                 <v-col md="1" class="d-flex flex-column justify-content-center"
                   style="justify-content: center; align-items: flex-start">
-                  <button @click="removeLahanUmumPIC(i)">
+                  <button v-if="isCreate" @click="removeLahanUmumPIC(i)">
                     <v-icon color="red">mdi-close</v-icon>
                   </button>
                 </v-col>
               </v-row>
 
-              <v-row>
+              <v-row v-if="isCreate">
                 <v-col md="12">
                   <v-btn variant="primary" @click="addLahanUmumPIC">
                     <v-icon>mdi-plus</v-icon>
