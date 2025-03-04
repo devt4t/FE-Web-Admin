@@ -565,7 +565,7 @@
           </v-col>
           <v-col></v-col>
         </v-row>
-        <div class="list-header py-3 mt-1">
+        <div class="list-header py-3 mt-1 " v-if="isCreate">
           <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
             <h4>Data PIC Lahan Umum</h4>
           </div>
@@ -574,9 +574,9 @@
             Data 1 Adalah PIC Lahan Utama
           </div>
         </div>
-        <v-row>
+        <v-row v-if="isCreate">
           <v-col>
-            <div class="pic-person-list">
+            <div class="pic-person-list ">
               <v-row v-for="(person, i) in formData.pic_list" :key="'persons-' + i">
                 <v-col class="index-wrapper">
                   <div class="index">{{ i + 1 }}</div>
@@ -687,12 +687,12 @@
 
     <ValidationObserver ref="secondForm" v-slot="{ handleSubmit }" v-show="form === 2" class="geko-form-wrapper">
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-        <v-row>
+        <v-row v-if="isCreate">
           <v-col md="12" class="form-separator">
             <h4>Tambah Detail Bibit Per PIC</h4>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="isCreate">
           <v-col>
             <geko-input v-model="tempInsertSeed.tree_category" :item="{
               label: 'Tipe Bibit',
@@ -799,7 +799,7 @@
               <template v-slot:item.no="{ index }">
                 {{ ++index }}
               </template>
-              <template v-slot:item.actions="{ item }">
+              <template v-if="isCreate" v-slot:item.actions="{ item }">
                 <v-icon class="mr-2" @click="removeBibitPerPIC(item)" color="red">
                   mdi-delete
                 </v-icon>
@@ -1017,7 +1017,7 @@ export default {
   },
   data() {
     return {
-      isCreate: null,
+      isCreate: false,
       statusDesa: 'desa program',
       allFFByDesa: [],
       isActive: null,
