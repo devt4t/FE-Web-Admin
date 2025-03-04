@@ -1205,12 +1205,14 @@ export default {
       if (this.form < 4) {
         // console.log("current form: " + this.form);
         this.form++;
-        this.formData.ktp_no = this.formData.pic_list[0].ktp
-        this.formData.contact = this.formData.pic_list[0].contact
-        this.formData.pic_lahan = this.formData.pic_list[0].name
-        this.formData.project_no = this.formData.pic_list[0].project_no
-        this.formData.goals = this.formData.pic_list[0].plannting_goals
-        this.formData.pic_list[0].pic_no = this.tempLastPicNo + 1
+        if (this.isCreate) {
+          this.formData.ktp_no = this.formData.pic_list[0].ktp
+          this.formData.contact = this.formData.pic_list[0].contact
+          this.formData.pic_lahan = this.formData.pic_list[0].name
+          this.formData.project_no = this.formData.pic_list[0].project_no
+          this.formData.goals = this.formData.pic_list[0].plannting_goals
+          this.formData.pic_list[0].pic_no = this.tempLastPicNo + 1
+        }
         console.log(this.formData)
 
       } else if (this.form == 4) {
