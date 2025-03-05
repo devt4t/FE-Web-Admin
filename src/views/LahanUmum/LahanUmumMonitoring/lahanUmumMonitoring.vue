@@ -1,7 +1,12 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
-        
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true">
+        <template v-slot:create-form>
+            <lahan-umum-monitoring-create :user="user"></lahan-umum-monitoring-create>
+        </template>
+        <template v-slot:detail-slave-raw="{ data }">
+            <lahan-umum-monitoring-detail :data="data"></lahan-umum-monitoring-detail>
+        </template>
     </geko-base-crud>
 
 </template>
@@ -10,10 +15,14 @@
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
 import LahanUmumMonitoringConfig from "./lahanUmumMonitoringConfig";
+import LahanUmumMonitoringCreate from "./lahanUmumMonitoringCreate.vue";
+import LahanUmumMonitoringDetail from "./lahanUmumMonitoringDetail.vue";
 
 export default {
     components: {
         LottieAnimation,
+        LahanUmumMonitoringCreate,
+        LahanUmumMonitoringDetail,
     },
     name: "crud-general-land-monitoring",
     watch: {},
@@ -27,9 +36,9 @@ export default {
                 getter: "general-land/first-monitoring/list",
                 getterDataKey: "result",
                 totalDataKey: 'total',
-                // detail: "lahan-umum/main/detail",
-                // detailIdKey: "id",
-                // detailKey: "result",
+                detail: "general-land/first-monitriong/detail",
+                detailIdKey: "monitoring_no",
+                detailKey: "data",
                 // delete: "lahan-umum/main/delete",
                 // deleteKey: "lahan_no",
                 pk_field: null,
