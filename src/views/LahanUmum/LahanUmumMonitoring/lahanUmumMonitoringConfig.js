@@ -143,12 +143,26 @@ export default [
     {
       id: "is_verified",
       label: "Status Verifikasi",
-      methods: {
-      list: false,
-      detail: true,
-      create: false,
-      update: false,
-      filter: false
-      },
+        methods: {
+          list: {
+            view_data: "is_verified",
+            class: {
+              0: "badge bg-danger",
+              1: "badge bg-success",
+            },
+            transform: "simple-status",
+          },
+          detail: {
+            view_data: "is_verified",
+            class: {
+              0: "badge bg-danger",
+              1: "badge bg-success",
+            },
+            transform: "simple-status",
+          },
+          create: false,
+          update: false,
+          filter: false
+        },
     },
 ]

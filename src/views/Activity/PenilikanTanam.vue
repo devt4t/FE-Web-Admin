@@ -3040,7 +3040,7 @@
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <!-- Select Search Field -->
-          <v-select
+          <!-- <v-select
             color="success"
             item-color="success"
             v-model="pagination.search.field"
@@ -3065,9 +3065,9 @@
               border-top-right-radius: 0px;
               border-bottom-right-radius: 0px;
             "
-          ></v-select>
+          ></v-select> -->
           <!-- Search Input -->
-          <v-text-field
+          <!-- <v-text-field
             v-if="pagination.search.field != 'is_validate'"
             color="success"
             item-color="success"
@@ -3084,8 +3084,8 @@
               max-width: 200px;
             "
             :loading="pagination.search.options.column_loading"
-          ></v-text-field>
-          <v-select
+          ></v-text-field> -->
+          <!-- <v-select
             v-else
             color="success"
             item-color="success"
@@ -3112,7 +3112,7 @@
             label="Status"
             class="centered-select"
             style="border-top-left-radius: 0px; border-bottom-left-radius: 0px"
-          ></v-select>
+          ></v-select> -->
           <v-btn
             v-if="
               User.role_group == 'IT' &&
@@ -3187,7 +3187,7 @@
         >
           <v-col cols="12" lg="4">
             <h4>
-              Jumlah Lahan Terpilih Untuk Monitoring 2:
+              Jumlah Pohon Terpilih Untuk Monitoring 2:
               {{
                 listMonitoring1Checked.reduce((acc, val) => {
                   return acc + parseInt(val.kayu_hidup + val.mpts_hidup);
@@ -3198,7 +3198,7 @@
           </v-col>
           <v-col cols="12" lg="4">
             <h4>
-              Persentase Lahan Terpilih Untuk Monitoring 2:
+              Persentase Pohon Terpilih Untuk Monitoring 2:
               {{
                 percentageFormat(
                   listMonitoring1Checked.reduce((acc, val) => {
@@ -3446,7 +3446,8 @@
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+          <!-- action button -->
+          <!-- <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
             <v-btn
               color="info white--text"
               rounded
@@ -3526,7 +3527,7 @@
             >
               <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
             </v-btn>
-          </v-card>
+          </v-card> -->
         </v-menu>
       </template>
     </v-data-table>

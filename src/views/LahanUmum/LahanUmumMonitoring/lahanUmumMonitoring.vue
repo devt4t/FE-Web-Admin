@@ -7,6 +7,11 @@
         <template v-slot:detail-slave-raw="{ data }">
             <lahan-umum-monitoring-detail :data="data"></lahan-umum-monitoring-detail>
         </template>
+        <template v-slot:list-indicator="{ item }">
+            <div class="indicator-wrapper pt-1">
+                <div class="indicator" :class="{danger: item.is_verified == 0, success: item.is_verified == 1}"></div>
+            </div>
+        </template>
     </geko-base-crud>
 
 </template>
