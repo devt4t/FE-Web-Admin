@@ -5,24 +5,25 @@
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
+            <populate-modal :dataKey="populateKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                 :data="sostamDistributionData" />
         </template>
-        <template v-slot:list-redistribution_status="{item}" >
+        <template v-slot:list-redistribution_status="{ item }">
             <div class="d-flex flex-row min-w-100px">
                 <span class="badge" :class="{
-                    'bg-warning' : item.nursery_loading_line.redistribution_status > 0,
-                    'bg-success' : item.nursery_loading_line.redistribution_status == 0
+                    'bg-warning': item.nursery_loading_line.redistribution_status > 0,
+                    'bg-success': item.nursery_loading_line.redistribution_status == 0
                 }">
-                <p v-if="item.nursery_loading_line.redistribution_status > 0">
-                    Susulan {{ item.nursery_loading_line.redistribution_status }} Kali
-                </p>
-                <p v-else>
-                    Tidak Ada Susulan
-                </p>
+                    <p v-if="item.nursery_loading_line.redistribution_status > 0">
+                        Susulan {{ item.nursery_loading_line.redistribution_status }} Kali
+                    </p>
+                    <p v-else>
+                        Tidak Ada Susulan
+                    </p>
                 </span>
             </div>
         </template>
@@ -34,10 +35,10 @@
                     <span>Export Excel </span>
                 </v-btn>
 
-                <!-- <v-btn variant="primary" @click="importSostamKey += 1">
-                    <v-icon>mdi-cloud-sync</v-icon>
-                    <span>Import Excel Sostam</span>
-                </v-btn> -->
+                <v-btn variant="success" class="mr-2" @click="populateKey += 1">
+                    <v-icon>mdi-file-tree</v-icon>
+                    <span>Populate Data </span>
+                </v-btn>
             </div>
         </template>
 
@@ -231,7 +232,7 @@
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
                         'bg-danger': item.is_validate == 0,
-                        'bg-warning': item.is_validate == 1, 
+                        'bg-warning': item.is_validate == 1,
                         'bg-success': item.is_validate == 2,
                     }">
 
@@ -249,7 +250,7 @@
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
                         'bg-danger': item.is_populated == 0,
-                        'bg-success': item.is_populated == 1, 
+                        'bg-success': item.is_populated == 1,
                     }">
 
                         <span v-if="item.is_populated == 0">Belum Terpopulasi</span>
@@ -361,6 +362,8 @@ import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
 import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
+import PopulateModal from './PopulateModal.vue'
+
 export default {
     name: "crud-penilikan-tanam",
     components: {
@@ -371,7 +374,8 @@ export default {
         PlantingSocExportLahanMu,
         PlantingSocImportExcel,
         PlantingSocCoordinateEdit,
-        PlantingSocDistributionDateUpdate
+        PlantingSocDistributionDateUpdate,
+        PopulateModal
     },
     watch: {},
     methods: {
@@ -493,8 +497,8 @@ export default {
                 listTrees.push(pushData);
             });
             let temp_url = ''
-            if(type == 'fc') temp_url = 'MonitoringVerificationFC'
-            else if(type == 'um') temp_url = 'MonitoringVerificationUM'
+            if (type == 'fc') temp_url = 'MonitoringVerificationFC'
+            else if (type == 'um') temp_url = 'MonitoringVerificationUM'
             const url = `${this.$_config.baseUrl}${temp_url}`;
             const postData = {
                 monitoring_no: data.monitoring_no,
