@@ -502,13 +502,13 @@
                     color="success"
                     item-color="success"
                     v-model="searchValue"
-                    placeholder="Pencarian Nama Petani..."
+                    placeholder="Kolom Pencarian..."
                     append-icon="mdi-magnify"
                     outlined
                     dense
                     rounded
                     style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
-                    label="Pencarian Nama Petani"
+                    label="Kolom Pencarian"
                     hide-details      
                   ></v-text-field>
                   <v-divider class="mx-2 d-none d-md-block" inset></v-divider>

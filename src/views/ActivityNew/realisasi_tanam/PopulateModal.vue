@@ -69,30 +69,38 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                122 / 3000
-                                            </v-progress-circular>&nbsp;&nbsp;
     
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                22 %
+                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configFF.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees)"
+                                                :color="`${configFF.totalTrees == 0? 'red': 'green'}`">
+                                                <br>{{ configFF.selected.reduce((acc, val) => {
+                                                return acc + parseInt(val.total_hidup);
+                                                }, 0) }} / {{ configFF.totalTrees }}</br>
+                                                <br>
+                                                    Persentase: {{ percentageFormat(configFF.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees) }}%
+                                                </br>
                                             </v-progress-circular>
 
                                         </v-col>
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-data-table :headers="configFF.table.header" :items="configFF.allPopulateData"
-                                            :server-items-length="configFF.totalRecord" :loading="loadingExportByFF"
+                                        <v-data-table 
+                                            :headers="configFF.table.header" 
+                                            :items="configFF.allPopulateData"
+                                            :server-items-length="configFF.totalRecord" 
+                                            :loading="loadingExportByFF"
                                             :items-per-page="configFF.perPage" class="elevation-1"
-                                            @update:page="onChangePage" :page="configFF.page"
-                                            @update:items-per-page="($p) => (configFF.perPage = $p)" :footer-props="{
+                                            @update:page="onChangePage" 
+                                            :page="configFF.page"
+                                            @update:items-per-page="($p) => (configFF.perPage = $p)" 
+                                            :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
-                                            }" :show-select="true" v-model="configFF.selected">
+                                            }" 
+                                            :show-select="true" 
+                                            v-model="configFF.selected">
                                             <template v-slot:item.index="{ index }">
                                                 {{ index + 1 }}
                                             </template>
@@ -150,14 +158,15 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                122 / 3000
-                                            </v-progress-circular>&nbsp;&nbsp;
     
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                22 %
+                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configMU.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees)"
+                                                :color="`${configMU.totalTrees == 0? 'red': 'green'}`">
+                                                <br>{{ configMU.selected.reduce((acc, val) => {
+                                                return acc + parseInt(val.total_hidup);
+                                                }, 0) }} / {{ configMU.totalTrees }}</br>
+                                                <br>
+                                                    Persentase: {{ percentageFormat(configMU.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees) }}%
+                                                </br>
                                             </v-progress-circular>
 
                                         </v-col>
@@ -232,14 +241,15 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                122 / 3000
-                                            </v-progress-circular>&nbsp;&nbsp;
     
-                                            <v-progress-circular :rotate="360" :size="100" :width="20" :value="12"
-                                                color="green">
-                                                22 %
+                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configTA.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees)"
+                                                :color="`${configTA.totalTrees == 0? 'red': 'green'}`">
+                                                <br>{{ configTA.selected.reduce((acc, val) => {
+                                                return acc + parseInt(val.total_hidup);
+                                                }, 0) }} / {{ configTA.totalTrees }}</br>
+                                                <br>
+                                                    Persentase: {{ percentageFormat(configTA.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees) }}%
+                                                </br>
                                             </v-progress-circular>
 
                                         </v-col>
@@ -320,6 +330,7 @@ export default {
             configTA: {
                 allPopulateData: [],
                 totalRecord: 0,
+                totalTrees: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -373,6 +384,7 @@ export default {
             configMU: {
                 allPopulateData: [],
                 totalRecord: 0,
+                totalTrees: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -426,6 +438,7 @@ export default {
             configFF: {
                 allPopulateData: [],
                 totalRecord: 0,
+                totalTrees: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -564,20 +577,23 @@ export default {
                 return;
             }
 
-            const result = await this.$_api.get("first-monitorings/main/list", payload);
+            const result = await this.$_api.get("first-monitorings/main/options", payload);
 
             if (this.exportBy == 'ta') {
                 this.loadingExportByTA = false;
                 this.configTA.allPopulateData = result.result ?? [];
                 this.configTA.totalRecord = result.total ?? 0;
+                this.configTA.totalTrees = result.total_life_trees ?? 0;
             } else if (this.exportBy == 'mu') {
                 this.loadingExportByMU = false;
                 this.configMU.allPopulateData = result.result ?? [];
                 this.configMU.totalRecord = result.total ?? 0;
+                this.configMU.totalTrees = result.total_life_trees ?? 0;
             } else if (this.exportBy == 'ff') {
                 this.loadingExportByFF = false;
                 this.configFF.allPopulateData = result.result ?? [];
                 this.configFF.totalRecord = result.total ?? 0;
+                this.configff.totalTrees = result.total_life_trees ?? 0;
             } else {
                 return;
             }
@@ -1176,6 +1192,9 @@ export default {
         },
         test2(data) {
             console.log("data", data);
+        },
+        percentageFormat(partial, total) {
+            return ((partial * 100) / total).toFixed(1);
         },
     },
 

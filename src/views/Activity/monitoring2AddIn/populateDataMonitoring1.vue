@@ -649,6 +649,8 @@ export default {
     searchIndex: [
       { text: "Nama Petani", value: "farmer_name" },
       { text: "Nomor Lahan", value: "lahan_no" },
+      { text: "Nama FF", value: "ff_name" },
+      { text: "Nama FF Petugas Monitoring", value: "ff_replacement_name" },
     ],
 
     authtoken: "",
