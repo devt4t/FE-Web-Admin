@@ -77,7 +77,8 @@
                                                 }, 0)}} / {{ configFF.totalTrees }}</br>
                                                 <br>
                                                 Persentase: {{percentageFormat(configFF.selected.reduce((acc, val) => {
-                                                    return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees) }}%
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0), configFF.totalTrees)}}%
                                                 </br>
                                             </v-progress-circular>
 
@@ -89,7 +90,7 @@
                                             :server-items-length="configFF.totalRecord" :loading="loadingExportByFF"
                                             :items-per-page="configFF.perPage" class="elevation-1"
                                             @update:page="onChangePage" :page="configFF.page"
-                                            @update:items-per-page="($p) => (configFF.perPage = $p)" :footer-props="{
+                                            @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
@@ -160,7 +161,8 @@
                                                 }, 0)}} / {{ configMU.totalTrees }}</br>
                                                 <br>
                                                 Persentase: {{percentageFormat(configMU.selected.reduce((acc, val) => {
-                                                    return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees) }}%
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0), configMU.totalTrees)}}%
                                                 </br>
                                             </v-progress-circular>
 
@@ -172,7 +174,7 @@
                                             :server-items-length="configMU.totalRecord" :loading="loadingExportByMU"
                                             :items-per-page="configMU.perPage" class="elevation-1"
                                             @update:page="onChangePage" :page="configMU.page"
-                                            @update:items-per-page="($p) => (configMU.perPage = $p)" :footer-props="{
+                                            @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
@@ -244,7 +246,8 @@
                                                 }, 0)}} / {{ configTA.totalTrees }}</br>
                                                 <br>
                                                 Persentase: {{percentageFormat(configTA.selected.reduce((acc, val) => {
-                                                    return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees) }}%
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0), configTA.totalTrees)}}%
                                                 </br>
                                             </v-progress-circular>
 
@@ -256,7 +259,7 @@
                                             :server-items-length="configTA.totalRecord" :loading="loadingExportByTA"
                                             :items-per-page="configTA.perPage" class="elevation-1"
                                             @update:page="onChangePage" :page="configTA.page"
-                                            @update:items-per-page="($p) => (configTA.perPage = $p)" :footer-props="{
+                                            @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
@@ -613,6 +616,21 @@ export default {
                 this.loadingExportByMU = true;
             } else if (this.exportBy == 'ff') {
                 this.configFF.page = t;
+                this.loadingExportByFF = true;
+            } else {
+                return;
+            }
+            this.getData()
+        },
+        updatePerPage($p) {
+            if (this.exportBy == 'ta') {
+                this.configTA.perPage = $p;
+                this.loadingExportByTA = true;
+            } else if (this.exportBy == 'mu') {
+                this.configMU.perPage = $p;
+                this.loadingExportByMU = true;
+            } else if (this.exportBy == 'ff') {
+                this.configFF.perPage = $p;
                 this.loadingExportByFF = true;
             } else {
                 return;
