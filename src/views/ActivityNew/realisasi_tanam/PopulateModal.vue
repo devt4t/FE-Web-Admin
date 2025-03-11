@@ -241,7 +241,6 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-    
                                             <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configTA.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees)"
                                                 :color="`${configTA.totalTrees == 0? 'red': 'green'}`">
                                                 <br>{{ configTA.selected.reduce((acc, val) => {
