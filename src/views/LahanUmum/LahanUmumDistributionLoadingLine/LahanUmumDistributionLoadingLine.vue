@@ -57,7 +57,7 @@ export default {
             config: {
                 title: "Distribution Unload - Lahan Umum",
                 model_api: null,
-                getter: "distribution/loading-line/list?land_status=2",
+                getter: "general-land/distribution/list?land_status=2",
                 getterDataKey: "data",
                 totalDataKey: 'total',
                 detail: "distribution/loading-line/detail",
