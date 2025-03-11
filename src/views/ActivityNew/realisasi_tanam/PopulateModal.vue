@@ -69,14 +69,15 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-    
-                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configFF.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees)"
-                                                :color="`${configFF.totalTrees == 0? 'red': 'green'}`">
-                                                <br>{{ configFF.selected.reduce((acc, val) => {
-                                                return acc + parseInt(val.total_hidup);
-                                                }, 0) }} / {{ configFF.totalTrees }}</br>
+                                            <v-progress-circular :rotate="360" :size="200" :width="20"
+                                                :value="percentageFormat(configFF.selected.reduce((acc, val) => { return acc + parseInt(val.total_hidup); }, 0), configFF.totalTrees)"
+                                                :color="`${configFF.totalTrees == 0 ? 'red' : 'green'}`">
+                                                <br>{{configFF.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0)}} / {{ configFF.totalTrees }}</br>
                                                 <br>
-                                                    Persentase: {{ percentageFormat(configFF.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees) }}%
+                                                Persentase: {{percentageFormat(configFF.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);}, 0), configFF.totalTrees) }}%
                                                 </br>
                                             </v-progress-circular>
 
@@ -84,23 +85,16 @@
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-data-table 
-                                            :headers="configFF.table.header" 
-                                            :items="configFF.allPopulateData"
-                                            :server-items-length="configFF.totalRecord" 
-                                            :loading="loadingExportByFF"
+                                        <v-data-table :headers="configFF.table.header" :items="configFF.allPopulateData"
+                                            :server-items-length="configFF.totalRecord" :loading="loadingExportByFF"
                                             :items-per-page="configFF.perPage" class="elevation-1"
-                                            @update:page="onChangePage" 
-                                            :page="configFF.page"
-                                            @update:items-per-page="($p) => (configFF.perPage = $p)" 
-                                            :footer-props="{
+                                            @update:page="onChangePage" :page="configFF.page"
+                                            @update:items-per-page="($p) => (configFF.perPage = $p)" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
-                                            }" 
-                                            :show-select="true" 
-                                            v-model="configFF.selected">
+                                            }" :show-select="true" v-model="configFF.selected">
                                             <template v-slot:item.index="{ index }">
                                                 {{ index + 1 }}
                                             </template>
@@ -112,8 +106,8 @@
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-btn variant="success" type="submit">
-                                            <v-icon v-if="!loadingExportByMU">mdi-file-tree</v-icon>
+                                        <v-btn :disabled="!configFF.selected.length" variant="success" type="submit">
+                                            <v-icon v-if="!loadingExportByFF">mdi-file-tree</v-icon>
                                             <v-progress-circular v-else :size="20" color="danger"
                                                 indeterminate></v-progress-circular>
                                             <span class="ml-1"> Populate Data</span>
@@ -158,14 +152,15 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-    
-                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configMU.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees)"
-                                                :color="`${configMU.totalTrees == 0? 'red': 'green'}`">
-                                                <br>{{ configMU.selected.reduce((acc, val) => {
-                                                return acc + parseInt(val.total_hidup);
-                                                }, 0) }} / {{ configMU.totalTrees }}</br>
+                                            <v-progress-circular :rotate="360" :size="200" :width="20"
+                                                :value="percentageFormat(configMU.selected.reduce((acc, val) => { return acc + parseInt(val.total_hidup); }, 0), configMU.totalTrees)"
+                                                :color="`${configMU.totalTrees == 0 ? 'red' : 'green'}`">
+                                                <br>{{configMU.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0)}} / {{ configMU.totalTrees }}</br>
                                                 <br>
-                                                    Persentase: {{ percentageFormat(configMU.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees) }}%
+                                                Persentase: {{percentageFormat(configMU.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);}, 0), configMU.totalTrees) }}%
                                                 </br>
                                             </v-progress-circular>
 
@@ -195,7 +190,7 @@
 
 
                                     <v-col lg="12">
-                                        <v-btn variant="success" type="submit">
+                                        <v-btn :disabled="!configMU.selected.length" variant="success" type="submit">
                                             <v-icon v-if="!loadingExportByMU">mdi-file-tree</v-icon>
                                             <v-progress-circular v-else :size="20" color="danger"
                                                 indeterminate></v-progress-circular>
@@ -241,19 +236,21 @@
                                             <h3>Total Pohon yang Akan Terpopulasi</h3>
                                         </v-col>
                                         <v-col lg="4" class="flex d-flex justify-center">
-                                            <v-progress-circular :rotate="360" :size="200" :width="20" :value="percentageFormat(configTA.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees)"
-                                                :color="`${configTA.totalTrees == 0? 'red': 'green'}`">
-                                                <br>{{ configTA.selected.reduce((acc, val) => {
-                                                return acc + parseInt(val.total_hidup);
-                                                }, 0) }} / {{ configTA.totalTrees }}</br>
+                                            <v-progress-circular :rotate="360" :size="200" :width="20"
+                                                :value="percentageFormat(configTA.selected.reduce((acc, val) => { return acc + parseInt(val.total_hidup); }, 0), configTA.totalTrees)"
+                                                :color="`${configTA.totalTrees == 0 ? 'red' : 'green'}`">
+                                                <br>{{configTA.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);
+                                                }, 0)}} / {{ configTA.totalTrees }}</br>
                                                 <br>
-                                                    Persentase: {{ percentageFormat(configTA.selected.reduce((acc, val) => {return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees) }}%
+                                                Persentase: {{percentageFormat(configTA.selected.reduce((acc, val) => {
+                                                    return acc + parseInt(val.total_hidup);}, 0), configTA.totalTrees) }}%
                                                 </br>
                                             </v-progress-circular>
 
                                         </v-col>
                                     </v-col>
- 
+
                                     <v-col lg="12">
                                         <v-data-table :headers="configTA.table.header" :items="configTA.allPopulateData"
                                             :server-items-length="configTA.totalRecord" :loading="loadingExportByTA"
@@ -276,7 +273,7 @@
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-btn variant="success" type="submit">
+                                        <v-btn :disabled="!configTA.selected.length" variant="success" type="submit">
                                             <v-icon v-if="!loadingExportByTA">mdi-file-tree</v-icon>
                                             <v-progress-circular v-else :size="20" color="danger"
                                                 indeterminate></v-progress-circular>
@@ -328,8 +325,8 @@ export default {
             loadingExportByFF: false,
             configTA: {
                 allPopulateData: [],
-                totalRecord: 0,
                 totalTrees: 0,
+                totalRecord: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -382,8 +379,8 @@ export default {
             },
             configMU: {
                 allPopulateData: [],
-                totalRecord: 0,
                 totalTrees: 0,
+                totalRecord: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -436,8 +433,8 @@ export default {
             },
             configFF: {
                 allPopulateData: [],
-                totalRecord: 0,
                 totalTrees: 0,
+                totalRecord: 0,
                 selected: [],
                 perPage: 10,
                 page: 1,
@@ -515,14 +512,23 @@ export default {
             // this.getData()
         },
         mu_no(t) {
+            this.configMU.selected = [];
+            this.configMU.allPopulateData = [];
+            this.configMU.totalRecord = 0;
             this.loadingExportByMU = true;
             this.getData()
         },
         ff_no(t) {
+            this.configFF.selected = [];
+            this.configFF.allPopulateData = [];
+            this.configFF.totalRecord = 0;
             this.loadingExportByFF = true;
             this.getData()
         },
         target_area(t) {
+            this.configTA.selected = [];
+            this.configTA.allPopulateData = [];
+            this.configTA.totalRecord = 0;
             this.loadingExportByTA = true;
             this.page = 1;
             this.getData()
@@ -591,8 +597,8 @@ export default {
             } else if (this.exportBy == 'ff') {
                 this.loadingExportByFF = false;
                 this.configFF.allPopulateData = result.result ?? [];
-                this.configFF.totalRecord = result.total ?? 0;
                 this.configff.totalTrees = result.total_life_trees ?? 0;
+                this.configFF.totalRecord = result.total ?? 0;
             } else {
                 return;
             }
@@ -817,371 +823,71 @@ export default {
             if (this.loadingExportByTA) return;
 
             this.loadingExportByTA = true;
-            for (const [index, _ta] of this.target_area.entries()) {
-                if (!_ta) continue;
+            this.configTA.selected.map((value) => {
+                value.total_hidup = +value.mpts_hidup + +value.kayu_hidup;
+                return value;
+            })
+            console.log(this.configTA.selected)
+            return;
 
-                let taName = this.taList.find((item) => item.area_code == _ta)
-                    ? this.taList.find((item) => item.area_code == _ta).name
-                    : "";
-
-                let offset = 0;
-                let trees = [];
-                while (true) {
-                    const result = await this.getExportDataCarbon(_ta, offset);
-                    if (!result) {
-                        this.loadingExportByTA = false;
-                        break;
-                    }
-
-                    if (
-                        !Array.isArray(result.total) ||
-                        !Array.isArray(result.trees) ||
-                        (Array.isArray(result.data && result.data.length == 0) && this.exportData.length == 0)
-                    ) {
-                        this.loadingExportByTA = false;
-                        this.$_alert.error(
-                            {},
-                            "Tidak ada data",
-                            `Tidak ada data di Target Area ${taName} ${this.$store.state.tmpProgramYear}`
-                        );
-                        return;
-                    } else {
-                        console.log(result, offset)
-                        this.exportData = [...this.exportData, ...result.data]
-                        trees = result.trees;
-                        if (result.data.length < 100) break;
-                        offset += 100;
-                    }
-
-
-
-                }
-
-
-                // const trees = await this.$_api
-                //     .get("GetTreesAll")
-                //     .then((res) => {
-                //         return res.data.result.data;
-                //     })
-                //     .catch((err) => {
-                //         console.log("err", err);
-                //         return false;
-                //     });
-
-                // if (!trees) {
-                //     this.loading = false;
-                //     continue;
-                // }
-
-
-
-                if (taName) {
-                    taName = taName.replace(/ /g, "");
-                }
-
-                const configFilename = {
-                    pdf: `Report-${taName}-${_ta}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.pdf`,
-                    excel: `Report-${taName}-${_ta}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.xlsx`,
-                };
-                const axiosConfig = {
-                    method: "POST",
-                    url: this.configUrl['excel'],
-                    responseType: "arraybuffer",
-                    data: {
-                        data: this.exportData,
-                        exportBy: this.exportBy,
-                        trees: trees
-                    },
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `Bearer ${this.$store.state.token}`,
-                    },
-                };
-                const exported = await axios(axiosConfig)
-                    .then((res) => {
-                        return res;
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
-
-                if (!exported) {
-                    this.loadingExportByTA = false;
-                    continue;
-                }
-
-                const url = URL.createObjectURL(new Blob([exported.data]));
-                const link = document.createElement("a");
-                link.href = url;
-
-                const filename = configFilename[this.format];
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-
-                // reset after complete download, then filled by next UM
-                this.exportData = [];
-
-                // stop the loading when the last download completed
-                if (index === this.target_area.length - 1) {
-                    this.loadingExportByTA = false;
-                }
-            }
-
-            this.$_alert.success("Successfully");
-            this.loading = false;
+            this.$_api
+                .get("populate-monitoring/1-to-2", {
+                    list_monitoring1: this.configTA.selected,
+                })
+                .then((res) => {
+                    this.$_alert.success("Successfully");
+                })
+                .catch(() => {
+                });
+            this.loadingExportByTA = false;
             this.isOpen = false;
         },
         async onSubmitByMU() {
             if (this.loadingExportByMU) return;
 
             this.loadingExportByMU = true;
-            for (const [index, _mu] of this.mu_no.entries()) {
-                if (!_mu) continue;
+            this.configMU.selected.map((value) => {
+                value.total_hidup = +value.mpts_hidup + +value.kayu_hidup;
+                return value;
+            })
+            console.log(this.configMU.selected)
+            return;
 
-                let muName = this.muList.find((item) => item.mu_no == _mu)
-                    ? this.muList.find((item) => item.mu_no == _mu).name
-                    : "";
+            this.$_api
+                .get("populate-monitoring/1-to-2", {
+                    list_monitoring1: this.configMU.selected,
+                })
+                .then((res) => {
+                    this.$_alert.success("Successfully");
+                })
+                .catch(() => {
+                });
 
-                let offset = 0;
-                let trees = [];
-                while (true) {
-                    const result = await this.getExportDataCarbon(_mu, offset);
-                    if (!result) {
-                        this.loadingExportByMU = false;
-                        break;
-                    }
-
-                    if (
-                        !Array.isArray(result.total) ||
-                        !Array.isArray(result.trees) ||
-                        !Array.isArray(result.data) ||
-                        result.data.length == 0 && this.exportData.length == 0
-                    ) {
-                        this.loadingExportByMU = false;
-                        this.$_alert.error(
-                            {},
-                            "Tidak ada data",
-                            `Tidak ada data di Unit Management ${muName} ${this.$store.state.tmpProgramYear}`
-                        );
-                        return;
-                    } else {
-                        console.log(result, offset)
-                        this.exportData = [...this.exportData, ...result.data]
-                        trees = result.trees;
-                        if (result.data.length < 100) break;
-                        offset += 100;
-                    }
-
-
-
-                }
-
-
-                // const trees = await this.$_api
-                //     .get("GetTreesAll")
-                //     .then((res) => {
-                //         return res.data.result.data;
-                //     })
-                //     .catch((err) => {
-                //         console.log("err", err);
-                //         return false;
-                //     });
-
-                // if (!trees) {
-                //     this.loading = false;
-                //     continue;
-                // }
-
-
-
-                if (muName) {
-                    muName = muName.replace(/ /g, "");
-                }
-
-                const configFilename = {
-                    pdf: `Report-${muName}-${_mu}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.pdf`,
-                    excel: `Report-${muName}-${_mu}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.xlsx`,
-                };
-                const axiosConfig = {
-                    method: "POST",
-                    url: this.configUrl['excel'],
-                    responseType: "arraybuffer",
-                    data: {
-                        data: this.exportData,
-                        exportBy: this.exportBy,
-                        trees: trees
-                    },
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `Bearer ${this.$store.state.token}`,
-                    },
-                };
-                const exported = await axios(axiosConfig)
-                    .then((res) => {
-                        return res;
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
-
-                if (!exported) {
-                    this.loadingExportByMU = false;
-                    continue;
-                }
-
-                const url = URL.createObjectURL(new Blob([exported.data]));
-                const link = document.createElement("a");
-                link.href = url;
-
-                const filename = configFilename[this.format];
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-
-                // reset after complete download, then filled by next UM
-                this.exportData = [];
-
-                // stop the loading when the last download completed
-                if (index === this.mu_no.length - 1) {
-                    this.loadingExportByMU = false;
-                }
-            }
-
-            this.$_alert.success("Successfully");
-            this.loading = false;
+            this.loadingExportByMU = false;
             this.isOpen = false;
         },
         async onSubmitByFF() {
             if (this.loadingExportByFF) return;
 
             this.loadingExportByFF = true;
-            for (const [index, _ff] of this.ff_no.entries()) {
-                if (!_ff) continue;
+            this.configFF.selected.map((value) => {
+                value.total_hidup = +value.mpts_hidup + +value.kayu_hidup;
+                return value;
+            })
+            console.log(this.configFF.selected)
+            return;
 
-                let ffName = this.ffList.find((item) => item.ff_no == _ff)
-                    ? this.ffList.find((item) => item.ff_no == _ff).name
-                    : "";
+            this.$_api
+                .get("populate-monitoring/1-to-2", {
+                    list_monitoring1: this.configFF.selected,
+                })
+                .then((res) => {
+                    this.$_alert.success("Successfully");
+                })
+                .catch(() => {
+                });
 
-                let offset = 0;
-                let trees = [];
-                while (true) {
-                    const result = await this.getExportDataCarbon(_ff, offset);
-                    if (!result) {
-                        this.loadingExportByFF = false;
-                        break;
-                    }
-
-                    if (
-                        !Array.isArray(result.total) ||
-                        !Array.isArray(result.trees) ||
-                        !Array.isArray(result.data) ||
-                        result.data.length == 0 && this.exportData.length == 0
-                    ) {
-                        this.loadingExportByFF = false;
-                        this.$_alert.error(
-                            {},
-                            "Tidak ada data",
-                            `Tidak ada data dari FF ${ffName} ${this.$store.state.tmpProgramYear}`
-                        );
-                        return;
-                    } else {
-                        console.log(result, offset)
-                        this.exportData = [...this.exportData, ...result.data]
-                        trees = result.trees;
-                        if (result.data.length < 100) break;
-                        offset += 100;
-                    }
-
-
-
-                }
-
-
-                // const trees = await this.$_api
-                //     .get("GetTreesAll")
-                //     .then((res) => {
-                //         return res.data.result.data;
-                //     })
-                //     .catch((err) => {
-                //         console.log("err", err);
-                //         return false;
-                //     });
-
-                // if (!trees) {
-                //     this.loading = false;
-                //     continue;
-                // }
-
-
-
-                if (ffName) {
-                    ffName = ffName.replace(/ /g, "");
-                }
-
-                const configFilename = {
-                    pdf: `Report-${ffName}-${_ff}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.pdf`,
-                    excel: `Report-${ffName}-${_ff}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.xlsx`,
-                };
-                const axiosConfig = {
-                    method: "POST",
-                    url: this.configUrl['excel'],
-                    responseType: "arraybuffer",
-                    data: {
-                        data: this.exportData,
-                        exportBy: this.exportBy,
-                        trees: trees
-                    },
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `Bearer ${this.$store.state.token}`,
-                    },
-                };
-                const exported = await axios(axiosConfig)
-                    .then((res) => {
-                        return res;
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
-
-                if (!exported) {
-                    this.loadingExportByFF = false;
-                    continue;
-                }
-
-                const url = URL.createObjectURL(new Blob([exported.data]));
-                const link = document.createElement("a");
-                link.href = url;
-
-                const filename = configFilename[this.format];
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-
-                // reset after complete download, then filled by next UM
-                this.exportData = [];
-
-                // stop the loading when the last download completed
-                if (index === this.ff_no.length - 1) {
-                    this.loadingExportByFF = false;
-                }
-            }
-
-            this.$_alert.success("Successfully");
-            this.loading = false;
+            this.loadingExportByFF = false;
             this.isOpen = false;
         },
 
@@ -1192,6 +898,8 @@ export default {
         test2(data) {
             console.log("data", data);
         },
+
+
         percentageFormat(partial, total) {
             return ((partial * 100) / total).toFixed(1);
         },
