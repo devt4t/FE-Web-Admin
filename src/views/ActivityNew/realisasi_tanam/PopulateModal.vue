@@ -856,6 +856,7 @@ export default {
                     this.$_alert.success("Successfully");
                 })
                 .catch(() => {
+                    this.$_alert.error("Terjadi kesalahan");
                 });
             this.loadingExportByTA = false;
             this.isOpen = false;
@@ -879,6 +880,7 @@ export default {
                     this.$_alert.success("Successfully");
                 })
                 .catch(() => {
+                    this.$_alert.error("Terjadi kesalahan");
                 });
 
             this.loadingExportByMU = false;
@@ -903,6 +905,7 @@ export default {
                     this.$_alert.success("Successfully");
                 })
                 .catch(() => {
+                    this.$_alert.error("Terjadi kesalahan");
                 });
 
             this.loadingExportByFF = false;
