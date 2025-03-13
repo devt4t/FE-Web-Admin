@@ -523,6 +523,16 @@ const menu = [
     icon: "mdi-truck-delivery",
     items:[
       {
+        title: "Monitoring Populate",
+        to: "/Monitoring2Populate_new",
+        component: "Monitoring/MonitoringPopulate/monitoringPopulate",
+        name: "crud-monitoring-populate",
+        update: true,
+        permission: "Monitoring",
+        icon: "mdi-calendar-multiselect",
+        type: ["non-carbon"],
+      },
+      {
         title: "Monitoring 2",
         to: "/Monitoring2_new",
         component: "Monitoring/Monitoring2",

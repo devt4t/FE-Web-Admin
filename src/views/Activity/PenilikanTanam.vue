@@ -3447,8 +3447,9 @@
             </v-btn>
           </template>
           <!-- action button -->
-          <!-- <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
             <v-btn
+              v-if="generalSettings.landProgram.model == 'Umum'"
               color="info white--text"
               rounded
               small
@@ -3477,7 +3478,7 @@
             >
               <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
             </v-btn>
-            <v-btn
+            <!-- <v-btn
               rounded
               small
               color="red white--text"
@@ -3493,9 +3494,9 @@
               @click="showUnverifModal(item)"
             >
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
-            </v-btn>
+            </v-btn> -->
             <v-btn
-              v-else-if="
+              v-if="
                 item.is_validate > 0 &&
                 generalSettings.landProgram.model == 'Umum'
               "
@@ -3517,7 +3518,7 @@
             >
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
             </v-btn>
-            <v-btn
+            <!-- <v-btn
               rounded
               small
               color="red darken-2 white--text"
@@ -3526,8 +3527,8 @@
               :disabled="deleteDisabled(item.is_validate)"
             >
               <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
-            </v-btn>
-          </v-card> -->
+            </v-btn> -->
+          </v-card>
         </v-menu>
       </template>
     </v-data-table>
@@ -3860,7 +3861,7 @@ export default {
         text: "Nomor Lahan",
         align: "start",
         value: "lahan_no",
-        sortable: false,
+        sortable: true,
         search: true,
       },
       { text: "Bibit", value: "qty_std", align: "center", sortable: false },
@@ -4471,172 +4472,164 @@ export default {
           this.dialogFormLahanUmum.inputs.adjustment.loading = true;
           var url = "";
           var auth = "";
-          if (this.generalSettings.programYear == "2023") {
-            url = `https://backend.geninelabs.live/api/custom/reportGecko?program_year=${this.generalSettings.programYear}&&ff_no=${this.dialogFormLahanUmum.inputs.selectedMouDatas.ktp_no}`;
-            auth = {
+          // if (this.generalSettings.programYear == "2023") {
+            url = `https://api-nursery.t4t-api.org/api/custom/reportGecko?program_year=${this.generalSettings.programYear}&&ff_no=${this.dialogFormLahanUmum.inputs.selectedMouDatas.ktp_no}`;
+          const res = await axios .get(url, {
               headers: {
-                Authorization:
-                  `Bearer ` +
-                  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw",
+                Authorization: `Bearer ` + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg",
               },
+            });
+          const resData = res.data.data.detail_farmers[0].detail_seed_farmers;
+          var datas = resData;
+          // datas = res.data.detail_farmers[0].detail_seed_farmers; 
+          console.log(datas);
+
+          let listLahan = this.LahanUmumOptionData.filter((val) => {
+            return val.mou_no.includes(mou_no);
+          });
+          listLahan = listLahan[0].lahanNo;
+          let listTrees = [];
+
+          await datas.forEach((adj, adjIndex) => {
+            // let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+            // if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+            const pushData = {
+              tree_code: adj.tree_code,
+              tree_category: adj.tree_category,
+              tree_name: adj.rel_tree_id,
+              total_tree_received: parseInt(adj.total_received),
+              total_tree_planted_life: 0,
+              total_tree_planted_dead: 0,
+              total_tree_unplanted_life: 0,
+              total_tree_unplanted_dead: 0,
+              lost: parseInt(adj.total_missing),
             };
-          } else {
-            url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`;
-            auth = this.$store.state.apiConfig;
-          }
-          const res = await this.$_api.get(url);
-          var datas = "";
-
-          // push data from nursery
-          if (this.generalSettings.programYear == "2023") {
-            datas = res.data.detail_farmers[0].detail_seed_farmers;
-
-            let listLahan = this.LahanUmumOptionData.filter((val) => {
-              return val.mou_no.includes(mou_no);
-            });
-            listLahan = listLahan[0].lahanNo;
-            let listTrees = [];
-
-            await datas.forEach((adj, adjIndex) => {
-              // let checkExistLahanNo = listLahan.includes(adj.lahan_no)
-              // if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
-              const pushData = {
-                tree_code: adj.tree_code,
-                tree_category: adj.tree_category,
-                tree_name: adj.rel_tree_id,
-                total_tree_received: parseInt(adj.total_received),
-                total_tree_planted_life: 0,
-                total_tree_planted_dead: 0,
-                total_tree_unplanted_life: 0,
-                total_tree_unplanted_dead: 0,
-                lost: parseInt(adj.total_missing),
-              };
-              const indexTreee = listTrees.findIndex(
-                (tr) => tr.tree_code === adj.tree_code
+            const indexTreee = listTrees.findIndex(
+              (tr) => tr.tree_code === adj.tree_code
+            );
+            if (indexTreee > -1) {
+              listTrees[indexTreee].total_tree_received += parseInt(
+                adj.total_tree_received
               );
-              if (indexTreee > -1) {
-                listTrees[indexTreee].total_tree_received += parseInt(
-                  adj.total_tree_received
-                );
-                listTrees[indexTreee].lost += parseInt(adj.total_missing);
-              } else listTrees.push(pushData);
-            });
-            this.dialogFormLahanUmum.inputs.lahan_no = await listLahan;
-            this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees;
+              listTrees[indexTreee].lost += parseInt(adj.total_missing);
+            } else listTrees.push(pushData);
+          });
+          this.dialogFormLahanUmum.inputs.lahan_no = await listLahan;
+          this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees;
 
-            if (existingData) {
-              await existingData.map((exData) => {
-                let adjIndexEx =
-                  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(
-                    (adjItems) => adjItems.tree_code == exData.tree_code
-                  );
-                if (
-                  exData.status == "sudah_ditanam" &&
-                  exData.condition == "hidup"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_planted_life += parseInt(exData.amount);
-                else if (
-                  exData.status == "sudah_ditanam" &&
-                  exData.condition == "mati"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_planted_dead += parseInt(exData.amount);
-                else if (
-                  exData.status == "belum_ditanam" &&
-                  exData.condition == "hidup"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_unplanted_life += parseInt(exData.amount);
-                else if (
-                  exData.status == "belum_ditanam" &&
-                  exData.condition == "mati"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_unplanted_dead += parseInt(exData.amount);
-              });
-              await this.updateSeedlingAdjustment();
-            }
+          if (existingData) {
+            await existingData.map((exData) => {
+              let adjIndexEx =
+                this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(
+                  (adjItems) => adjItems.tree_code == exData.tree_code
+                );
+              if (
+                exData.status == "sudah_ditanam" &&
+                exData.condition == "hidup"
+              )
+                this.dialogFormLahanUmum.inputs.adjustment.items[
+                  adjIndexEx
+                ].total_tree_planted_life += parseInt(exData.amount);
+              else if (
+                exData.status == "sudah_ditanam" &&
+                exData.condition == "mati"
+              )
+                this.dialogFormLahanUmum.inputs.adjustment.items[
+                  adjIndexEx
+                ].total_tree_planted_dead += parseInt(exData.amount);
+              else if (
+                exData.status == "belum_ditanam" &&
+                exData.condition == "hidup"
+              )
+                this.dialogFormLahanUmum.inputs.adjustment.items[
+                  adjIndexEx
+                ].total_tree_unplanted_life += parseInt(exData.amount);
+              else if (
+                exData.status == "belum_ditanam" &&
+                exData.condition == "mati"
+              )
+                this.dialogFormLahanUmum.inputs.adjustment.items[
+                  adjIndexEx
+                ].total_tree_unplanted_dead += parseInt(exData.amount);
+            });
+            await this.updateSeedlingAdjustment();
+          }
             //push data from geko
-          } else {
-            datas = res.data.result;
-            let listLahan = [];
-            let listTrees = [];
-            await datas.distributionAdjustment.forEach((adj, adjIndex) => {
-              let checkExistLahanNo = listLahan.includes(adj.lahan_no);
-              if (!checkExistLahanNo) listLahan.push(adj.lahan_no);
+          // } else {
+          //   datas = res.data.result;
+          //   let listLahan = [];
+          //   let listTrees = [];
+          //   await datas.distributionAdjustment.forEach((adj, adjIndex) => {
+          //     let checkExistLahanNo = listLahan.includes(adj.lahan_no);
+          //     if (!checkExistLahanNo) listLahan.push(adj.lahan_no);
 
-              const pushData = {
-                tree_code: adj.tree_code,
-                tree_category: adj.tree_category,
-                tree_name: adj.tree_name,
-                total_tree_received: parseInt(adj.total_tree_received),
-                total_tree_planted_life: 0,
-                total_tree_planted_dead: 0,
-                total_tree_unplanted_life: 0,
-                total_tree_unplanted_dead: 0,
-                lost: parseInt(adj.total_tree_received),
-              };
-              const indexTreee = listTrees.findIndex(
-                (tr) => tr.tree_code === adj.tree_code
-              );
-              if (indexTreee > -1) {
-                listTrees[indexTreee].total_tree_received += parseInt(
-                  adj.total_tree_received
-                );
-                listTrees[indexTreee].lost += parseInt(adj.total_tree_received);
-              } else listTrees.push(pushData);
-            });
-            this.dialogFormLahanUmum.inputs.lahan_no = await listLahan;
-            this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees;
-            if (existingData) {
-              await existingData.map((exData) => {
-                let adjIndexEx =
-                  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(
-                    (adjItems) => adjItems.tree_code == exData.tree_code
-                  );
-                if (
-                  exData.status == "sudah_ditanam" &&
-                  exData.condition == "hidup"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_planted_life += parseInt(exData.amount);
-                else if (
-                  exData.status == "sudah_ditanam" &&
-                  exData.condition == "mati"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_planted_dead += parseInt(exData.amount);
-                else if (
-                  exData.status == "belum_ditanam" &&
-                  exData.condition == "hidup"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_unplanted_life += parseInt(exData.amount);
-                else if (
-                  exData.status == "belum_ditanam" &&
-                  exData.condition == "mati"
-                )
-                  this.dialogFormLahanUmum.inputs.adjustment.items[
-                    adjIndexEx
-                  ].total_tree_unplanted_dead += parseInt(exData.amount);
-              });
-              await this.updateSeedlingAdjustment();
-            }
-          }
+          //     const pushData = {
+          //       tree_code: adj.tree_code,
+          //       tree_category: adj.tree_category,
+          //       tree_name: adj.tree_name,
+          //       total_tree_received: parseInt(adj.total_tree_received),
+          //       total_tree_planted_life: 0,
+          //       total_tree_planted_dead: 0,
+          //       total_tree_unplanted_life: 0,
+          //       total_tree_unplanted_dead: 0,
+          //       lost: parseInt(adj.total_tree_received),
+          //     };
+          //     const indexTreee = listTrees.findIndex(
+          //       (tr) => tr.tree_code === adj.tree_code
+          //     );
+          //     if (indexTreee > -1) {
+          //       listTrees[indexTreee].total_tree_received += parseInt(
+          //         adj.total_tree_received
+          //       );
+          //       listTrees[indexTreee].lost += parseInt(adj.total_tree_received);
+          //     } else listTrees.push(pushData);
+          //   });
+          //   this.dialogFormLahanUmum.inputs.lahan_no = await listLahan;
+          //   this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees;
+          //   if (existingData) {
+          //     await existingData.map((exData) => {
+          //       let adjIndexEx =
+          //         this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(
+          //           (adjItems) => adjItems.tree_code == exData.tree_code
+          //         );
+          //       if (
+          //         exData.status == "sudah_ditanam" &&
+          //         exData.condition == "hidup"
+          //       )
+          //         this.dialogFormLahanUmum.inputs.adjustment.items[
+          //           adjIndexEx
+          //         ].total_tree_planted_life += parseInt(exData.amount);
+          //       else if (
+          //         exData.status == "sudah_ditanam" &&
+          //         exData.condition == "mati"
+          //       )
+          //         this.dialogFormLahanUmum.inputs.adjustment.items[
+          //           adjIndexEx
+          //         ].total_tree_planted_dead += parseInt(exData.amount);
+          //       else if (
+          //         exData.status == "belum_ditanam" &&
+          //         exData.condition == "hidup"
+          //       )
+          //         this.dialogFormLahanUmum.inputs.adjustment.items[
+          //           adjIndexEx
+          //         ].total_tree_unplanted_life += parseInt(exData.amount);
+          //       else if (
+          //         exData.status == "belum_ditanam" &&
+          //         exData.condition == "mati"
+          //       )
+          //         this.dialogFormLahanUmum.inputs.adjustment.items[
+          //           adjIndexEx
+          //         ].total_tree_unplanted_dead += parseInt(exData.amount);
+          //     });
+          //     await this.updateSeedlingAdjustment();
+          //   }
+          // }
         } catch (err) {
           this.dialogFormLahanUmum.inputs.adjustment.items = [];
-          if (err.response == 401) {
-            localStorage.removeItem("token");
-            this.$router.push("/");
-          }
+          // if (err.response == 401) {
+          //   localStorage.removeItem("token");
+          //   this.$router.push("/");
+          // }
         } finally {
           this.dialogFormLahanUmum.inputs.adjustment.loading = false;
         }
