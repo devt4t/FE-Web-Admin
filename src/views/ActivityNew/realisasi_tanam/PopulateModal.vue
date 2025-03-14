@@ -552,7 +552,7 @@ export default {
         },
 
         async getData() {
-            this.allPopulateData = []
+            // this.allPopulateData = []
             let payload = {
                 program_year: this.$store.state.tmpProgramYear,
                 limit: 10,
