@@ -2895,7 +2895,7 @@
       :options.sync="pagination.options"
       :server-items-length="pagination.total"
       v-model="listMonitoring1Checked"
-      :show-select="populateDataSwitch"
+      :show-select="generalSettings.landProgram.model == 'Petani' ? populateDataSwitch : true"
       :page="pagination.current_page"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
@@ -3178,19 +3178,14 @@
         </v-row>
         <v-row
           class="pb-4 px-2"
-          v-if="
-            (populateDataSwitch == true &&
-              !valueTA == '' &&
-              User.role_group == 'IT') ||
-            User.role_name == 'PLANNING MANAGER'
-          "
+          v-if="(populateDataSwitch == true && !valueTA == '' && (User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER')) || generalSettings.landProgram.model == 'Umum'"
         >
           <v-col cols="12" lg="4">
             <h4>
-              Jumlah Pohon Terpilih Untuk Monitoring 2:
+              Jumlah Pohon Terpilih Untuk Monitoring:
               {{
                 listMonitoring1Checked.reduce((acc, val) => {
-                  return acc + parseInt(val.kayu_hidup + val.mpts_hidup);
+                  return acc + parseInt(val.total_hidup);
                 }, 0)
               }}
               / {{ totalDatas }}
@@ -3198,11 +3193,11 @@
           </v-col>
           <v-col cols="12" lg="4">
             <h4>
-              Persentase Pohon Terpilih Untuk Monitoring 2:
+              Persentase Pohon Terpilih Untuk Monitoring:
               {{
                 percentageFormat(
                   listMonitoring1Checked.reduce((acc, val) => {
-                    return acc + parseInt(val.kayu_hidup + val.mpts_hidup);
+                    return acc + parseInt(val.total_hidup);
                   }, 0) + total_populated,
                   totalDatas
                 )
@@ -4409,55 +4404,108 @@ export default {
     async pushPopulateData() {
       var url = "";
       var alertText = "";
-      if (this.populateModalSwitch == 0) {
-        url = "AddMonitoring1Populate";
-        alertText = "Untuk Monitoring 2?";
-      } else if (this.populateModalSwitch == 1) {
-        url = "AddMonitoring1PopulateTo2";
-        alertText = "Untuk Monitoring 3?";
-      } else if (this.populateModalSwitch == 2) {
-        url = "AddMonitoring1PopulateTo3";
-        alertText = "Untuk Monitoring 4?";
-      }
-      const confirmation = await Swal.fire({
-        title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,
-        text: "Proses Tidak Dapat Dikembalikan!",
-        icon: "warning",
-        confirmButtonColor: "#2e7d32",
-        confirmButtonText: "Okay",
-        showCancelButton: true,
-      });
-      if (confirmation.isConfirmed) {
-        const pushParams = {
-          // list_monitoring1ID: this.listMonitoring1Checked.map(val => {
-          //   return val.monitoring_no
-          // }),
-
-          list_monitoring1: this.listMonitoring1Checked,
-        };
-        console.log(url);
-
-        try {
-          const response = await this.$_api.post(url, pushParams);
-          if (response.data.result == "success") {
-            this.listMonitoring1Checked = [];
-            this.totalDatas = 0;
-            this.$router.push("populateDataMonitoring1");
-            this.initialize();
-          } else {
-            this.listMonitoring1Checked = [];
-            this.totalDatas = 0;
+      if(this.generalSettings.landProgram.model == 'Petani'){
+        if (this.populateModalSwitch == 0) {
+          url = "AddMonitoring1Populate";
+          alertText = "Untuk Monitoring 2?";
+        } else if (this.populateModalSwitch == 1) {
+          url = "AddMonitoring1PopulateTo2";
+          alertText = "Untuk Monitoring 3?";
+        } else if (this.populateModalSwitch == 2) {
+          url = "AddMonitoring1PopulateTo3";
+          alertText = "Untuk Monitoring 4?";
+        }
+        const confirmation = await Swal.fire({
+          title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: "warning",
+          confirmButtonColor: "#2e7d32",
+          confirmButtonText: "Okay",
+          showCancelButton: true,
+        });
+        if (confirmation.isConfirmed) {
+          const pushParams = {
+            // list_monitoring1ID: this.listMonitoring1Checked.map(val => {
+            //   return val.monitoring_no
+            // }),
+  
+            list_monitoring1: this.listMonitoring1Checked,
+          };
+          console.log(url);
+  
+          try {
+            const response = await this.$_api.post(url, pushParams);
+            if (response.data.result == "success") {
+              this.listMonitoring1Checked = [];
+              this.totalDatas = 0;
+              this.$router.push("populateDataMonitoring1");
+              this.initialize();
+            } else {
+              this.listMonitoring1Checked = [];
+              this.totalDatas = 0;
+              this.loadtable = false;
+            }
+          } catch (error) {
+            console.error(error.response);
             this.loadtable = false;
           }
-        } catch (error) {
-          console.error(error.response);
+  
+          this.listMonitoring1Checked = [];
+          this.totalDatas = 0;
+          this.initialize();
           this.loadtable = false;
         }
-
-        this.listMonitoring1Checked = [];
-        this.totalDatas = 0;
-        this.initialize();
-        this.loadtable = false;
+      }else if(this.generalSettings.landProgram.model == 'Umum'){
+        if (this.populateModalSwitch == 0) {
+          url = "general-land/populate-monitoring/1-to-2/create";
+          alertText = "Untuk Monitoring 2?";
+        } else if (this.populateModalSwitch == 1) {
+          url = "general-land/populate-monitoring/1-to-3";
+          alertText = "Untuk Monitoring 3?";
+        } else if (this.populateModalSwitch == 2) {
+          url = "general-land/populate-monitoring/1-to-4";
+          alertText = "Untuk Monitoring 4?";
+        }
+        const confirmation = await Swal.fire({
+          title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: "warning",
+          confirmButtonColor: "#2e7d32",
+          confirmButtonText: "Okay",
+          showCancelButton: true,
+        });
+        if (confirmation.isConfirmed) {
+          const pushParams = {
+            // list_monitoring1ID: this.listMonitoring1Checked.map(val => {
+            //   return val.monitoring_no
+            // }),
+  
+            list_monitoring1: this.listMonitoring1Checked,
+          };
+          console.log(url);
+  
+          try {
+            const response = await this.$_api.post(url, pushParams);
+            if (response.data.result == "success") {
+              this.listMonitoring1Checked = [];
+              this.totalDatas = 0;
+              this.$router.push("populateDataMonitoring1");
+              this.initialize();
+            } else {
+              this.listMonitoring1Checked = [];
+              this.totalDatas = 0;
+              this.loadtable = false;
+            }
+          } catch (error) {
+            console.error(error.response);
+            this.loadtable = false;
+          }
+  
+          this.listMonitoring1Checked = [];
+          this.totalDatas = 0;
+          this.initialize();
+          this.loadtable = false;
+        }
       }
     },
     async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
@@ -4721,10 +4769,10 @@ export default {
         await this.getTableData().then((data) => {
           this.dataobject = data.items;
           this.pagination.total = data.total;
-          if (this.generalSettings.landProgram.model == "Petani") {
+          // if (this.generalSettings.landProgram.model == "Petani") {
             this.total_populated = data.total_populated;
             this.livingTreeTotal = data.total_living_tree;
-          }
+          // }
           this.pagination.current_page = data.current_page;
           this.pagination.length_page = data.last_page;
           if (
@@ -4734,6 +4782,8 @@ export default {
             !this.valueTA == ""
           ) {
             this.totalDatas = data.total_living_tree + data.total_populated;
+          } else if(this.generalSettings.landProgram.model == 'Umum'){
+            this.totalDatas = data.total_living_tree ?? 0 + data.total_populated ?? 0;
           }
           const pageOptions = [];
           for (let index = 1; index <= data.last_page; index++) {
@@ -4798,15 +4848,19 @@ export default {
           .then((res) => {
             if (typeof res.data.result !== "undefined") {
               if (this.generalSettings.landProgram.model == "Umum") {
-                let items = res.data.result.data;
-                const total = res.data.result.total;
-                const current_page = res.data.result.current_page;
-                const last_page = res.data.result.last_page;
+                let items = res.data.result.data.data;
+                const total = res.data.result.data.total;
+                const current_page = res.data.result.data.current_page;
+                const last_page = res.data.result.data.last_page;
+                const total_living_tree = res.data.result.total_pohon_hidup;
+                const total_populated = res.data.result.total_populated;
                 resolve({
                   items,
                   total,
                   current_page,
                   last_page,
+                  total_living_tree,
+                  total_populated
                 });
               } else {
                 let items = res.data.result.datas.data;
@@ -4842,10 +4896,16 @@ export default {
     async getSearchColumn() {
       let headerItems = [];
       let searchOptions = [];
-      if (this.generalSettings.landProgram.model == "Petani")
+      if (this.generalSettings.landProgram.model == "Petani"){
         headerItems = this.headers;
-      else if (this.generalSettings.landProgram.model == "Umum")
+        this.listMonitoring1Checked = [];
+        this.totalDatas = 0;
+      }
+      else if (this.generalSettings.landProgram.model == "Umum"){
         headerItems = this.headers2;
+        this.listMonitoring1Checked = [];
+        this.totalDatas = 0;
+      }
       await headerItems.forEach((val) => {
         if (val.search == true) searchOptions.push(val);
       });

@@ -174,11 +174,11 @@
       data-aos="fade-up"
       data-aos-delay="200"
       class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
-      :headers="headers"
-      :items="dataobject"
+      :headers="plantingType.model == 'regular'? headers : lahanUmum.headers"
+      :items="plantingType.model == 'regular'? dataobject : lahanUmum.item"
       :loading="tableLoading"
       loading-text="Loading... Please wait"
-      :show-expand="true"
+      :show-expand="plantingType.model == 'regular'? true : false"
       single-expand
       @item-expanded="checkExpandenItem"
       :expanded.sync="subTable.expanded"
@@ -245,6 +245,28 @@
               rounded
               :disabled="subTable.expanded.length > 0"
               label="Modul Populasi Data"
+              class="mx-auto mx-lg-3"
+              style="max-width: 400px"
+            ></v-select>
+            <v-select
+              color="success"
+              item-color="success"
+              v-model="plantingType.model"
+              :items="plantingType.items"
+              item-text="text"
+              item-value="value"
+              outlined
+              dense
+              hide-details
+              :menu-props="{
+                bottom: true,
+                offsetY: true,
+                rounded: 'xl',
+                transition: 'slide-y-transition',
+              }"
+              rounded
+              :disabled="subTable.expanded.length > 0"
+              label="Tipe Penanaman"
               class="mx-auto mx-lg-3"
               style="max-width: 400px"
             ></v-select>
@@ -693,6 +715,25 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    lahanUmum: {
+      headers:[
+        { text: "No", value: "index" },
+        { text: "Kode Populate", value: "populate_no" },
+        { text: "Nomor Lahan", value: "lahan_no" },
+        { text: "Management Unit", value: "mu_name" },
+        { text: "Tahun Program", value: "program_year" },
+        { text: "Nama Petani", value: "farmer_name" },
+        { text: "Luas Lahan", value: "land_area" },
+        { text: "Luas Area Tanam", value: "planting_area" },
+        { text: "Pola Tanam", value: "planting_option" },
+        { text: "Nama FF", value: "ff_name" },
+        { text: "Sampling", value: "sampling" },
+        { text: "Ditugaskan Pada", value: "assigned_to_name" },
+        { text: "Status Data", value: "sts" },
+        { text: "Action", value: "actions" },
+      ],
+      item: []
+    },
     localConfig: {
       programYear: "",
     },
@@ -702,6 +743,13 @@ export default {
         { text: "Populate Untuk Monitoring 2", value: "pmo1" },
         { text: "Populate Untuk Monitoring 3", value: "pmo2" },
         { text: "Populate Untuk Monitoring 4", value: "pmo3" },
+      ],
+    },
+    plantingType: {
+      model: "regular",
+      items: [
+        { text: "Regular", value: "regular" },
+        { text: "Umum", value: "umum" },
       ],
     },
     subTable: {
@@ -757,6 +805,11 @@ export default {
         this.getPopulateTableData();
       },
     },
+    "plantingType.model": {
+      handler(val) {
+        this.getPopulateTableData();
+      },
+    },
     SearchIndex_model: {
       handler(val) {
         this.getPopulateTableData();
@@ -803,6 +856,7 @@ export default {
         );
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result;
+          // console.log(this.dataobject)
         } else {
           this.dataobject = [];
           // this.loadtable = false;
@@ -1078,7 +1132,6 @@ export default {
         );
         if (response.data.length != 0) {
           this.itemFFPerDesa = response.data.data.result;
-          console.log(this.itemFFPerDesa);
         }
       } catch (error) {
         console.error(error.response);
@@ -1148,37 +1201,62 @@ export default {
         this.subTable.tableLoading = true;
         this.subTable.populateDataObject = [];
         var url = "";
-        if (this.populateModuls.model == "pmo1") {
-          url = "GetMonitoring1PopulateByTA?";
-        } else if (this.populateModuls.model == "pmo2") {
-          url = "GetMonitoring2PopulateByTA?";
-        } else if (this.populateModuls.model == "pmo3") {
-          url = "GetMonitoring3PopulateByTA?";
-        }
-        const response = await axios.get(
-          this.BaseUrlGet +
-            url +
-            "program_year=" +
-            this.localConfig.programYear +
-            "&ta=" +
-            this.expand_key +
-            "&search_column=" +
-            this.SearchIndex_model +
-            "&search_value=" +
-            this.searchValues,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
+        console.log()
+        if(this.plantingType.model == 'regular'){
+          if (this.populateModuls.model == "pmo1") {
+            url = "GetMonitoring1PopulateByTA?";
+          } else if (this.populateModuls.model == "pmo2") {
+            url = "GetMonitoring2PopulateByTA?";
+          } else if (this.populateModuls.model == "pmo3") {
+            url = "GetMonitoring3PopulateByTA?";
           }
-        );
-        if (response.data.length != 0) {
-          this.subTable.populateDataObject = response.data.data.result;
-          this.subTable.tableLoading = false;
-        } else {
-          this.subTable.populateDataObject = [];
-          this.subTable.tableLoading = false;
-          // this.loadtable = false;
+          const response = await axios.get(
+            this.BaseUrlGet +
+              url +
+              "program_year=" +
+              this.localConfig.programYear +
+              "&ta=" +
+              this.expand_key +
+              "&search_column=" +
+              this.SearchIndex_model +
+              "&search_value=" +
+              this.searchValues,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          if (response.data.length != 0) {
+            this.subTable.populateDataObject = response.data.data.result;
+            this.subTable.tableLoading = false;
+          } else {
+            this.subTable.populateDataObject = [];
+            this.subTable.tableLoading = false;
+            // this.loadtable = false;
+          }
+        }else if(this.plantingType.model == 'umum'){
+          if (this.populateModuls.model == "pmo1") {
+            url = "general-land/populate-monitoring/1-to-2/list?";
+          } else if (this.populateModuls.model == "pmo2") {
+            url = "general-land/populate-monitoring/1-to-3/list?";
+          } else if (this.populateModuls.model == "pmo3") {
+            url = "general-land/populate-monitoring/1-to-4/list?";
+          }
+          const response = await axios.get(
+            this.BaseUrlGet +
+              url +
+              "program_year=" +
+              this.localConfig.programYear +
+              "&search_value=" +
+              this.searchValues,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            });
+          this.lahanUmum.item = response.result
+          console.log(this.lahanUmum.item)
         }
       } catch (error) {
         console.error(error);
