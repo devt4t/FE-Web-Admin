@@ -585,7 +585,7 @@
       </template>
 
       <!-- Action table -->
-      <!-- <template v-slot:item.actions="{ item }">
+      <template v-if="plantingType.model == 'umum'" v-slot:item.actions="{ item }">
         <v-menu
           rounded="xl"
           bottom
@@ -600,26 +600,145 @@
             </v-icon>
           </template>
           <v-list class="d-flex flex-column align-stretch">
-            <v-list-item v-if="User.role_name == 'PLANNING MANAGER' || User.role_name == 'IT'">
+            <v-list-item>
               <v-btn
                 dark
-                class="px-7"
                 rounded
-                @click=""
-                color="warning"
-                block
-                
+                @click="openDetailData(item)"
+                color="blue"
+                class="px-5"
               >
-              <v-icon class="mr-1" small color="white">
-                mdi-pencil
-              </v-icon>
-                Detail
+                <v-icon class="mr-1" small color="white">
+                  mdi-magnify
+                </v-icon>
+                Detail Monitoring Sebelumnya
+              </v-btn>
+            </v-list-item>
+            <v-list-item
+              v-if="item.sampling == '-' && item.assigned_to == '-'"
+            >
+              <v-btn
+                dark
+                rounded
+                @click="openUpdateModal(item)"
+                color="green"
+                :disabled="
+                  User.role_group != 'IT' &&
+                  User.role_name != 'PLANNING MANAGER' &&
+                  User.role_name != 'FIELD COORDINATOR' &&
+                  User.role_name != 'UNIT MANAGER'
+                "
+                class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-file-document-edit
+                </v-icon>
+                Lengkapi Data!
+              </v-btn>
+            </v-list-item>
+            <v-list-item
+              v-if="
+                item.sampling != '-' &&
+                item.assigned_to != '-' &&
+                item.is_monitoring == 0
+              "
+            >
+              <v-btn
+                dark
+                rounded
+                @click="pushGenerateMonitoring(item)"
+                color="green"
+                :disabled="
+                  User.role_group != 'IT' &&
+                  User.role_name != 'PLANNING MANAGER' &&
+                  User.role_name != 'FIELD COORDINATOR' &&
+                  User.role_name != 'UNIT MANAGER'
+                "
+                class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-check-bold
+                </v-icon>
+                Generate Monitoring!
+              </v-btn>
+            </v-list-item>
+
+            <v-list-item
+              v-if="
+                User.role_group == 'IT' &&
+                item.sampling != '-' &&
+                item.assigned_to != '-' &&
+                item.is_monitoring == 0
+              "
+            >
+              <v-btn
+                dark
+                rounded
+                @click="resetDataPopulate(item)"
+                color="red"
+                class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-refresh
+                </v-icon>
+                Reset Data Populasi!
+              </v-btn>
+            </v-list-item>
+
+            <v-list-item
+              v-if="
+                User.role_group == 'IT' &&
+                populateModuls.model == 'pmo1' &&
+                item.is_monitoring == 0
+              "
+            >
+              <v-btn
+                dark
+                rounded
+                @click="deleteDataPopulate(item)"
+                color="red"
+                class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-close
+                </v-icon>
+                Hapus Data Populate 1
               </v-btn>
             </v-list-item>
           </v-list>
         </v-menu>
 
-      </template> -->
+      </template>
+      <template v-if="plantingType.model == 'umum'" v-slot:item.sts="{ item }">
+        <v-chip
+          v-if="
+            item.assigned_to == '-' ||
+            (item.sampling == '-' && item.is_monitoring == 0)
+          "
+          color="red white--text"
+          class="pl-1 pr-3"
+          ><v-icon class="mr-1">mdi-close-circle</v-icon> Data Belum
+          Lengkap</v-chip
+        >
+        <v-chip
+          v-else-if="
+            item.assigned_to != '-' &&
+            item.sampling != '-' &&
+            item.is_monitoring == 0
+          "
+          color="orange white--text"
+          class="pl-1 pr-3"
+          ><v-icon class="mr-1">mdi-plus-circle-outline</v-icon> Data
+          Sudah Siap</v-chip
+        >
+        <v-chip
+          v-else-if="item.is_monitoring == 1"
+          color="green white--text"
+          class="pl-1 pr-3"
+          ><v-icon class="mr-1">mdi-check-circle-outline</v-icon> Data
+          Sudah Masuk</v-chip
+        >
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -822,7 +941,11 @@ export default {
     },
     "localConfig.programYear": {
       handler(val) {
-        this.initialize();
+        if(this.plantingType.model=='regular'){
+          this.initialize();
+        }else{
+          this.getPopulateTableData();
+        }
       },
     },
   },
@@ -990,6 +1113,7 @@ export default {
             confirmButtonColor: "#2e7d32",
             confirmButtonText: "Okay",
           });
+          this.getPopulateTableData();
         } catch (error) {
           await Swal.fire({
             title: "Gagal Melakukan Reset Data Populasi",
@@ -1254,9 +1378,13 @@ export default {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
               },
-            });
-          this.lahanUmum.item = response.result
-          console.log(this.lahanUmum.item)
+            }
+          );
+          if (response.data.length != 0) {
+            this.lahanUmum.item = response.data.result;
+          } else {
+            this.lahanUmum.item = [];
+          }
         }
       } catch (error) {
         console.error(error);

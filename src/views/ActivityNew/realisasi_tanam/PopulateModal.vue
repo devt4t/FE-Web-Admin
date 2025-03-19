@@ -38,7 +38,7 @@
                     <!-- mu_no, target_area & ff_no -->
                     <div :class="exportBy === 'ff' ? 'd-block' : 'd-none'">
                         <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
-                            <form @submit.prevent="handleSubmit(onSubmitByFF)" autocomplete="off">
+                            <form @submit.prevent="handleSubmit(onSubmit_new('ff'))" autocomplete="off">
                                 <v-row>
                                     <v-col lg="12">
                                         <geko-input v-if="ffList.length > 0" v-model="ff_no" :item="{
@@ -120,7 +120,7 @@
                     </div>
                     <div :class="exportBy === 'mu' ? 'd-block' : 'd-none'">
                         <ValidationObserver ref="secondForm" v-slot="{ handleSubmit }">
-                            <form @submit.prevent="handleSubmit(onSubmitByMU)" autocomplete="off">
+                            <form @submit.prevent="handleSubmit(onSubmit_new('mu'))" autocomplete="off">
                                 <v-row>
                                     <v-col lg="12">
                                         <geko-input v-if="muList.length > 0" v-model="mu_no" :item="{
@@ -205,7 +205,7 @@
                     </div>
                     <div :class="exportBy === 'ta' ? 'd-block' : 'd-none'">
                         <ValidationObserver ref="thirdForm" v-slot="{ handleSubmit }">
-                            <form @submit.prevent="handleSubmit(onSubmitByTA)" autocomplete="off">
+                            <form @submit.prevent="handleSubmit(onSubmit_new('ta'))" autocomplete="off">
                                 <v-row>
                                     <v-col lg="12">
                                         <geko-input v-if="taList.length > 0" v-model="target_area" :item="{
@@ -918,6 +918,37 @@ export default {
         },
         test2(data) {
             console.log("data", data);
+        },
+        async onSubmit_new(configType){
+            var configData = []
+            if(configType == 'ff') configData = this.configFF.selected
+            else if(configType == 'mu') configData = this.configMU.selected
+            else if(configType == 'ta') configData = this.configTA.selected
+            console.log(configData)
+            try {
+            
+                const creating = await this.$_api.post('populate-monitoring/1-to-2/create', {
+                    list_monitoring1: configData,
+                })
+                    .catch(() => false)
+
+                if (!creating) {
+                    throw "err"
+                }
+
+                this.$_alert.success("Berhasil Melakukan Populasi Data Monitoring!")
+                this.$emit('success', true)
+                this.configFF.selected = []
+                this.configMU.selected = []
+                this.configTA.selected = []
+                configData = []
+                }
+
+                catch (err) {
+                console.log('err', err);
+                this.loading = false
+
+                }
         },
 
 
