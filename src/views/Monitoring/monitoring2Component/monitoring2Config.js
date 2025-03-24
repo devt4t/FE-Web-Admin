@@ -134,6 +134,32 @@ export default reactive({
               },
           },
           {
+            id: "mu_no",
+            label: "Management Unit",
+            methods: {
+              filter: {
+                main: true,
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "new-utilities/management-units",
+                setter: "mu_no",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "mu_no",
+                    label: "name",
+                    display: ["name", "mu_no"],
+                  },
+                },
+              },
+            },
+          },
+          {
             id: "target_areas_name",
             label: "Target Area",
             methods: {
@@ -143,6 +169,35 @@ export default reactive({
                 update: false,
                 filter: false,
               },
+          },
+          {
+            id: "target_area",
+            label: "Target Area",
+            methods: {
+              filter: {
+                main: true,
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "new-utilities/target-areas",
+                setter: "target_area",
+                form_param: {
+                  mu_no: "mu_no",
+                },
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "area_code",
+                    label: "name",
+                    display: ["name", "area_code"],
+                  },
+                },
+              },
+            },
           },
           {
             id: "desas_name",
@@ -155,6 +210,35 @@ export default reactive({
                 filter: false,
               },
           },
+          // {
+          //   id: "village",
+          //   label: "Desa",
+          //   methods: {
+          //     filter: {
+          //       main: true,
+          //       validation: ["required"],
+          //       type: "select",
+          //       col_size: 6,
+          //       getter: "new-utilities/desas/option",
+          //       setter: "village",
+          //       form_param: {
+          //         area_code: "target_area",
+          //       },
+          //       param: {
+          //         page: 1,
+          //         per_page: 100,
+          //       },
+          //       option: {
+          //         getterKey: "data",
+          //         list_pointer: {
+          //           code: "kode_desa",
+          //           label: "name",
+          //           display: ["name", "kode_desa"],
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
           {
             id: "lahan_no",
             label: "Nomor Lahan",
