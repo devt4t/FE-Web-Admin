@@ -29,6 +29,39 @@ export default reactive({
             id: "monitoring2_no",
             label: "Nomor Monitoring",
             methods: {
+              list: false,
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "monitoring_time",
+            label: "Tanggal Monitoring",
+            methods: {
+              list: false,
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "monitoring_start",
+            label: "Tanggal Mulai Monitoring",
+            methods: {
+              list: false,
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "monitoring2_no",
+            label: "Tanggal Selesai Monitoring",
+            methods: {
               list: true,
               detail: true,
               create: false,
@@ -125,8 +158,106 @@ export default reactive({
               },
           },
           {
+            id: "opsi_pola_tanam",
+            label: "Pola Tanam",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "qty_kayu",
+            label: "Total Kayu",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "qty_mpts",
+            label: "Total MPTS",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "qty_trees",
+            label: "Total Pohon",
+            methods: {
+                list:{
+                  view_data: 'qty_trees',
+                  class: {
+                    0: "badge bg-success",
+                  },
+                },
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
             id: "land_condition",
             label: "Kondisi Lahan",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "interview",
+            label: "Komentar Interview",
+            methods: {
+                list: false,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "is_verified",
+            label: "Status Verifikasi",
+            methods: {
+              list: {
+                view_data: "is_verified",
+                class: {
+                  0: "badge bg-danger",
+                  1: "badge bg-warning",
+                  2: "badge bg-success",
+                },
+                transform: "monitoring-verification-status",
+              },
+              detail: {
+                view_data: "is_verified",
+                class: {
+                  0: "badge bg-danger",
+                  1: "badge bg-warning",
+                  2: "badge bg-success",
+                },
+                transform: "monitoring-verification-status",
+              },
+              create: false,
+              update: false,
+              filter: false
+            },
+          },
+          {
+            id: "verified_by",
+            label: "Terverifikasi Oleh",
             methods: {
                 list: true,
                 detail: true,

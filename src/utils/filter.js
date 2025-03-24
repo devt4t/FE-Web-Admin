@@ -153,6 +153,16 @@ Vue.filter("parse", (value, id) => {
         _value = "Terpopulasi";
       }
       break;
+    case "monitoring-verification-status":
+      if (value == 0) {
+        _value = "Belum / Tidak Terpopulasi";
+      } else if (value === 1) {
+        _value = "Terverifikasi FC";
+      } else if (value === 2) {
+        _value = "Terverifikasi UM";
+      }
+      
+      break;
     case "capitalize":
       _value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
       break;
