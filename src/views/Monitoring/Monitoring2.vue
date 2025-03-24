@@ -16,15 +16,14 @@
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onExportDetailExcel(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
-                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
-                <span>Export Detail Excel</span>
+                <v-icon small v-if="!exportIds.includes(item.id)">mdi-microsoft-excel</v-icon>
+                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
+
+                <span>Export Excel</span>
             </v-btn>
         </template>
         <template v-slot:list-after-filter>
-            <monitoring2-export-selection
-                :data="detailData"
-                :dataKey="detailDataKey"
-            ></monitoring2-export-selection>
+            <monitoring2-export-selection :data="detailData" :dataKey="detailDataKey"></monitoring2-export-selection>
         </template>
     </geko-base-crud>
 
@@ -56,6 +55,8 @@ export default {
             exportModal: 0,
             exportFormat: null,
             exportIds: [],
+            detailDataKey: 0,
+            detailData: [],
         };
     },
     mounted() {
@@ -65,20 +66,23 @@ export default {
     methods: {
         async onExportDetailExcel(item) {
             try {
-                if (this.exportIds.includes(item.id)) return
+                if (this.exportIds.includes(item.id)) {
+                    // console.log('item', this.exportIds.includes(item.id));
+                    return;
+                }
                 this.exportIds.push(item.id)
-                const training_data = await this.$_api.get('second-monitorings/main/detail', {
+                const monitoring_data = await this.$_api.get('second-monitorings/main/detail', {
                     id: item.id
                 })
 
-                if (training_data.result.length == 0) throw "err"
+                if (monitoring_data.result.length == 0) throw "err"
 
                 //EXPORT DATA
                 const exportEndpoint = `${this.$_config.baseUrlExport}export/monitoring2/excel`
                 const exportPayload = {
-                    data: training_data.result
+                    data: monitoring_data.result
                 }
-                const exportFilename = `Export-Monitoring2-${training_data.result.monitoring2_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+                const exportFilename = `Export-Monitoring2-${monitoring_data.result.monitoring2_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
 
                 const axiosConfig = {
                     method: "POST",
