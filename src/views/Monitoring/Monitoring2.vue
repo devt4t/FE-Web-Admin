@@ -15,17 +15,24 @@
                 ></div>
             </div>
         </template>
+
         <template v-slot:list-bottom-action="{ item }">
             <v-btn
-                variant="success"
+                variant="info"
                 small
                 class="d-flex flex-row align-items-center mt-2"
-                @click="onExportDetailExcel(item)"
+                @click="onExportDetailSelection(item)"
                 v-if="$_sys.isAllowed('field-facilitator-update')"
             >
-                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
-                <span>Export Detail Excel</span>
+                <v-icon small class="mr-1">mdi-download</v-icon>
+                <span>Export Detail</span>
             </v-btn>
+        </template>
+        <template v-slot:list-after-filter>
+            <monitoring2-export-selection
+                :data="detailData"
+                :dataKey="detailDataKey"
+            ></monitoring2-export-selection>
         </template>
     </geko-base-crud>
 
@@ -36,11 +43,13 @@ import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
 import monitoring2Config from "./monitoring2Component/monitoring2Config";
 import monitoring2Detail from "./monitoring2Detail.vue";
+import monitoring2ExportSelection from "./monitoring2Component/monitoring2ExportSelection.vue";
 
 export default {
     components: {
         LottieAnimation,
-        monitoring2Detail
+        monitoring2Detail,
+        monitoring2ExportSelection
     },
     name: "crud-monitoring2",
     watch: {},
@@ -50,8 +59,9 @@ export default {
             refreshKey: 1,
             config: monitoring2Config,
             lottie: maintenanceAnimation,
-            exportModal: 0,
-            exportFormat: null
+            
+            detailData: null,
+            detailDataKey: null,
         };
     },
     mounted() {
@@ -59,7 +69,11 @@ export default {
         this.user = user;
     },
     methods: {
-        
+        onExportDetailSelection(item){
+            this.detailData = item
+            this.detailDataKey += 1
+            console.log(this.detailData);
+        }
     },
 };
 </script>
