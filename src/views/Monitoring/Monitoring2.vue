@@ -3,6 +3,30 @@
         <template v-slot:detail-slave-raw="{ data }">
             <monitoring2-detail :data="data"></monitoring2-detail>
         </template>
+        <template v-slot:list-indicator="{ item }">
+            <div class="indicator-wrapper pt-1">
+                <div
+                class="indicator"
+                :class="{
+                    danger: item.is_verified == 0,
+                    warning: item.is_verified == 1,
+                    success: item.is_verified == 2,
+                    }"
+                ></div>
+            </div>
+        </template>
+        <template v-slot:list-bottom-action="{ item }">
+            <v-btn
+                variant="success"
+                small
+                class="d-flex flex-row align-items-center mt-2"
+                @click="onExportDetailExcel(item)"
+                v-if="$_sys.isAllowed('field-facilitator-update')"
+            >
+                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
+                <span>Export Detail Excel</span>
+            </v-btn>
+        </template>
     </geko-base-crud>
 
 </template>

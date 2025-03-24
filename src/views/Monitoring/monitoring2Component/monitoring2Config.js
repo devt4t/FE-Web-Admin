@@ -26,6 +26,15 @@ export default reactive({
     slave: [],
     fields: [
         {
+          id: "indicator",
+          label: " ",
+          methods: {
+            list: {
+              type: "row-slot",
+            },
+          },
+        },
+        {
             id: "monitoring2_no",
             label: "Nomor Monitoring",
             methods: {
