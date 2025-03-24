@@ -5,24 +5,16 @@
         </template>
         <template v-slot:list-indicator="{ item }">
             <div class="indicator-wrapper pt-1">
-                <div
-                class="indicator"
-                :class="{
+                <div class="indicator" :class="{
                     danger: item.is_verified == 0,
                     warning: item.is_verified == 1,
                     success: item.is_verified == 2,
-                    }"
-                ></div>
+                }"></div>
             </div>
         </template>
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn
-                variant="success"
-                small
-                class="d-flex flex-row align-items-center mt-2"
-                @click="onExportDetailExcel(item)"
-                v-if="$_sys.isAllowed('field-facilitator-update')"
-            >
+            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
+                @click="onExportDetailExcel(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
                 <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
                 <span>Export Detail Excel</span>
             </v-btn>
@@ -37,6 +29,8 @@ import LottieAnimation from "lottie-web-vue";
 import monitoring2Config from "./monitoring2Component/monitoring2Config";
 import monitoring2Detail from "./monitoring2Detail.vue";
 
+import moment from "moment";
+import axios from "axios";
 export default {
     components: {
         LottieAnimation,
@@ -51,7 +45,8 @@ export default {
             config: monitoring2Config,
             lottie: maintenanceAnimation,
             exportModal: 0,
-            exportFormat: null
+            exportFormat: null,
+            exportIds: [],
         };
     },
     mounted() {
@@ -59,7 +54,64 @@ export default {
         this.user = user;
     },
     methods: {
-        
+        async onExportDetailExcel(item) {
+            try {
+                if (this.exportIds.includes(item.id)) return
+                this.exportIds.push(item.id)
+                const training_data = await this.$_api.get('second-monitorings/main/detail', {
+                    id: item.id
+                })
+
+                if (training_data.result.length == 0) throw "err"
+
+                //EXPORT DATA
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/monitoring2/excel`
+                const exportPayload = {
+                    data: training_data.result
+                }
+                const exportFilename = `Export-Monitoring2-${training_data.result.monitoring2_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+
+                const axiosConfig = {
+                    method: "POST",
+                    url: exportEndpoint,
+                    responseType: "arraybuffer",
+                    data: exportPayload,
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                if (!exported) throw "ERR"
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = exportFilename;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+
+            }
+
+            catch (err) {
+                console.log('err', err);
+
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+            }
+
+        },
     },
 };
 </script>
