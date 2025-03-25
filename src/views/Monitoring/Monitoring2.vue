@@ -21,6 +21,12 @@
 
                 <span>Export Excel</span>
             </v-btn>
+            <v-btn variant="primary" small class="d-flex flex-row align-items-center mt-2"
+                @click="onExportDetailSelectiom(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
+                <v-icon small v-if="!exportIds.includes(item.id)">mdi-download</v-icon>
+                <!-- <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular> -->
+                <span>Export Detail</span>
+            </v-btn>
         </template>
         <template v-slot:list-after-filter>
             <monitoring2-export-selection :data="detailData" :dataKey="detailDataKey"></monitoring2-export-selection>
@@ -52,8 +58,6 @@ export default {
             refreshKey: 1,
             config: monitoring2Config,
             lottie: maintenanceAnimation,
-            exportModal: 0,
-            exportFormat: null,
             exportIds: [],
             detailDataKey: 0,
             detailData: [],
@@ -125,6 +129,10 @@ export default {
             }
 
         },
+        onExportDetailSelectiom(item){
+            this.detailData = item
+            this.detailDataKey += 1
+        }
     },
 };
 </script>
