@@ -898,7 +898,7 @@ export default {
             return;
 
             this.$_api
-                .get("populate-monitoring/1-to-2", {
+                .get("populate-monitoring/1-to-2/create", {
                     list_monitoring1: this.configFF.selected,
                 })
                 .then((res) => {
