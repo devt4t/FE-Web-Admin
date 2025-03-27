@@ -176,7 +176,7 @@
                                             @update:page="onChangePage" :page="configMU.page"
                                             @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
-                                                itemsPerPageOptions: [10, 25, 50, 100, 200],
+                                                itemsPerPageOptions: [10, 25, 50, 100, 200, 500, 3238],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
                                             }" :show-select="true" v-model="configMU.selected">
@@ -597,6 +597,26 @@ export default {
                 this.configMU.allPopulateData = result.result ?? [];
                 this.configMU.totalRecord = result.total ?? 0;
                 this.configMU.totalTrees = result.total_life_trees ?? 0;
+                // const lahans = [ ]
+                // let lahan = []
+                // this.configMU.selected = result.result.filter(data => {
+                //     if (lahans.includes(data.lahan_no)) {
+                //         lahan.push(data.lahan_no)
+                //         return true
+                //     } else {
+                //         return false
+                //     }
+                // })
+                // console.log(lahan.length, lahans.length)
+                // lahans.filter(data => {
+                //     if (lahan.includes(data)) {
+                //         // lahan.push(data)
+                //         return true
+                //     } else {
+                //         console.log('compare ', data)
+                //         return false
+                //     }
+                // })
             } else if (this.exportBy == 'ff') {
                 this.loadingExportByFF = false;
                 this.configFF.allPopulateData = result.result ?? [];
@@ -919,14 +939,14 @@ export default {
         test2(data) {
             console.log("data", data);
         },
-        async onSubmit_new(configType){
+        async onSubmit_new(configType) {
             var configData = []
-            if(configType == 'ff') configData = this.configFF.selected
-            else if(configType == 'mu') configData = this.configMU.selected
-            else if(configType == 'ta') configData = this.configTA.selected
+            if (configType == 'ff') configData = this.configFF.selected
+            else if (configType == 'mu') configData = this.configMU.selected
+            else if (configType == 'ta') configData = this.configTA.selected
             console.log(configData)
             try {
-            
+
                 const creating = await this.$_api.post('populate-monitoring/1-to-2/create', {
                     list_monitoring1: configData,
                 })
@@ -942,13 +962,13 @@ export default {
                 this.configMU.selected = []
                 this.configTA.selected = []
                 configData = []
-                }
+            }
 
-                catch (err) {
+            catch (err) {
                 console.log('err', err);
                 this.loading = false
 
-                }
+            }
             this.getData()
         },
 
