@@ -597,7 +597,7 @@ export default {
                 this.configMU.allPopulateData = result.result ?? [];
                 this.configMU.totalRecord = result.total ?? 0;
                 this.configMU.totalTrees = result.total_life_trees ?? 0;
-                // const lahans = [ ]
+                // const lahans = []
                 // let lahan = []
                 // this.configMU.selected = result.result.filter(data => {
                 //     if (lahans.includes(data.lahan_no)) {
