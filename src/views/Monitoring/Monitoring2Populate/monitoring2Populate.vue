@@ -1,7 +1,7 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
         <template v-slot:detail-slave-raw="{ data }">
-            <monitoring-populate-detail :data="data"></monitoring-populate-detail>
+            <monitoring2-populate-detail :data="data"></monitoring2-populate-detail>
         </template>
         <template v-slot:list-bottom-action="{ item }">
             <v-btn v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)" variant="primary" small class="d-flex flex-row align-items-center mt-2"
@@ -9,16 +9,16 @@
                 <v-icon small>mdi-pencil-plus</v-icon>
                 <span>Lengkapi Data Populasi</span>
             </v-btn>
-            <v-btn v-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" variant="warning" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn v-if="(!(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="warning" small class="d-flex flex-row align-items-center mt-2"
                 @click="OnResetAssignedData(item)">
                 <v-icon small>mdi-alert-circle</v-icon>
                 <span>Reset Data Populasi</span>
             </v-btn>
-            <v-btn v-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
+            <!-- <v-btn v-if="(!(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGenerateMonitoring(item)">
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Generate Data Monitoring!</span>
-            </v-btn>
+            </v-btn> -->
             <v-btn v-if="item.is_monitoring == 0" variant="danger" small class="d-flex flex-row align-items-center mt-2"
                 @click="onDeletePopulateData(item)">
                 <v-icon small>mdi-backspace</v-icon>
@@ -58,7 +58,7 @@
             {{ item.field_facilitators_name?? 'Belum Ditentukan!' }} ( {{ item.assigned_to?? '-' }} )
         </template>
         <template v-slot:list-after-filter>
-            <monitoring-populate-assignment-form :data="formData" :dataKey="formDataKey"></monitoring-populate-assignment-form>
+            <monitoring2-populate-assignment-form :data="formData" :dataKey="formDataKey"></monitoring2-populate-assignment-form>
         </template>
     </geko-base-crud>
 
@@ -67,23 +67,23 @@
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
-import monitoringPopulateConfig from "./monitoringPopulateConfig";
-import monitoringPopulateDetail from "./monitoringPopulateDetail.vue";
-import MonitoringPopulateAssignmentForm from "./MonitoringPopulateAssignmentForm.vue";
+import monitoring2PopulateConfig from "./Monitoring2PopulateComponent/monitoring2PopulateConfig";
+import monitoring2PopulateDetail from "./monitoring2PopulateDetail.vue";
+import Monitoring2PopulateAssignmentForm from "./Monitoring2PopulateComponent/Monitoring2PopulateAssignmentForm.vue";
 
 export default {
     components: {
         LottieAnimation,
-        monitoringPopulateDetail,
-        MonitoringPopulateAssignmentForm
+        monitoring2PopulateDetail,
+        Monitoring2PopulateAssignmentForm
     },
-    name: "crud-monitoringPopulate",
+    name: "crud-monitoring2Populate",
     watch: {},
     data() {
         return {
             user: {},
             refreshKey: 1,
-            config: monitoringPopulateConfig,
+            config: monitoring2PopulateConfig,
             lottie: maintenanceAnimation,
             formData: null,
             formDataKey: 0
@@ -102,7 +102,7 @@ export default {
         async OnResetAssignedData(item){
             const prompt = await this.$_alert.confirm('Reset Assignment Populasi?', 'Apakah anda yakin Untuk Reset Data Assignment Populasi ini?', 'Ya, Reset', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('populate-monitoring/1-to-2/reset-assignment', {id: item.id})
+                this.$_api.post('populate-monitoring/2-to-3/reset-assignment', {id: item.id})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Reset Data Assignment!')
                   this.refreshKey += 1;
@@ -113,7 +113,7 @@ export default {
             const prompt = await this.$_alert.confirm('Generate Data Populasi?', 'Harap Lakukan Dengan Teliti, Proses Ini Tidak Dapat Dikembalikan!', 'Ya, Generate!', 'Batal', true)
             if (prompt.isConfirmed) {
                 // console.log(item)
-                this.$_api.post('AddMonitoring2New', item)
+                this.$_api.post('test-api', item)
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
                   this.refreshKey += 1;
@@ -125,10 +125,10 @@ export default {
             var payload={
                 id: item.id,
                 is_monitoring: item.is_monitoring,
-                monitoring_no: item.monitoring_no
+                monitoring2_no: item.monitoring_no
             }
             if (prompt.isConfirmed) {
-                this.$_api.post('populate-monitoring/1-to-2/delete', payload)
+                this.$_api.post('populate-monitoring/2-to-3/delete', payload)
                 .then(() => {
                   this.$_alert.success('Berhasil Menghapus Data Populasi!')
                   this.refreshKey += 1;

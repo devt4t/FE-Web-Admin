@@ -1,10 +1,10 @@
 <template>
     <div>
-      <div class="d-flex align-center mb-2">
-          <p class="mb-0"><v-icon>mdi-map-marker</v-icon> Lokasi Lahan</p>
-          <v-divider class="ml-2"></v-divider>
-      </div>
-      <v-card class="rounded-xl elevation-0 overflow-hidden mb-4" style="width: 100%">
+        <v-card class="rounded-xl elevation-0 overflow-hidden mb-4" style="width: 100%">
+          <div class="d-flex align-center mb-3 mt-3 mr-3">
+              <p class="mb-0 mr-2"><v-icon>mdi-map-marker</v-icon> {{ this.title }} (Long: {{ this.long }}, Lat: {{ this.lat }})</p>
+              <v-divider class="ml-2"></v-divider>
+          </div>
         <v-card-text class="pa-0" style="position: relative;width: 100%">
             <!-- loading overlay -->
             <v-overlay v-if="maps.loading.show" absolute justify-center align-center>
@@ -21,12 +21,11 @@
             </v-overlay>
             <!-- Mapbox -->
             <div id="mapboxWrapper"
-                data-aos="fade-down"
-                class="overflow-hidden rounded-xl" style="position: relative;width: 100%"
+                class="overflow-hidden rounded-xl mb-3 ml-3 align-center justify-center" style="position: relative;width: 100%"
             >
                 <!-- map -->
                 <div :id="`LahanDetailMapboxContainer${this.section}`" :ref="this.section + 'mapbox'" :key="this.section + maps.key" 
-                    style="height: 300px;width: 100%!important" class="rounded-xl overflow-hidden"></div>
+                    style="height: 300px;width: 97%!important" class="rounded-xl overflow-hidden"></div>
             </div>
         </v-card-text>
       </v-card>
@@ -52,6 +51,10 @@ export default {
         lahanNo: {
             type: String,
             default: null
+        },
+        title: {
+            type: String,
+            default: 'Koordinat Lahan'
         }
     },
     data: () => ({
@@ -96,7 +99,7 @@ export default {
     }),
     async mounted() {
         this.maps.loading.show = true
-        this.maps.accessToken = this.$store.state.maps.accessToken
+        this.maps.accessToken = this.$_config.mapBoxApi;
         this.maps.mapStyle = this.$store.state.maps.mapStyle
         if (this.lahanNo) {
             if (this.lahanNo.length > 0) await this.initializeMapMultipleMarker(this.lahanNo)
@@ -129,7 +132,7 @@ export default {
             try {
                 const mapOptions = this.maps
                 const markerCoordinates = [this.long, this.lat]
-                mapboxgl.accessToken = mapOptions.accessToken
+                mapboxgl.accessToken = this.$_config.mapBoxApi;
                 if (!mapboxgl.supported()) {
                     Swal.fire({
                         title: 'Warning!',
@@ -184,7 +187,7 @@ export default {
                 let mapOptions = this.maps
                 let store = this.$store
                 let utils = this._utils
-                mapboxgl.accessToken = mapOptions.accessToken
+                mapboxgl.accessToken = this.$_config.mapBoxApi;
                 if (!mapboxgl.supported()) {
                     Swal.fire({
                         title: 'Warning!',

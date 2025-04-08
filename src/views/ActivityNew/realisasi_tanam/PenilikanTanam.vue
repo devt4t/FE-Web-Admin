@@ -13,7 +13,7 @@
                 :data="sostamDistributionData" />
         </template>
         <template v-slot:list-redistribution_status="{ item }">
-            <div class="d-flex flex-row min-w-100px">
+            <div v-if="item.nursery_loading_line.redistribution_status != null" class="d-flex flex-row min-w-100px">
                 <span class="badge" :class="{
                     'bg-warning': item.nursery_loading_line.redistribution_status > 0,
                     'bg-success': item.nursery_loading_line.redistribution_status == 0
