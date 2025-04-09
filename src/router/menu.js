@@ -529,7 +529,7 @@ const menu = [
         name: "crud-monitoring-populate",
         update: true,
         permission: "Monitoring",
-        icon: "mdi-calendar-multiselect",
+        icon: "magnify-expand",
         type: ["non-carbon"],
       },
       {
@@ -539,7 +539,27 @@ const menu = [
         name: "crud-monitoring2",
         update: true,
         permission: "Monitoring",
-        icon: "mdi-calendar-multiselect",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
+      {
+        title: "Monitoring 2 Populate",
+        to: "/Monitoring3Populate_new",
+        component: "Monitoring/Monitoring2Populate/monitoring2Populate",
+        name: "crud-monitoring2-populate",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
+      {
+        title: "Monitoring 3",
+        to: "/Monitoring3_new",
+        component: "Monitoring/Monitoring3/Monitoring3",
+        name: "crud-monitoring3",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
         type: ["non-carbon"],
       }
     ]

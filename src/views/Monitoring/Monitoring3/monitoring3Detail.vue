@@ -260,8 +260,8 @@ export default {
         },
         {
           text: 'Kode Monitoring',
-          key: 'monitoring2_no',
-          value: 'monitoring2_no',
+          key: 'monitoring3_no',
+          value: 'monitoring3_no',
         },
         {
           text: 'Kode Pohon',
