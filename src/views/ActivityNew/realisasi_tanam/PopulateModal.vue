@@ -176,7 +176,7 @@
                                             @update:page="onChangePage" :page="configMU.page"
                                             @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
-                                                itemsPerPageOptions: [10, 25, 50, 100, 200, 500, 3238],
+                                                itemsPerPageOptions: [10, 25, 50, 100, 200, 500, 10000],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
                                             }" :show-select="true" v-model="configMU.selected">
