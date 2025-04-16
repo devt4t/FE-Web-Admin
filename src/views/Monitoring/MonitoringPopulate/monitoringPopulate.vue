@@ -9,12 +9,12 @@
                 <v-icon small>mdi-pencil-plus</v-icon>
                 <span>Lengkapi Data Populasi</span>
             </v-btn>
-            <v-btn v-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" variant="warning" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="warning" small class="d-flex flex-row align-items-center mt-2"
                 @click="OnResetAssignedData(item)">
                 <v-icon small>mdi-alert-circle</v-icon>
                 <span>Reset Data Populasi</span>
             </v-btn>
-            <v-btn v-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGenerateMonitoring(item)">
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Generate Data Monitoring!</span>
@@ -30,7 +30,7 @@
                 <span v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)" class="badge bg-danger mr-1">
                     <v-icon size="small">mdi-close</v-icon> Belum Melakukan Assignment Data! 
                 </span>
-                <span v-else-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" class="badge bg-warning mr-1">
+                <span v-else-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" class="badge bg-warning mr-1">
                     <v-icon size="small">mdi-alert-circle</v-icon> Data Sudah Lengkap! 
                 </span>
                 <span v-else-if="item.is_monitoring == 1" class="badge bg-success mr-1">
