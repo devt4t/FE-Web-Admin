@@ -35,6 +35,11 @@
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
+            <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
+                @click="onDelete(item)" v-if="item.is_verified == 0">
+                <v-icon small>mdi-trash-can</v-icon>
+                <span>Hapus Data</span>
+            </v-btn>
             <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGeneratePopulate(item)" v-if="item.is_verified != 0 && item.is_populated == 0">
                 <v-icon small>mdi-inbox-arrow-up</v-icon>
@@ -122,6 +127,17 @@ export default {
                 this.$_api.post('monitoring2/main/unverification', {monitoring_no: item.monitoring2_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Unverifikasi Data Monitoring!')
+                  this.refreshKey += 1;
+                })
+            }
+        },
+        async onDelete(item){
+            const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti!, Proses Hapus Tidak Dapat Dikembalikan!"', 'Ya, Hapus!', 'Batal', true)
+            if (prompt.isConfirmed) {
+                // console.log(item);
+                this.$_api.post('monitoring2/main/delete', {monitoring2_no: item.monitoring2_no, is_verified: item.is_verified, populate_no: item.populate_no})
+                .then(() => {
+                  this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring!')
                   this.refreshKey += 1;
                 })
             }

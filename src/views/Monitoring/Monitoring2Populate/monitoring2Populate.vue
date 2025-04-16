@@ -14,11 +14,11 @@
                 <v-icon small>mdi-alert-circle</v-icon>
                 <span>Reset Data Populasi</span>
             </v-btn>
-            <!-- <v-btn v-if="(!(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn v-if="(!(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGenerateMonitoring(item)">
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Generate Data Monitoring!</span>
-            </v-btn> -->
+            </v-btn>
             <v-btn v-if="item.is_monitoring == 0" variant="danger" small class="d-flex flex-row align-items-center mt-2"
                 @click="onDeletePopulateData(item)">
                 <v-icon small>mdi-backspace</v-icon>
@@ -112,12 +112,12 @@ export default {
         async onGenerateMonitoring(item){
             const prompt = await this.$_alert.confirm('Generate Data Populasi?', 'Harap Lakukan Dengan Teliti, Proses Ini Tidak Dapat Dikembalikan!', 'Ya, Generate!', 'Batal', true)
             if (prompt.isConfirmed) {
-                // console.log(item)
-                this.$_api.post('test-api', item)
-                .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
-                  this.refreshKey += 1;
-                })
+                console.log(item)
+                // this.$_api.post('populate-monitoring/2-to-3/generate-monitoring', item)
+                // .then(() => {
+                //   this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
+                //   this.refreshKey += 1;
+                // })
             }
         },
         async onDeletePopulateData(item){
