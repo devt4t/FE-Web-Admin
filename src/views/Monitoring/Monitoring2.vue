@@ -9,7 +9,8 @@
                 <div class="indicator" :class="{
                     danger: item.is_verified == 0,
                     warning: item.is_verified == 1,
-                    success: item.is_verified == 2,
+                    info: item.is_verified == 2 && item.is_populated == 0,
+                    success: item.is_verified == 2 && item.is_populated == 1
                 }"></div>
             </div>
         </template>
