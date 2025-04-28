@@ -349,6 +349,36 @@ export default reactive({
             },
           },
           {
+            id: "is_populated",
+            label: "Status Populasi",
+            methods: {
+              list: {
+                transform: "status-population",
+                class: {
+                  1: "badge bg-success",
+                  0: "badge bg-danger",
+                },
+              },
+              detail: {
+                transform: "status-population",
+                class: {
+                  1: "badge bg-success",
+                  0: "badge bg-danger",
+                },
+              },
+              // filter: {
+              //   label: "Tanggal Monitoring",
+              //   validation: ["required"],
+              //   type: "daterange",
+              //   col_size: 6,
+              //   getter: "updated_at",
+              //   setter: "distribution_date",
+              //   icon: "calendar-edit",
+              //   main: true,
+              // },
+            },
+          },
+          {
             id: "verified_by",
             label: "Terverifikasi Oleh",
             methods: {
