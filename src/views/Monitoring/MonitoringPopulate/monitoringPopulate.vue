@@ -1,20 +1,27 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true"
+        @onExportExcel="onExportExcel($event)">
         <template v-slot:detail-slave-raw="{ data }">
             <monitoring-populate-detail :data="data"></monitoring-populate-detail>
         </template>
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)" variant="primary" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn
+                v-if="(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)"
+                variant="primary" small class="d-flex flex-row align-items-center mt-2"
                 @click="AssignDataPopulate(item)">
                 <v-icon small>mdi-pencil-plus</v-icon>
                 <span>Lengkapi Data Populasi</span>
             </v-btn>
-            <v-btn v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="warning" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn
+                v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0"
+                variant="warning" small class="d-flex flex-row align-items-center mt-2"
                 @click="OnResetAssignedData(item)">
                 <v-icon small>mdi-alert-circle</v-icon>
                 <span>Reset Data Populasi</span>
             </v-btn>
-            <v-btn v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" variant="success" small class="d-flex flex-row align-items-center mt-2"
+            <v-btn
+                v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0"
+                variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGenerateMonitoring(item)">
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Generate Data Monitoring!</span>
@@ -24,41 +31,55 @@
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Hapus Data Populasi</span>
             </v-btn>
+            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2" @click="onExportExcel(item)">
+                <v-icon v-if="!exportIds.includes(item.id)" small>mdi-microsoft-excel</v-icon>
+                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
+                <span>Export Excel</span>
+            </v-btn>
         </template>
         <template v-slot:list-status_data="{ item }">
-            <div class="pr-5 mr-5 d-flex flex-row" >
-                <span v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)" class="badge bg-danger mr-1">
-                    <v-icon size="small">mdi-close</v-icon> Belum Melakukan Assignment Data! 
+            <div class="pr-5 mr-5 d-flex flex-row">
+                <span
+                    v-if="(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)"
+                    class="badge bg-danger mr-1">
+                    <v-icon size="small">mdi-close</v-icon> Belum Melakukan Assignment Data!
                 </span>
-                <span v-else-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0" class="badge bg-warning mr-1">
-                    <v-icon size="small">mdi-alert-circle</v-icon> Data Sudah Lengkap! 
+                <span
+                    v-else-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0"
+                    class="badge bg-warning mr-1">
+                    <v-icon size="small">mdi-alert-circle</v-icon> Data Sudah Lengkap!
                 </span>
                 <span v-else-if="item.is_monitoring == 1" class="badge bg-success mr-1">
-                    <v-icon size="small">mdi-check</v-icon> Data Monitoring Sudah Digenerate! 
+                    <v-icon size="small">mdi-check</v-icon> Data Monitoring Sudah Digenerate!
                 </span>
             </div>
         </template>
         <template v-slot:detail-status_data="{ item }">
-            <div class="pr-5 mr-5 d-flex flex-row" >
-            <!-- <div> -->
+            <div class="pr-5 mr-5 d-flex flex-row">
+                <!-- <div> -->
                 <div>
-                    <span v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)" class="badge bg-danger mr-1">
-                        <v-icon size="small">mdi-close</v-icon> Belum Melakukan Assignment Data! 
+                    <span
+                        v-if="(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)"
+                        class="badge bg-danger mr-1">
+                        <v-icon size="small">mdi-close</v-icon> Belum Melakukan Assignment Data!
                     </span>
-                    <span v-else-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0" class="badge bg-warning mr-1">
-                        <v-icon size="small">mdi-alert-circle</v-icon> Data Sudah Lengkap! 
+                    <span
+                        v-else-if="(!item.assigned_to == '-' && !item.sampling == '-') || (!item.assigned_to == null && !item.sampling == null) && item.is_monitoring == 0"
+                        class="badge bg-warning mr-1">
+                        <v-icon size="small">mdi-alert-circle</v-icon> Data Sudah Lengkap!
                     </span>
                     <span v-else-if="item.is_monitoring == 1" class="badge bg-success mr-1">
-                        <v-icon size="small">mdi-check</v-icon> Data Monitoring Sudah Digenerate! 
+                        <v-icon size="small">mdi-check</v-icon> Data Monitoring Sudah Digenerate!
                     </span>
                 </div>
             </div>
         </template>
         <template v-slot:list-assigned_to="{ item }">
-            {{ item.field_facilitators_name?? 'Belum Ditentukan!' }} ( {{ item.assigned_to?? '-' }} )
+            {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }} ( {{ item.assigned_to ?? '-' }} )
         </template>
         <template v-slot:list-after-filter>
-            <monitoring-populate-assignment-form :data="formData" :dataKey="formDataKey"></monitoring-populate-assignment-form>
+            <monitoring-populate-assignment-form :data="formData"
+                :dataKey="formDataKey"></monitoring-populate-assignment-form>
         </template>
     </geko-base-crud>
 
@@ -86,7 +107,8 @@ export default {
             config: monitoringPopulateConfig,
             lottie: maintenanceAnimation,
             formData: null,
-            formDataKey: 0
+            formDataKey: 0,
+            exportIds: []
         };
     },
     mounted() {
@@ -94,47 +116,105 @@ export default {
         this.user = user;
     },
     methods: {
-        AssignDataPopulate(item){
+        AssignDataPopulate(item) {
             this.formData = item
             this.formDataKey += 1
             console.log(this.formData)
         },
-        async OnResetAssignedData(item){
+        async OnResetAssignedData(item) {
             const prompt = await this.$_alert.confirm('Reset Assignment Populasi?', 'Apakah anda yakin Untuk Reset Data Assignment Populasi ini?', 'Ya, Reset', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('populate-monitoring/1-to-2/reset-assignment', {id: item.id})
-                .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Reset Data Assignment!')
-                  this.refreshKey += 1;
-                })
+                this.$_api.post('populate-monitoring/1-to-2/reset-assignment', { id: item.id })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Melakukan Reset Data Assignment!')
+                        this.refreshKey += 1;
+                    })
             }
         },
-        async onGenerateMonitoring(item){
+        async onGenerateMonitoring(item) {
             const prompt = await this.$_alert.confirm('Generate Data Populasi?', 'Harap Lakukan Dengan Teliti, Proses Ini Tidak Dapat Dikembalikan!', 'Ya, Generate!', 'Batal', true)
             if (prompt.isConfirmed) {
                 // console.log(item)
                 this.$_api.post('AddMonitoring2New', item)
-                .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
-                  this.refreshKey += 1;
-                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
+                        this.refreshKey += 1;
+                    })
             }
         },
-        async onDeletePopulateData(item){
+        async onDeletePopulateData(item) {
             const prompt = await this.$_alert.confirm('Hapus Data Populasi?', 'Apakah anda yakin Menghapus Data Populasi ini?', 'Ya, Hapus', 'Batal', true)
-            var payload={
+            var payload = {
                 id: item.id,
                 is_monitoring: item.is_monitoring,
                 monitoring_no: item.monitoring_no
             }
             if (prompt.isConfirmed) {
                 this.$_api.post('populate-monitoring/1-to-2/delete', payload)
-                .then(() => {
-                  this.$_alert.success('Berhasil Menghapus Data Populasi!')
-                  this.refreshKey += 1;
-                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Menghapus Data Populasi!')
+                        this.refreshKey += 1;
+                    })
             }
-        }
+        },
+        async onExportExcel(item) { 
+            try {
+                if (this.exportIds.includes(item.id)) return
+                this.exportIds.push(item.id)
+                const training_data = await this.$_api.get('farmer-training/detail/export', {
+                    training_no: item.id
+                })
+
+                if (training_data.data.result.length == 0) throw "err"
+
+                //EXPORT DATA
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/farmer-training/excel`
+                const exportPayload = {
+                    data: training_data.data.result
+                }
+                const exportFilename = `Export-PelatihanPetani-${training_data.data.result.um_name.replace(/ /g, '')}-${training_data.data.result.desa}-${training_data.data.result.id}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+
+                const axiosConfig = {
+                    method: "POST",
+                    url: exportEndpoint,
+                    responseType: "arraybuffer",
+                    data: exportPayload,
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                if (!exported) throw "ERR"
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = exportFilename;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+
+            }
+
+            catch (err) {
+                console.log('err', err);
+
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+            }
+
+        },
     },
 };
 </script>
