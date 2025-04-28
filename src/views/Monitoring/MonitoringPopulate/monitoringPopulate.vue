@@ -1,6 +1,9 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true"
         @onExportExcel="onExportExcel($event)">
+        <template v-slot:list-before-create>
+            <export-modal :dataKey="exportModal" :format="exportFormat" :data="data" />
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <monitoring-populate-detail :data="data"></monitoring-populate-detail>
         </template>
@@ -30,12 +33,7 @@
                 @click="onDeletePopulateData(item)">
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Hapus Data Populasi</span>
-            </v-btn>
-            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2" @click="onExportExcel(item)">
-                <v-icon v-if="!exportIds.includes(item.id)" small>mdi-microsoft-excel</v-icon>
-                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
-                <span>Export Excel</span>
-            </v-btn>
+            </v-btn> 
         </template>
         <template v-slot:list-status_data="{ item }">
             <div class="pr-5 mr-5 d-flex flex-row">
@@ -91,12 +89,14 @@ import LottieAnimation from "lottie-web-vue";
 import monitoringPopulateConfig from "./monitoringPopulateConfig";
 import monitoringPopulateDetail from "./monitoringPopulateDetail.vue";
 import MonitoringPopulateAssignmentForm from "./MonitoringPopulateAssignmentForm.vue";
+import ExportModal from "./ExportModal.vue";
 
 export default {
     components: {
         LottieAnimation,
         monitoringPopulateDetail,
-        MonitoringPopulateAssignmentForm
+        MonitoringPopulateAssignmentForm,
+        ExportModal,
     },
     name: "crud-monitoringPopulate",
     watch: {},
@@ -108,7 +108,10 @@ export default {
             lottie: maintenanceAnimation,
             formData: null,
             formDataKey: 0,
-            exportIds: []
+            exportIds: [],
+            exportModal: 0,
+            exportFormat: null,
+            data: {}
         };
     },
     mounted() {
@@ -157,7 +160,7 @@ export default {
                     })
             }
         },
-        async onExportExcel(item) { 
+        async onExportExcel(item) {
             try {
                 if (this.exportIds.includes(item.id)) return
                 this.exportIds.push(item.id)
@@ -215,6 +218,16 @@ export default {
             }
 
         },
+        onExportExcel(data) {
+            this.data = data.data;
+            this.exportModal += 1;
+            this.exportFormat = "excel";
+        },
+        onExportPdf(data) {
+            this.data = data.data;
+            this.exportModal += 1;
+            this.exportFormat = "pdf";
+        }
     },
 };
 </script>
