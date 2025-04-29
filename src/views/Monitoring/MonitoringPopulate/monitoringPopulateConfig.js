@@ -180,6 +180,47 @@ export default reactive({
       },
     },
     {
+      id: "created_at",
+      label: "Tahun Input Data Populasi",
+      methods: {
+        filter: {
+          main: true,
+          type: "select",
+          col_size: 6,
+          // validation: ["required"],
+          option: {
+            default_options: [
+              {
+                name: "2021",
+                code: "2021",
+              },
+              {
+                name: "2022",
+                code: "2022",
+              },
+              {
+                name: "2023",
+                code: "2023",
+              },
+              {
+                name: "2024",
+                code: "2024",
+              },
+              {
+                name: "2025",
+                code: "2025",
+              }
+            ],
+            list_pointer: {
+              code: "code",
+              label: "name",
+              display: ["name"],
+            },
+          },
+        },
+      },
+    },
+    {
       id: "sampling",
       label: "Metode Sampling",
       methods: {
