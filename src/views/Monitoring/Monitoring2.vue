@@ -31,6 +31,11 @@
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Verifikasi UM</span>
             </v-btn>
+            <v-btn variant="info" small class="d-flex flex-row align-items-center mt-2"
+                @click="onPrintLable(item)" v-if="item.is_verified == 2">
+                <v-icon small>mdi-printer</v-icon>
+                <span>Cetak Lable Pohon Monitoring</span>
+            </v-btn>
             <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
                 @click="onUnverif(item)" v-if="item.is_verified != 0">
                 <v-icon small>mdi-backspace</v-icon>
@@ -48,7 +53,8 @@
             </v-btn>
         </template>
         <template v-slot:list-after-filter>
-            <monitoring2-export-selection :data="detailData" :dataKey="detailDataKey"></monitoring2-export-selection>
+            <monitoring2-export-selection :data="detailData" :dataKey="export_selection_key"></monitoring2-export-selection>
+            <monitoring2-print-lable :data="detailData" :dataKey="print_lable_key"></monitoring2-print-lable>
         </template>
     </geko-base-crud>
 
@@ -61,6 +67,7 @@ import monitoring2DetailMap from "@/views/Lahan/components/DetailLahanMap";
 import monitoring2Config from "./monitoring2Component/monitoring2Config";
 import monitoring2Detail from "./monitoring2Detail.vue";
 import monitoring2ExportSelection from "./monitoring2Component/monitoring2ExportSelection.vue";
+import monitoring2PrintLable from "./monitoring2Component/monitoring2PrintLable.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -69,7 +76,8 @@ export default {
         LottieAnimation,
         monitoring2DetailMap,
         monitoring2Detail,
-        monitoring2ExportSelection
+        monitoring2ExportSelection,
+        monitoring2PrintLable
     },
     name: "crud-monitoring2",
     watch: {},
@@ -81,6 +89,8 @@ export default {
             lottie: maintenanceAnimation,
             detailDataKey: 0,
             detailData: [],
+            export_selection_key: 0,
+            print_lable_key: 0
         };
     },
     mounted() {
@@ -90,7 +100,13 @@ export default {
     methods: {
         onExportDetailSelectiom(item){
             this.detailData = item
-            this.detailDataKey += 1
+            // this.detailDataKey += 1
+            this.export_selection_key += 1
+        },
+        async onPrintLable(item){
+            this.detailData = item
+            // this.detailDataKey += 1
+            this.print_lable_key += 1
         },
         async onVerifFC(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Field Coordinator?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)
@@ -153,7 +169,7 @@ export default {
                   this.refreshKey += 1;
                 })
             }
-        }
+        },
     },
 };
 </script>
