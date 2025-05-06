@@ -118,7 +118,7 @@ export default {
         url: configUrl,
         responseType: "arraybuffer",
         data: {
-          data: this.monitoring_trees_lable.selected.filter(data=> {
+          data: this.monitoring_trees_lable.selected.map(data=> {
             return {
               tree_no: data.tree_no,
               monitoring2_no: data.monitoring2_no,
