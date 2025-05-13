@@ -125,7 +125,7 @@ export default {
             const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!', true)
             if (prompt.isConfirmed) {
                 console.log(item)
-                this.$_api.post('monitoring3/main/delete', {monitoring3_no: item.monitoring3_no})
+                this.$_api.post('monitoring3/main/delete', {monitoring3_no: item.monitoring3_no, populate2_no: item.populate2_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring3!')
                   this.refreshKey += 1;
