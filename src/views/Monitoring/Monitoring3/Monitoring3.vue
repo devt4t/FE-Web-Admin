@@ -31,9 +31,19 @@
                 <span>Verifikasi UM</span>
             </v-btn>
             <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
+                @click="onDelete(item)" v-if="item.is_verified == 0">
+                <v-icon small>mdi-trash-can</v-icon>
+                <span>Hapus</span>
+            </v-btn>
+            <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
                 @click="onUnverif(item)" v-if="item.is_verified != 0">
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Unverifikasi</span>
+            </v-btn>
+            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
+                @click="onGeneratePopulate(item)" v-if="item.is_verified == 2">
+                <v-icon small>mdi-check-bold</v-icon>
+                <span>Generate Data Populate Monitoring 4</span>
             </v-btn>
         </template>
         <template v-slot:list-after-filter>
@@ -84,12 +94,7 @@ export default {
         async onVerifFC(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Field Coordinator?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                var payload = {
-                    currents_monitoring_no: item.monitoring3_no,
-                    verified_by: this.user.name
-                }
-                // console.log(item)
-                this.$_api.post('ValidateMonitoring3New', payload)
+                this.$_api.post('monitoring3/main/verification-fc', {monitoring3_no: item.monitoring3_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Verifikasi Data Fase Field Coordinator!')
                   this.refreshKey += 1;
@@ -99,12 +104,7 @@ export default {
         async onVerifUM(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Unit Manager?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                // console.log(item)
-                var payload = {
-                    currents_monitoring_no: item.monitoring3_no,
-                    verified_by: this.user.name
-                }
-                this.$_api.post('UMValidateMonitoring3', payload)
+                this.$_api.post('monitoring3/main/verification-um', {monitoring3_no: item.monitoring3_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Verifikasi Data Fase Unit Manager!')
                   this.refreshKey += 1;
@@ -114,11 +114,28 @@ export default {
         async onUnverif(item){
             const prompt = await this.$_alert.confirm('Unverifikasi Data Monitoring?', 'Harap Cek Data Dengan Teliti!, Proses Unverifikasi Akan Mengembalikan Status Data ke "Belum Terverifikasi!"', 'Ya, Unverifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('monitoring3/main/unverification', {monitoring_no: item.monitoring3_no})
+                this.$_api.post('monitoring3/main/unverification', {monitoring3_no: item.monitoring3_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Unverifikasi Data Monitoring!')
                   this.refreshKey += 1;
                 })
+            }
+        },
+        async onDelete(item){
+            const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!', true)
+            if (prompt.isConfirmed) {
+                console.log(item)
+                this.$_api.post('monitoring3/main/delete', {monitoring3_no: item.monitoring3_no})
+                .then(() => {
+                  this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring3!')
+                  this.refreshKey += 1;
+                })
+            }
+        },
+        async onGeneratePopulate(item){
+            const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 4?', 'Harap Cek Data Dengan Teliti!', true)
+            if (prompt.isConfirmed) {
+                console.log(item);
             }
         }
     },
