@@ -58,7 +58,7 @@
             {{ item.field_facilitators_name?? 'Belum Ditentukan!' }} ( {{ item.assigned_to?? '-' }} )
         </template>
         <template v-slot:list-after-filter>
-            <monitoring3-populate-assignment-form :data="formData" :dataKey="formDataKey"></monitoring3-populate-assignment-form>
+            <monitoring3-populate-assignment-form :data="formData" :dataKey="formDataKey" :refreshKey="refreshKey"></monitoring3-populate-assignment-form>
         </template>
     </geko-base-crud>
 
@@ -102,7 +102,7 @@ export default {
         async OnResetAssignedData(item){
             const prompt = await this.$_alert.confirm('Reset Assignment Populasi?', 'Apakah anda yakin Untuk Reset Data Assignment Populasi ini?', 'Ya, Reset', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('populate-monitoring/3-to-4/reset', {id: item.id})
+                this.$_api.post('populate-monitoring/3-to-4/reset', {id: item.id,populate_no: item.populate_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Reset Data Assignment!')
                   this.refreshKey += 1;
@@ -125,7 +125,7 @@ export default {
             var payload={
                 id: item.id,
                 is_monitoring: item.is_monitoring,
-                monitoring2_no: item.monitoring_no
+                monitoring3_no: item.monitoring_no
             }
             if (prompt.isConfirmed) {
                 this.$_api.post('populate-monitoring/3-to-4/delete', payload)
