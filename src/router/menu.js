@@ -561,7 +561,17 @@ const menu = [
         permission: "Monitoring",
         icon: "magnify-expand",
         type: ["non-carbon"],
-      }
+      },
+      {
+        title: "Monitoring 3 Populate",
+        to: "/Monitoring4Populate_new",
+        component: "Monitoring/Monitoring3Populate/monitoring3Populate",
+        name: "crud-monitoring3-populate",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
     ]
   },
 
