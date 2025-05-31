@@ -47,7 +47,7 @@
             </v-btn>
         </template>
         <template v-slot:list-after-filter>
-            <monitoring3-export-selection :data="detailData" :dataKey="detailDataKey"></monitoring3-export-selection>
+            <monitoring3-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-export-selection>
         </template>
     </geko-base-crud>
 
@@ -122,7 +122,7 @@ export default {
             }
         },
         async onDelete(item){
-            const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!', true)
+            const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!','Ya, Hapus!', 'Batal', true)
             if (prompt.isConfirmed) {
                 console.log(item)
                 this.$_api.post('monitoring3/main/delete', {monitoring3_no: item.monitoring3_no, populate2_no: item.populate2_no})

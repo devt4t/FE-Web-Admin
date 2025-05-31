@@ -148,7 +148,7 @@
             </div>
             </div>
 
-            <div class="absent-photo-list d-flex flex-row" v-if="true">
+            <div class="absent-photo-list d-flex flex-row" v-if="data.result.tree_detail_acumulation.length > 0">
                 <div class="absent-photo-item"
                     @click="showLightbox($_config.baseUrlUpload + '/' + data.result.tree_detail_acumulation[0].photo_dead ?? '')"
                     v-bind:style="{
@@ -194,47 +194,8 @@ export default {
     },
   },
   mounted() {
-    // this.initializeMap()
   },
   methods: {
-    // async initializeMap() {
-    //   mapboxgl.accessToken = this.$_config.mapBoxApi;
-    //   let mapLatitude = -7.024947076120682
-    //   let mapLongitude = 110.41467292861057
-    //   try {
-    //     mapLatitude = this.data.result.latitude
-    //     mapLongitude = this.data.result.longitude
-    //   }
-    //   catch (e) { console.log(e) }
-    //   this.maps = await new mapboxgl.Map({
-    //     container: 'mapContainer',
-    //     style: this.$_config.mapBoxStyle,
-    //     zoom: 12,
-    //     projection: "globe",
-    //     maxZoom: 100,
-    //     preserveDrawingBuffer: true,
-    //     center: [mapLongitude, mapLatitude],
-    //   });
-
-    //   const geolocate = new mapboxgl.GeolocateControl({
-    //     positionOptions: {
-    //       enableHighAccuracy: true,
-    //     },
-    //     trackUserLocation: true,
-    //     showUserHeading: true,
-    //   });
-    //   await this.maps.dragRotate.disable();
-    //   await this.maps.touchZoomRotate.disableRotation();
-    //   await this.maps.addControl(new mapboxgl.FullscreenControl());
-    //   await this.maps.addControl(new mapboxgl.NavigationControl());
-    //   await this.maps.addControl(geolocate);
-    //   this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
-    //     .setLngLat([mapLongitude, mapLatitude])
-    //     .addTo(this.maps);
-    //   // this.maps.on("click", (data) => {
-    //   //     this.marker.setLngLat(data.lngLat);
-    //   // });
-    // },
     progressColorFormat(val){
       if(val <= 30) return "red"
       else if (val > 30 && val <= 80) return "orange"

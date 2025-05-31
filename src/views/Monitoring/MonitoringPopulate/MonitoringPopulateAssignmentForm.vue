@@ -116,7 +116,7 @@ import { random } from 'lodash';
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Assignment Data!')
                   this.loading = false;
-                  this.$router.go(-1);
+                  this.$emit("success", true);
                 })
             }
       }
@@ -136,6 +136,7 @@ import { random } from 'lodash';
           this.sampling = 'Random';
           this.assigned_to = '';
           this.error = "";
+
         }
       },
     },
