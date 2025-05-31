@@ -32,7 +32,7 @@
                 <span>Verifikasi UM</span>
             </v-btn>
             <v-btn variant="info" small class="d-flex flex-row align-items-center mt-2"
-                @click="onPrintLable(item)" v-if="item.is_verified == 2">
+                @click="onPrintLable(item)">
                 <v-icon small>mdi-printer</v-icon>
                 <span>Cetak Lable Pohon Monitoring</span>
             </v-btn>

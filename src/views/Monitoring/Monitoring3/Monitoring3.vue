@@ -135,7 +135,12 @@ export default {
         async onGeneratePopulate(item){
             const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 4?', 'Harap Cek Data Dengan Teliti!', true)
             if (prompt.isConfirmed) {
-                console.log(item);
+                // console.log(item);
+                this.$_api.post('populate-monitoring/3-to-4/create', item)
+                .then(() => {
+                  this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 4!, Silahkan Melanjutkan Proses Monitoring 4.')
+                  this.refreshKey += 1;
+                })
             }
         }
     },

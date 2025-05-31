@@ -150,25 +150,25 @@
 
             <div class="absent-photo-list d-flex flex-row" v-if="data.result.tree_detail_acumulation.length > 0">
                 <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.tree_detail_acumulation[0].photo_dead ?? '')"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.tree_detail_acumulation[0]?.photo_dead ?? '')"
                     v-bind:style="{
                     backgroundImage:
                         'url(' +
                         $_config.baseUrlUpload +
                         '/' +
-                        data.result.tree_detail_acumulation[0].photo_dead ?? '' +
+                        data.result.tree_detail_acumulation[0]?.photo_dead ?? '' +
                         ')',
                     }">
                     <h6>Foto Pohon Mati</h6>
                 </div>
                 <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.tree_detail_acumulation[0].photo_life ?? '')"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.tree_detail_acumulation[0]?.photo_life ?? '')"
                     v-bind:style="{
                     backgroundImage:
                         'url(' +
                         $_config.baseUrlUpload +
                         '/' +
-                        data.result.tree_detail_acumulation[0].photo_life ?? '' +
+                        data.result.tree_detail_acumulation[0]?.photo_life ?? '' +
                         ')',
                     }">
                     <h6>Foto Pohon Hidup</h6>
@@ -186,7 +186,7 @@
 <script>
 
 export default {
-  name: "monitoring-detail",
+  name: "monitoring3-detail",
   props: {
     data: {
       required: true,
