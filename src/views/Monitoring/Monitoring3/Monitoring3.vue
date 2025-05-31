@@ -16,7 +16,7 @@
 
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="primary" small class="d-flex flex-row align-items-center mt-2"
-                @click="onExportDetailSelectiom(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
+                @click="onExportDetailSelection(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
                 <v-icon small>mdi-download</v-icon>
                 <span>Export Detail</span>
             </v-btn>
@@ -29,6 +29,11 @@
                 @click="onVerifUM(item)" v-if="item.is_verified == 1">
                 <v-icon small>mdi-check-all</v-icon>
                 <span>Verifikasi UM</span>
+            </v-btn>
+            <v-btn variant="info" small class="d-flex flex-row align-items-center mt-2"
+                @click="onPrintLable(item)" v-if="item.sampling == 'Tetap'">
+                <v-icon small>mdi-printer</v-icon>
+                <span>Cetak Lable Pohon Monitoring</span>
             </v-btn>
             <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
                 @click="onDelete(item)" v-if="item.is_verified == 0">
@@ -48,6 +53,7 @@
         </template>
         <template v-slot:list-after-filter>
             <monitoring3-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-export-selection>
+            <monitoring3-print-lable :data="lableData" :dataKey="lableDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-print-lable>
         </template>
     </geko-base-crud>
 
@@ -60,6 +66,7 @@ import monitoring3DetailMap from "@/views/Lahan/components/DetailLahanMap";
 import monitoring3Config from "./monitoring3Component/monitoring3Config";
 import monitoring3Detail from "./monitoring3Detail.vue";
 import monitoring3ExportSelection from "./monitoring3Component/monitoring3ExportSelection.vue";
+import monitoring3PrintLable from "./monitoring3Component/monitoring3PrintLable.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -68,7 +75,8 @@ export default {
         LottieAnimation,
         monitoring3DetailMap,
         monitoring3Detail,
-        monitoring3ExportSelection
+        monitoring3ExportSelection,
+        monitoring3PrintLable
     },
     name: "crud-monitoring3",
     watch: {},
@@ -80,6 +88,8 @@ export default {
             lottie: maintenanceAnimation,
             detailDataKey: 0,
             detailData: [],
+            lableDataKey: 0,
+            lableData: [],
         };
     },
     mounted() {
@@ -87,9 +97,13 @@ export default {
         this.user = user;
     },
     methods: {
-        onExportDetailSelectiom(item){
+        onExportDetailSelection(item){
             this.detailData = item
             this.detailDataKey += 1
+        },
+        async onPrintLable(item){
+            this.lableData = item
+            this.lableDataKey += 1
         },
         async onVerifFC(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Field Coordinator?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)

@@ -2,7 +2,7 @@
   <v-dialog v-model="isOpen" width="70%">
     <template v-slot:default="{ isActive }">
       <v-card class="mx-auto">
-        <v-card-title>Print Label Pohon Monitoring 2 ({{ data.monitoring2_no }}), Petani: {{ data.farmer_name }}, Lahan:
+        <v-card-title>Print Label Pohon Monitoring 3 ({{ data.monitoring3_no }}), Petani: {{ data.farmer_name }}, Lahan:
           {{ data.lahan_no }}</v-card-title>
         <form @submit.prevent="handleSubmit(onSubmitPrint())" autocomplete="off">
           <v-row>
@@ -27,11 +27,7 @@
             </v-col>
 
             <v-col lg="12">
-              <v-switch
-                v-model="massPrint"
-                :label="`Print Semua Data Pohon?`"
-              ></v-switch>
-              <v-data-table v-if="massPrint==false" :headers="monitoring_trees_lable.table.header" :items="monitoring_trees_lable.table.items"
+              <v-data-table :headers="monitoring_trees_lable.table.header" :items="monitoring_trees_lable.table.items"
                 :server-items-length="monitoring_trees_lable.totalRecord" :loading="monitoring_trees_lable.loading"
                 :items-per-page="monitoring_trees_lable.perPage" class="elevation-1" @update:page="onChangePage"
                 :page="monitoring_trees_lable.page" @update:items-per-page="updatePerPage" :footer-props="{
@@ -97,17 +93,15 @@ export default {
       this.GetData()
     },
     async GetData() {
-      if(this.massPrint==true) this.monitoring_trees_lable.perPage = 100000 
       var payload = {
-        'monitoring2_no': this.data.monitoring2_no,
+        'monitoring3_no': this.data.monitoring3_no,
         'limit': this.monitoring_trees_lable.perPage,
         'offset': this.monitoring_trees_lable.perPage * (this.monitoring_trees_lable.page - 1),
         'search_value': this.monitoring_trees_lable.search
       }
-      var MonitoringDetailUrl = "second-monitorings/main/print-lable";
+      var MonitoringDetailUrl = "third-monitorings/main/print-lable";
       var resMonitoringDetail = await this.$_api.get(MonitoringDetailUrl, payload);
       this.monitoring_trees_lable.table.items = resMonitoringDetail.result
-      this.monitoring_trees_lable.selected = resMonitoringDetail.result
       this.monitoring_trees_lable.totalRecord = resMonitoringDetail.total
       this.monitoring_trees_lable.totalTrees = resMonitoringDetail.total
       this.monitoring_trees_lable.loading = false
@@ -116,7 +110,7 @@ export default {
       console.log(this.data)
       const configUrl = `${this.$_config.baseUrlExport}export/label-monitoring2-populate/pdf`;
 
-      const configFilename = `monitoring2-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
+      const configFilename = `monitoring3-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
       const axiosConfig = {
         method: "POST",
         url: configUrl,
@@ -125,7 +119,7 @@ export default {
           data: this.monitoring_trees_lable.selected.map(data=> {
             return {
               tree_no: data.tree_no,
-              monitoring2_no: data.monitoring2_no,
+              monitoring3_no: data.monitoring3_no,
               tree_name: data.tree_name,
               farmer_name: data.farmer_name,
               lahan_no: data.lahan_no, 
@@ -199,7 +193,6 @@ export default {
       isOpen: false,
       loading: false,
       error: "",
-      massPrint: true,
       monitoring_trees_lable: {
         selected: [],
         totalTrees: 0,
@@ -218,10 +211,10 @@ export default {
               value: "tree_no",
             },
             {
-              key: "monitoring2_no",
+              key: "monitoring3_no",
               sortable: false,
               text: "Nomor Monitoring 2",
-              value: "monitoring2_no",
+              value: "monitoring3_no",
             },
             {
               key: "tree_name",

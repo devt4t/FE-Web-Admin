@@ -123,6 +123,28 @@ export default reactive({
               },
           },
           {
+            id: "sampling",
+            label: "Metode Sampling",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
+            id: "assigned_ff",
+            label: "FF Petugas Monitoring",
+            methods: {
+                list: true,
+                detail: true,
+                create: false,
+                update: false,
+                filter: false,
+              },
+          },
+          {
             id: "managementunits_name",
             label: "Management Unit",
             methods: {
@@ -388,6 +410,47 @@ export default reactive({
                 update: false,
                 filter: false,
               },
+          },
+          {
+            id: "created_at",
+            label: "Tahun Input Data",
+            methods: {
+              filter: {
+                main: true,
+                type: "select",
+                col_size: 6,
+                // validation: ["required"],
+                option: {
+                  default_options: [
+                    {
+                      name: "2021",
+                      code: "2021",
+                    },
+                    {
+                      name: "2022",
+                      code: "2022",
+                    },
+                    {
+                      name: "2023",
+                      code: "2023",
+                    },
+                    {
+                      name: "2024",
+                      code: "2024",
+                    },
+                    {
+                      name: "2025",
+                      code: "2025",
+                    }
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
           },
     ],
 });
