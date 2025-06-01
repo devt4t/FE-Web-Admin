@@ -2,7 +2,7 @@
     <v-dialog v-model="isOpen" width="70%">
       <template v-slot:default="{ isActive }">
         <v-card class="mx-auto">
-          <v-card-title>Export Detail Data Monitoring 3 ({{ data.monitoring2_no }}), Petani: {{ data.farmer_name}}, Lahan: {{ data.lahan_no }}</v-card-title>
+          <v-card-title>Export Detail Data Monitoring 4 ({{ data.monitoring4_no }}), Petani: {{ data.farmer_name}}, Lahan: {{ data.lahan_no }}</v-card-title>
             
                 <v-col>
                     <v-btn
@@ -53,7 +53,7 @@
       async onOpen() {
         console.log(this.data);
         var MonitoringDetailUrl =
-            `third-monitorings/main/detail?id=${this.data.id}`;
+            `fourth-monitorings/main/detail?id=${this.data.id}`;
           var resMonitoringDetail = await this.$_api.get(MonitoringDetailUrl);
           this.monitoringData = resMonitoringDetail;
       },
@@ -73,7 +73,7 @@
                 const exportPayload = {
                     data: monitoring_data.result
                 }
-                const exportFilename = `Export-Monitoring2-${monitoring_data.result.monitoring2_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+                const exportFilename = `Export-Monitoring4-${monitoring_data.result.monitoring4_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
 
                 const axiosConfig = {
                     method: "POST",
@@ -131,7 +131,7 @@
                 const exportPayload = {
                     data: monitoring_data.result
                 }
-                const exportFilename = `Export-Monitoring2-${monitoring_data.result.monitoring2_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.pdf`
+                const exportFilename = `Export-Monitoring4-${monitoring_data.result.monitoring4_no}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.pdf`
 
                 const axiosConfig = {
                     method: "POST",

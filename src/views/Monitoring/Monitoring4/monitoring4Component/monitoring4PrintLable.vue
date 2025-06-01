@@ -2,7 +2,7 @@
   <v-dialog v-model="isOpen" width="70%">
     <template v-slot:default="{ isActive }">
       <v-card class="mx-auto">
-        <v-card-title>Print Label Pohon Monitoring 3 ({{ data.monitoring3_no }}), Petani: {{ data.farmer_name }}, Lahan:
+        <v-card-title>Print Label Pohon Monitoring 4 ({{ data.monitoring4_no }}), Petani: {{ data.farmer_name }}, Lahan:
           {{ data.lahan_no }}</v-card-title>
         <form @submit.prevent="handleSubmit(onSubmitPrint())" autocomplete="off">
           <v-row>
@@ -94,12 +94,12 @@ export default {
     },
     async GetData() {
       var payload = {
-        'monitoring3_no': this.data.monitoring3_no,
+        'monitoring4_no': this.data.monitoring4_no,
         'limit': this.monitoring_trees_lable.perPage,
         'offset': this.monitoring_trees_lable.perPage * (this.monitoring_trees_lable.page - 1),
         'search_value': this.monitoring_trees_lable.search
       }
-      var MonitoringDetailUrl = "third-monitorings/main/print-lable";
+      var MonitoringDetailUrl = "fourth-monitorings/main/print-lable";
       var resMonitoringDetail = await this.$_api.get(MonitoringDetailUrl, payload);
       this.monitoring_trees_lable.table.items = resMonitoringDetail.result
       this.monitoring_trees_lable.totalRecord = resMonitoringDetail.total
@@ -110,7 +110,7 @@ export default {
       console.log(this.data)
       const configUrl = `${this.$_config.baseUrlExport}export/label-monitoring2-populate/pdf`;
 
-      const configFilename = `monitoring3-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
+      const configFilename = `monitoring4-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
       const axiosConfig = {
         method: "POST",
         url: configUrl,
@@ -119,7 +119,7 @@ export default {
           data: this.monitoring_trees_lable.selected.map(data=> {
             return {
               tree_no: data.tree_no,
-              monitoring3_no: data.monitoring3_no,
+              monitoring4_no: data.monitoring4_no,
               tree_name: data.tree_name,
               farmer_name: data.farmer_name,
               lahan_no: data.lahan_no, 
@@ -211,10 +211,10 @@ export default {
               value: "tree_no",
             },
             {
-              key: "monitoring3_no",
+              key: "monitoring4_no",
               sortable: false,
-              text: "Nomor Monitoring 3",
-              value: "monitoring3_no",
+              text: "Nomor Monitoring 4",
+              value: "monitoring4_no",
             },
             {
               key: "tree_name",

@@ -113,11 +113,11 @@ export default {
             const prompt = await this.$_alert.confirm('Generate Data Populasi?', 'Harap Lakukan Dengan Teliti, Proses Ini Tidak Dapat Dikembalikan!', 'Ya, Generate!', 'Batal', true)
             if (prompt.isConfirmed) {
                 console.log(item)
-                // this.$_api.post('populate-monitoring/3-to-4/generate-monitoring', item)
-                // .then(() => {
-                //   this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
-                //   this.refreshKey += 1;
-                // })
+                this.$_api.post('populate-monitoring/3-to-4/generate-monitoring', item)
+                .then(() => {
+                  this.$_alert.success('Berhasil Melakukan Generate Data Populasi Ke Monitoring!')
+                  this.refreshKey += 1;
+                })
             }
         },
         async onDeletePopulateData(item){

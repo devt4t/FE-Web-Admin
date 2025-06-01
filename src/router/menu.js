@@ -572,6 +572,16 @@ const menu = [
         icon: "magnify-expand",
         type: ["non-carbon"],
       },
+      {
+        title: "Monitoring 4",
+        to: "/Monitoring4_new",
+        component: "Monitoring/Monitoring4/Monitoring4",
+        name: "crud-monitoring4",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
     ]
   },
 
