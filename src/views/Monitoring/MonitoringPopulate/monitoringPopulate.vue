@@ -9,11 +9,11 @@
         </template>
         <template v-slot:list-bottom-action="{ item }">
             <v-btn
-                v-if="(item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)"
                 variant="primary" small class="d-flex flex-row align-items-center mt-2"
                 @click="AssignDataPopulate(item)">
                 <v-icon small>mdi-pencil-plus</v-icon>
-                <span>Lengkapi Data Populasi</span>
+                <span v-if="(item.assigned_to =='-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)">Lengkapi Data Populasi</span>
+                <span v-else>Edit Data Populasi</span>
             </v-btn>
             <v-btn
                 v-if="!((item.assigned_to == '-' && item.sampling == '-') || (item.assigned_to == null && item.sampling == null)) && item.is_monitoring == 0"

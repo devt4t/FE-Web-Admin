@@ -2,7 +2,13 @@
     <v-dialog v-model="isOpen" width="70%">
       <template v-slot:default="{ isActive }">
         <v-card>
-          <v-card-title>Assign Data Penugasan Monitoring {{ 1 }}Tahunan </v-card-title>
+          <v-card-title>
+            <span
+            v-if="(data.assigned_to == '-' && data.sampling == '-') || (data.assigned_to == null && data.sampling == null)">
+            Assign 
+          </span>
+          <span v-else>Edit </span>
+           &nbsp;Data Penugasan Monitoring {{ 1 }}Tahunan </v-card-title>
   
           <v-card-text class="ff-email-wrapper">
             <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
