@@ -41,7 +41,7 @@
                 <span>Hapus</span>
             </v-btn>
             <v-btn variant="danger" small class="d-flex flex-row align-items-center mt-2"
-                @click="onUnverif(item)" v-if="item.is_verified != 0">
+                @click="onUnverif(item)" v-if="item.is_verified != 0 && item.is_populated == 0">
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
