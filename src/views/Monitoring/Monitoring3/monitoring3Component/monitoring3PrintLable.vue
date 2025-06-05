@@ -237,7 +237,7 @@ export default {
               key: "village_name",
               sortable: false,
               text: "Desa",
-              value: "village_name",
+              value: "village",
             }
           ],
           items: [],
