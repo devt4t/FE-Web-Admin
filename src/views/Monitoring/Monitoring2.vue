@@ -1,5 +1,6 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true" @onExportExcel="onExportExcel($event)"
+        :onExportExcelUrl="'monitoring2/main/export-excel'" :onExportExcelFileName="'Monitoring2'">
         <template v-slot:detail-slave-raw="{ data }">
             <monitoring2-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`Monitoring2`" :title="'Koordinat Monitoring'"/>
             <monitoring2-detail :data="data"></monitoring2-detail>
@@ -13,7 +14,7 @@
                     success: item.is_verified == 2 && item.is_populated == 1
                 }"></div>
             </div>
-        </template>
+        </template> 
 
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="primary" small class="d-flex flex-row align-items-center mt-2"
@@ -52,9 +53,20 @@
                 <span>Populasi Data ke Monitoring 3</span>
             </v-btn>
         </template>
-        <template v-slot:list-after-filter>
+        <template v-slot:list-before-create>    
             <monitoring2-export-selection :data="detailData" :dataKey="export_selection_key"></monitoring2-export-selection>
             <monitoring2-print-lable :data="detailData" :dataKey="print_lable_key"></monitoring2-print-lable>
+            <monitoring2-export :dataKey="exportKey" />
+
+        </template>
+        <template v-slot:list-after-filter>
+            <!-- <div class="d-flex flex-row justify-content-start">
+                <v-btn variant="info" class="mr-2" @click="exportKey += 1">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Export Excel </span>
+                </v-btn>
+            </div> -->
+            
         </template>
     </geko-base-crud>
 
@@ -68,6 +80,7 @@ import monitoring2Config from "./monitoring2Component/monitoring2Config";
 import monitoring2Detail from "./monitoring2Detail.vue";
 import monitoring2ExportSelection from "./monitoring2Component/monitoring2ExportSelection.vue";
 import monitoring2PrintLable from "./monitoring2Component/monitoring2PrintLable.vue";
+import Monitoring2Export from "./monitoring2Component/monitoring2ExportModal.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -77,7 +90,8 @@ export default {
         monitoring2DetailMap,
         monitoring2Detail,
         monitoring2ExportSelection,
-        monitoring2PrintLable
+        monitoring2PrintLable,
+        Monitoring2Export,
     },
     name: "crud-monitoring2",
     watch: {},
@@ -90,7 +104,8 @@ export default {
             detailDataKey: 0,
             detailData: [],
             export_selection_key: 0,
-            print_lable_key: 0
+            print_lable_key: 0,
+            exportKey: 0,
         };
     },
     mounted() {
@@ -170,6 +185,9 @@ export default {
                 })
             }
         },
+        onExportExcel() {
+            
+        }
     },
 };
 </script>

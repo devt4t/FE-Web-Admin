@@ -107,7 +107,6 @@ export default {
       this.monitoring_trees_lable.loading = false
     },
     async onSubmitPrint() {
-      console.log(this.data)
       const configUrl = `${this.$_config.baseUrlExport}export/label-monitoring2-populate/pdf`;
 
       const configFilename = `monitoring3-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
@@ -123,7 +122,7 @@ export default {
               tree_name: data.tree_name,
               farmer_name: data.farmer_name,
               lahan_no: data.lahan_no, 
-              village_name: data.village_name,
+              village_name: data.village,
             }
           })
         },

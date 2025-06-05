@@ -3040,7 +3040,7 @@
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <!-- Select Search Field -->
-          <!-- <v-select
+          <v-select
             color="success"
             item-color="success"
             v-model="pagination.search.field"
@@ -3065,9 +3065,9 @@
               border-top-right-radius: 0px;
               border-bottom-right-radius: 0px;
             "
-          ></v-select> -->
+          ></v-select>
           <!-- Search Input -->
-          <!-- <v-text-field
+          <v-text-field
             v-if="pagination.search.field != 'is_validate'"
             color="success"
             item-color="success"
@@ -3084,7 +3084,7 @@
               max-width: 200px;
             "
             :loading="pagination.search.options.column_loading"
-          ></v-text-field> -->
+          ></v-text-field>
           <!-- <v-select
             v-else
             color="success"
