@@ -97,7 +97,8 @@ export default {
       this.GetData()
     },
     async GetData() {
-      if(this.massPrint==true) this.monitoring_trees_lable.perPage = 100000 
+      if(this.massPrint==true) this.monitoring_trees_lable.perPage = 100000
+      else this.monitoring_trees_lable.perPage = 10 
       var payload = {
         'monitoring2_no': this.data.monitoring2_no,
         'limit': this.monitoring_trees_lable.perPage,

@@ -27,7 +27,11 @@
             </v-col>
 
             <v-col lg="12">
-              <v-data-table :headers="monitoring_trees_lable.table.header" :items="monitoring_trees_lable.table.items"
+              <v-switch
+                v-model="massPrint"
+                :label="`Print Semua Data Pohon?`"
+              ></v-switch>
+              <v-data-table v-if="massPrint == false" :headers="monitoring_trees_lable.table.header" :items="monitoring_trees_lable.table.items"
                 :server-items-length="monitoring_trees_lable.totalRecord" :loading="monitoring_trees_lable.loading"
                 :items-per-page="monitoring_trees_lable.perPage" class="elevation-1" @update:page="onChangePage"
                 :page="monitoring_trees_lable.page" @update:items-per-page="updatePerPage" :footer-props="{
@@ -93,6 +97,8 @@ export default {
       this.GetData()
     },
     async GetData() {
+      if(this.massPrint == true)this.monitoring_trees_lable.perPage = 100000;
+      else this.monitoring_trees_lable.perPage = 10
       var payload = {
         'monitoring4_no': this.data.monitoring4_no,
         'limit': this.monitoring_trees_lable.perPage,
@@ -102,6 +108,7 @@ export default {
       var MonitoringDetailUrl = "fourth-monitorings/main/print-lable";
       var resMonitoringDetail = await this.$_api.get(MonitoringDetailUrl, payload);
       this.monitoring_trees_lable.table.items = resMonitoringDetail.result
+      this.monitoring_trees_lable.selected = resMonitoringDetail.result
       this.monitoring_trees_lable.totalRecord = resMonitoringDetail.total
       this.monitoring_trees_lable.totalTrees = resMonitoringDetail.total
       this.monitoring_trees_lable.loading = false
@@ -193,6 +200,7 @@ export default {
       isOpen: false,
       loading: false,
       error: "",
+      massPrint: false,
       monitoring_trees_lable: {
         selected: [],
         totalTrees: 0,

@@ -284,8 +284,8 @@ export default reactive({
       },
     },
     {
-      id: "qty_kayu",
-      label: "Total Kayu",
+      id: "total_detail_life_kayu",
+      label: "Total Kayu Hidup",
       methods: {
         list: true,
         detail: true,
@@ -295,8 +295,8 @@ export default reactive({
       },
     },
     {
-      id: "qty_mpts",
-      label: "Total MPTS",
+      id: "total_detail_life_mpts",
+      label: "Total MPTS Hidup",
       methods: {
         list: true,
         detail: true,
@@ -306,11 +306,11 @@ export default reactive({
       },
     },
     {
-      id: "qty_trees",
-      label: "Total Pohon",
+      id: "total_detail_life_trees",
+      label: "Total Pohon Hidup",
       methods: {
         list: {
-          view_data: 'qty_trees',
+          view_data: 'total_detail_life_trees',
           class: {
             0: "badge bg-success",
           },
