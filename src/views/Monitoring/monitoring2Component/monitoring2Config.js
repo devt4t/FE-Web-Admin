@@ -108,7 +108,26 @@ export default reactive({
         detail: true,
         create: false,
         update: false,
-        filter: false,
+        filter: {
+          main: true,
+          validation: ["required"],
+          type: "select",
+          col_size: 6,
+          getter: "GetFFAllWeb_new",
+          setter: "ff_no",
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: "data",
+            list_pointer: {
+              code: "ff_no",
+              label: "name",
+              display: ["name", "ff_no"],
+            },
+          },
+        },
       },
     },
     {

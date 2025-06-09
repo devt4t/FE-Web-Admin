@@ -341,7 +341,7 @@ export default {
                 }
 
                 this.$_api
-                    .get("monitoring/first/main/export", payload)
+                    .get("second-monitorings/main/list", payload)
                     .then((res) => {
                         return resolve(res);
                     })
@@ -724,12 +724,7 @@ export default {
                         break;
                     }
 
-                    if (
-                        !Array.isArray(result.total) ||
-                        !Array.isArray(result.trees) ||
-                        !Array.isArray(result.data) ||
-                        result.data.length == 0 && this.exportData.length == 0
-                    ) {
+                    if (result.result.length == 0) {
                         this.loadingExportByFF = false;
                         this.$_alert.error(
                             {},
@@ -739,9 +734,9 @@ export default {
                         return;
                     } else {
                         console.log(result, offset)
-                        this.exportData = [...this.exportData, ...result.data]
+                        this.exportData = [...this.exportData, ...result.result]
                         trees = result.trees;
-                        if (result.data.length < 100) break;
+                        if (result.result.length < 100) break;
                         offset += 100;
                     }
 

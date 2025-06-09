@@ -60,12 +60,12 @@
 
         </template>
         <template v-slot:list-after-filter>
-            <!-- <div class="d-flex flex-row justify-content-start">
+            <div class="d-flex flex-row justify-content-start">
                 <v-btn variant="info" class="mr-2" @click="exportKey += 1">
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel </span>
                 </v-btn>
-            </div> -->
+            </div>
             
         </template>
     </geko-base-crud>
