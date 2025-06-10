@@ -129,7 +129,7 @@ export default {
               tree_name: data.tree_name,
               farmer_name: data.farmer_name,
               lahan_no: data.lahan_no, 
-              village_name: data.village,
+              village_name: data.village_name,
             }
           })
         },
@@ -245,7 +245,7 @@ export default {
               key: "village_name",
               sortable: false,
               text: "Desa",
-              value: "village",
+              value: "village_name",
             }
           ],
           items: [],
