@@ -3,7 +3,7 @@
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-card-title>
-                    <span>Export Monitoring 2</span>
+                    <span>Export Monitoring 3</span>
                 </v-card-title>
 
                 <v-card-text class="farmer-assign-wrapper mt-3">
@@ -193,7 +193,7 @@
 import axios from "axios";
 import moment from "moment";
 export default {
-    name: "lahan-export-modal",
+    name: "export-modal",
     data() {
         return {
             ff_no: null,
@@ -341,7 +341,7 @@ export default {
                 }
 
                 this.$_api
-                    .get("second-monitorings/main/list", payload)
+                    .get("third-monitorings/main/list", payload)
                     .then((res) => {
                         return resolve(res);
                     })
@@ -779,7 +779,7 @@ export default {
                     url: this.configUrl['excel'],
                     responseType: "arraybuffer",
                     data: {
-                        moNo:2,
+                        moNo:3,
                         data: this.exportData,
                         exportBy: this.exportBy,
                         trees: trees
