@@ -105,7 +105,7 @@ export default {
         sampling: this.sampling,
         assigned_to: this.assigned_to
       }
-      console.log(payload)
+        
       const prompt = await this.$_alert.confirm('Assign Data Populasi Monitoring?', 'Pastikan Data yang Akan di Assign Sudah Benar!', 'Ya, Assign!', 'Batal', true)
       if (prompt.isConfirmed) {
         this.$_api.post('populate-monitoring/2-to-3/assignment', payload)
