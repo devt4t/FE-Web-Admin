@@ -90,6 +90,7 @@
   </template>
   
   <script>
+import { refresh } from 'aos';
 import { random } from 'lodash';
 
   export default {

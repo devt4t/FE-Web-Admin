@@ -62,7 +62,7 @@
             {{ item.field_facilitators_name?? 'Belum Ditentukan!' }} ( {{ item.assigned_to?? '-' }} )
         </template>
         <template v-slot:list-after-filter>
-            <monitoring3-populate-assignment-form :data="formData" :dataKey="formDataKey" :refreshKey="refreshKey"></monitoring3-populate-assignment-form>
+            <monitoring3-populate-assignment-form :data="formData" :dataKey="formDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-populate-assignment-form>
         </template>
     </geko-base-crud>
 
