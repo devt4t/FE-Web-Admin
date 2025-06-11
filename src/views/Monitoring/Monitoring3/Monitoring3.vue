@@ -51,9 +51,19 @@
                 <span>Generate Data Populate Monitoring 4</span>
             </v-btn>
         </template>
-        <template v-slot:list-after-filter>
+        <template v-slot:list-before-create>
             <monitoring3-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-export-selection>
             <monitoring3-print-lable :data="lableData" :dataKey="lableDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-print-lable>
+            <monitoring3-export :dataKey="exportKey" />
+        </template>
+        <template v-slot:list-after-filter>
+            <div class="d-flex flex-row justify-content-start">
+                <v-btn variant="info" class="mr-2" @click="exportKey += 1">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Export Excel </span>
+                </v-btn>
+            </div>
+            
         </template>
     </geko-base-crud>
 
@@ -67,6 +77,7 @@ import monitoring3Config from "./monitoring3Component/monitoring3Config";
 import monitoring3Detail from "./monitoring3Detail.vue";
 import monitoring3ExportSelection from "./monitoring3Component/monitoring3ExportSelection.vue";
 import monitoring3PrintLable from "./monitoring3Component/monitoring3PrintLable.vue";
+import Monitoring3Export from "./monitoring3Component/monitoring3ExportModal.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -76,7 +87,8 @@ export default {
         monitoring3DetailMap,
         monitoring3Detail,
         monitoring3ExportSelection,
-        monitoring3PrintLable
+        monitoring3PrintLable,
+        Monitoring3Export,
     },
     name: "crud-monitoring3",
     watch: {},
@@ -90,6 +102,7 @@ export default {
             detailData: [],
             lableDataKey: 0,
             lableData: [],
+            exportKey: 0,
         };
     },
     mounted() {

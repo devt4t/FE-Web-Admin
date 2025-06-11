@@ -75,6 +75,9 @@
         <template v-slot:list-assigned_to="{ item }">
             {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }} ( {{ item.assigned_to ?? '-' }} )
         </template>
+        <template v-slot:detail-assigned_to="{ item }">
+            {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }} ( {{ item.assigned_to ?? '-' }} )
+        </template>
         <template v-slot:list-after-filter>
             <monitoring-populate-assignment-form :data="formData"
                 :dataKey="formDataKey"></monitoring-populate-assignment-form>
