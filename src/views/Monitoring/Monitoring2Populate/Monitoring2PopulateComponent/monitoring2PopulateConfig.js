@@ -73,7 +73,7 @@ export default reactive({
             id: "farmer_name",
             label: "Nama Petani",
             methods: {
-                list: false,
+                list: true,
                 detail: true,
                 create: false,
                 update: false,

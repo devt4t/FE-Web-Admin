@@ -139,7 +139,7 @@ import { random } from 'lodash';
         if (t) {
         } else {
           this.loading = false;
-          this.sampling = 'Random';
+          this.sampling = 'Tetap';
           this.assigned_to = '';
           this.error = "";
 
@@ -149,7 +149,7 @@ import { random } from 'lodash';
     data() {
       return {
         isOpen: false,
-        sampling: "Random",
+        sampling: "Tetap",
         loading: false,
         assigned_to: "",
         error: "",
