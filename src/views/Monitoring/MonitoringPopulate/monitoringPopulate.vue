@@ -80,7 +80,7 @@
         </template>
         <template v-slot:list-after-filter>
             <monitoring-populate-assignment-form :data="formData"
-                :dataKey="formDataKey"></monitoring-populate-assignment-form>
+                :dataKey="formDataKey" @success="refreshKey = refreshKey + 1"></monitoring-populate-assignment-form>
         </template>
     </geko-base-crud>
 

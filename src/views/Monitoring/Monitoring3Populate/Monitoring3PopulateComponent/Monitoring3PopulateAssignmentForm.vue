@@ -94,11 +94,6 @@ export default {
       default: 0,
       type: Number,
     },
-    refreshKey: {
-      required: true,
-      default: 0,
-      type: Number,
-    },
   },
 
   methods: {
@@ -118,7 +113,7 @@ export default {
           .then(() => {
             this.$_alert.success('Berhasil Melakukan Assignment Data!')
             this.loading = false;
-            this.refreshKey += 1;
+            this.$emit("success", true);
             // this.$router.go(-1);
           })
       }
