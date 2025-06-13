@@ -30,6 +30,7 @@
               <v-switch
                 v-model="massPrint"
                 :label="`Print Semua Data Pohon?`"
+                @change="onMassPrintSwitch"
               ></v-switch>
               <v-data-table v-if="massPrint == false" :headers="monitoring_trees_lable.table.header" :items="monitoring_trees_lable.table.items"
                 :server-items-length="monitoring_trees_lable.totalRecord" :loading="monitoring_trees_lable.loading"
@@ -96,13 +97,24 @@ export default {
       this.monitoring_trees_lable.table.items = []
       this.GetData()
     },
+    onMassPrintSwitch(){
+      this.GetData()
+    },
     async GetData() {
-      if(this.massPrint == true)this.monitoring_trees_lable.perPage = 100000;
-      else this.monitoring_trees_lable.perPage = 10
+      var limit = 10;
+      var offset = 0;
+      if(this.massPrint == true){
+        limit = 100000 
+        offset = 0
+      }
+      else {
+        limit = this.monitoring_trees_lable.perPage
+        offset = (this.monitoring_trees_lable.page - 1)*limit
+      }
       var payload = {
         'monitoring4_no': this.data.monitoring4_no,
-        'limit': this.monitoring_trees_lable.perPage,
-        'offset': this.monitoring_trees_lable.perPage * (this.monitoring_trees_lable.page - 1),
+        'limit': limit,
+        'offset': offset,
         'search_value': this.monitoring_trees_lable.search
       }
       var MonitoringDetailUrl = "fourth-monitorings/main/print-lable";
