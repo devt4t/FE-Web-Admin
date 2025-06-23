@@ -117,7 +117,7 @@ export default {
         'offset': offset,
         'search_value': this.monitoring_trees_lable.search
       }
-      var MonitoringDetailUrl = "fourth-monitorings/main/print-lable";
+      var MonitoringDetailUrl = "fifth-monitorings/main/print-lable";
       var resMonitoringDetail = await this.$_api.get(MonitoringDetailUrl, payload);
       this.monitoring_trees_lable.table.items = resMonitoringDetail.result
       this.monitoring_trees_lable.selected = resMonitoringDetail.result

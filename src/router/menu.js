@@ -582,6 +582,26 @@ const menu = [
         icon: "magnify-expand",
         type: ["non-carbon"],
       },
+      {
+        title: "Monitoring 4 Populate",
+        to: "/Monitoring5Populate_new",
+        component: "Monitoring/Monitoring4Populate/monitoring4Populate",
+        name: "crud-monitoring4-populate",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
+      {
+        title: "Monitoring 5",
+        to: "/Monitoring5_new",
+        component: "Monitoring/Monitoring5/Monitoring5",
+        name: "crud-monitoring5",
+        update: true,
+        permission: "Monitoring",
+        icon: "magnify-expand",
+        type: ["non-carbon"],
+      },
     ]
   },
 
