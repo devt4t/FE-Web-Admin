@@ -786,10 +786,19 @@ const menu = [
     icon: "mdi-account",
     items: [
       {
-        title: "Users",
+        title: "Users Old",
         to: "/Users",
         component: "Users/Users",
         name: "Users",
+        permission: "Users",
+        icon: "mdi-account",
+      },
+      {
+        title: "Users",
+        to: "/Users-V2",
+        component: "Users/users_new",
+        name: "UsersV2",
+        update: true,
         permission: "Users",
         icon: "mdi-account",
       },

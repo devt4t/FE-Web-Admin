@@ -2,7 +2,7 @@
   <v-dialog v-model="isOpen" width="70%">
     <template v-slot:default="{ isActive }">
       <v-card class="mx-auto">
-        <v-card-title>Print Label Pohon Monitoring 4 ({{ data.monitoring4_no }}), Petani: {{ data.farmer_name }}, Lahan:
+        <v-card-title>Print Label Pohon Monitoring 5 ({{ data.monitoring5_no }}), Petani: {{ data.farmer_name }}, Lahan:
           {{ data.lahan_no }}</v-card-title>
         <form @submit.prevent="handleSubmit(onSubmitPrint())" autocomplete="off">
           <v-row>
@@ -112,7 +112,7 @@ export default {
         offset = (this.monitoring_trees_lable.page - 1)*limit
       }
       var payload = {
-        'monitoring4_no': this.data.monitoring4_no,
+        'monitoring5_no': this.data.monitoring5_no,
         'limit': limit,
         'offset': offset,
         'search_value': this.monitoring_trees_lable.search
@@ -129,7 +129,7 @@ export default {
       console.log(this.data)
       const configUrl = `${this.$_config.baseUrlExport}export/label-monitoring2-populate/pdf`;
 
-      const configFilename = `monitoring4-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
+      const configFilename = `monitoring5-lable-${this.data.managementunits_name}-${this.data.lahan_no}-ff_${this.data.field_facilitators_name}-farmer_${this.data.farmers_name}-${moment().format("DMMYYYYHHmmss")}.pdf`;
       const axiosConfig = {
         method: "POST",
         url: configUrl,
@@ -138,7 +138,7 @@ export default {
           data: this.monitoring_trees_lable.selected.map(data=> {
             return {
               tree_no: data.tree_no,
-              monitoring4_no: data.monitoring4_no,
+              monitoring5_no: data.monitoring5_no,
               tree_name: data.tree_name,
               farmer_name: data.farmer_name,
               lahan_no: data.lahan_no, 
@@ -171,7 +171,6 @@ export default {
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
-      this.$emit("success", true);
     },
     percentageFormat(partial, total) {
       return ((partial * 100) / total).toFixed(1);
@@ -232,10 +231,10 @@ export default {
               value: "tree_no",
             },
             {
-              key: "monitoring4_no",
+              key: "monitoring5_no",
               sortable: false,
-              text: "Nomor Monitoring 4",
-              value: "monitoring4_no",
+              text: "Nomor Monitoring 5",
+              value: "monitoring5_no",
             },
             {
               key: "tree_name",

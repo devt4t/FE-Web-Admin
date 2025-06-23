@@ -1,8 +1,8 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
         <template v-slot:detail-slave-raw="{ data }">
-            <monitoring4-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`Monitoring4`" :title="'Koordinat Monitoring'"/>
-            <monitoring4-detail :data="data"></monitoring4-detail>
+            <monitoring5-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`Monitoring5`" :title="'Koordinat Monitoring'"/>
+            <monitoring5-detail :data="data"></monitoring5-detail>
         </template>
         <template v-slot:list-indicator="{ item }">
             <div class="indicator-wrapper pt-1">
@@ -45,16 +45,16 @@
                 <v-icon small>mdi-backspace</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
+            <!-- <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGeneratePopulate(item)" v-if="item.is_verified == 2">
                 <v-icon small>mdi-check-bold</v-icon>
-                <span>Generate Data Populate Monitoring 4</span>
-            </v-btn>
+                <span>Generate Data Populate Monitoring 5</span>
+            </v-btn> -->
         </template>
         <template v-slot:list-before-create>
-            <monitoring4-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring4-export-selection>
-            <monitoring4-print-lable :data="lableData" :dataKey="lableDataKey" @success="refreshKey = refreshKey + 1"></monitoring4-print-lable>
-            <monitoring4-export :dataKey="exportKey" />
+            <monitoring5-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring5-export-selection>
+            <monitoring5-print-lable :data="lableData" :dataKey="lableDataKey" @success="refreshKey = refreshKey + 1"></monitoring5-print-lable>
+            <monitoring5-export :dataKey="exportKey" />
         </template>
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-start">
@@ -72,31 +72,31 @@
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
-import monitoring4DetailMap from "@/views/Lahan/components/DetailLahanMap";
-import monitoring4Config from "./monitoring4Component/monitoring4Config";
-import monitoring4Detail from "./monitoring4Detail.vue";
-import monitoring4ExportSelection from "./monitoring4Component/monitoring4ExportSelection.vue";
-import monitoring4PrintLable from "./monitoring4Component/monitoring4PrintLable.vue";
-import Monitoring4Export from "./monitoring4Component/monitoring4ExportModal.vue";
+import monitoring5DetailMap from "@/views/Lahan/components/DetailLahanMap";
+import monitoring5Config from "./monitoring5Component/monitoring5Config";
+import monitoring5Detail from "./monitoring5Detail.vue";
+import monitoring5ExportSelection from "./monitoring5Component/monitoring5ExportSelection.vue";
+import monitoring5PrintLable from "./monitoring5Component/monitoring5PrintLable.vue";
+import Monitoring5Export from "./monitoring5Component/monitoring5ExportModal.vue";
 
 import moment from "moment";
 import axios from "axios";
 export default {
     components: {
         LottieAnimation,
-        monitoring4DetailMap,
-        monitoring4Detail,
-        monitoring4ExportSelection,
-        monitoring4PrintLable,
-        Monitoring4Export,
+        monitoring5DetailMap,
+        monitoring5Detail,
+        monitoring5ExportSelection,
+        monitoring5PrintLable,
+        Monitoring5Export,
     },
-    name: "crud-monitoring4",
+    name: "crud-monitoring5",
     watch: {},
     data() {
         return {
             user: {},
             refreshKey: 1,
-            config: monitoring4Config,
+            config: monitoring5Config,
             lottie: maintenanceAnimation,
             detailDataKey: 0,
             detailData: [],
@@ -121,7 +121,7 @@ export default {
         async onVerifFC(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Field Coordinator?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('fourth-monitorings/main/verification-fc', {monitoring4_no: item.monitoring4_no})
+                this.$_api.post('fifth-monitorings/main/verification-fc', {monitoring5_no: item.monitoring5_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Verifikasi Data Fase Field Coordinator!')
                   this.refreshKey += 1;
@@ -131,7 +131,7 @@ export default {
         async onVerifUM(item){
             const prompt = await this.$_alert.confirm('Verifikasi Data Fase Unit Manager?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Verifikasi!', 'Ya, Verifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('fourth-monitorings/main/verification-um', {monitoring4_no: item.monitoring4_no})
+                this.$_api.post('fifth-monitorings/main/verification-um', {monitoring5_no: item.monitoring5_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Verifikasi Data Fase Unit Manager!')
                   this.refreshKey += 1;
@@ -141,7 +141,7 @@ export default {
         async onUnverif(item){
             const prompt = await this.$_alert.confirm('Unverifikasi Data Monitoring?', 'Harap Cek Data Dengan Teliti!, Proses Unverifikasi Akan Mengembalikan Status Data ke "Belum Terverifikasi!"', 'Ya, Unverifikasi!', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('fourth-monitorings/main/unverification', {monitoring4_no: item.monitoring4_no})
+                this.$_api.post('fifth-monitorings/main/unverification', {monitoring5_no: item.monitoring5_no})
                 .then(() => {
                   this.$_alert.success('Berhasil Melakukan Unverifikasi Data Monitoring!')
                   this.refreshKey += 1;
@@ -152,24 +152,24 @@ export default {
             const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!','Ya, Hapus!', 'Batal', true)
             if (prompt.isConfirmed) {
                 console.log(item)
-                this.$_api.post('fourth-monitorings/main/delete', {monitoring4_no: item.monitoring4_no, populate3_no: item.populate3_no})
+                this.$_api.post('fifth-monitorings/main/delete', {monitoring4_no: item.monitoring4_no, populate3_no: item.populate3_no})
                 .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring4!')
+                  this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring5!')
                   this.refreshKey += 1;
                 })
             }
         },
-        async onGeneratePopulate(item){
-            const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 5?', 'Harap Cek Data Dengan Teliti!', true)
-            if (prompt.isConfirmed) {
-                // console.log(item);
-                this.$_api.post('populate-monitoring/4-to-5/create', item)
-                .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 5!, Silahkan Melanjutkan Proses Monitoring 5.')
-                  this.refreshKey += 1;
-                })
-            }
-        }
+        // async onGeneratePopulate(item){
+        //     const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 4?', 'Harap Cek Data Dengan Teliti!', true)
+        //     if (prompt.isConfirmed) {
+        //         // console.log(item);
+        //         this.$_api.post('populate-monitoring/3-to-4/create', item)
+        //         .then(() => {
+        //           this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 4!, Silahkan Melanjutkan Proses Monitoring 4.')
+        //           this.refreshKey += 1;
+        //         })
+        //     }
+        // }
     },
 };
 </script>

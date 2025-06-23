@@ -2,11 +2,11 @@ import { reactive } from "vue"
 
 export default reactive({
   // export: true,
-  title: "Monitoring 3",
-  getter: "third-monitorings/main/list",
+  title: "Monitoring 5",
+  getter: "fifth-monitorings/main/list",
   getterDataKey: "result",
   totalDataKey: 'total',
-  detail: "third-monitorings/main/detail",
+  detail: "fifth-monitorings/main/detail",
   detailIdKey: "id",
   detailKey: "result",
   pk_field: null,
@@ -35,8 +35,30 @@ export default reactive({
       },
     },
     {
-      id: "monitoring3_no",
+      id: "monitoring5_no",
       label: "Nomor Monitoring",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
+      id: "last_monitoring",
+      label: "Nomor Monitoring Sebelumnya",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
+      id: "populate4_no",
+      label: "Kode Populasi",
       methods: {
         list: true,
         detail: true,
@@ -61,17 +83,6 @@ export default reactive({
       label: "Tanggal Monitoring",
       methods: {
         list: false,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false,
-      },
-    },
-    {
-      id: "last_monitoring",
-      label: "Nomor Monitoring Sebelumnya",
-      methods: {
-        list: true,
         detail: true,
         create: false,
         update: false,
@@ -142,7 +153,7 @@ export default reactive({
       },
     },
     {
-      id: "assign_to",
+      id: "assigned_ff",
       label: "FF Petugas Monitoring",
       methods: {
         list: true,
@@ -293,7 +304,7 @@ export default reactive({
     },
     {
       id: "total_detail_life_kayu",
-      label: "Total Kayu Hidup",
+      label: "Total Kayu",
       methods: {
         list: true,
         detail: true,
@@ -304,7 +315,7 @@ export default reactive({
     },
     {
       id: "total_detail_life_mpts",
-      label: "Total MPTS Hidup",
+      label: "Total MPTS",
       methods: {
         list: true,
         detail: true,
@@ -315,7 +326,7 @@ export default reactive({
     },
     {
       id: "total_detail_life_trees",
-      label: "Total Pohon Hidup",
+      label: "Total Pohon",
       methods: {
         list: {
           view_data: 'total_detail_life_trees',
@@ -397,7 +408,6 @@ export default reactive({
           main: true,
           type: "select",
           col_size: 6,
-          // validation: ["required"],
           option: {
             default_options: [
               {

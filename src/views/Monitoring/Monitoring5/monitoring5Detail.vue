@@ -31,28 +31,39 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-1">
+          <v-data-table :headers="DetailPerSeeds.header" :items="DetailPerSeeds.items" :search="''" class="rounded-xl elevation- pa-1 px-5"
+            :footer-props="{
+              showCurrentPage: false,
+              showFirstLastPage: false,
+            }">
+            
+            <template v-slot:top>
+              <div class="list-header py-3 mt-1">
+                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                  <h4>Detail Pohon Per-Jenis
+                  </h4>
+                  </div>
+                  <div class="d-flex flex-row geko-list-header-action">
+                  <div class="geko-list-header-toolbar"></div>
+                  </div>
+              </div>
+            </template>
+
+            <template v-slot:item.index="{ index }">
+              <div class="ml-2">
+                {{ index + 1 }}
+
+              </div>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
 
     <v-row>
-      <!-- <v-col>
-        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
-
-          <div class="list-header py-3 mt-1">
-            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-              <h4>Titik Koordinat Penanaman</h4>
-            </div>
-            <div class="d-flex flex-row geko-list-header-action">
-              <div class="geko-list-header-toolbar"></div>
-            </div>
-          </div>
-
-          <div>
-            <div ref="mapContainer" id="mapContainer" class="map-container"
-              style="width: 100%; height: 400px; border-radius: 10px;"></div>
-          </div>
-
-
-        </v-card>
-      </v-col> -->
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
           <div class="list-header py-3 mt-1">
@@ -186,7 +197,7 @@
 <script>
 
 export default {
-  name: "monitoring4-detail",
+  name: "monitoring5-detail",
   props: {
     data: {
       required: true,
@@ -213,6 +224,30 @@ export default {
   data() {
     return {
       // bibits: [],
+      DetailPerSeeds:{
+        header: [
+          {
+            text: 'No',
+            key: 'index',
+            value: 'index',
+          },
+          {
+            text: 'Kode Monitoring',
+            key: 'monitoring5_no',
+            value: 'monitoring5_no',
+          },  
+          {
+            text: 'Kode Jenis Pohon',
+            key: 'tree_code',
+            value: 'tree_code',
+          },
+          {
+            text: 'Nama Pohon',
+            key: 'tree_name',
+            value: 'tree_name',
+          }
+        ], 
+      },
       headerBibits: [
         {
           text: 'No',
@@ -221,8 +256,8 @@ export default {
         },
         {
           text: 'Kode Monitoring',
-          key: 'monitoring4_no',
-          value: 'monitoring4_no',
+          key: 'monitoring5_no',
+          value: 'monitoring5_no',
         },
         {
           text: 'Kode Pohon',
