@@ -165,6 +165,12 @@ export default {
               value: "name",
             },
             {
+              key: "email",
+              sortable: false,
+              text: "Email Geko",
+              value: "email",
+            },
+            {
               key: "role",
               sortable: false,
               text: "Posisi",
