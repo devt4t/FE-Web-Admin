@@ -186,7 +186,7 @@
 <script>
 
 export default {
-  name: "monitoring3-detail",
+  name: "monitoring4-detail",
   props: {
     data: {
       required: true,
@@ -221,8 +221,8 @@ export default {
         },
         {
           text: 'Kode Monitoring',
-          key: 'monitoring3_no',
-          value: 'monitoring3_no',
+          key: 'monitoring4_no',
+          value: 'monitoring4_no',
         },
         {
           text: 'Kode Pohon',

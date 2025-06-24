@@ -1,7 +1,7 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
         <template v-slot:detail-slave-raw="{ data }">
-            <monitoring5-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`monitoring5`" :title="'Koordinat Monitoring'"/>
+            <monitoring5-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`Monitoring5`" :title="'Koordinat Monitoring'"/>
             <monitoring5-detail :data="data"></monitoring5-detail>
         </template>
         <template v-slot:list-indicator="{ item }">
@@ -77,7 +77,7 @@ import monitoring5Config from "./monitoring5Component/monitoring5Config";
 import monitoring5Detail from "./monitoring5Detail.vue";
 import monitoring5ExportSelection from "./monitoring5Component/monitoring5ExportSelection.vue";
 import monitoring5PrintLable from "./monitoring5Component/monitoring5PrintLable.vue";
-import monitoring5Export from "./monitoring5Component/monitoring5ExportModal.vue";
+import Monitoring5Export from "./monitoring5Component/monitoring5ExportModal.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -88,7 +88,7 @@ export default {
         monitoring5Detail,
         monitoring5ExportSelection,
         monitoring5PrintLable,
-        monitoring5Export,
+        Monitoring5Export,
     },
     name: "crud-monitoring5",
     watch: {},
@@ -152,20 +152,20 @@ export default {
             const prompt = await this.$_alert.confirm('Hapus Data Monitoring?', 'Harap Cek Data Dengan Teliti Sebelum Menghapus!','Ya, Hapus!', 'Batal', true)
             if (prompt.isConfirmed) {
                 console.log(item)
-                this.$_api.post('fifth-monitorings/main/delete', {monitoring5_no: item.monitoring5_no, populate3_no: item.populate3_no})
+                this.$_api.post('fifth-monitorings/main/delete', {monitoring4_no: item.monitoring4_no, populate3_no: item.populate3_no})
                 .then(() => {
-                  this.$_alert.success('Berhasil Melakukan Hapus Data monitoring5!')
+                  this.$_alert.success('Berhasil Melakukan Hapus Data Monitoring5!')
                   this.refreshKey += 1;
                 })
             }
         },
         // async onGeneratePopulate(item){
-        //     const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 5?', 'Harap Cek Data Dengan Teliti!', true)
+        //     const prompt = await this.$_alert.confirm('Generate Data Untuk Populasi Monitoring 4?', 'Harap Cek Data Dengan Teliti!', true)
         //     if (prompt.isConfirmed) {
         //         // console.log(item);
         //         this.$_api.post('populate-monitoring/4-to-5/create', item)
         //         .then(() => {
-        //           this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 5!, Silahkan Melanjutkan Proses Monitoring 5.')
+        //           this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 4!, Silahkan Melanjutkan Proses Monitoring 4.')
         //           this.refreshKey += 1;
         //         })
         //     }

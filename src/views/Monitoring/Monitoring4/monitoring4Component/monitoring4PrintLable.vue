@@ -171,6 +171,7 @@ export default {
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
+      this.$emit("success", true);
     },
     percentageFormat(partial, total) {
       return ((partial * 100) / total).toFixed(1);

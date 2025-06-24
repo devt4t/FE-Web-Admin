@@ -46,6 +46,28 @@ export default reactive({
       },
     },
     {
+      id: "last_monitoring",
+      label: "Nomor Monitoring Sebelumnya",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
+      id: "populate4_no",
+      label: "Kode Populasi",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
       id: "monitoring_start",
       label: "Tanggal Mulai Monitoring",
       methods: {
@@ -61,17 +83,6 @@ export default reactive({
       label: "Tanggal Monitoring",
       methods: {
         list: false,
-        detail: true,
-        create: false,
-        update: false,
-        filter: false,
-      },
-    },
-    {
-      id: "last_monitoring",
-      label: "Nomor Monitoring Sebelumnya",
-      methods: {
-        list: true,
         detail: true,
         create: false,
         update: false,
@@ -397,7 +408,6 @@ export default reactive({
           main: true,
           type: "select",
           col_size: 6,
-          // validation: ["required"],
           option: {
             default_options: [
               {

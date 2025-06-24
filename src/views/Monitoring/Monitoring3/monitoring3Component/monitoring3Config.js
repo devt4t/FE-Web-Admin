@@ -142,7 +142,7 @@ export default reactive({
       },
     },
     {
-      id: "assigned_ff",
+      id: "assign_to",
       label: "FF Petugas Monitoring",
       methods: {
         list: true,
