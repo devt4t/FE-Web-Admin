@@ -10,6 +10,6 @@ export default {
   mapBoxStyleLight: "mapbox://styles/mapbox/light-v11",
   programYear: {
     model: "2024",
-    options: ["2020", "2021", "2022", "2023", "2024", , "2025"],
+    options: ["2020", "2021", "2022", "2023", "2024", "2025"],
   },
 };
