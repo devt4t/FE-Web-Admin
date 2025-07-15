@@ -722,7 +722,7 @@ export default {
                         break;
                     }
 
-                    if (result.result.length == 0) {
+                    if (offset == 0 && result.result.length == 0) {
                         this.loadingExportByFF = false;
                         this.$_alert.error(
                             {},
