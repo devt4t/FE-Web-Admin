@@ -55,12 +55,17 @@
             <monitoring3-export-selection :data="detailData" :dataKey="detailDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-export-selection>
             <monitoring3-print-lable :data="lableData" :dataKey="lableDataKey" @success="refreshKey = refreshKey + 1"></monitoring3-print-lable>
             <monitoring3-export :dataKey="exportKey" />
+            <monitoring3-export-summary-modal :dataKey="exportKey2" />
         </template>
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-start">
                 <v-btn variant="info" class="mr-2" @click="exportKey += 1">
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel </span>
+                </v-btn>
+                <v-btn variant="success" class="mr-2" @click="exportKey2 += 1">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Export Summary Monitoring Per FF (per tree) </span>
                 </v-btn>
             </div>
             
@@ -78,6 +83,7 @@ import monitoring3Detail from "./monitoring3Detail.vue";
 import monitoring3ExportSelection from "./monitoring3Component/monitoring3ExportSelection.vue";
 import monitoring3PrintLable from "./monitoring3Component/monitoring3PrintLable.vue";
 import Monitoring3Export from "./monitoring3Component/monitoring3ExportModal.vue";
+import monitoring3ExportSummaryModal from "./monitoring3Component/monitoring3ExportSummaryModal.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -89,6 +95,7 @@ export default {
         monitoring3ExportSelection,
         monitoring3PrintLable,
         Monitoring3Export,
+        monitoring3ExportSummaryModal
     },
     name: "crud-monitoring3",
     watch: {},
@@ -103,6 +110,7 @@ export default {
             lableDataKey: 0,
             lableData: [],
             exportKey: 0,
+            exportKey2: 0,
         };
     },
     mounted() {

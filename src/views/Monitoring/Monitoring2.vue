@@ -57,6 +57,7 @@
             <monitoring2-export-selection :data="detailData" :dataKey="export_selection_key"></monitoring2-export-selection>
             <monitoring2-print-lable :data="detailData" :dataKey="print_lable_key"></monitoring2-print-lable>
             <monitoring2-export :dataKey="exportKey" />
+            <monitoring2-export-summary-modal :dataKey="exportKey2" />
 
         </template>
         <template v-slot:list-after-filter>
@@ -64,6 +65,10 @@
                 <v-btn variant="info" class="mr-2" @click="exportKey += 1">
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel </span>
+                </v-btn>
+                <v-btn variant="success" class="mr-2" @click="exportKey2 += 1">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Export Summary Monitoring Per FF (per tree) </span>
                 </v-btn>
             </div>
             
@@ -81,6 +86,7 @@ import monitoring2Detail from "./monitoring2Detail.vue";
 import monitoring2ExportSelection from "./monitoring2Component/monitoring2ExportSelection.vue";
 import monitoring2PrintLable from "./monitoring2Component/monitoring2PrintLable.vue";
 import Monitoring2Export from "./monitoring2Component/monitoring2ExportModal.vue";
+import monitoring2ExportSummaryModal from "./monitoring2Component/monitoring2ExportSummaryModal.vue";
 
 import moment from "moment";
 import axios from "axios";
@@ -92,6 +98,7 @@ export default {
         monitoring2ExportSelection,
         monitoring2PrintLable,
         Monitoring2Export,
+        monitoring2ExportSummaryModal
     },
     name: "crud-monitoring2",
     watch: {},
@@ -106,6 +113,7 @@ export default {
             export_selection_key: 0,
             print_lable_key: 0,
             exportKey: 0,
+            exportKey2: 0,
         };
     },
     mounted() {
