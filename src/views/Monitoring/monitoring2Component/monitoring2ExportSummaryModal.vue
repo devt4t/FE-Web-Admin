@@ -729,6 +729,8 @@ export default {
                             "Tidak ada data",
                             `Tidak ada data dari FF ${ffName} ${this.$store.state.tmpProgramYear}`
                         );
+                        this.ff_no.shift();
+                        if (this.ff_no.length) {this.onSubmitByFF();}
                         return;
                     } else {
                         console.log(result, offset)
