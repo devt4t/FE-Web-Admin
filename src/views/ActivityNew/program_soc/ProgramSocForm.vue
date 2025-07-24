@@ -44,6 +44,10 @@
                     name: '2024',
                     value: '2024',
                   },
+                  {
+                    name: '2025',
+                    value: '2025',
+                  },
                 ],
 
                 list_pointer: {
@@ -485,7 +489,7 @@ export default {
         village: "",
         mu_no: "",
         target_area: "",
-        program_year: "2024",
+        program_year: "2025",
       },
       projectPurpose: null,
       participants: [
