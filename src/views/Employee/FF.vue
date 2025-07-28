@@ -694,6 +694,10 @@ export default {
                       code: "2024",
                       label: "2024",
                     },
+                    {
+                      code: "2025",
+                      label: "2025",
+                    },
                   ],
                 },
               },
