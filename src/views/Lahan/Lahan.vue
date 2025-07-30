@@ -341,6 +341,17 @@
 
     <template v-slot:list-after-filter>
       <div class="d-flex flex-row justify-content-start align-items-center pb-4">
+        <v-btn v-if="$_sys.isAllowed('lahan-create')" class="mr-3" variant="primary" @click="
+          $router.push({
+            path: '/LahanBarcodeHistory',
+            query: {
+              view: 'list',
+            },
+          })
+          ">
+          <v-icon small class="mr-2">mdi-qrcode</v-icon>
+          <span>Lahan Barcode Generator</span>
+        </v-btn>
         <v-btn class="mr-3" variant="info" @click="
           $router.push({
             path: '/DaftarQRLahanRusak',
