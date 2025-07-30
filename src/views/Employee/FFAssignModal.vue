@@ -164,6 +164,10 @@
                                 label: '2024',
                                 code: '2024',
                               },
+                              {
+                                label: '2025',
+                                code: '2025',
+                              },
                             ],
                             list_pointer: {
                               label: 'label',

@@ -136,6 +136,7 @@ export default {
         ...data.filter,
         ...data.params,
         limit: parseInt(data.totalRecord * 1.5),
+        program_year: this.$_config.programYear.model,
       };
 
       try {
