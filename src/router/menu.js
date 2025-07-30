@@ -464,6 +464,14 @@ const menu = [
         hide: true,
       },
       {
+        title: "LahanBarcodeHistory",
+        to: "/LahanBarcodeHistory",
+        component: "Lahan/LahanBarcodeHistory",
+        name: "LahanBarcodeHistory",
+        permission: "Lahan",
+        // hide: true,
+      },
+      {
         title: "DaftarQRLahanRusak",
         to: "/DaftarQRLahanRusak",
         component: "Lahan/QrLahanRusak",
