@@ -242,6 +242,11 @@ export default {
               icon: "mdi-close-circle-outline",
               color: "danger",
             },
+            total_project: {
+              label: "Total Project",
+              icon: "mdi-list-status",
+              color: "info",
+            },
           },
         },
         pk_field: null,
