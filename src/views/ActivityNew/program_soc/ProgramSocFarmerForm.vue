@@ -50,6 +50,60 @@
                   />
                 </v-col>
 
+                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                  <geko-input v-model="formData.entry_data_status" :item="{
+                    label: 'Status Pengisi Data',
+                    validation: ['required'],
+                    type: 'select-radio',
+                    setter: 'status_program',
+                    option: {
+                      list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
+                      },
+                      default_options: [
+                        {
+                          label: 'Pemilik Lahan',
+                          code: 1,
+                        },
+                        {
+                          label: 'Pengelola/Penggarap',
+                          code: 2,
+                        },
+                        {
+                          label: 'Lainnya',
+                          code: 3,
+                        },
+                      ],
+                    },
+                  }" />
+                </v-col>
+
+                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                  <geko-input v-if="formData.entry_data_status == 3" v-model="formData.enty_data_status_others" :item="{
+                    label: 'Keterangan Status pengisi data lain',
+                    validation: ['required'],
+                    type: 'text',
+                    setter: 'text',
+                  }" />
+                </v-col>
+
+                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                  <geko-input v-model="formData.lahan_for_program" :item="{
+                    label: 'Jumlah lahan yang ingin diikutkan program',
+                    type: 'number',
+                  }" />
+                </v-col>
+
+
+                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                  <geko-input v-model="formData.lahan_for_program_luas" :item="{
+                    label: 'Luas dari lahan yang ingin diikutkan program',
+                    type: 'number',
+                  }" />
+                </v-col>
+
                 <v-col
                   lg="6"
                   :class="{
@@ -321,6 +375,10 @@ export default {
 
       const keys = [
         ["name"],
+        ["entry_data_status"],
+        ["enty_data_status_others"],
+        ["lahan_for_program"],
+        ["lahan_for_program_luas"],
         ["pattern", "pattern"],
         ["status_program"],
         ["training", "training", "training_materials_material_name"],

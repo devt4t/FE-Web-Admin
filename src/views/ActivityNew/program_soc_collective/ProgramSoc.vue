@@ -1,10 +1,11 @@
 <template>
   <geko-base-crud
     :config="config"
-    :hideDelete="!['13'].includes($store.state.User.role)"
     :hideUpdate="true"
+    :hideDetail="true"
+    :hideDelete="true"
+    :hideDeleteSoft="true"
     :key="'program-soc-detail' + componentKey"
-    @onExportExcel="onExportExcel($event)"
   >
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column min-w-150px">
@@ -305,7 +306,7 @@ export default {
           },
         },
 
-        delete: "DeleteFormMinatMain_new",
+        delete: "",
 
         deleteKey: "form_no",
         delete_ext_payload: {
@@ -324,7 +325,7 @@ export default {
             setter: "program_year",
           },
         },
-        export: true,
+        export: false,
         pk_field: null,
         permission: {
           create: "sosialisasi-program-create",

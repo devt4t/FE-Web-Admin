@@ -319,7 +319,8 @@
                 ['4', '13'].includes($store.state.User.role) &&
                 config.deleteSoft &&
                 config.deleteSoft.payload &&
-                $_sys.isAllowed(config.permission.delete)
+                $_sys.isAllowed(config.permission.delete) &&
+                !hideDeleteSoft
               ">
                 <v-icon small>mdi-eye-off-outline</v-icon>
               </button>

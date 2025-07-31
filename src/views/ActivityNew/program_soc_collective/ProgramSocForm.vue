@@ -168,19 +168,47 @@
               validation: ['required'],
               type: 'number',
             }" />
-          </v-col>
+          </v-col> 
 
           <v-col lg="6">
-            <geko-input v-model="formData.entry_data_position" :item="{
-              label: 'Jabatan / Posisi',
+            <geko-input v-model="formData.group_name" :item="{
+              label: 'Perwakilan Dari',
               validation: ['required'],
               type: 'text',
             }" />
           </v-col>
 
           <v-col lg="6">
-            <geko-input v-model="formData.group_name" :item="{
-              label: 'Perwakilan Dari',
+            <geko-input v-model="formData.entry_data_position" :item="{
+              label: 'Jabatan / Posisi',
+              validation: ['required'],
+              type: 'select-radio',
+              option: {
+              list_pointer: {
+                label: 'label',
+                code: 'code',
+                display: ['label'],
+              },
+              default_options: [
+                {
+                  label: 'Aparat Desa',
+                  code: 1,
+                },
+                {
+                  label: 'Tokoh Desa',
+                  code: 2,
+                },
+                {
+                  label: 'Lainnya',
+                  code: 3,
+                },
+              ],
+            }}" />
+          </v-col>
+
+          <v-col lg="6">
+            <geko-input v-if="formData.entry_data_position == 3" v-model="formData.position_others" :item="{
+              label: 'Jabatan / Posisi (Lainnya)',
               validation: ['required'],
               type: 'text',
             }" />
@@ -200,11 +228,11 @@
               default_options: [
                 {
                   label: 'Ya, Pernah',
-                  code: true,
+                  code: 1,
                 },
                 {
                   label: 'Tidak Pernah',
-                  code: false,
+                  code: 0,
                 },
               ],
             }}" />
@@ -298,7 +326,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'select',
-              setter: 'province',
+              setter: 'province_code',
               param: {
                 page: 1,
                 per_page: 10,
@@ -318,11 +346,11 @@
 
           <v-col lg="6">
             <geko-input v-model="formData.city" :disabled="!formData.program_year || !formData.province" :item="{
-              label: 'Kabupaten',
+              label: 'Kota / Kabupaten',
               validation: ['required'],
               col_size: 6,
               type: 'select',
-              setter: 'kabupaten',
+              setter: 'kabupaten_no',
               param: {
                 page: 1,
                 per_page: 10,
@@ -618,7 +646,7 @@
 
           <v-col lg="12">
             <div class="d-flex flex-row" style="justify-content: flex-end">
-              <v-btn variant="success" type="submit" :disabled="loading">
+              <v-btn variant="success" type="submit" :disabled="loading || (formData.total_minat == 0 && formData.total_ragu == 0)">
                 <v-icon>mdi-plus</v-icon>
                 <span>Tambah Data</span>
               </v-btn>
@@ -652,6 +680,15 @@ export default {
         .post("AddFormMinatCollective", this.formData)
         .then((res) => {
           console.log("res", res);
+
+          this.loading = false;
+          this.$_alert.success("Data sosialisasi program berhasil ditambahkan");
+          this.$router.replace({
+            query: {
+              view: "list",
+            },
+          });
+
           return res.form_no;
         })
         .catch((err) => {
@@ -671,13 +708,7 @@ export default {
       //   await this.$_api.post("AddFormMinatFarmers_new", farmer);
       // }
 
-      this.loading = false;
-      this.$_alert.success("Data sosialisasi program berhasil ditambahkan");
-      this.$router.replace({
-        query: {
-          view: "list",
-        },
-      });
+      
     },
 
     addRow() {
@@ -746,6 +777,7 @@ export default {
     },
     "formData.total_minat"(v) {
       if (v == 0) {
+        this.formData.is_minat = null;
         this.formData.peserta_pemilik_people = null;
         this.formData.peserta_pemilik_lahan = null;
         this.formData.peserta_pemilik_luas_lahan = null;
@@ -755,10 +787,31 @@ export default {
         this.formData.peserta_lain_people = null;
         this.formData.peserta_lain_lahan = null;
         this.formData.peserta_lain_luas_lahan = null;
+      } else {
+        this.formData.is_minat = 1;
+      }
+    },
+    "formData.total_ragu"(v) {
+      if (v == 0) {
+        this.formData.is_ragu = null;
+        this.formData.peserta_pemilik_people = null;
+        this.formData.peserta_pemilik_lahan = null;
+        this.formData.peserta_pemilik_luas_lahan = null;
+        this.formData.peserta_penggarap_people = null;
+        this.formData.peserta_penggarap_lahan = null;
+        this.formData.peserta_penggarap_luas_lahan = null;
+        this.formData.peserta_lain_people = null;
+        this.formData.peserta_lain_lahan = null;
+        this.formData.peserta_lain_luas_lahan = null;
+      } else {
+        this.formData.is_ragu = 1;
       }
     },
     "formData.lahan_legal_status"(v) {
       if (v != 4) this.formData.lahan_legal_status_others = null;
+    },
+    "formData.entry_data_position"(v) {
+      if (v != 3) this.formData.position_others = null;
     },
   },
 

@@ -212,6 +212,59 @@
                           },
                         }" />
                       </v-col>
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-model="item.entry_data_status" :item="{
+                          label: 'Status Pengisi Data',
+                          validation: ['required'],
+                          type: 'select-radio',
+                          setter: 'status_program',
+                          option: {
+                            list_pointer: {
+                              label: 'label',
+                              code: 'code',
+                              display: ['label'],
+                            },
+                            default_options: [
+                              {
+                                label: 'Pemilik Lahan',
+                                code: 1,
+                              },
+                              {
+                                label: 'Pengelola/Penggarap',
+                                code: 2,
+                              },
+                              {
+                                label: 'Lainnya',
+                                code: 3,
+                              },
+                            ],
+                          },
+                        }" />
+                      </v-col>
+
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-if="item.entry_data_status == 3" v-model="item.enty_data_status_others" :item="{
+                          label: 'Keterangan Status pengisi data lain',
+                          validation: ['required'],
+                          type: 'text',
+                          setter: 'text',
+                        }" />
+                      </v-col>
+
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-model="item.lahan_for_program" :item="{
+                          label: 'Jumlah lahan yang ingin diikutkan program',
+                          type: 'number',
+                        }" />
+                      </v-col>
+
+
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-model="item.lahan_for_program_luas" :item="{
+                          label: 'Luas dari lahan yang ingin diikutkan program',
+                          type: 'number',
+                        }" />
+                      </v-col>
                       <v-col lg="6" v-if="item.status_program === 'Ya'">
                         <geko-input v-model="item.pattern" :item="{
                           label: 'Pola Tanam Sebelumnya',
@@ -323,6 +376,14 @@
                           },
                         }" />
                       </v-col>
+
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-model="item.suggestion" :item="{
+                          label: 'Saran Untuk Program Trees4Trees',
+                          // validation: ['required'],
+                          type: 'textarea',
+                        }" />
+                      </v-col>
                     </v-row>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -392,7 +453,6 @@ export default {
         }
       }
       //api call
-
       const payload = {
         form_date: this.formData.form_date,
         village: this.formData.village,
@@ -424,7 +484,8 @@ export default {
         farmer.form_no = resultMain;
         await this.$_api.post("AddFormMinatFarmers_new", farmer);
       }
-
+      
+      console.log('formData', this.resultMain, )
       this.loading = false;
       this.$_alert.success("Data sosialisasi program berhasil ditambahkan");
       this.$router.replace({
