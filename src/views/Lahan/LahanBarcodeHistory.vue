@@ -84,7 +84,7 @@ export default {
                 const result = await this.$_api.get('lahan/generate-barcode/detail', {id: item.id})
                 var list_lahan_no = result.lahan_numbers
                 if(list_lahan_no.length == 0) throw this.$_alert.error('Tidak Ada Data Barcode Lahan!')
-                const exportEndpoint = `${this.$_config.baseUrlExport}`
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/lahan-barcode/excel`
                 const exportPayload = {
                     data: list_lahan_no
                 }

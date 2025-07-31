@@ -292,7 +292,7 @@ export default {
       config: {
         title: "Sosialisasi Program Collective",
         model_api: null,
-        getter: "GetFormMinatAll_new",
+        getter: "GetFormMinatCollectiveAll_new",
         // getterDataKey: "data.result.data",
         detail: "GetFormMinatDetailAll_new",
         detailIdKey: "id",
