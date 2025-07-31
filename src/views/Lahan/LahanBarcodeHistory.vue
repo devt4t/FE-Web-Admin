@@ -115,6 +115,7 @@ export default {
                 link.setAttribute("download", filename);
                 document.body.appendChild(link);
                 link.click();
+                this.refreshKey + 1
                 this.$_alert.success('Berhasil Melakukan Export Data Barcode Lahan, Harap Gunakan Semua Nomor yang Disediakan!')
             }
         },
