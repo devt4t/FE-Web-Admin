@@ -341,7 +341,7 @@
 
     <template v-slot:list-after-filter>
       <div class="d-flex flex-row justify-content-start align-items-center pb-4">
-        <v-btn v-if="$_sys.isAllowed('lahan-create')" class="mr-3" variant="primary" @click="
+        <v-btn v-if="$_sys.isAllowed('lahan-barcode-history-create')" class="mr-3" variant="primary" @click="
           $router.push({
             path: '/LahanBarcodeHistory',
             query: {
