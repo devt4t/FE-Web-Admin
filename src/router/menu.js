@@ -292,6 +292,16 @@ const menu = [
         type: ["non-carbon"],
       },
       {
+        title: "Sosprog Collective",
+        to: "/sosialisasi-program-collective",
+        component: "ActivityNew/program_soc_collective/ProgramSoc",
+        name: "sosialisasiProgramCollective",
+        permission: "sosialisasi-program-v2",
+        icon: "mdi-account-card",
+        update: true,
+        type: ["non-carbon"],
+      },
+      {
         title: "Petani (Sosialisasi Program)",
         to: "/sosialisasi-program-farmer-v2",
         component: "ActivityNew/program_soc/ProgramSocFarmer",
