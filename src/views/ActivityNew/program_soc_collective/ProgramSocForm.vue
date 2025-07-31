@@ -133,15 +133,15 @@
                 default_options: [
                   {
                     name: 'Tidak Ada',
-                    value: 'Tidak Ada',
+                    value: 1,
                   },
                   {
                     name: 'Telephone Rumah',
-                    value: 'Telephone Rumah',
+                    value: 2,
                   },
                   {
                     name: 'HP',
-                    value: 'HP',
+                    value: 3,
                   },
                 ],
 
@@ -155,7 +155,7 @@
           </v-col>
 
           <v-col lg="6">
-            <geko-input v-if="formData.contact_type != null" v-model="formData.contact_person" :item="{
+            <geko-input v-if="formData.contact_type != 1" v-model="formData.contact_person" :item="{
               label: 'Nomor Kontak',
               validation: ['required'],
               type: 'number',
@@ -171,8 +171,36 @@
           </v-col> 
 
           <v-col lg="6">
-            <geko-input v-model="formData.group_name" :item="{
-              label: 'Perwakilan Dari',
+            <geko-input v-model="formData.people_status" :item="{
+              label: 'Merupakan Perwakilan Dari',
+              validation: ['required'],
+              type: 'select-radio',
+              option: {
+              list_pointer: {
+                label: 'label',
+                code: 'code',
+                display: ['label'],
+              },
+              default_options: [
+                {
+                  label: 'Warga Desa',
+                  code: 1,
+                },
+                {
+                  label: 'Warga Dusun',
+                  code: 2,
+                },
+                {
+                  label: 'Kelompok Dalam Area',
+                  code: 3,
+                },
+              ],
+            }}" />
+          </v-col>
+
+          <v-col v-if="formData.people_status == 3" lg="6">
+            <geko-input  v-model="formData.group_name" :item="{
+              label: 'Nama Kelompok',
               validation: ['required'],
               type: 'text',
             }" />
@@ -207,8 +235,8 @@
           </v-col>
 
           <v-col lg="6">
-            <geko-input v-if="formData.entry_data_position == 3" v-model="formData.position_others" :item="{
-              label: 'Jabatan / Posisi (Lainnya)',
+            <geko-input  v-model="formData.position_name" :item="{
+              label: 'Nama Jabatan / Posisi ',
               validation: ['required'],
               type: 'text',
             }" />
@@ -674,6 +702,7 @@ export default {
       this.loading = true;
 
       this.formData.list_tree = this.trees;
+      this.formData.is_group_area = this.formData.people_status === 3 ? 1 : 0;
       console.log("Form submitted with data:", this.formData);
       //insert main program soc
       const resultMain = await this.$_api
@@ -770,7 +799,7 @@ export default {
       if (!v) this.projectPurpose = null;
     },
     "formData.contact_type"(v) {
-      if (v == 'Tidak Ada') this.formData.contact_person = null;
+      if (v == 1) this.formData.contact_person = null;
     },
     "formData.is_program"(v) {
       if (!v) this.formData.is_program_year = null;
@@ -813,6 +842,9 @@ export default {
     "formData.entry_data_position"(v) {
       if (v != 3) this.formData.position_others = null;
     },
+    "formData.people_status"(v) {
+      if (v != 3) this.formData.group_name = null;
+    },
   },
 
   data() {
@@ -826,6 +858,7 @@ export default {
         total_minat: 0,
         total_ragu: 0,
         program_year: "2025",
+        contact_type: 1,
         list_tree: [],
       },
       projectPurpose: null,
