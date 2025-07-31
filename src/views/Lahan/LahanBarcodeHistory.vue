@@ -116,6 +116,7 @@ export default {
                 document.body.appendChild(link);
                 link.click();
                 this.$_alert.success('Berhasil Melakukan Export Data Barcode Lahan, Harap Gunakan Semua Nomor yang Disediakan!')
+                this.refreshKey += 1
             }
         },
         async onGenerateBarcodeData(){

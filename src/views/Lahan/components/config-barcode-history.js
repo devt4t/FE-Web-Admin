@@ -54,7 +54,7 @@ export default reactive({
       },
     },
     {
-      id: "is_printed_by",
+      id: "employees_name_printer",
       label: "Terakhir Di Export Oleh",
       methods: {
         list: true,
@@ -63,6 +63,13 @@ export default reactive({
     {
       id: "is_printed_at",
       label: "Waktu Terakhir Di Export",
+      methods: {
+        list: true,
+      },
+    },
+    {
+      id: "employees_name_generator",
+      label: "Digenerate Oleh",
       methods: {
         list: true,
       },
