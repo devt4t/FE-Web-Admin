@@ -179,6 +179,9 @@ Vue.filter("parse", (value, id) => {
     case "status-allocation":
       _value = value === 0 ? "Belum Dialokasi" : "Sudah Dialokasi";
       break;
+    case "program-type":
+      _value = value === '2' ? "Carbon" : value === '3' ? "Non-Carbon" : "-";
+      break;
     default:
       _value = value;
       break;

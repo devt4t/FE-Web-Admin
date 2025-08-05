@@ -66,6 +66,7 @@ export default {
   mounted() {
     const user = JSON.parse(localStorage.getItem("User"));
     this.user = user;
+    console.log("PelatihanPetani mounted", user);
     this.$set(this.config.delete_ext_payload, 'user_email', user.email);
     this.$set(this.config.deleteSoft.payload, 'user_email', user.email);
   },

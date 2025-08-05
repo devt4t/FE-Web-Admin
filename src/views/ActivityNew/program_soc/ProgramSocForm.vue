@@ -301,6 +301,54 @@
                         }" />
                       </v-col>
 
+                      <v-col
+                  lg="6"
+                  v-if="
+                    ['Ya'].includes(formData.status_program)
+                  "
+                >
+                  <geko-input
+                    v-model="formData.owned_land_legalization_status"
+                    :item="{
+                      validation: ['required'],
+                      label: 'Status legalitas lahan yang dimiliki',
+                      type: 'select-radio',
+                      option: {
+                        default_options:
+                          defaultData.owned_land_legalization_status,
+                        list_pointer: {
+                          code: 'code',
+                          name: 'name',
+                          display: ['name'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
+                <v-col
+                  lg="6"
+                  v-if="
+                    ['Ya'].includes(formData.status_program)
+                  "
+                >
+                  <geko-input
+                    v-model="formData.followed_project_model"
+                    :item="{
+                      validation: ['required'],
+                      label: 'Model project yang akan diikuti',
+                      type: 'select-radio',
+                      option: {
+                        default_options: [],
+                        list_pointer: {
+                          code: 'code',
+                          name: 'name',
+                          display: ['name'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
+
                       <v-col lg="6" v-if="
                         ['Ya'].includes(item.status_program) && [2].includes(projectPurpose)
                       ">

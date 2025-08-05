@@ -2,9 +2,8 @@
   <geko-base-crud
     :config="config"
     :hideUpdate="true"
-    :hideDetail="true"
-    :hideDelete="true"
-    :hideDeleteSoft="true"
+    :hideDelete="false"
+    :hideDeleteSoft="false"
     :key="'program-soc-detail' + componentKey"
   >
     <template v-slot:list-form_no="{ item }">
@@ -70,7 +69,7 @@
         >
       </div>
     </template>
-    <template v-slot:list-bottom-action="{ item }">
+    <template v-if="false" v-slot:list-bottom-action="{ item }">
       <v-btn
         small
         @click="onExport(item)"
@@ -117,7 +116,11 @@ export default {
     ProgramSocForm,
     ProgramSocDetail,
   },
-
+  mounted() {
+    const user = JSON.parse(localStorage.getItem("User"));
+    console.log("ProgramSoc mounted", user);
+    this.user = user;
+  },
   methods: {
 
     //refactored
@@ -260,9 +263,10 @@ export default {
         .then((response) => {
           if (response.isConfirmed) {
             this.$_api
-              .post("UpdateVerificationFormMinat_new", {
-                current_id: this.$route.query.id,
-                moduls: verif ? "verification" : "unverification",
+              .post("VerificationFormMinatCollective", {
+                id: this.$route.query.id,
+                verified_by: this.user.employee_no,
+                moduls: verif ? 1 : 0,
               })
               .then(() => {
                 this.$_alert.success("Data berhasil diverifikasi");
@@ -295,7 +299,7 @@ export default {
         model_api: null,
         getter: "GetFormMinatCollectiveAll_new",
         // getterDataKey: "data.result.data",
-        detail: "GetFormMinatDetailAll_new",
+        detail: "GetFormMinatCollectiveDetailAll_new",
         detailIdKey: "id",
         detailKey: "mainSpr",
         setter: "GetFormMinatAll",
@@ -536,6 +540,20 @@ export default {
             },
           },
           {
+            id: "form_date",
+            label: "Tanggal Sosialisasi",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "form_date",
+                transform: "date",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
             id: "program_year",
             label: "Tahun Program",
             methods: {
@@ -545,6 +563,62 @@ export default {
               },
               detail: {
                 view_data: "program_year",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "program_type",
+            label: "Jenis Program",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "program_type",
+                transform: "program-type",
+                class: "badge bg-success",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "users_name_created_by",
+            label: "Nama Pengisi Form",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "users_name_created_by",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "is_program_year",
+            label: "Pernah Mengikuti Program Tahun",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "is_program_year",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "contact_person",
+            label: "Nomor Kontak",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "contact_person",
+                transform: "no-empty",
               },
               create: true,
               update: true,
@@ -647,7 +721,5 @@ export default {
       },
     };
   },
-
-  mounted() {},
 };
 </script>

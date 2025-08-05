@@ -536,6 +536,7 @@
               validation: ['required'],
               type: 'select',
               option: {
+              multiple: true,
               list_pointer: {
                 label: 'label',
                 code: 'code',
@@ -563,7 +564,7 @@
           </v-col>
 
            <v-col lg="6">
-            <geko-input v-if="formData.lahan_legal_status == 4" v-model="formData.lahan_legal_status_others" :item="{
+            <geko-input v-if="formData.lahan_legal_status.includes(4)" v-model="formData.lahan_legal_status_others" :item="{
               label: 'Status Legalitas Lahan (Lainnya)',
               validation: ['required'],
               type: 'text',
@@ -860,6 +861,7 @@ export default {
         program_year: "2025",
         contact_type: 1,
         list_tree: [],
+        lahan_legal_status: [],
       },
       projectPurpose: null,
       trees: [
