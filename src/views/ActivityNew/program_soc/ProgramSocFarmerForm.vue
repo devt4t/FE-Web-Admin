@@ -198,7 +198,7 @@
                   <geko-input
                     v-model="formData.training"
                     :item="{
-                      label: 'Materi Pelatihan',
+                      label: 'Materi Pelatihan (max 2)',
                       validation: ['required'],
                       type: 'select',
                       setter: 'training',
@@ -206,6 +206,7 @@
                       default_label: formData.training_materials_material_name,
                       option: {
                         getterKey: 'data.result',
+                        multiple: true,
                         list_pointer: {
                           label: 'material_name',
                           code: 'material_no',
@@ -385,6 +386,14 @@ export default {
 
         delete _payload.trees;
       }
+
+      if (Array.isArray(_payload.training)) {
+        if (_payload.training.length > 0) {
+          _payload.training = this.formData.training.map((item) => {
+            return item.material_no ?? item;
+          });
+        }
+      }
       //api call
 
       //insert farmers
@@ -449,7 +458,7 @@ export default {
       // console.log("thi", detailData);
 
       for (const keyArr of keys) {
-        if (keyArr[0] !== "trees") {
+        if (keyArr[0] !== "trees" && keyArr[0] !== "training") {
           this.$set(
             this.formData,
             keyArr[0],
@@ -459,6 +468,22 @@ export default {
           if (keyArr.length > 2) {
             this.$set(this.formData, keyArr[2], this.data[keyArr[2]]);
           }
+        } else if (keyArr[0] == "training") {
+          let _training = [];
+          if (this.data.training_materials_material_name && this.data.training_materials_material_name !== "-") {
+            _training.push({
+              material_no: this.data.training.split(',')[0] ?? null,
+              material_name: this.data.training_materials_material_name,
+            });
+          }
+          if (this.data.training_materials_material_name2 && this.data.training_materials_material_name2 !== "-") {
+            _training.push({
+              material_no: this.data.training.split(',')[1] ?? null,
+              material_name: this.data.training_materials_material_name2,
+            });
+          }
+          console.log("training", _training);
+          this.$set(this.formData, "training", _training);
         } else {
           let _tree = [];
           if (this.data.tree1 && this.data.tree1 !== "-") {
@@ -528,7 +553,7 @@ export default {
         name: "",
         address: "",
         status_program: "",
-        training: "",
+        training: [],
         photo: "",
         trees: [],
         tree1: "",

@@ -345,7 +345,7 @@
                         ['Ya', 'Ragu - Ragu'].includes(item.status_program)
                       ">
                         <geko-input v-model="item.training" :item="{
-                          label: 'Materi Pelatihan',
+                          label: 'Materi Pelatihan (max 2)',
                           validation: ['required'],
                           type: 'select',
                           setter: 'training',

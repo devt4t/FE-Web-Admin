@@ -203,6 +203,21 @@
         </div>
       </template>
 
+      <template v-slot:item.training="{ item }">
+        <div class="d-flex flex-row min-w-200px" style="flex-wrap: wrap">
+          <span
+            v-if="item.training_materials_material_name"
+            class="badge bg-success text-no-wrap mr-2 mb-1"
+            >{{ item.training_materials_material_name }}</span
+          >
+          <span
+            v-if="item.training_materials_material_name2"
+            class="badge bg-success text-no-wrap mr-2 mb-1"
+            >{{ item.training_materials_material_name2 }}</span
+          >
+        </div>
+      </template>
+
       <template v-slot:item.photo="{ item }">
         <div class="photo">
           <img
@@ -420,10 +435,10 @@ export default {
             value: "status_program",
           },
           {
-            key: "training_materials_material_name",
+            key: "training",
             sortable: false,
             text: "Materi Training",
-            value: "training_materials_material_name",
+            value: "training",
           },
           {
             key: "pattern",
