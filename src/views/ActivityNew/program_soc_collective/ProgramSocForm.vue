@@ -456,7 +456,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_pemilik_lahan" :item="{
               label: 'Jumlah Lahan',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -464,7 +463,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_pemilik_luas_lahan" :item="{
               label: 'Total Luas Lahan (M²)',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -484,7 +482,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_penggarap_lahan" :item="{
               label: 'Jumlah Lahan',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -492,7 +489,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_penggarap_luas_lahan" :item="{
               label: 'Total Luas Lahan (M²)',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -512,7 +508,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_lain_lahan" :item="{
               label: 'Jumlah Lahan',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -520,7 +515,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.peserta_lain_luas_lahan" :item="{
               label: 'Total Luas Lahan (M²)',
-              validation: ['required'],
               type: 'number',
             }" />
           </v-col>
@@ -533,7 +527,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.lahan_legal_status" :item="{
               label: 'Status Legalitas Lahan',
-              validation: ['required'],
               type: 'select',
               option: {
               multiple: true,

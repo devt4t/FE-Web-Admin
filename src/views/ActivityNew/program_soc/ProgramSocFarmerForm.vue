@@ -89,6 +89,66 @@
                   }" />
                 </v-col>
 
+                <v-col lg="6" v-if="formData.status_program =='Ya'">
+                  <geko-input v-model="formData.is_program" :item="{
+                    label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
+                    validation: ['required'],
+                    type: 'select-radio',
+                    option: {
+                    list_pointer: {
+                      label: 'label',
+                      code: 'code',
+                      display: ['label'],
+                    },
+                    default_options: [
+                      {
+                        label: 'Ya, Pernah',
+                        code: 1,
+                      },
+                      {
+                        label: 'Tidak Pernah',
+                        code: 0,
+                      },
+                    ],
+                  }}" />
+                </v-col>
+
+                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                  <geko-input v-if="formData.is_program" v-model="formData.is_program_year" :item="{
+                    label: 'Pernah Ikut Program Tahun',
+                    validation: ['required'],
+                    type: 'select',
+                    option: {
+                    list_pointer: {
+                      label: 'label',
+                      code: 'code',
+                      display: ['label'],
+                    },
+                    default_options: [
+                      {
+                        label: '2020',
+                        code: '2020',
+                      },
+                      {
+                        label: '2021',
+                        code: '2021',
+                      },
+                      {
+                        label: '2022',
+                        code: '2022',
+                      },
+                      {
+                        label: '2023',
+                        code: '2023',
+                      },
+                      {
+                        label: '2024',
+                        code: '2024',
+                      },
+                    ],
+                  }}" />
+                </v-col>
+
                 <v-col v-if="formData.status_program =='Ya'" lg="6">
                   <geko-input v-model="formData.lahan_for_program" :item="{
                     label: 'Jumlah lahan yang ingin diikutkan program',
@@ -203,9 +263,7 @@
                 <v-col
                   lg="6"
                   v-if="
-                    ['Ya'].includes(formData.status_program) &&
-                    !['007', '019', '015', '008', '014', '016'].includes(muNo)
-                  "
+                    ['Ya'].includes(formData.status_program)"
                 >
                   <geko-input
                     v-model="formData.owned_land_legalization_status"
@@ -228,8 +286,7 @@
                 <v-col
                   lg="6"
                   v-if="
-                    ['Ya'].includes(formData.status_program) &&
-                    !['007', '019', '015', '008', '014', '016'].includes(muNo)
+                    ['Ya'].includes(formData.status_program)
                   "
                 >
                   <geko-input
@@ -381,6 +438,8 @@ export default {
         ["lahan_for_program_luas"],
         ["pattern", "pattern"],
         ["status_program"],
+        ["is_program"],
+        ["is_program_year"],
         ["training", "training", "training_materials_material_name"],
         ["photo", "photo"],
         ["trees", "trees"],

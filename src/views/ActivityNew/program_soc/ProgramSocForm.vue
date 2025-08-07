@@ -251,6 +251,66 @@
                         }" />
                       </v-col>
 
+                      <v-col lg="6" v-if="item.status_program =='Ya'">
+                        <geko-input v-model="item.is_program" :item="{
+                          label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
+                          validation: ['required'],
+                          type: 'select-radio',
+                          option: {
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
+                          },
+                          default_options: [
+                            {
+                              label: 'Ya, Pernah',
+                              code: 1,
+                            },
+                            {
+                              label: 'Tidak Pernah',
+                              code: 0,
+                            },
+                          ],
+                        }}" />
+                      </v-col>
+
+                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                        <geko-input v-if="item.is_program" v-model="item.is_program_year" :item="{
+                          label: 'Pernah Ikut Program Tahun',
+                          validation: ['required'],
+                          type: 'select',
+                          option: {
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
+                          },
+                          default_options: [
+                            {
+                              label: '2020',
+                              code: '2020',
+                            },
+                            {
+                              label: '2021',
+                              code: '2021',
+                            },
+                            {
+                              label: '2022',
+                              code: '2022',
+                            },
+                            {
+                              label: '2023',
+                              code: '2023',
+                            },
+                            {
+                              label: '2024',
+                              code: '2024',
+                            },
+                          ],
+                        }}" />
+                      </v-col>
+
                       <v-col v-if="item.status_program =='Ya'" lg="6">
                         <geko-input v-model="item.lahan_for_program" :item="{
                           label: 'Jumlah lahan yang ingin diikutkan program',
@@ -291,6 +351,7 @@
                           setter: 'training',
                           api: 'GetTrainingMaterials',
                           option: {
+                            multiple: true,
                             getterKey: 'data.result',
                             list_pointer: {
                               label: 'material_name',
@@ -301,30 +362,6 @@
                         }" />
                       </v-col>
 
-                      <v-col
-                  lg="6"
-                  v-if="
-                    ['Ya'].includes(formData.status_program)
-                  "
-                >
-                  <geko-input
-                    v-model="formData.owned_land_legalization_status"
-                    :item="{
-                      validation: ['required'],
-                      label: 'Status legalitas lahan yang dimiliki',
-                      type: 'select-radio',
-                      option: {
-                        default_options:
-                          defaultData.owned_land_legalization_status,
-                        list_pointer: {
-                          code: 'code',
-                          name: 'name',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                  />
-                </v-col>
                 <v-col
                   lg="6"
                   v-if="
@@ -348,44 +385,6 @@
                     }"
                   />
                 </v-col>
-
-                      <v-col lg="6" v-if="
-                        ['Ya'].includes(item.status_program) && [2].includes(projectPurpose)
-                      ">
-                        <geko-input v-model="item.owned_land_legalization_status" :item="{
-                          validation: ['required'],
-                          label: 'Status legalitas lahan yang dimiliki',
-                          type: 'select-radio',
-                          option: {
-                            default_options:
-                              defaultData.owned_land_legalization_status,
-                            list_pointer: {
-                              code: 'code',
-                              name: 'name',
-                              display: ['name'],
-                            },
-                          },
-                        }" />
-                      </v-col>
-
-                      <v-col lg="6" v-if="
-                        ['Ya'].includes(item.status_program) && [2].includes(projectPurpose)
-                      ">
-                        <geko-input v-model="item.followed_project_model" :item="{
-                          validation: ['required'],
-                          label: 'Model project yang akan diikuti',
-                          type: 'select-radio',
-                          option: {
-                            default_options:
-                              defaultData.followed_project_model,
-                            list_pointer: {
-                              code: 'code',
-                              name: 'name',
-                              display: ['name'],
-                            },
-                          },
-                        }" />
-                      </v-col>
 
                       <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
                         <geko-input v-model="item.trees" :item="{
@@ -423,6 +422,51 @@
                             multiple: false,
                           },
                         }" />
+                      </v-col>
+
+                      <v-col
+                        v-if="item.status_program =='Ya'"
+                        lg="6"
+                      >
+                        <geko-input
+                          v-model="item.owned_land_legalization_status"
+                          :item="{
+                            label: 'Status legalitas lahan yang dimiliki',
+                            validation: ['required'],
+                            type: 'select-radio',
+                            option: {
+                              default_options:
+                                defaultData.owned_land_legalization_status,
+                              list_pointer: {
+                                code: 'code',
+                                name: 'name',
+                                display: ['name'],
+                              },
+                            },
+                          }"
+                        />
+                      </v-col>
+                      <v-col
+                      v-if="item.status_program =='Ya'"
+                      lg="6"
+                      >
+                        <geko-input
+                          v-model="item.followed_project_model"
+                          :item="{
+                            validation: ['required'],
+                            label: 'Model project yang akan diikuti',
+                            type: 'select-radio',
+                            option: {
+                              default_options:
+                                defaultData.followed_project_model,
+                              list_pointer: {
+                                code: 'code',
+                                name: 'name',
+                                display: ['name'],
+                              },
+                            },
+                          }"
+                        />
                       </v-col>
 
                       <v-col v-if="item.status_program =='Ya'" lg="6">
@@ -472,6 +516,7 @@ export default {
 
       let _participants = [];
       for (const item of this.participants) {
+        console.log("item", item);
         if (Array.isArray(item.trees) && item.trees.length > 3) {
           this.$_alert.error(
             {},
@@ -598,7 +643,7 @@ export default {
         village: "",
         mu_no: "",
         target_area: "",
-        program_year: "2025",
+        program_year: "",
       },
       projectPurpose: null,
       participants: [
@@ -614,6 +659,8 @@ export default {
           tree2: "",
           tree3: "",
           pattern: "",
+          is_program: "",
+          is_program_year: "",
         },
       ],
     };
