@@ -227,6 +227,24 @@
         </div>
       </template>
 
+      <template v-slot:item.photo_documentation1="{ item }">
+        <div class="photo">
+          <img
+            :src="$_config.baseUrlUpload + '/' + item.photo_documentation1"
+            @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation1)"
+          />
+        </div>
+      </template>
+
+      <template v-slot:item.photo_documentation2="{ item }">
+        <div class="photo">
+          <img
+            :src="$_config.baseUrlUpload + '/' + item.photo_documentation2"
+            @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation2)"
+          />
+        </div>
+      </template>
+
       <template v-slot:item.owned_land_legalization_status="{ item }">
         <div
           class="min-w-200px"
@@ -469,6 +487,18 @@ export default {
             sortable: false,
             text: "Foto Form Minat",
             value: "photo",
+          },
+          {
+            key: "photo_documentation1",
+            sortable: false,
+            text: "Foto Dokumentasi 1",
+            value: "photo_documentation1",
+          },
+          {
+            key: "photo_documentation2",
+            sortable: false,
+            text: "Foto Dokumentasi 2",
+            value: "photo_documentation2",
           },
         ],
         data: [],

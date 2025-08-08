@@ -261,6 +261,44 @@
                   />
                 </v-col>
 
+                <v-col md="6">
+                  <geko-input v-model="formData.photo_documentation1" :item="{
+                    label: 'Foto Dokumentasi 1',
+                    validation: ['required'],
+                    type: 'upload',
+                    api: 'sosialisasi_program/upload.php',
+                    directory: 'photos/documentations',
+                    upload_type: 'image/*',
+                    setter: 'photo_documentation1',
+                    view_data: 'photo_documentation1' + i,
+                    option: {
+                      label_hint:
+                        'Klik gambar untuk memilih berkas yang akan diunggah',
+                      max_size: 5,
+                      multiple: false,
+                    },
+                  }" />
+                </v-col>
+
+                <v-col md="6">
+                  <geko-input v-model="formData.photo_documentation2" :item="{
+                    label: 'Foto Dokumentasi 2',
+                    validation: ['required'],
+                    type: 'upload',
+                    api: 'sosialisasi_program/upload.php',
+                    directory: 'photos/documentations',
+                    upload_type: 'image/*',
+                    setter: 'photo_documentation2',
+                    view_data: 'photo_documentation2' + i,
+                    option: {
+                      label_hint:
+                        'Klik gambar untuk memilih berkas yang akan diunggah',
+                      max_size: 5,
+                      multiple: false,
+                    },
+                  }" />
+                </v-col>
+
                 <v-col
                   lg="6"
                   v-if="
@@ -451,6 +489,8 @@ export default {
         ["is_program_year"],
         ["training", "training", "training_materials_material_name"],
         ["photo", "photo"],
+        ["photo_documentation1", "photo_documentation1"],
+        ["photo_documentation2", "photo_documentation2"],
         ["trees", "trees"],
         ["owned_land_legalization_status", "owned_land_legalization_status"],
         ["followed_project_model", "followed_project_model"],

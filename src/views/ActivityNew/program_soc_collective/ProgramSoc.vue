@@ -626,6 +626,134 @@ export default {
             },
           },
           {
+            id: "age",
+            label: "Umur",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "age",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "people_status",
+            label: "Perwakilan Dari",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "people_status",
+                transform: "people-status",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "group_name",
+            label: "Nama Kelompok",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "group_name",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "entry_data_position",
+            label: "Jabatan / Posisi Pengisi Form",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "entry_data_position",
+                transform: "entry-data-position",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "position_name",
+            label: "Nama Jabatan / Posisi",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "position_name",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "total_minat",
+            label: "Jumlah Peserta Yg Berminat",
+            methods: {
+              list: false,
+              detail: {
+                class: "badge bg-success",
+                view_data: "total_minat",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "total_ragu",
+            label: "Jumlah Peserta Yg Ragu-Ragu",
+            methods: {
+              list: false,
+              detail: {
+                class: "badge bg-warning",
+                view_data: "total_ragu",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "training_materials_material_name_training1",
+            label: "Materi Pelatihan 1",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "training_materials_material_name_training1",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "training_materials_material_name_training2",
+            label: "Materi Pelatihan 2",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "training_materials_material_name_training2",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
             id: "pic_manager_id",
             label: "PIC Manager",
             methods: {

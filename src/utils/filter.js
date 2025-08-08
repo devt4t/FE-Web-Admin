@@ -182,6 +182,12 @@ Vue.filter("parse", (value, id) => {
     case "program-type":
       _value = value === '2' ? "Carbon" : value === '3' ? "Non-Carbon" : "-";
       break;
+    case "people-status":
+      _value = value === '1' ? "Warga Desa" : value === '2' ? "Warga Dusun" : "Kelompok Dalam Area";
+      break;
+    case "entry-data-position":
+      _value = value === '1' ? "Aparat Desa" : value === '2' ? "Tokoh Dusun" : "Lainnya";
+      break;
     default:
       _value = value;
       break;

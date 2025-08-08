@@ -171,6 +171,22 @@ export default {
 
       this.$store.state.lightbox.show = true;
     },
+    async getDetail() {
+      if (!this.data) return;
+
+      this.$_api
+        .get("GetFormMinatCollectiveDetailAll_new", {
+          id: this.data.id,
+        })
+        .then((response) => {
+          this.data = response.data.result;
+          // this.$emit("data-loaded", this.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          this.$_alert.error(err);
+        });
+    }
   },
   computed: {
     defaultData() {
