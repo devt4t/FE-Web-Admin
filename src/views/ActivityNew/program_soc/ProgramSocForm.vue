@@ -117,7 +117,7 @@
                 list_pointer: {
                   code: 'kode_desa',
                   label: 'name',
-                  display: ['name'],
+                  display: ['name','kecamatans_name'],
                 },
               },
             }" @selected="onChangeVillage($event)" />
