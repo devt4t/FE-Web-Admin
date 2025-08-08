@@ -261,44 +261,6 @@
                   />
                 </v-col>
 
-                <v-col md="6">
-                  <geko-input v-model="formData.photo_documentation1" :item="{
-                    label: 'Foto Dokumentasi 1',
-                    validation: ['required'],
-                    type: 'upload',
-                    api: 'sosialisasi_program/upload.php',
-                    directory: 'photos/documentations',
-                    upload_type: 'image/*',
-                    setter: 'photo_documentation1',
-                    view_data: 'photo_documentation1' + i,
-                    option: {
-                      label_hint:
-                        'Klik gambar untuk memilih berkas yang akan diunggah',
-                      max_size: 5,
-                      multiple: false,
-                    },
-                  }" />
-                </v-col>
-
-                <v-col md="6">
-                  <geko-input v-model="formData.photo_documentation2" :item="{
-                    label: 'Foto Dokumentasi 2',
-                    validation: ['required'],
-                    type: 'upload',
-                    api: 'sosialisasi_program/upload.php',
-                    directory: 'photos/documentations',
-                    upload_type: 'image/*',
-                    setter: 'photo_documentation2',
-                    view_data: 'photo_documentation2' + i,
-                    option: {
-                      label_hint:
-                        'Klik gambar untuk memilih berkas yang akan diunggah',
-                      max_size: 5,
-                      multiple: false,
-                    },
-                  }" />
-                </v-col>
-
                 <v-col
                   lg="6"
                   v-if="
@@ -313,29 +275,6 @@
                       option: {
                         default_options:
                           defaultData.owned_land_legalization_status,
-                        list_pointer: {
-                          code: 'code',
-                          name: 'name',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                  />
-                </v-col>
-                <v-col
-                  lg="6"
-                  v-if="
-                    ['Ya'].includes(formData.status_program)
-                  "
-                >
-                  <geko-input
-                    v-model="formData.followed_project_model"
-                    :item="{
-                      validation: ['required'],
-                      label: 'Model project yang akan diikuti',
-                      type: 'select-radio',
-                      option: {
-                        default_options: defaultData.followed_project_model,
                         list_pointer: {
                           code: 'code',
                           name: 'name',

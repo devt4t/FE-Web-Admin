@@ -218,29 +218,17 @@
         </div>
       </template>
 
+      <template v-slot:item.entry_data_status="{ item }">
+        <div>
+          {{ ["-", "Pemilik Lahan", "Pengelola/Penggarap", "Lainnya"][+item.entry_data_status ?? 0] }}
+        </div>
+      </template>
+
       <template v-slot:item.photo="{ item }">
         <div class="photo">
           <img
             :src="$_config.baseUrlUpload + '/' + item.photo"
             @click="showLightbox($_config.baseUrlUpload + '/' + item.photo)"
-          />
-        </div>
-      </template>
-
-      <template v-slot:item.photo_documentation1="{ item }">
-        <div class="photo">
-          <img
-            :src="$_config.baseUrlUpload + '/' + item.photo_documentation1"
-            @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation1)"
-          />
-        </div>
-      </template>
-
-      <template v-slot:item.photo_documentation2="{ item }">
-        <div class="photo">
-          <img
-            :src="$_config.baseUrlUpload + '/' + item.photo_documentation2"
-            @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation2)"
           />
         </div>
       </template>
@@ -483,22 +471,40 @@ export default {
             value: "followed_project_model",
           },
           {
+            key: "is_program_year",
+            sortable: false,
+            text: "Pernah Ikut Program Tahun",
+            value: "is_program_year",
+          },
+          {
+            key: "entry_data_status",
+            sortable: false,
+            text: "Status Pengisi Data",
+            value: "entry_data_status",
+          },
+          {
+            key: "enty_data_status_others",
+            sortable: false,
+            text: "Status Pengisi Data (Lainnya)",
+            value: "enty_data_status_others",
+          },
+          {
+            key: "lahan_for_program",
+            sortable: false,
+            text: "Jumlah lahan",
+            value: "lahan_for_program",
+          },
+          {
+            key: "lahan_for_program_luas",
+            sortable: false,
+            text: "Total luas lahan (m²)",
+            value: "lahan_for_program_luas",
+          },
+          {
             key: "photo",
             sortable: false,
             text: "Foto Form Minat",
             value: "photo",
-          },
-          {
-            key: "photo_documentation1",
-            sortable: false,
-            text: "Foto Dokumentasi 1",
-            value: "photo_documentation1",
-          },
-          {
-            key: "photo_documentation2",
-            sortable: false,
-            text: "Foto Dokumentasi 2",
-            value: "photo_documentation2",
           },
         ],
         data: [],

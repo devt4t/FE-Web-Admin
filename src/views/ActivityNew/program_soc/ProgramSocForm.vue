@@ -123,7 +123,6 @@
             }" @selected="onChangeVillage($event)" />
           </v-col>
 
-
           <v-col lg="6" v-if="formData.village">
             <geko-input v-model="projectPurpose" :item="{
               label: 'Project',
@@ -146,6 +145,44 @@
                     code: 3,
                   },
                 ],
+              },
+            }" />
+          </v-col>
+
+          <v-col md="6">
+            <geko-input v-model="formData.photo_documentation1" :item="{
+              label: 'Foto Dokumentasi 1',
+              validation: ['required'],
+              type: 'upload',
+              api: 'sosialisasi_program/upload.php',
+              directory: 'photos/documentations',
+              upload_type: 'image/*',
+              setter: 'photo_documentation1',
+              view_data: 'photo_documentation1' + i,
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 5,
+                multiple: false,
+              },
+            }" />
+          </v-col>
+
+          <v-col md="6">
+            <geko-input v-model="formData.photo_documentation2" :item="{
+              label: 'Foto Dokumentasi 2',
+              validation: ['required'],
+              type: 'upload',
+              api: 'sosialisasi_program/upload.php',
+              directory: 'photos/documentations',
+              upload_type: 'image/*',
+              setter: 'photo_documentation2',
+              view_data: 'photo_documentation2' + i,
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 5,
+                multiple: false,
               },
             }" />
           </v-col>
@@ -362,30 +399,6 @@
                         }" />
                       </v-col>
 
-                <v-col
-                  lg="6"
-                  v-if="
-                    ['Ya'].includes(formData.status_program)
-                  "
-                >
-                  <geko-input
-                    v-model="formData.followed_project_model"
-                    :item="{
-                      validation: ['required'],
-                      label: 'Model project yang akan diikuti',
-                      type: 'select-radio',
-                      option: {
-                        default_options: [],
-                        list_pointer: {
-                          code: 'code',
-                          name: 'name',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                  />
-                </v-col>
-
                       <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
                         <geko-input v-model="item.trees" :item="{
                           label: 'Pohon Yang Diminati (maks 3)',
@@ -424,44 +437,6 @@
                         }" />
                       </v-col>
 
-                      <v-col md="6">
-                        <geko-input v-model="item.photo_documentation1" :item="{
-                          label: 'Foto Dokumentasi 1',
-                          validation: ['required'],
-                          type: 'upload',
-                          api: 'sosialisasi_program/upload.php',
-                          directory: 'photos/documentations',
-                          upload_type: 'image/*',
-                          setter: 'photo_documentation1',
-                          view_data: 'photo_documentation1' + i,
-                          option: {
-                            label_hint:
-                              'Klik gambar untuk memilih berkas yang akan diunggah',
-                            max_size: 5,
-                            multiple: false,
-                          },
-                        }" />
-                      </v-col>
-
-                      <v-col md="6">
-                        <geko-input v-model="item.photo_documentation2" :item="{
-                          label: 'Foto Dokumentasi 2',
-                          validation: ['required'],
-                          type: 'upload',
-                          api: 'sosialisasi_program/upload.php',
-                          directory: 'photos/documentations',
-                          upload_type: 'image/*',
-                          setter: 'photo_documentation2',
-                          view_data: 'photo_documentation2' + i,
-                          option: {
-                            label_hint:
-                              'Klik gambar untuk memilih berkas yang akan diunggah',
-                            max_size: 5,
-                            multiple: false,
-                          },
-                        }" />
-                      </v-col>
-
                       <v-col
                         v-if="item.status_program =='Ya'"
                         lg="6"
@@ -475,28 +450,6 @@
                             option: {
                               default_options:
                                 defaultData.owned_land_legalization_status,
-                              list_pointer: {
-                                code: 'code',
-                                name: 'name',
-                                display: ['name'],
-                              },
-                            },
-                          }"
-                        />
-                      </v-col>
-                      <v-col
-                      v-if="item.status_program =='Ya'"
-                      lg="6"
-                      >
-                        <geko-input
-                          v-model="item.followed_project_model"
-                          :item="{
-                            validation: ['required'],
-                            label: 'Model project yang akan diikuti',
-                            type: 'select-radio',
-                            option: {
-                              default_options:
-                                defaultData.followed_project_model,
                               list_pointer: {
                                 code: 'code',
                                 name: 'name',
@@ -590,6 +543,8 @@ export default {
         mu_no: this.formData.mu_no,
         target_area: this.formData.target_area,
         program_year: this.formData.program_year,
+        photo_documentation1: this.formData.photo_documentation1,
+        photo_documentation2: this.formData.photo_documentation2,
       };
 
       //insert main program soc
@@ -682,6 +637,8 @@ export default {
         mu_no: "",
         target_area: "",
         program_year: "",
+        photo_documentation1: "",
+        photo_documentation2: "",
       },
       projectPurpose: null,
       participants: [
@@ -690,10 +647,8 @@ export default {
           name: "",
           address: "",
           status_program: "",
-          training: "",
+          training: [],
           photo: "",
-          photo_documentation1: "",
-          photo_documentation2: "",
           trees: [],
           tree1: "",
           tree2: "",
