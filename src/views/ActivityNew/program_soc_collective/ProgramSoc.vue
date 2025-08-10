@@ -69,6 +69,13 @@
         >
       </div>
     </template>
+
+    <template v-slot:detail-lahan_legal_status="{ item }">
+      <div v-for="itm of '1,2,3,4'.split(',')" :key="itm">
+          {{ itm + ". " }} {{ itm | parse('lahan-legal-status') }}
+      </div>
+    </template>
+
     <template v-if="false" v-slot:list-bottom-action="{ item }">
       <v-btn
         small
@@ -726,6 +733,168 @@ export default {
             },
           },
           {
+            id: "lahan_legal_status",
+            label: "Status Legalitas Lahan",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "lahan_legal_status_others",
+            label: "Legalitas Lahan Lainnya",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "lahan_legal_status_others",
+                transform: "no-empty",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_pemilik_people",
+            label: "Jumlah Peserta Pemilik Lahan",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_pemilik_people",
+                transform: "no-empty",
+                class: "badge bg-info",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_pemilik_lahan",
+            label: "Jumlah Lahan Pemilik Lahan",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_pemilik_lahan",
+                transform: "no-empty",
+                class: "badge bg-info",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_pemilik_luas_lahan",
+            label: "Luas Lahan Pemilik Lahan",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_pemilik_luas_lahan",
+                transform: "no-empty",
+                class: "badge bg-info",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_penggarap_people",
+            label: "Jumlah Peserta Penggarap",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_penggarap_people",
+                transform: "no-empty",
+                class: "badge bg-primary",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_penggarap_lahan",
+            label: "Jumlah Lahan Penggarap",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_penggarap_lahan",
+                transform: "no-empty",
+                class: "badge bg-primary",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_penggarap_luas_lahan",
+            label: "Luas Lahan Penggarap",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_penggarap_luas_lahan",
+                transform: "no-empty",
+                class: "badge bg-primary",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_penggarap_people",
+            label: "Jumlah Peserta Lainnya",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_penggarap_people",
+                transform: "no-empty",
+                class: "badge bg-warning",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_lain_lahan",
+            label: "Jumlah Lahan Lainnya",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_lain_lahan",
+                transform: "no-empty",
+                class: "badge bg-warning",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "peserta_lain_luas_lahan",
+            label: "Luas Lahan Lainnya",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "peserta_lain_luas_lahan",
+                transform: "no-empty",
+                class: "badge bg-warning",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
             id: "training_materials_material_name_training1",
             label: "Materi Pelatihan 1",
             methods: {
@@ -763,6 +932,20 @@ export default {
                 class: "min-w-100px",
               },
               detail: false,
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "suggestion",
+            label: "Usulan Untuk T4T",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "suggestion",
+                transform: "no-empty"
+              },
               create: true,
               update: true,
               filter: false,
