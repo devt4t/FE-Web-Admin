@@ -3,7 +3,7 @@
 .program-soc-form {
 
     .bg-grey {
-        
+
         background-color: rgba(199, 199, 199, 0.1);
         border-radius: 12px;
         padding: 1.5em;
@@ -14,6 +14,24 @@
     .photo img {
         width: 5em;
         height: auto;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
+
+.image-list {
+    display: flex;
+    flex-direction: row;
+
+    .image-item {
+        width: 8em;
+        height: 8em;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 5px;
+        background-size: cover;
 
         &:hover {
             cursor: pointer;

@@ -190,7 +190,7 @@ Vue.filter("parse", (value, id) => {
       break;
     case "lahan-legal-status":
       _value = value === '1' ? "Sertifikat Lahan atau letter C atas nama Sendiri" 
-        : value === '2' ? "Sertifikat Lahan atau letter C atas nama Sendiri" 
+        : value === '2' ? "Akte Jual beli atau Letter C masih atas nama Orang Lain" 
           : value === '3' ? "Lahan Waris atau Lahan Sewa atau Lahan Garapan" : "Lainnya";
       break;
     default:

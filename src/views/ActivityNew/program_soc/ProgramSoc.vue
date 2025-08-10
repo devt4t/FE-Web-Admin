@@ -71,18 +71,16 @@
     </template>
 
     <template v-slot:detail-photo_documentation="{ item }">
-      <div class="photo">
-        <img
-          width="100px"
-          :src="$_config.baseUrlUpload + '/' + item.photo_documentation1"
-          @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation1)"
-        />
-        <img
-          width="100px"
-          :src="$_config.baseUrlUpload + '/' + item.photo_documentation2"
-          @click="showLightbox($_config.baseUrlUpload + '/' + item.photo_documentation2)"
-        />
-      </div>
+      <div class="d-flex flex-row image-list">
+        <div class="image-item" v-if="item.photo_documentation"
+            @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation}`, 0)"
+            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation}` + ')' }">
+        </div>
+        <div @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation2}`, 0)"
+            class="image-item" v-if="item.photo_documentation2"
+            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation2}` + ')' }">
+        </div>
+    </div>
     </template>
 
     <template v-slot:list-bottom-action="{ item }">

@@ -71,8 +71,8 @@
     </template>
 
     <template v-slot:detail-lahan_legal_status="{ item }">
-      <div v-for="itm of '1,2,3,4'.split(',')" :key="itm">
-          {{ itm + ". " }} {{ itm | parse('lahan-legal-status') }}
+      <div v-for="(legal, index) in item.lahan_legal_status.split(',')" :key="index">
+          {{ ++index + ". " }} {{ legal | parse('lahan-legal-status') }}
       </div>
     </template>
 
@@ -606,7 +606,7 @@ export default {
           },
           {
             id: "is_program_year",
-            label: "Pernah Mengikuti Program Tahun",
+            label: "Pernah Ikut Program Tahun",
             methods: {
               list: false,
               detail: {
