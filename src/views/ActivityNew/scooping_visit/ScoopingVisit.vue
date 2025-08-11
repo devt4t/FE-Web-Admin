@@ -1,6 +1,6 @@
 <template>
   <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey"
-    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')" :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')">
+    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')" :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')" :refreshKey="refreshKey">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
@@ -80,7 +80,7 @@
               'border-dotted-bottom': true,
             }">
               <h5 class="font-weight-400 mb-0 text-09-em">
-                Project Pembangunan Masjid
+                <span class="text-09-em">Project</span>
               </h5>
               <div class="d-flex flex-row" style="align-items: flex-start">
                 <span class="badge bg-info text-08-em ml-2">Carbon</span>
@@ -93,6 +93,13 @@
 
     <template v-slot:detail-row>
       <scooping-visit-detail />
+    </template>
+    <template v-slot:list-after-filter>
+      <scooping-project-program-year-modal
+      :data="scooping_data"
+      :dataKey="scooping_data_key"
+      @success="refreshKey = refreshKey + 1"
+      ></scooping-project-program-year-modal>
     </template>
 
     <template v-slot:list-indicator="{ item }">
@@ -176,6 +183,10 @@
         <v-progress-circular v-else color="primary" :size="15" :width="2" indeterminate></v-progress-circular>
         <span class="text-09-em ml-2">Export</span>
       </v-btn>
+      <v-btn small @click="onAssignProject(item)" variant="info" class="mt-1">
+        <v-icon small>mdi-switch</v-icon>
+        <span class="text-09-em ml-2">Assign Project</span>
+      </v-btn>
     </template>
   </geko-base-crud>
 </template>
@@ -185,16 +196,21 @@ import "./scooping-visit.scss";
 import ScoopingVisitForm from "./ScoopingVisitForm.vue";
 import ScoopingVisitDetail from "./ScoopingVisitDetail.vue";
 import ScoopingVisitData from "./ScoopingVisitData.js";
+import ScoopingProjectProgramYearModal from "./ScoopingVisitProjectAsignment.vue";
 import axios from "axios";
 export default {
   name: "crud-scooping-visit",
   components: {
     ScoopingVisitForm,
     ScoopingVisitDetail,
+    ScoopingProjectProgramYearModal,
   },
   watch: {},
   data() {
     return {
+      refreshKey: 0,
+      scooping_data: null,
+      scooping_data_key: null,
       componentKey: 1,
       updateIds: [],
       exportIds: [],
@@ -564,6 +580,10 @@ export default {
   },
 
   methods: {
+    onAssignProject(item) {
+      this.scooping_data = item;
+      this.scooping_data_key = item.id;
+    },
     async onExport(data) {
       if (this.exportIds.includes(data.id)) return;
       this.exportIds.push(data.id);

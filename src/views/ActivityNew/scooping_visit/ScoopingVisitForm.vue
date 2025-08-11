@@ -128,15 +128,16 @@
             }" @selected="formData.village_code = $event.kode_desa" :disabled="!formData.district_id" />
           </v-col>
 
-          <v-col md="6">
+          <v-col md="6" >
             <geko-input v-model="formData.project_id" :item="{
               label: 'Project',
-              validation: ['required'],
+              validation: [],
               col_size: 6,
               type: 'select',
               setter: 'project_id',
               api: 'GetProjectAllAdmin',
               default_label: formData.project_code,
+              disabled: true,
               param: {
                 limit: 1000,
               },
