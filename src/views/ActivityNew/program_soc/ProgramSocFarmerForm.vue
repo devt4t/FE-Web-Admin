@@ -174,9 +174,6 @@
                     v-model="formData.pattern"
                     :item="{
                       label: 'Pola Tanam Sebelumnya',
-                      validation: ['Ya'].includes(formData.status_program)
-                        ? ['required']
-                        : [],
                       type: 'select',
                       setter: 'pattern',
                       default_label: formData.planting_pattern_name || '',
@@ -191,6 +188,44 @@
                     }"
                   />
                 </v-col>
+
+                <v-col
+                  lg="6"
+                  :class="{
+                    'd-none': !['Ya'].includes(formData.status_program),
+                  }"
+                >
+                  <geko-input
+                    v-model="formData.pattern_new"
+                    :item="{
+                      label: 'Pola Tanam Yang Diminati',
+                      validation: ['required'],
+                      type: 'select',
+                      setter: 'pattern_new',
+                      default_label: formData.planting_pattern_name || '',
+                      option: {
+                        default_options: [
+                          {
+                            value: 'Agroforestry',
+                            text: 'Agroforestry',
+                          },
+                          {
+                            value: 'Konservasi',
+                            text: 'Konservasi',
+                          },
+                        ],
+                        list_pointer: {
+                          label: 'text',
+                          code: 'value',
+                          display: ['text'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
+
+                
+
                 <v-col
                   lg="6"
                   v-if="['Ya', 'Ragu - Ragu'].includes(formData.status_program)"
@@ -423,6 +458,7 @@ export default {
         ["lahan_for_program"],
         ["lahan_for_program_luas"],
         ["pattern", "pattern"],
+        ["pattern_new", "pattern_new"],
         ["status_program"],
         ["is_program"],
         ["is_program_year"],
@@ -539,6 +575,7 @@ export default {
         tree2: "",
         tree3: "",
         pattern: "",
+        pattern_new: "",
         owned_land_legalization_status: "",
       },
     };

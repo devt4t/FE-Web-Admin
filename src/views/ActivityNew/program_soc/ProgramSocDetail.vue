@@ -447,10 +447,10 @@ export default {
             value: "training",
           },
           {
-            key: "pattern",
+            key: "pattern_new",
             sortable: false,
             text: "Pola",
-            value: "pattern",
+            value: "pattern_new",
           },
           {
             key: "trees",
