@@ -69,6 +69,20 @@
         >
       </div>
     </template>
+
+    <template v-slot:detail-photo_documentation="{ item }">
+      <div class="d-flex flex-row image-list">
+        <div class="image-item" v-if="item.photo_documentation"
+            @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation}`, 0)"
+            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation}` + ')' }">
+        </div>
+        <div @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation2}`, 0)"
+            class="image-item" v-if="item.photo_documentation2"
+            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation2}` + ')' }">
+        </div>
+    </div>
+    </template>
+
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
         small
@@ -272,6 +286,14 @@ export default {
               });
           }
         });
+    },
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+      if (index) this.$store.state.lightbox.index = index;
+      else this.$store.state.lightbox.index = 0;
+
+      this.$store.state.lightbox.show = true;
     },
   },
 
@@ -579,6 +601,7 @@ export default {
               filter: false,
             },
           },
+
           {
             id: "is_verify",
             label: "Status",
@@ -632,6 +655,20 @@ export default {
           {
             id: "action",
             label: "Action",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+
+          {
+            id: "photo_documentation",
+            label: "Foto Dokumentasi",
             methods: {
               list: false,
               detail: {
