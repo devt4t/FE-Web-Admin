@@ -365,7 +365,6 @@
                       <v-col lg="6" v-if="item.status_program === 'Ya'">
                         <geko-input v-model="item.pattern" :item="{
                           label: 'Pola Tanam Sebelumnya',
-                          validation: ['required'],
                           type: 'select',
                           setter: 'pattern',
                           option: {
@@ -377,6 +376,38 @@
                             default_options: defaultData.planting_pattern,
                           },
                         }" />
+                      </v-col>
+                      <v-col
+                        lg="6"
+                        v-if="item.status_program =='Ya'"
+                      >
+                        <geko-input
+                          v-model="item.pattern_new"
+                          :item="{
+                            label: 'Pola Tanam Yang Diminati',
+                            validation: ['required'],
+                            type: 'select',
+                            setter: 'pattern_new',
+                            default_label: item.planting_pattern_name || '',
+                            option: {
+                              default_options: [
+                                {
+                                  value: 'Agroforestry',
+                                  text: 'Agroforestry',
+                                },
+                                {
+                                  value: 'Konservasi',
+                                  text: 'Konservasi',
+                                },
+                              ],
+                              list_pointer: {
+                                label: 'text',
+                                code: 'value',
+                                display: ['text'],
+                              },
+                            },
+                          }"
+                        />
                       </v-col>
                       <v-col lg="6" v-if="
                         ['Ya', 'Ragu - Ragu'].includes(item.status_program)
@@ -489,6 +520,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-form",
@@ -654,6 +686,7 @@ export default {
           tree2: "",
           tree3: "",
           pattern: "",
+          pattern_new: "",
           is_program: "",
           is_program_year: "",
         },

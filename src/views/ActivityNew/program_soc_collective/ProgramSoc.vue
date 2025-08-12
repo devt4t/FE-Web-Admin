@@ -76,13 +76,13 @@
       </div>
     </template>
 
-    <template v-if="false" v-slot:list-bottom-action="{ item }">
+    <template v-slot:list-bottom-action="{ item }">
       <v-btn
         small
         @click="onExport(item)"
         variant="danger"
         class="mt-1"
-        v-if="item.is_verified"
+        v-if="!item.is_verified"
       >
         <v-icon small v-if="!exportIds.includes(item.id)"
           >mdi-file-pdf-box</v-icon

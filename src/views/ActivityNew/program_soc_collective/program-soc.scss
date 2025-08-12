@@ -20,3 +20,21 @@
         }
     }
 }
+
+.image-list {
+    display: flex;
+    flex-direction: row;
+
+    .image-item {
+        width: 8em;
+        height: 8em;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 5px;
+        background-size: cover;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

@@ -166,17 +166,12 @@
 
                 <v-col
                   lg="6"
-                  :class="{
-                    'd-none': !['Ya'].includes(formData.status_program),
-                  }"
+                  v-if="formData.status_program =='Ya'"
                 >
                   <geko-input
                     v-model="formData.pattern"
                     :item="{
                       label: 'Pola Tanam Sebelumnya',
-                      validation: ['Ya'].includes(formData.status_program)
-                        ? ['required']
-                        : [],
                       type: 'select',
                       setter: 'pattern',
                       default_label: formData.planting_pattern_name || '',
@@ -191,6 +186,42 @@
                     }"
                   />
                 </v-col>
+
+                <v-col
+                  lg="6"
+                  v-if="formData.status_program =='Ya'"
+                >
+                  <geko-input
+                    v-model="formData.pattern_new"
+                    :item="{
+                      label: 'Pola Tanam Yang Diminati',
+                      validation: ['required'],
+                      type: 'select',
+                      setter: 'pattern_new',
+                      default_label: formData.planting_pattern_name || '',
+                      option: {
+                        default_options: [
+                          {
+                            value: 'Agroforestry',
+                            text: 'Agroforestry',
+                          },
+                          {
+                            value: 'Konservasi',
+                            text: 'Konservasi',
+                          },
+                        ],
+                        list_pointer: {
+                          label: 'text',
+                          code: 'value',
+                          display: ['text'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
+
+                
+
                 <v-col
                   lg="6"
                   v-if="['Ya', 'Ragu - Ragu'].includes(formData.status_program)"
@@ -216,7 +247,7 @@
                     }"
                   />
                 </v-col>
-                <v-col lg="6" v-if="['Ya'].includes(formData.status_program)">
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
                   <geko-input
                     v-model="formData.trees"
                     :item="{
@@ -262,10 +293,7 @@
                 </v-col>
 
                 <v-col
-                  lg="6"
-                  v-if="
-                    ['Ya'].includes(formData.status_program)"
-                >
+                  lg="6" v-if="formData.status_program == 'Ya'">
                   <geko-input
                     v-model="formData.owned_land_legalization_status"
                     :item="{
@@ -321,7 +349,8 @@ import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-farmer-form",
   methods: {
-    async onSubmit() {
+    async onSubmit(data) {
+      console.log('hit!', data)
       if (this.loading) return;
       this.loading = true;
 
@@ -423,6 +452,7 @@ export default {
         ["lahan_for_program"],
         ["lahan_for_program_luas"],
         ["pattern", "pattern"],
+        ["pattern_new", "pattern_new"],
         ["status_program"],
         ["is_program"],
         ["is_program_year"],
@@ -539,6 +569,7 @@ export default {
         tree2: "",
         tree3: "",
         pattern: "",
+        pattern_new: "",
         owned_land_legalization_status: "",
       },
     };
