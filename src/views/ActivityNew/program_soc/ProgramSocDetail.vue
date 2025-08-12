@@ -70,7 +70,7 @@
               <p class="mb-0 value">
                 {{
                   data.sprFarmer.filter((x) => x.status_program == "Tidak")
-                    .length
+                  .length
                 }}
               </p>
             </div>
@@ -86,6 +86,61 @@
                   ).length
                 }}
               </p>
+            </div>
+          </div>
+        </div>
+        
+        <h4 class="font-weight-500 mb-2 mt-2 text-grey">Total Jumlah Lahan</h4>
+
+        <div class="statistics mb-3">
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Lahan Pemilik</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===1).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
+            </div>
+          </div>
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Lahan Pengelola/Penggarap</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===2).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
+            </div>
+          </div>
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Lahan Lainnya</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===3).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
+            </div>
+          </div>
+          
+        </div>
+
+        <h4 class="font-weight-500 mb-2 mt-2 text-grey">Total Luas Lahan</h4>
+        
+        <div class="statistics mb-3">
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===1).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
+            </div>
+          </div>
+
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===2).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
+            </div>
+          </div>
+
+          <div class="statistic-item light">
+            <v-icon>mdi-list-status</v-icon>
+            <div class="statistic-data">
+              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===3).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
             </div>
           </div>
         </div>

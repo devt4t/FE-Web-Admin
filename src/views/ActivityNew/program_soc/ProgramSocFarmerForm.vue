@@ -166,9 +166,7 @@
 
                 <v-col
                   lg="6"
-                  :class="{
-                    'd-none': !['Ya'].includes(formData.status_program),
-                  }"
+                  v-if="formData.status_program =='Ya'"
                 >
                   <geko-input
                     v-model="formData.pattern"
@@ -191,9 +189,7 @@
 
                 <v-col
                   lg="6"
-                  :class="{
-                    'd-none': !['Ya'].includes(formData.status_program),
-                  }"
+                  v-if="formData.status_program =='Ya'"
                 >
                   <geko-input
                     v-model="formData.pattern_new"
@@ -251,7 +247,7 @@
                     }"
                   />
                 </v-col>
-                <v-col lg="6" v-if="['Ya'].includes(formData.status_program)">
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
                   <geko-input
                     v-model="formData.trees"
                     :item="{
@@ -297,10 +293,7 @@
                 </v-col>
 
                 <v-col
-                  lg="6"
-                  v-if="
-                    ['Ya'].includes(formData.status_program)"
-                >
+                  lg="6" v-if="formData.status_program == 'Ya'">
                   <geko-input
                     v-model="formData.owned_land_legalization_status"
                     :item="{
@@ -356,7 +349,8 @@ import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-farmer-form",
   methods: {
-    async onSubmit() {
+    async onSubmit(data) {
+      console.log('hit!', data)
       if (this.loading) return;
       this.loading = true;
 
