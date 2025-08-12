@@ -4,6 +4,7 @@
     :hideDelete="!['13'].includes($store.state.User.role)"
     :hideUpdate="true"
     :key="'program-soc-detail' + componentKey"
+    :refreshKey="refreshKey"
     @onExportExcel="onExportExcel($event)"
   >
     <template v-slot:list-form_no="{ item }">
@@ -82,6 +83,9 @@
         </div>
     </div>
     </template>
+    <template v-slot:list-after-filter>
+      <program-soc-from-main-update :data="sosprog_data" :dataKey="sosprog_data_key" @success="refreshKey = refreshKey + 1"/>
+    </template>
 
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
@@ -104,12 +108,21 @@
         ></v-progress-circular>
         <span class="text-09-em ml-1">Export</span>
       </v-btn>
+      <v-btn
+        small
+        @click="onUpdateSosprog(item)"
+        variant="info"
+        class="mt-1"
+      >
+        <v-icon small
+          >mdi-upload</v-icon>
+        <span class="text-09-em ml-1">Update Main Data</span>
+      </v-btn>
     </template>
 
     <template v-slot:create-form>
       <program-soc-form />
     </template>
-
     <!-- DETAIL SLAVE -->
     <template v-slot:detail-slave-raw="{ data }">
       <program-soc-detail :data="data" />
@@ -122,17 +135,25 @@ import "./program-soc.scss";
 import moment from "moment";
 import ProgramSocForm from "./ProgramSocForm.vue";
 import ProgramSocDetail from "./ProgramSocDetail.vue";
+import ProgramSocFromMainUpdate from "./ProgramSocFormMainUpdate.vue";
 import defaultData from "./ProgramSocData.js";
 import axios from "axios";
+import { refresh } from "aos";
 export default {
   name: "pra-module",
   components: {
     ProgramSocForm,
     ProgramSocDetail,
+    ProgramSocFromMainUpdate
   },
 
   methods: {
 
+    onUpdateSosprog(data) {
+      console.log("onUpdateSosprog", data);
+      this.sosprog_data = data;
+      this.sosprog_data_key = this.sosprog_data_key + 1;
+    },
     //refactored
     async onExportExcel(data) {
 
@@ -308,6 +329,9 @@ export default {
       exportIds: [],
       isExportingExcel: false,
       componentKey: 1,
+      refreshKey: 0,
+      sosprog_data: null,
+      sosprog_data_key: 0,
       formatDate(date, format = "YYYY-MM-DD", dateFormat = "YYYY-MM-DD") {
         return moment(date, format).format("DD MMMM YYYY");
       },
