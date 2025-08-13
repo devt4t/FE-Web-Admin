@@ -82,7 +82,7 @@
         @click="onExport(item)"
         variant="danger"
         class="mt-1"
-        v-if="!item.is_verified"
+        v-if="item.is_verified"
       >
         <v-icon small v-if="!exportIds.includes(item.id)"
           >mdi-file-pdf-box</v-icon
@@ -856,7 +856,7 @@ export default {
             },
           },
           {
-            id: "peserta_penggarap_people",
+            id: "peserta_lain_people",
             label: "Jumlah Peserta Lainnya",
             methods: {
               list: false,
@@ -958,7 +958,7 @@ export default {
             },
           },
           {
-            id: "verified_by",
+            id: "users_name_verified_by",
             label: "Verified By",
             methods: {
               list: {
