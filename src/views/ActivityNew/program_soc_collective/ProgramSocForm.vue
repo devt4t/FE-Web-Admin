@@ -556,13 +556,55 @@
             }}" />
           </v-col>
 
-           <v-col lg="6">
+          <v-col lg="6">
             <geko-input v-if="formData.lahan_legal_status.includes(4)" v-model="formData.lahan_legal_status_others" :item="{
               label: 'Status Legalitas Lahan (Lainnya)',
               validation: ['required'],
               type: 'text',
             }" />
           </v-col>
+
+          <v-col lg="6">
+            <geko-input v-model="formData.pattern" :item="{
+              label: 'Pola Tanam Sebelumnya',
+              type: 'select',
+              option: {
+              multiple: true,
+              list_pointer: {
+                label: 'text',
+                code: 'value',
+                display: ['text'],
+              },
+              default_options: defaultData.planting_pattern,
+            }}" />
+          </v-col>
+
+          <v-col lg="6">
+            <geko-input v-model="formData.pattern_new" :item="{
+              label: 'Pola Tanam Yang Diminati',
+              type: 'select',
+              validation: ['required'],
+              option: {
+              multiple: true,
+              list_pointer: {
+                  label: 'text',
+                code: 'value',
+                display: ['text'],
+              },
+              default_options: [
+                {
+                  value: 'Agroforestry',
+                  text: 'Agroforestry',
+                },
+                {
+                  value: 'Konservasi',
+                  text: 'Konservasi',
+                },
+              ],
+            }}" />
+          </v-col>
+
+           
 
           <v-col md="12" class="form-separator">
             <h4>Materi Pelatihan</h4>

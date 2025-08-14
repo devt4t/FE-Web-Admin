@@ -82,7 +82,7 @@
         @click="onExport(item)"
         variant="danger"
         class="mt-1"
-        v-if="!item.is_verified"
+        v-if="item.is_verified"
       >
         <v-icon small v-if="!exportIds.includes(item.id)"
           >mdi-file-pdf-box</v-icon
@@ -107,6 +107,19 @@
     <template v-slot:detail-slave-raw="{ data }">
       <program-soc-detail :data="data" />
     </template>
+
+    <template v-slot:list-before-create>
+        <progsoc-collective-export-modal :dataKey="exportKey" />
+    </template>
+
+    <template v-slot:list-after-filter>
+        <div class="d-flex flex-row justify-content-start">
+            <v-btn variant="info" class="mr-2" @click="exportKey += 1">
+                <v-icon>mdi-table-arrow-right</v-icon>
+                <span>Export Excel</span>
+            </v-btn>
+        </div>
+    </template>
   </geko-base-crud>
 </template>
 
@@ -117,11 +130,15 @@ import ProgramSocForm from "./ProgramSocForm.vue";
 import ProgramSocDetail from "./ProgramSocDetail.vue";
 import defaultData from "./ProgramSocData.js";
 import axios from "axios";
+
+import ProgsocCollectiveExportModal from "./ProgsocCollectiveExportModal.vue";
+
 export default {
   name: "pra-module",
   components: {
     ProgramSocForm,
     ProgramSocDetail,
+    ProgsocCollectiveExportModal,
   },
   mounted() {
     const user = JSON.parse(localStorage.getItem("User"));
@@ -203,7 +220,7 @@ export default {
       if (this.exportIds.includes(data.id)) return;
       this.exportIds.push(data.id);
       const result = await this.$_api
-        .get("GetFormMinatDetailAll_new", {
+        .get("GetFormMinatCollectiveDetailAll_new", {
           id: data.id,
         })
         .catch(() => false);
@@ -213,25 +230,13 @@ export default {
         return;
       }
 
-      for (const item of result.sprFarmer) {
-        if (item.owned_land_legalization_status) {
-          item.owned_land_legalization_status =
-            defaultData.owned_land_legalization_status.find(
-              (x) => x.code == item.owned_land_legalization_status
-            ).label;
-        }
-        if (item.followed_project_model) {
-          item.followed_project_model = defaultData.followed_project_model.find(
-            (x) => x.code == item.followed_project_model
-          ).label;
-        }
-      }
+
       const exported = await axios
         .post(
-          `${this.$_config.baseUrlExport}export/soc-prog/pdf`,
+          `${this.$_config.baseUrlExport}export/soc-prog-collective/pdf`,
           {
             ...result.mainSpr,
-            participants: result.sprFarmer,
+            trees: result.sprTrees,
           },
           {
             responseType: "arraybuffer",
@@ -295,6 +300,7 @@ export default {
 
   data() {
     return {
+      exportKey: 0,
       exportIds: [],
       isExportingExcel: false,
       componentKey: 1,
@@ -850,7 +856,7 @@ export default {
             },
           },
           {
-            id: "peserta_penggarap_people",
+            id: "peserta_lain_people",
             label: "Jumlah Peserta Lainnya",
             methods: {
               list: false,
@@ -952,7 +958,7 @@ export default {
             },
           },
           {
-            id: "verified_by",
+            id: "users_name_verified_by",
             label: "Verified By",
             methods: {
               list: {

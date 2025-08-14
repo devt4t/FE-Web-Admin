@@ -94,23 +94,23 @@
 
         <div class="statistics mb-3">
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-land-fields</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Lahan Pemilik</p>
+              <p class="mb-0 label">Lahan Pemilik</p>
               <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===1).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
             </div>
           </div>
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-land-fields</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Lahan Pengelola/Penggarap</p>
+              <p class="mb-0 label">Lahan Pengelola/Penggarap</p>
               <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===2).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
             </div>
           </div>
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-land-fields</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Lahan Lainnya</p>
+              <p class="mb-0 label">Lahan Lainnya</p>
               <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===3).reduce((a,b)=> a+b.lahan_for_program, 0) }}</p>
             </div>
           </div>
@@ -121,26 +121,26 @@
         
         <div class="statistics mb-3">
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-arrow-expand</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
-              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===1).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
+              <p class="mb-0 label">Lahan Pemilik</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===1).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }} m²</p>
             </div>
           </div>
 
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-arrow-expand</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
-              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===2).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
+              <p class="mb-0 label">Lahan Pengelola/Penggarap</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===2).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }} m²</p>
             </div>
           </div>
 
           <div class="statistic-item light">
-            <v-icon>mdi-list-status</v-icon>
+            <v-icon>mdi-arrow-expand</v-icon>
             <div class="statistic-data">
-              <p class="mb-0 label">Total Luas Lahan Pemilik (m²)</p>
-              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===3).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }}</p>
+              <p class="mb-0 label">Lahan Lainnya</p>
+              <p class="mb-0 value">{{ data.sprFarmer.filter(a=>a.entry_data_status===3).reduce((a,b)=> a+b.lahan_for_program_luas, 0) }} m²</p>
             </div>
           </div>
         </div>
@@ -238,6 +238,14 @@
         </div>
       </template>
 
+      <template v-slot:item.is_program="{ item }">  
+        {{ item.is_program ? "Ya" : "Tidak" }}
+      </template>
+
+      <template v-slot:item.lahan_for_program_luas="{ item }">  
+        {{ item.lahan_for_program_luas }} m²
+      </template>
+
       <template v-slot:item.trees="{ item }">
         <div class="d-flex flex-row min-w-200px" style="flex-wrap: wrap">
           <span
@@ -275,7 +283,7 @@
 
       <template v-slot:item.entry_data_status="{ item }">
         <div>
-          {{ ["-", "Pemilik Lahan", "Pengelola/Penggarap", "Lainnya"][+item.entry_data_status ?? 0] }}
+          {{ +item.entry_data_status == 3 ? item.enty_data_status_others : ["-", "Pemilik Lahan", "Pengelola/Penggarap", "Lainnya"][+item.entry_data_status ?? 0] }}
         </div>
       </template>
 
@@ -492,56 +500,20 @@ export default {
           {
             key: "status_program",
             sortable: false,
-            text: "Berminat?",
+            text: "Status Berminat",
             value: "status_program",
-          },
-          {
-            key: "training",
-            sortable: false,
-            text: "Materi Training",
-            value: "training",
           },
           {
             key: "pattern_new",
             sortable: false,
-            text: "Pola",
+            text: "Pola Tanam Yang Diminati",
             value: "pattern_new",
-          },
-          {
-            key: "trees",
-            sortable: false,
-            text: "Jenis Bibit Yang Diharapkan",
-            value: "trees",
-          },
-          {
-            key: "owned_land_legalization_status",
-            sortable: false,
-            text: "Status legalitas lahan yang dimiliki",
-            value: "owned_land_legalization_status",
-          },
-          {
-            key: "followed_project_model",
-            sortable: false,
-            text: "Model project yang akan diikuti",
-            value: "followed_project_model",
-          },
-          {
-            key: "is_program_year",
-            sortable: false,
-            text: "Pernah Ikut Program Tahun",
-            value: "is_program_year",
           },
           {
             key: "entry_data_status",
             sortable: false,
-            text: "Status Pengisi Data",
+            text: "Status Lahan dari Pengisi Data Sebagai",
             value: "entry_data_status",
-          },
-          {
-            key: "enty_data_status_others",
-            sortable: false,
-            text: "Status Pengisi Data (Lainnya)",
-            value: "enty_data_status_others",
           },
           {
             key: "lahan_for_program",
@@ -552,9 +524,40 @@ export default {
           {
             key: "lahan_for_program_luas",
             sortable: false,
-            text: "Total luas lahan (m²)",
+            text: "Luas lahan (Total)",
             value: "lahan_for_program_luas",
           },
+          {
+            key: "owned_land_legalization_status",
+            sortable: false,
+            text: "Bentuk Legalitas Lahan",
+            value: "owned_land_legalization_status",
+          },
+          {
+            key: "is_program",
+            sortable: false,
+            text: "Pernah Ikut Program Sebelumnya",
+            value: "is_program",
+          },
+          {
+            key: "trees",
+            sortable: false,
+            text: "Jenis Tanaman",
+            value: "trees",
+          },
+          {
+            key: "training",
+            sortable: false,
+            text: "Materi Training",
+            value: "training",
+          },
+          // {
+          //   key: "followed_project_model",
+          //   sortable: false,
+          //   text: "Model project yang akan diikuti",
+          //   value: "followed_project_model",
+          // },
+          
           {
             key: "photo",
             sortable: false,
