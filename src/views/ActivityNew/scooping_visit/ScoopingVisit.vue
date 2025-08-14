@@ -295,26 +295,7 @@ export default {
               detail: false,
               create: false,
               update: false,
-              filter: {
-                validation: ["required"],
-                type: "select",
-                col_size: 6,
-                main: true,
-                getter: "GetManagementUnitAdmin",
-                setter: "mu_no",
-                param: {
-                  page: 1,
-                  per_page: 10,
-                },
-                option: {
-                  getterKey: "data.result",
-                  list_pointer: {
-                    code: "mu_no",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
+              filter: false,
             },
           },
           {
@@ -368,6 +349,66 @@ export default {
             },
           },
           {
+            id: "province",
+            label: "Provinsi",
+            methods: {
+              list: false,
+              detail: true,
+              create: false,
+              update: false,
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                main: true,
+                getter: "new-utilities/provinces",
+                setter: "province_code",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "province_code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
+            id: "kabupaten",
+            label: "Kota/Kabupaten",
+            methods: {
+              list: false,
+              detail: true,
+              create: false,
+              update: false,
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                main: true,
+                getter: "new-utilities/kabupatens",
+                setter: "kabupaten_no",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "kabupaten_no",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
             id: "desa",
             label: "Desa",
             methods: {
@@ -377,9 +418,28 @@ export default {
               detail: true,
               create: false,
               update: false,
-              filter: false,
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                main: true,
+                getter: "village/dataset",
+                setter: "village",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "kode_desa",
+                    label: "desas_name",
+                    display: ["desas_name"],
+                  },
+                },
+              },
             },
-          },
+          }, 
           {
             id: "village_area",
             label: "Luas Desa",
