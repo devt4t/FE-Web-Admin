@@ -138,7 +138,7 @@ export default {
 
       this.$_alert.loading(
         "Sedang mengexport data",
-        "Mohon tunggu sebentar, proses ini memerlukan waktu beberapa detik"
+        "Mohon tunggu sebentar, proses ini memerlukan waktu beberapa saat"
       );
 
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));

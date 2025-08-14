@@ -21,7 +21,7 @@
                     </v-btn>
                   </div>
                 </v-col>
-                <v-col lg="12" v-for="(ProjectPY, i) in project_programYear" :key="'ProjectPY-' + i">
+                <v-col lg="12" v-for="(ProjectPY, i) in project_programYear" :key="'ProjectPY-' + i" v-if="loading === false">
                   <v-row class="mx-3 bg-grey">
                     <v-col lg="6">
                       <geko-input
@@ -186,18 +186,26 @@ export default {
     },
     onOpen() {
       this.loading = true;
+
+      this.project_programYear = [];
+      this.scooping_data = null;
+
       this.scooping_data = this.data;
-      console.log("scooping_data", this.scooping_data.assigned_projects);
+
       if (this.scooping_data.assigned_projects.length > 0) {
-        let ExistingProjects = [];
-        for (const item of this.scooping_data.assigned_projects) {
-          if (!item.program_year) item.program_year = null;
-          ExistingProjects.push(item);
-        }
+        let ExistingProjects = this.scooping_data.assigned_projects.map(item => {
+          return {
+            ...item,
+            program_year: item.program_year || null,
+            project_name: item.project_name || "",
+          };
+        });
         this.project_programYear = ExistingProjects;
       }
+
       this.loading = false;
     },
+
 
     onSubmit() {
       this.loading = true;
@@ -225,14 +233,15 @@ export default {
       }
     },
     isOpen(t) {
-      console.log("open change", this.isOpen);
       if (t) {
         this.onOpen();
       } else {
         this.loading = false;
         this.error = "";
+        this.project_programYear = [];
+        this.scooping_data = null;
       }
-    },
+    }
   },
   data() {
     return {
