@@ -1398,7 +1398,7 @@ export default {
               size: 6,
               type: "select",
               setter: "fauna_categories",
-              options: defaultData.flora_type,
+              options: defaultData.fauna_type,
             },
 
             {

@@ -502,7 +502,7 @@
                 </v-col>
 
                 <v-col md="6">
-                  <geko-input v-model="item.method" :item="{
+                  <geko-input v-model="item.period" :item="{
                     label: 'Periode Pemasaran Komoditas',
                     validation: ['required'],
                     type: 'select',
@@ -1064,10 +1064,14 @@ export default {
         const mainDataResult = await this.$_api
           .post("addMainRra_new", mainDataPayload)
           .catch((err) => {
-            this.$_alert.error(err);
+            // this.$_alert.error(err);
             this.isLoading = false;
             return;
           });
+
+        if (!mainDataResult.last_id) {
+          this.$_alert.error("Data RRA sudah ditambahkan");
+        }
 
         const rraId = parseInt(mainDataResult.last_id.current_id) - 1;
 
