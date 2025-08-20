@@ -428,7 +428,7 @@
               </div>
             </div>
           </div>
-          <div v-if="data.main_lahan" class="lahan-side-list" v-for="(item, i) in side" :key="'land-detail-row-' + i">
+          <div v-if="data.main_lahan" class="lahan-side-list" v-for="(item, i) in side" :key="'land-detail-row-' + i++">
             <h4>{{ item.name }}</h4>
 
             <div class="lahan-side-item-wrapper">
@@ -1051,6 +1051,7 @@ export default {
 
       this.data = result;
       let _trees = [];
+      console.log("resData", result);
       for (const tree of result.lahan_detail) {
         const idx = _trees.findIndex(
           (x) => x.label == tree.detail_year.substring(0, 4)
@@ -1066,6 +1067,7 @@ export default {
       }
 
       this.trees = _trees;
+      console.log("trees", this.trees);
       this.openMaps();
     },
 

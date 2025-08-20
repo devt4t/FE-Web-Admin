@@ -28,7 +28,7 @@ export default {
         // },
         model_api: null,
         getter: "new-utilities/kabupatens",
-        setter: "AddEmployee",
+        setter: "AddKabupaten",
         search_key: "search_value",
         // getterDataKey: "data.result.data",
         pagination: true,

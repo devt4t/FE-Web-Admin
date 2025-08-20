@@ -497,7 +497,7 @@
       </v-col>
     </template>
 
-    <template v-slot:update-fc_no="{ formData, setFormData, item }">
+    <!-- <template v-slot:update-fc_no="{ formData, setFormData, item }">
       <v-col lg="6">
         <geko-input
           v-model="formData.fc_no"
@@ -522,7 +522,7 @@
           :disabled="true"
         />
       </v-col>
-    </template>
+    </template> -->
     <!-- END UPDATE -->
   </geko-base-crud>
 </template>
@@ -1257,14 +1257,7 @@ export default {
               create: {
                 type: "row-slot",
               },
-              update: {
-                type: "row-slot",
-                base_type: "select",
-                disabled: true,
-                option: {
-                  default_label: "employees_name",
-                },
-              },
+              update: false
             },
           },
 

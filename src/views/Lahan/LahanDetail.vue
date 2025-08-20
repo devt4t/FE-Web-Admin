@@ -724,7 +724,11 @@
                   <span>Sesuaikan Bibit</span>
                 </v-btn>
               </div>
-              <div class="trees-filter" v-if="trees.length > 1">
+              <!-- <div v-for="(tree,i) in trees[0].data" :key="`lahan-detail-tree-${i}`"
+                class="d-flex flex-row align-items-center">
+                <span class="badge mr-2" :class="'bg-success'">{{ tree.trees_tree_name }}: {{ tree.amount | parse("ts") }}</span>
+              </div> -->
+              <div class="trees-filter" v-if="trees.length > 0">
                 <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
                   :key="`lahan-detail-tree-${i}`" class="mr-2" :class="{
                     'font-weight-bold': tree.label == treesActive,
@@ -1279,6 +1283,7 @@ export default {
       result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![23, 24, 25].includes(x.id))
       this.data = result;
 
+      console.log("result", result);
       // set trees data
       let _trees = [];
       for (const tree of result.lahan_detail) {
@@ -1296,6 +1301,7 @@ export default {
       }
 
       this.trees = _trees;
+      console.log("trees", this.trees);
 
       // get data mou
       try {

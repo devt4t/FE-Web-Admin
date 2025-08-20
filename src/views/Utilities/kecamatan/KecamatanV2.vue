@@ -28,7 +28,7 @@ export default {
         // },
         model_api: null,
         getter: "new-utilities/kecamatans",
-        setter: "AddEmployee",
+        setter: "AddKecamatan",
         search_key: "search_value",
         // getterDataKey: "data.result.data",
         pagination: true,
