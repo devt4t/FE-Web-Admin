@@ -659,6 +659,47 @@
           </v-col>
 
           <v-col md="12" class="form-separator">
+            <h4>Foto Dokumentasi</h4>
+          </v-col>
+
+          <v-col lg="6">
+            <geko-input v-model="formData.documentation1" :item="{
+              label: 'Foto Dokumentasi 1',
+              validation: ['required'],
+              type: 'upload',
+              api: 'sosialisasi_program/upload.php',
+              directory: 'photos/doc_collective',
+              upload_type: 'image/*',
+              setter: 'documentation1',
+              view_data: 'documentation1' + i,
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 5,
+                multiple: false,
+              },
+            }" />
+          </v-col>
+
+          <v-col lg="6">
+            <geko-input v-model="formData.documentation2" :item="{
+              label: 'Foto Dokumentasi 2',
+              type: 'upload',
+              api: 'sosialisasi_program/upload.php',
+              directory: 'photos/doc_collective',
+              upload_type: 'image/*',
+              setter: 'documentation2',
+              view_data: 'documentation2' + i,
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 5,
+                multiple: false,
+              },
+            }" />
+          </v-col>
+
+          <v-col md="12" class="form-separator">
             <div class="d-flex flex-row" style="align-items: center">
               <h4 class="mb-0 pb-0">Jenis Tanaman Yang Diminati Calon Peserta</h4>
               <v-btn small class="circle ml-3" variant="success" @click="addRow()">
@@ -674,7 +715,7 @@
                   <v-expansion-panel-header>
                     <span :class="{
                       'text-italic text-grey': !item.name,
-                    }">{{ item.name || "Masukkan Data Tanaman" }}</span>
+                    }">{{ item.tree_name || "Masukkan Data Tanaman" }}</span>
                     <div class="d-flex flex-row" style="justify-content: flex-end" v-if="trees.length > 1">
                       <button class="text-danger" @click="deleteRow(i)">
                         <v-icon class="text-danger">mdi-delete-empty</v-icon>
