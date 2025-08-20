@@ -1,8 +1,8 @@
 <template>
   <geko-base-crud
     :config="config"
-    :hideUpdate="true"
     :hideDelete="false"
+    :hideUpdate="true"
     :hideDeleteSoft="false"
     :key="'program-soc-detail' + componentKey"
   >
@@ -326,6 +326,7 @@ export default {
         delete: "",
 
         deleteKey: "form_no",
+        updateValidationKey: "is_verified",
         delete_ext_payload: {
           delete_type: "hard_delete",
         },

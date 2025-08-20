@@ -335,7 +335,7 @@
               setter: 'target_area',
               api: 'GetTargetArea',
               param: {
-                mu_no: formData.mu_no,
+                mu_no: typeof formData.mu_no === 'object' ? formData.mu_no[0].mu_no : formData.mu_no,
               },
               option: {
                 getterKey: 'data.result',
@@ -538,19 +538,19 @@
               default_options: [
                 {
                   label: 'Sertifikat Lahan atau letter C atas nama Sendiri',
-                  code: 1,
+                  code: '1',
                 },
                 {
                   label: 'Akte Jual beli atau Letter C masih atas nama Orang Lain',
-                  code: 2,
+                  code: '2',
                 },
                 {
                   label: 'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
-                  code: 3,
+                  code: '3',
                 },
                 {
                   label: 'Lainnya',
-                  code: 4,
+                  code: '4',
                 },
               ],
             }}" />
@@ -665,18 +665,17 @@
           <v-col lg="6">
             <geko-input v-model="formData.documentation1" :item="{
               label: 'Foto Dokumentasi 1',
-              validation: ['required'],
+              path: formData.documentation1,
               type: 'upload',
               api: 'sosialisasi_program/upload.php',
               directory: 'photos/doc_collective',
               upload_type: 'image/*',
               setter: 'documentation1',
-              view_data: 'documentation1' + i,
+              view_data: 'documentation1',
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
                 max_size: 5,
-                multiple: false,
               },
             }" />
           </v-col>
@@ -689,12 +688,11 @@
               directory: 'photos/doc_collective',
               upload_type: 'image/*',
               setter: 'documentation2',
-              view_data: 'documentation2' + i,
+              view_data: 'documentation2',
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
                 max_size: 5,
-                multiple: false,
               },
             }" />
           </v-col>
@@ -753,7 +751,8 @@
             <div class="d-flex flex-row" style="justify-content: flex-end">
               <v-btn variant="success" type="submit" :disabled="loading || (formData.total_minat == 0 && formData.total_ragu == 0)">
                 <v-icon>mdi-plus</v-icon>
-                <span>Tambah Data</span>
+                <span v-if="isCreate">Tambah Data</span>
+                <span v-else>Perbaharui Data</span>
               </v-btn>
             </div>
           </v-col>
@@ -767,6 +766,15 @@
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-form",
+  mounted() {
+    if (this.$route.query.view === "update") {
+      this.isCreate = false;
+      this.initData();
+    } else {
+      this.isCreate = true;
+      this.ready = true;
+    }
+  },
   methods: {
     async onChangeVillage(data) {
       this.potentialStatus = data.scooping_visits_potential_status
@@ -778,17 +786,32 @@ export default {
       if (this.loading) return;
       this.loading = true;
 
+      const endpoint =
+        this.$route.query.view == "create"
+          ? "AddFormMinatCollective"
+          : "UpdateFormMinatCollective";
+
       this.formData.list_tree = this.trees;
       this.formData.is_group_area = this.formData.people_status === 3 ? 1 : 0;
+      this.formData.city = typeof this.formData.city === 'object' ? this.formData.city[0].kabupaten_no : this.formData.city;
+      this.formData.training1 = typeof this.formData.training1 === 'object' ? this.formData.training1[0]?.material_no : this.formData.training1;
+      this.formData.training2 = typeof this.formData.training2 === 'object' ? this.formData.training2[0]?.material_no : this.formData.training2;
+      this.formData.village = typeof this.formData.village === 'object' ? this.formData.village[0].kode_desa : this.formData.village;
+      this.formData.mu_no = typeof this.formData.mu_no === 'object' ? this.formData.mu_no[0].mu_no : this.formData.mu_no;
+      this.formData.province = typeof this.formData.province === 'object' ? this.formData.province[0].province_code : this.formData.province;
       console.log("Form submitted with data:", this.formData);
       //insert main program soc
       const resultMain = await this.$_api
-        .post("AddFormMinatCollective", this.formData)
+        .post(endpoint, this.formData)
         .then((res) => {
           console.log("res", res);
 
           this.loading = false;
-          this.$_alert.success("Data sosialisasi program berhasil ditambahkan");
+          this.$_alert.success(
+            `Data sosialisasi program berhasil ${
+              this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
+            }`
+          );
           this.$router.replace({
             query: {
               view: "list",
@@ -816,7 +839,216 @@ export default {
 
       
     },
+    async initData() {
+      const detailData = await this.$_api.get("GetFormMinatCollectiveDetailAll_new", {
+        id: this.$route.query.id,
+      });
+      this.data = detailData.mainSpr;
+      this.muNo = this.$route.query.mu_no;
 
+      this.trees = detailData.sprTrees || [];
+
+      const resTrainings = await this.$_api.get(
+        "GetTrainingMaterials"
+      );
+
+      const resMUs = await this.$_api.get(
+        "new-utilities/management-units",
+        {
+          mu_no: this.data.mu_no,
+        }
+      );
+
+      const resTAs = await this.$_api.get(
+        "GetTargetArea",
+        {
+          mu_no: this.data.mu_no,
+          area_code: this.data.target_area,
+        }
+      );
+
+      const resProvinces = await this.$_api.get(
+        "new-utilities/provinces",
+        {
+          province_code: this.data.province,
+        }
+      );
+
+      const resKabs = await this.$_api.get(
+        "new-utilities/kabupatens",
+        {
+          kabupaten_no: this.data.city,
+        }
+      );
+
+      const resDesas = await this.$_api.get(
+        "new-utilities/desas",
+        {
+          village: this.data.village,
+        }
+      );
+      
+      const keys = [
+        ["documentation1"],
+        ["documentation2"],
+        ["form_date"],
+        ["village"],
+        ["mu_no"],
+        ["target_area"],
+        ["total_minat"],
+        ["total_ragu"],
+        ["program_year"],
+        ["contact_type"],
+        ["list_tree"],
+        ["lahan_legal_status"],
+        ["program_type"],
+        ["lahan_legal_status_others"],
+        ["name_entry_data"],
+        ["gender"],
+        ["age"],
+        ["people_status","people_status"],
+        ["group_name"],
+        ["entry_data_position"],
+        ["position_others"],
+        ["position_name"],
+        ["is_program"],
+        ["is_program_year"],
+        ["province"],
+        ["city"],
+        ["is_minat"],
+        ["peserta_pemilik_people"],
+        ["peserta_pemilik_lahan"],
+        ["peserta_pemilik_luas_lahan"],
+        ["peserta_penggarap_people"],
+        ["peserta_penggarap_lahan"],
+        ["peserta_penggarap_luas_lahan"],
+        ["peserta_lain_people"],
+        ["peserta_lain_lahan"],
+        ["peserta_lain_luas_lahan"],
+        ["pattern"],
+        ["pattern_new"],
+        ["training1","training1"],
+        ["training2"],
+        ["suggestion"],
+    ];
+      // console.log("thi", detailData);
+
+      for (const keyArr of keys) {
+        if (keyArr[0] !== "trees" && keyArr[0] !== "training") {
+          this.$set(
+            this.formData,
+            keyArr[0],
+            keyArr.length > 1 ? this.data[keyArr[1]] : this.data[keyArr[0]]
+          );
+
+          if (keyArr.length > 2) {
+            this.$set(this.formData, keyArr[2], this.data[keyArr[2]]);
+          }
+        } else if (keyArr[0] == "training") {
+          let _training = [];
+          if (this.data.training_materials_material_name && this.data.training_materials_material_name !== "-") {
+            _training.push({
+              material_no: this.data.training.split(',')[0] ?? null,
+              material_name: this.data.training_materials_material_name,
+            });
+          }
+          if (this.data.training_materials_material_name2 && this.data.training_materials_material_name2 !== "-") {
+            _training.push({
+              material_no: this.data.training.split(',')[1] ?? null,
+              material_name: this.data.training_materials_material_name2,
+            });
+          }
+          console.log("training", _training);
+          this.$set(this.formData, "training", _training);
+        } else {
+          let _tree = [];
+          if (this.data.tree1 && this.data.tree1 !== "-") {
+            _tree.push({
+              tree_name: this.data.trees_tree_name_t1,
+              tree_code: this.data.tree1,
+            });
+          }
+          if (this.data.tree2 && this.data.tree2 !== "-") {
+            _tree.push({
+              tree_name: this.data.trees_tree_name_t2,
+              tree_code: this.data.tree2,
+            });
+          }
+          if (this.data.tree3 && this.data.tree3 !== "-") {
+            _tree.push({
+              tree_name: this.data.trees_tree_name_t3,
+              tree_code: this.data.tree3,
+            });
+          }
+          this.$set(this.formData, "trees", _tree);
+        }
+      }
+
+      let existingTraining1 = [];
+      for (const d of resTrainings.data.result.filter((x) => x.material_no == this.data.training1)) {
+        existingTraining1.push({
+          material_name: `${d.material_name}`,
+          material_no: d.material_no,
+        });
+      }
+
+      let existingTraining2 = [];
+      for (const d of resTrainings.data.result.filter((x) => x.material_no == this.data.training2)) {
+        existingTraining2.push({
+          material_name: `${d.material_name}`,
+          material_no: d.material_no,
+        });
+      }
+
+      let existingMU = [];
+      for (const d of resMUs.data.filter((x) => x.mu_no == this.data.mu_no)) {
+        existingMU.push({
+          name: `${d.name}`,
+          mu_no: d.mu_no,
+        });
+      }
+
+      let existingTA = [];
+      for (const d of resTAs.data.result) {
+        existingTA.push({
+          name: `${d.name}`,
+          area_code: d.area_code,
+        });
+      }
+
+      let existingProvince = [];
+      for (const d of resProvinces.data) {
+        existingProvince.push({
+          name: `${d.name}`,
+          province_code: d.province_code,
+        });
+      }
+
+      let existingKab = [];
+      for (const d of resKabs.data) {
+        existingKab.push({
+          name: `${d.name}`,
+          kabupaten_no: d.kabupaten_no,
+        });
+      }
+
+      let existingDesa = [];
+      for (const d of resDesas.data) {
+        existingDesa.push({
+          name: `${d.name}`,
+          kode_desa: d.kode_desa,
+        });
+      }
+
+      this.$set(this.formData, "training1", existingTraining1);
+      this.$set(this.formData, "training2", existingTraining2);
+      this.$set(this.formData, "mu_no", existingMU);
+      this.$set(this.formData, "target_area", existingTA);
+      this.$set(this.formData, "province", existingProvince);
+      this.$set(this.formData, "city", existingKab);
+      this.$set(this.formData, "village", existingDesa);
+      this.ready = true;
+    },
     addRow() {
       this.trees.push({
         tree_name: null,
@@ -864,12 +1096,12 @@ export default {
 
   watch: {
     "formData.mu_no"(v) {
-      this.$set(this.formData, "target_area", null);
-      this.$set(this.formData, "village", null);
+      // this.$set(this.formData, "target_area", null);
+      // this.$set(this.formData, "village", null);
     },
 
     "formData.target_area"() {
-      this.$set(this.formData, "village", null);
+      // this.$set(this.formData, "village", null);
     },
 
     "formData.village"(v) {

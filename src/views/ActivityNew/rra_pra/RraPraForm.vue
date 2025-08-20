@@ -530,7 +530,7 @@
           </v-col>
 
           <v-col md="12" class="form-separator d-flex flex-row" style="align-items: center">
-            <h4>Identifikasi Petani Invoatif</h4>
+            <h4>Identifikasi Petani Inovatif</h4>
 
             <v-btn small variant="success" class="ml-3" @click="addRow('innovativeFarmer', 'rra_no')"><v-icon
                 small>mdi-plus</v-icon></v-btn>

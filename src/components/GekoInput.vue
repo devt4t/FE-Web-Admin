@@ -119,7 +119,7 @@
           <label :for="item.view_data" class="file-upload" :class="{
             uploaded: tmpImage,
           }" :style="{
-            'background-image': tmpImage ? 'url(' + tmpImage + ')' : 'unset',
+            'background-image': tmpImage ? 'url(' + tmpImage + ')' : item.path,
           }">
             <v-icon v-if="!tmpImage">{{
               item.option && item.option.icon ? item.option.icon : "mdi-image"
@@ -212,6 +212,9 @@ export default {
     }
     if (![undefined, null, ""].includes(this.value)) {
       this.setDefaultValue();
+    } else {
+      console.log("mounted", this.item.type);
+
     }
   },
 
@@ -273,11 +276,13 @@ export default {
           for (let i = 0; i < _tmpImages.length; i++) {
             _tmpImages[i] = `${this.$_config.baseUrlUpload}/${_tmpImages[i]}`;
           }
-
+          
+          console.log("1");
           this.tmpImages = _tmpImages;
           this.tmpValue = this.value;
           await this.$refs.provider.validate(this.tmpValue);
         } else {
+          console.log("2");
           this.tmpImage = `${this.$_config.baseUrlUpload}/${this.value}`;
           this.tmpValue = this.value;
           await this.$refs.provider.validate(this.tmpValue);
