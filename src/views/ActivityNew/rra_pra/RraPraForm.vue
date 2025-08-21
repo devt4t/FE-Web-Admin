@@ -1160,9 +1160,9 @@ export default {
         }
 
         let dusunPayload = [];
-        for (const [i,item] of this.dusuns) {
+        for (const [i,item] of this.dusuns.entries()) {
           item.rra_no = rraNumber;
-          item.dusun_access_photo = item[`dusun_access_photo_${i}`] ?? null;
+          item.dusun_access_photo = item.hasOwnProperty(`dusun_access_photo_${i}`) ? item[`dusun_access_photo_${i}`] : null;
           if (item.potential == 0) {
             item.potential = parseInt(item.potential);
             dusunPayload.push(item);
@@ -1205,7 +1205,6 @@ export default {
           dusunPayload.push(item);
         }
         console.log(dusunPayload)
-return 
         for (const item of villageBorderPayload) {
           const isSuccess = await this.$_api
             .post("addRraVillageBorder_new", item)
