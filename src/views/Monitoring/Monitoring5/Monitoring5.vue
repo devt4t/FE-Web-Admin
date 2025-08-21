@@ -16,7 +16,7 @@
 
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="primary" small class="d-flex flex-row align-items-center mt-2"
-                @click="onExportDetailSelection(item)" v-if="$_sys.isAllowed('field-facilitator-update')">
+                @click="onExportDetailSelection(item)" v-if="$_sys.isAllowed('monitoring-lookup')">
                 <v-icon small>mdi-download</v-icon>
                 <span>Export Detail</span>
             </v-btn>

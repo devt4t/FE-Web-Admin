@@ -671,15 +671,15 @@
                         </v-col>
 
                         <v-col lg="6">
-                          <geko-input v-model="item.dusun_access_photo" :item="{
+                          <geko-input v-model="item[`dusun_access_photo_${i}`]" :item="{
                             label: 'Foto Akses Jalan',
                             validation: ['required'],
                             type: 'upload',
                             api: 'rra_pra/upload.php',
                             directory: 'photos',
                             upload_type: 'image/*',
-                            setter: 'dusun_access_photo',
-                            view_data: 'dusun_access_photo',
+                            setter: `dusun_access_photo_${i}`,
+                            view_data: `dusun_access_photo_${i}`,
                             option: {
                               label_hint:
                                 'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -1160,8 +1160,9 @@ export default {
         }
 
         let dusunPayload = [];
-        for (const item of this.dusuns) {
+        for (const [i,item] of this.dusuns) {
           item.rra_no = rraNumber;
+          item.dusun_access_photo = item[`dusun_access_photo_${i}`] ?? null;
           if (item.potential == 0) {
             item.potential = parseInt(item.potential);
             dusunPayload.push(item);
@@ -1203,7 +1204,8 @@ export default {
           }
           dusunPayload.push(item);
         }
-
+        console.log(dusunPayload)
+return 
         for (const item of villageBorderPayload) {
           const isSuccess = await this.$_api
             .post("addRraVillageBorder_new", item)
