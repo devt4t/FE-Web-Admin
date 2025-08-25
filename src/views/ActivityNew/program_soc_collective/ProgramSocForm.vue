@@ -766,10 +766,9 @@
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-form",
-  beforeMount() {
+  mounted() {
     if (this.$route.query.view === "update") {
       this.isCreate = false;
-      this.ready = true;
       this.initData();
     } else {
       this.isCreate = true;
@@ -801,7 +800,7 @@ export default {
       this.formData.target_area = typeof this.formData.target_area === 'object' ? this.formData.target_area[0].target_area : this.formData.target_area;
       this.formData.mu_no = typeof this.formData.mu_no === 'object' ? this.formData.mu_no[0].mu_no : this.formData.mu_no;
       this.formData.province = typeof this.formData.province === 'object' ? this.formData.province[0].province_code : this.formData.province;
-      return console.log("Form submitted with data:", this.formData);
+      console.log("Form submitted with data:", this.formData);
       //insert main program soc
       const resultMain = await this.$_api
         .post(endpoint, this.formData)
