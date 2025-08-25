@@ -766,9 +766,10 @@
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-form",
-  mounted() {
+  beforeMount() {
     if (this.$route.query.view === "update") {
       this.isCreate = false;
+      this.ready = true;
       this.initData();
     } else {
       this.isCreate = true;
@@ -797,9 +798,10 @@ export default {
       this.formData.training1 = typeof this.formData.training1 === 'object' ? this.formData.training1[0]?.material_no : this.formData.training1;
       this.formData.training2 = typeof this.formData.training2 === 'object' ? this.formData.training2[0]?.material_no : this.formData.training2;
       this.formData.village = typeof this.formData.village === 'object' ? this.formData.village[0].kode_desa : this.formData.village;
+      this.formData.target_area = typeof this.formData.target_area === 'object' ? this.formData.target_area[0].target_area : this.formData.target_area;
       this.formData.mu_no = typeof this.formData.mu_no === 'object' ? this.formData.mu_no[0].mu_no : this.formData.mu_no;
       this.formData.province = typeof this.formData.province === 'object' ? this.formData.province[0].province_code : this.formData.province;
-      console.log("Form submitted with data:", this.formData);
+      return console.log("Form submitted with data:", this.formData);
       //insert main program soc
       const resultMain = await this.$_api
         .post(endpoint, this.formData)
@@ -887,11 +889,14 @@ export default {
           village: this.data.village,
         }
       );
+
+      
       
       const keys = [
         ["documentation1"],
         ["documentation2"],
         ["form_date"],
+        ["form_no"],
         ["village"],
         ["mu_no"],
         ["target_area"],
@@ -908,10 +913,10 @@ export default {
         ["age"],
         ["people_status","people_status"],
         ["group_name"],
-        ["entry_data_position"],
+        ["entry_data_position", "entry_data_position"],
         ["position_others"],
         ["position_name"],
-        ["is_program"],
+        ["is_program","is_program"],
         ["is_program_year"],
         ["province"],
         ["city"],
@@ -934,13 +939,16 @@ export default {
       // console.log("thi", detailData);
 
       for (const keyArr of keys) {
-        if (keyArr[0] !== "trees" && keyArr[0] !== "training") {
+        if (keyArr[0] !== "trees"
+         && keyArr[0] !== "training"
+         && keyArr[0] !== "pattern"
+         && keyArr[0] !== "lahan_legal_status"
+         && keyArr[0] !== "pattern_new") {
           this.$set(
             this.formData,
             keyArr[0],
             keyArr.length > 1 ? this.data[keyArr[1]] : this.data[keyArr[0]]
           );
-
           if (keyArr.length > 2) {
             this.$set(this.formData, keyArr[2], this.data[keyArr[2]]);
           }
@@ -960,6 +968,12 @@ export default {
           }
           console.log("training", _training);
           this.$set(this.formData, "training", _training);
+        } else if (keyArr[0] == "pattern") {
+          this.$set(this.formData, "pattern", this.data[keyArr[0]].split(','));
+        } else if (keyArr[0] == "pattern_new") {
+          this.$set(this.formData, "pattern_new", this.data[keyArr[0]].split(','));
+        } else if (keyArr[0] == "lahan_legal_status") {
+          this.$set(this.formData, "lahan_legal_status", this.data[keyArr[0]].split(','));
         } else {
           let _tree = [];
           if (this.data.tree1 && this.data.tree1 !== "-") {
