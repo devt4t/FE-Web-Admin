@@ -2,7 +2,7 @@
   <geko-base-crud
     :config="config"
     :hideDelete="false"
-    :hideUpdate="true"
+    :hideUpdate="false"
     :hideDeleteSoft="false"
     :key="'program-soc-detail' + componentKey"
   >

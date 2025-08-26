@@ -62,7 +62,6 @@
           <v-col lg="6" >
             <geko-input v-model="formData.program_type" :item="{
               label: 'Project',
-              validation: ['required'],
               type: 'select-radio',
               setter: 'formData.program_type',
               option: {
@@ -173,7 +172,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.people_status" :item="{
               label: 'Merupakan Perwakilan Dari',
-              validation: ['required'],
               type: 'select-radio',
               option: {
               list_pointer: {
@@ -209,7 +207,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.entry_data_position" :item="{
               label: 'Jabatan / Posisi',
-              validation: ['required'],
               type: 'select-radio',
               option: {
               list_pointer: {
@@ -245,7 +242,6 @@
           <v-col lg="6">
             <geko-input v-model="formData.is_program" :item="{
               label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
-              validation: ['required'],
               type: 'select-radio',
               option: {
               list_pointer: {
@@ -725,7 +721,6 @@
                       <v-col lg="6">
                         <geko-input :item="{
                           label: 'Nama Tanaman',
-                          validation: ['required'],
                           col_size: 6,
                           type: 'select',
                           setter: 'tree_code',
@@ -766,9 +761,10 @@
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-form",
-  mounted() {
+  beforeMount() {
     if (this.$route.query.view === "update") {
       this.isCreate = false;
+      this.ready = true;
       this.initData();
     } else {
       this.isCreate = true;
@@ -797,10 +793,10 @@ export default {
       this.formData.training1 = typeof this.formData.training1 === 'object' ? this.formData.training1[0]?.material_no : this.formData.training1;
       this.formData.training2 = typeof this.formData.training2 === 'object' ? this.formData.training2[0]?.material_no : this.formData.training2;
       this.formData.village = typeof this.formData.village === 'object' ? this.formData.village[0].kode_desa : this.formData.village;
-      this.formData.target_area = typeof this.formData.target_area === 'object' ? this.formData.target_area[0].target_area : this.formData.target_area;
+      this.formData.target_area = typeof this.formData.target_area === 'object' ? this.formData.target_area[0].area_code : this.formData.target_area;
       this.formData.mu_no = typeof this.formData.mu_no === 'object' ? this.formData.mu_no[0].mu_no : this.formData.mu_no;
       this.formData.province = typeof this.formData.province === 'object' ? this.formData.province[0].province_code : this.formData.province;
-      console.log("Form submitted with data:", this.formData);
+      console.log("Form submitted with data:", this.formData, typeof this.formData.target_area);
       //insert main program soc
       const resultMain = await this.$_api
         .post(endpoint, this.formData)

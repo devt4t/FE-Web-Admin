@@ -38,6 +38,43 @@
           </v-data-table>
         </v-card>
       </v-col>
+      <v-col v-if="main.documentation1 || main.documentation2">
+        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+          <div class="list-header py-3 mt-1">
+            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+              <h4>Dokumentasi</h4>
+            </div>
+            <div class="d-flex flex-row geko-list-header-action">
+              <div class="geko-list-header-toolbar"></div>
+            </div>
+          </div>
+
+          <div class="absent-photo-list d-flex flex-row" >
+            <div v-if="main.documentation1" class="absent-photo-item" @click="showLightbox($_config.baseUrlUpload+ '/' +main.documentation1)"
+              v-bind:style="{
+                backgroundImage:
+                  'url(' +
+                  $_config.baseUrlUpload + '/' +
+                  main.documentation1 +
+                  ')',
+              }">
+              <h6>Dokumentasi 1</h6>
+            </div>
+            <div v-if="main.documentation2" class="absent-photo-item" @click="showLightbox($_config.baseUrlUpload+ '/' +main.documentation2)"
+              v-bind:style="{
+                backgroundImage:
+                  'url(' +
+                  $_config.baseUrlUpload + '/' +
+                  main.documentation2 +
+                  ')',
+              }">
+              <h6>Dokumentasi 2</h6>
+            </div>
+          </div>
+
+        </v-card>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -50,6 +87,14 @@ export default {
     this.getDetail();
   },
   methods: {
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+      if (index) this.$store.state.lightbox.index = index;
+      else this.$store.state.lightbox.index = 0;
+
+      this.$store.state.lightbox.show = true;
+    },
     async getDetail() {
       this.$_api
         .get("GetFormMinatCollectiveDetailAll_new", {
@@ -58,6 +103,7 @@ export default {
         .then((response) => {
           console.log("Detail data loaded", response.sprTrees);
           this.trees = response.sprTrees;
+          this.main = response.mainSpr;
           // this.$emit("data-loaded", this.data);
         })
         .catch((err) => {
