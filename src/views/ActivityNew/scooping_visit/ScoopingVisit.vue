@@ -217,6 +217,7 @@ export default {
       config: {
         title: "Scooping Visit",
         model_api: null,
+        updateValidationKey: 'is_verify',
         filter_api: {
           scooping_type: "new",
         },

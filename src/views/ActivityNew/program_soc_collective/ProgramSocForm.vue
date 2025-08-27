@@ -711,7 +711,7 @@
                       'text-italic text-grey': !item.name,
                     }">{{ item.tree_name || "Masukkan Data Tanaman" }}</span>
                     <div class="d-flex flex-row" style="justify-content: flex-end" v-if="trees.length > 1">
-                      <button class="text-danger" @click="deleteRow(i)">
+                      <button type="button" class="text-danger" @click="deleteRow(i)">
                         <v-icon class="text-danger">mdi-delete-empty</v-icon>
                       </button>
                     </div>
