@@ -413,7 +413,7 @@
                   display: ['name'],
                 },
               },
-            }" @selected="onChangeVillage($event)" />
+            }" />
           </v-col>
 
           <v-col md="12" class="form-separator">
@@ -772,12 +772,12 @@ export default {
     }
   },
   methods: {
-    async onChangeVillage(data) {
-      this.potentialStatus = data.scooping_visits_potential_status
-      if ([2, 3].includes(this.potentialStatus)) {
-        this.projectPurpose = data.scooping_visits_potential_status
-      }
-    },
+    // async onChangeVillage(data) {
+    //   this.potentialStatus = data.scooping_visits_potential_status
+    //   if ([2, 3].includes(this.potentialStatus)) {
+    //     this.projectPurpose = data.scooping_visits_potential_status
+    //   }
+    // },
     async onSubmit() {
       if (this.loading) return;
       this.loading = true;
@@ -899,6 +899,7 @@ export default {
         ["total_ragu"],
         ["program_year"],
         ["contact_type"],
+        ["contact_person"],
         ["list_tree"],
         ["lahan_legal_status"],
         ["program_type"],
@@ -964,9 +965,9 @@ export default {
           console.log("training", _training);
           this.$set(this.formData, "training", _training);
         } else if (keyArr[0] == "pattern") {
-          this.$set(this.formData, "pattern", this.data[keyArr[0]].split(','));
+          if (this.data[keyArr[0]] != null) this.$set(this.formData, "pattern", this.data[keyArr[0]].split(','));
         } else if (keyArr[0] == "pattern_new") {
-          this.$set(this.formData, "pattern_new", this.data[keyArr[0]].split(','));
+          if (this.data[keyArr[0]] != null) this.$set(this.formData, "pattern_new", this.data[keyArr[0]].split(','));
         } else if (keyArr[0] == "lahan_legal_status") {
           this.$set(this.formData, "lahan_legal_status", this.data[keyArr[0]].split(','));
         } else {

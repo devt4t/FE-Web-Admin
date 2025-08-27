@@ -45,6 +45,14 @@
       </div>
     </template>
 
+    <template v-slot:detail-pattern="{ item }">
+        {{ item.pattern ? item.pattern.replace(/,/g, ', ') : '-' }}
+    </template>
+
+    <template v-slot:detail-pattern_new="{ item }">
+        {{ item.pattern_new ? item.pattern_new.replace(/,/g, ', ') : '-' }}
+    </template>
+
     <template v-slot:detail-action="{ item }">
       <div>
         <v-btn
@@ -599,12 +607,38 @@ export default {
             },
           },
           {
-            id: "users_name_created_by",
+            id: "pattern",
+            label: "Pola Tanam Yg Sudah Ada",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "pattern_new",
+            label: "Pola Tanam Yg Diinginkan",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "name_entry_data",
             label: "Nama Pengisi Form",
             methods: {
               list: false,
               detail: {
-                view_data: "users_name_created_by",
+                view_data: "name_entry_data",
               },
               create: true,
               update: true,
