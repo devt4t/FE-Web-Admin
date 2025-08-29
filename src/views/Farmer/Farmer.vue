@@ -2,7 +2,7 @@
   <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`" @onExportExcel="onExportExcel($event)">
     
     <template v-slot:list-before-create>
-      <export-modal :exportKey="exportKey" format="excel"></export-modal>
+      <export-modal-farmer :dataKey="exportKey" format="excel"></export-modal-farmer>
     </template>
 
     <template v-slot:list-action-detail="{ item }">
@@ -311,14 +311,14 @@ import moment from "moment";
 import "./farmer.scss";
 import FarmerAssignModal from "./FarmerAssignModal.vue";
 import FarmerDetail from "./FarmerDetail.vue";
-import ExportModal from "./ExportModal.vue";
+import ExportModalFarmer from "./ExportModalFarmer.vue";
 
 export default {
   name: "farmer-v2",
   components: {
     FarmerAssignModal,
     FarmerDetail,
-    ExportModal
+    ExportModalFarmer
   },
   methods: {
     onExportExcel(data) {

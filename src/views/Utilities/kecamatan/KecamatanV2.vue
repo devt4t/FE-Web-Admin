@@ -35,7 +35,7 @@ export default {
         // setter_ext_payload: {
         //     project_modul: 'environment',
         // },
-        update: "EditEmployee",
+        update: "UpdateKecamatan",
         update_ext_payload: {},
         globalFilter: {
           // project_purpose: {
@@ -45,7 +45,7 @@ export default {
             setter: "program_year",
           },
         },
-        delete: "DeleteEmployee",
+        // delete: "DeleteEmployee",
         // delete_ext_payload: {
         //     delete_type: "hard_delete",
         //     project_modul: 'environment',

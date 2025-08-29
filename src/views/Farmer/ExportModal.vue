@@ -61,9 +61,10 @@ export default {
     getExportData() {
       return new Promise(async (resolve, reject) => {
         this.$_api
-          .get("export/farmerAll", {
+          .get("GetAllUserByPosition", {
             program_year: this.$store.state.tmpProgramYear,
             mu_no: this.muNo,
+            employee_no: '1055',
           })
           .then((res) => {
             return resolve(res.data);
@@ -82,7 +83,7 @@ export default {
           throw "Not Found"
         }
         
-        
+        return
         const axiosConfig = {
           method: "POST",
           url: `${this.$_config.baseUrlExport}export/farmers/excel`,

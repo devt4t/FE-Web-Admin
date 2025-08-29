@@ -293,8 +293,8 @@
               </slot>
 
               <slot name="list-action-update" v-bind:item="item"
-                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update) && (config.hasOwnProperty('updateValidationKey') 
-                ? !+item[config.updateValidationKey] : true)">
+                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update) && 
+                (config.hasOwnProperty('updateValidationKey')?!+item[config.updateValidationKey]:true)">
                 <button class="geko-list-action-update" @click="
                   $router.push({
                     query: {
