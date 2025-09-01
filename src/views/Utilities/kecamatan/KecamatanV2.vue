@@ -45,7 +45,7 @@ export default {
             setter: "program_year",
           },
         },
-        // delete: "DeleteEmployee",
+        delete: "DeleteKecamatan",
         // delete_ext_payload: {
         //     delete_type: "hard_delete",
         //     project_modul: 'environment',

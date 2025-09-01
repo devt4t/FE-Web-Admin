@@ -619,7 +619,6 @@ export default {
                     } else {
                         console.log(result, offset)
                         this.exportData = [...this.exportData, ...result.data]
-                        trees = result.trees;
                         if (result.data.length < 100) break;
                         offset += 100;
                     }
@@ -644,17 +643,11 @@ export default {
                 //     continue;
                 // }
 
-
-
-                if (muName) {
-                    muName = muName.replace(/ /g, "");
-                }
-
                 const configFilename = {
-                    pdf: `Report-${muName}-${_mu}-${moment().format(
+                    pdf: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
                         "DMMYYYYHHmmss"
                     )}.pdf`,
-                    excel: `Report-${muName}-${_mu}-${moment().format(
+                    excel: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
                         "DMMYYYYHHmmss"
                     )}.xlsx`,
                 };
@@ -665,7 +658,7 @@ export default {
                     data: {
                         data: this.exportData,
                         exportBy: this.exportBy,
-                        trees: trees
+                        program_year: this.$store.state.tmpProgramYear,
                     },
                     headers: {
                         "content-type": "application/json",

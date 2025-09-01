@@ -687,6 +687,7 @@ export default {
         type: item.methods[key].type || "text",
         class: item.methods[key].class || "",
         transform: item.methods[key].transform || null,
+        append: item.methods[key].append || null,
         validation: item.methods[key].validation || [],
         input:
           typeof item.methods[key].input === "boolean"
