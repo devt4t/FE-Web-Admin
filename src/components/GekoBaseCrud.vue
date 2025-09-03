@@ -231,7 +231,7 @@
                         [undefined, null, ""].includes(stat.value)
                           ? "-"
                           : stat.value | parse(stat.transform)
-                      }}</span>
+                      }} {{ stat.append }}</span>
                     </slot>
                   </p>
                 </div>
@@ -801,6 +801,7 @@ export default {
             let _processedStat = {
               label: this.config.statistic.transform_key[_key].label,
               value: statisticData[_key],
+              append: this.config.statistic.transform_key[_key].append,
               key: _key,
               icon: this.config.statistic.transform_key[_key].icon,
               color: this.config.statistic.transform_key[_key].color || "",
