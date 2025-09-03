@@ -19,7 +19,7 @@
                 type: 'textarea',
               }" />
             </v-col>
-            <v-col lg="6">
+            <v-col>
                 <v-btn
                     variant="success"
                     class="d-flex flex-row align-items-center ml-2 mt-3"
