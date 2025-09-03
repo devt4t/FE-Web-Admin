@@ -54,7 +54,12 @@
       async Generate(){
         const prompt = await this.$_alert.confirm('Melakukan Generate Nomor Lahan?', 'Harap Cek Data Dengan Teliti!, Proses Generate Data Akan Masuk History Barcode Lahan & Tidak Bisa Dihapus!', 'Ya, Generate!', 'Batal', true)
         if (prompt.isConfirmed) {
-            
+            this.$_api.post('lahan/generate-barcode/create', {generate_amount: this.generate_amount, description: this.description })
+            .then(() => {
+                this.$_alert.success('Berhasil Melakukan Generate Data Barcode Lahan, Harap Segera Export Data!')
+                this.isOpen = false;
+                this.$emit('success', true)
+            })
         }
       },
     },
