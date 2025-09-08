@@ -404,17 +404,17 @@ export default {
             },
             lahan_pemilik_luas: {
               label: "Luas Lahan Pemilik",
-              icon: "mdi-land-fields",
+              icon: "mdi-arrow-expand",
               append: "m²",
             },
             lahan_pengelola_luas: {
               label: "Luas Lahan Pengelola",
-              icon: "mdi-land-fields",
+              icon: "mdi-arrow-expand",
               append: "m²",
             },
             lahan_lainnya_luas: {
               label: "Luas Lahan Lainnya",
-              icon: "mdi-land-fields",
+              icon: "mdi-arrow-expand",
               append: "m²",
             },
           },

@@ -29,6 +29,7 @@ export default {
       }
     },
     async onChangeFf(data) {
+console.log('DATA CHANGED', data);
       if (!data) {
         return;
       }
