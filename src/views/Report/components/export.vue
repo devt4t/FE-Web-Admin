@@ -106,7 +106,7 @@
                 :key="`itemTbl-${itemIndex}`"
               >
                 <span v-if="item.type == 'number'">
-                  {{ e[item.key] || 0 }}
+                  {{ e[item.key] ?? 0 }}
                 </span>
                 <span v-else>
                   {{ e[item.key] }}
@@ -157,6 +157,7 @@ export default {
 
   data: () => ({
     programYear: "",
+    exportData: [],
     download: {
       title: "Export Data",
     },
@@ -183,7 +184,10 @@ export default {
         return this.show;
       },
       set: function (newVal) {
-        if (newVal == false) this.$emit("close");
+        if (newVal == false) {
+          this.exportData = [];
+          this.$emit("close");
+        }
       },
     },
   },
@@ -914,12 +918,136 @@ export default {
         }
       }
     },
+    async getSocialImpacts() {
+      let loading = this.loading;
+      const config = this.config;
+      let store = this.$store;
+      this.exportData = [];
+      let offset = 0;
+
+      const management_unit = this.config.fields.find(
+        (v) => v.id == "mu_name"
+      ).model;
+      const programYear = config.fields.find(
+        (v) => v.id == "program_year"
+      ).model;
+
+      while (true) {
+        let payload = {
+            program_year: programYear,
+            mu_no: management_unit,
+            limit: 100,
+            offset: offset,
+        };
+        const result = await this.$_api.get("report-data/generateFarmerLahanForSocialImpact", payload)
+          if (!result) {
+              loading = false;
+              break;
+          }
+
+          if (
+              offset == 0 && result.data.length == 0
+          ) {
+              loading = false;
+              this.$_alert.error(
+                  {},
+                  "Tidak ada data",
+              );
+              return;
+          } else {
+              this.exportData = [...this.exportData, ...result.data]
+              if (result.data.length < 100) break;
+              offset += 100;
+              loading.progress = Math.round((offset/result.total) * 100);
+            }
+          }
+
+      // const lahan_details = Object.groupBy(this.table.data, ({ lahan_details }) => lahan_details);
+      
+      // make header bibit
+      let headerBibits = [];
+      this.exportData.map((farmer_lahan) => {
+        if (!farmer_lahan.lahan_details.length) return;
+        for (const [key,bibit] of farmer_lahan.lahan_details.entries()) {
+          headerBibits.push(bibit.tree_name);
+        }
+      }); 
+      headerBibits = [...new Set(headerBibits)];
+      headerBibits = headerBibits.map((val) => {
+        return {
+          key: `${val}`,
+          icon: 'mdi-calendar',
+          label: val,
+          type: 'number',
+          model: '',
+          filter: false,
+          list: true,
+        };
+      }); 
+      
+      this.table.fields.push(...headerBibits);
+      // make header bibit end
+
+      // map bibit to lahan details
+      this.exportData.map((farmer_lahan) => {
+        if (!farmer_lahan.lahan_details.length) return;
+        for (const [key,bibit] of headerBibits.entries()) {
+            farmer_lahan[`${bibit.key}`] = farmer_lahan?.lahan_details?.filter((detail) => {
+              console.log(detail.tree_name == bibit.key);
+              return detail.tree_name == bibit.key
+            })?.[0]?.amount ?? 0;
+          }
+          return farmer_lahan;
+        });
+        // map bibit to lahan details end
+        
+      this.exportData.map((farmer_lahan) => {
+        if (farmer_lahan.lahans_type_sppt == '0') {
+          farmer_lahan.lahans_type_sppt = 'Pribadi';
+        } else if (farmer_lahan.lahans_type_sppt == '1') {
+          farmer_lahan.lahans_type_sppt = 'Keterkaitan Keluarga';
+        } else if (farmer_lahan.lahans_type_sppt == '2') {
+          farmer_lahan.lahans_type_sppt = 'Umum';
+        } else if (farmer_lahan.lahans_type_sppt == '3') {
+          farmer_lahan.lahans_type_sppt = 'Lain-lain';
+        } else {
+          farmer_lahan.lahans_type_sppt = 'Tidak Diketahui';
+        }
+
+        if (farmer_lahan.farmers_gender == 'male') {
+          farmer_lahan.farmers_gender = 'Laki-laki';
+        } else if (farmer_lahan.farmers_gender == 'female') {
+          farmer_lahan.farmers_gender = 'Perempuan';
+        }
+
+        farmer_lahan.farmers_age = this.calculateAge(farmer_lahan.farmers_birthday) + ' Tahun';
+
+        return farmer_lahan;
+      });
+      this.table.data = this.exportData;
+
+     
+    },
     percentages(val1, val2) {
       if (!val1 == 0 && !val2 == 0) {
         return ((100 * val1) / val2).toFixed(2);
       } else {
         return 0;
       }
+    },
+    calculateAge(dateOfBirth) {
+      const today = new Date();
+      const birthDate = new Date(dateOfBirth); // Ensure dateOfBirth is a Date object or a valid date string
+
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDifference = today.getMonth() - birthDate.getMonth();
+
+      // Adjust age if the birth month or day hasn't occurred yet this year
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      return age;
     },
 
     // monitoring 3
@@ -1346,6 +1474,9 @@ export default {
         }
         if (config.section == "export-new-lahan-with-seed") {
           await this.getNewLahanWithSeeds();
+        }
+        if (config.section == "export-social-impact") {
+          await this.getSocialImpacts();
         }
         if (this.table.data.length > 0) {
           let emailMessage = config.title || "";

@@ -493,7 +493,7 @@ export default {
                         break;
                     }
 
-                    if (result.data.length == 0) {
+                    if (offset == 0 && result.data.length == 0) {
                         this.loadingExportByUM = false;
                         this.$_alert.error(
                             {},
@@ -607,7 +607,7 @@ export default {
                     }
 
                     if (
-                        result.data.length == 0 && this.exportData.length == 0
+                        offset == 0 && result.data.length == 0
                     ) {
                         this.loadingExportByMU = false;
                         this.$_alert.error(
@@ -622,9 +622,6 @@ export default {
                         if (result.data.length < 100) break;
                         offset += 100;
                     }
-
-
-
                 }
 
 
@@ -720,12 +717,12 @@ export default {
                         break;
                     }
 
-                    if (result.data.length == 0) {
+                    if (offset == 0 && result.data.length == 0) {
                         this.loadingExportByFC = false;
                         this.$_alert.error(
                             {},
                             "Tidak ada data",
-                            `Tidak ada data dari FF ${fcName} ${this.$store.state.tmpProgramYear}`
+                            `Tidak ada data dari FC ${fcName} ${this.$store.state.tmpProgramYear}`
                         );
                         return;
                     } else {

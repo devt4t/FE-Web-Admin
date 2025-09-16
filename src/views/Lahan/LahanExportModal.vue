@@ -194,7 +194,8 @@ export default {
     async getFFDataForExport() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
-        limit: 1000,
+        program_year: this.$store.state.tmpProgramYear,
+        limit: 2200,
         offset: 0,
       });
 

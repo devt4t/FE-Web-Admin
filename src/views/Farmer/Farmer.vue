@@ -47,7 +47,7 @@
           getMaskedValue(item).field_facilitators_name
         }}</span>
         <div class="d-flex flex-row">
-          <span class="badge bg-light">{{ getMaskedValue(item).user_id }}</span>
+          <span class="badge bg-light">{{ getMaskedValue(item).field_facilitators_ff_no }}</span>
         </div>
       </div>
     </template>
@@ -143,7 +143,7 @@
           '-',
         ].includes(item.legal_land_categories),
       }">{{ item.legal_land_categories }}</span>
-    </template>
+    </template>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
     <template v-slot:detail-row-detail_program_year="{ item, response }">
       <div class="geko-base-detail-item">
@@ -722,7 +722,60 @@ export default {
               filter: false,
             },
           },
-
+          {
+            id: "employee_no",
+            label: "Unit Manager",
+            methods: {
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "getEmployeeList_new",
+                setter: "um_employee_no",
+                main: true,
+                param: {
+                  page: 1,
+                  per_page: 10,
+                  position_no: 20,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "nik",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
+            id: "employee_no",
+            label: "Field Coordinator",
+            methods: {
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "getEmployeeList_new",
+                setter: "fc_employee_no",
+                main: true,
+                param: {
+                  page: 1,
+                  per_page: 10,
+                  position_no: 19,
+                },
+                option: {
+                  getterKey: "data",
+                  list_pointer: {
+                    code: "nik",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
           {
             id: "mu_id",
             label: "Management Unit",

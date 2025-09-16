@@ -28,6 +28,9 @@
                         :item="{
                           label: 'Nama FF',
                           type: 'select',
+                          param: {
+                            program_year: $_config.programYear.model,
+                          },
                           api: 'GetFFAllWeb_new',
                           validation: ['required'],
                           setter: 'key1',
@@ -36,11 +39,11 @@
                             list_pointer: {
                               code: 'ff_no',
                               label: 'name',
-                              display: ['name'],
+                              display: ['name', 'ff_no'],
                             },
                           },
                         }"
-                        :disabled="f.id ? true : false"
+                        :disabled="false"
                       />
                     </v-col>
                     <v-col
@@ -235,6 +238,7 @@ export default {
           if (this.$_sys.isAllowed("farmer-unassign-it-create")) {
             await this.editProgramYear({
               id: farmer.id,
+              ff_no: farmer.key1,
               program_year: farmer.program_year,
             })
               .then(() => successList.push(farmer.program_year))
