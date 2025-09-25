@@ -783,7 +783,7 @@ export default {
       this.data = this.processListData(
         responseData,
         this.config.getterDataKey || "data"
-      );
+      ); this.$emit("onGetListData", this.data)
       if (this.config.statistic) {
         const statisticKey = ![null, undefined].includes(
           this.config.statistic.statistic_key
