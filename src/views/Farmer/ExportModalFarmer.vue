@@ -286,21 +286,6 @@ export default {
 
             this.fcList = result.data;
         },
-        async getMUDataForExport() {
-            if (this.muList.length > 0) return;
-            const result = await this.$_api.get("GetManagementUnitAdmin", {
-                page: 1,
-                per_page: 1000,
-            });
-
-            if (!Array.isArray(result.data.result)) return;
-
-            for (const item of result.data.result) {
-                item.name = `${item.name} - ${item.mu_no}`;
-            }
-
-            this.muList = result.data.result;
-        },
         async getUMDataForExport() {
             if (this.umList.length > 0) return;
             const result = await this.$_api.get("getEmployeeList_new", {
@@ -318,6 +303,22 @@ export default {
 
             this.umList = result.data;
         },
+        async getMUDataForExport() {
+            if (this.muList.length > 0) return;
+            const result = await this.$_api.get("GetManagementUnitAdmin", {
+                page: 1,
+                per_page: 1000,
+            });
+
+            if (!Array.isArray(result.data.result)) return;
+
+            for (const item of result.data.result) {
+                item.name = `${item.name} - ${item.mu_no}`;
+            }
+
+            this.muList = result.data.result;
+        },
+        
         // export data
 
         getExportData(ffCode) {
@@ -473,6 +474,117 @@ export default {
             this.loading = false;
             this.isOpen = false;
         },
+        async onSubmitByMU() {
+            if (this.loadingExportByMU) return;
+
+            this.loadingExportByMU = true;
+            for (const [index, _mu] of this.mu_no.entries()) {
+                if (!_mu) continue;
+
+                let muName = this.muList.find((item) => item.mu_no == _mu)
+                    ? this.muList.find((item) => item.mu_no == _mu).name
+                    : "";
+
+                let offset = 0;
+                let trees = [];
+                while (true) {
+                    const result = await this.getExportDataCarbon(_mu, offset);
+                    if (!result) {
+                        this.loadingExportByMU = false;
+                        break;
+                    }
+
+                    if (
+                        offset == 0 && result.data.length == 0
+                    ) {
+                        this.loadingExportByMU = false;
+                        this.$_alert.error(
+                            {},
+                            "Tidak ada data",
+                            `Tidak ada data di Unit Management ${muName} ${this.$store.state.tmpProgramYear}`
+                        );
+                        return;
+                    } else {
+                        console.log(result, offset)
+                        this.exportData = [...this.exportData, ...result.data]
+                        if (result.data.length < 100) break;
+                        offset += 100;
+                    }
+                }
+
+
+                // const trees = await this.$_api
+                //     .get("GetTreesAll")
+                //     .then((res) => {
+                //         return res.data.result.data;
+                //     })
+                //     .catch((err) => {
+                //         console.log("err", err);
+                //         return false;
+                //     });
+
+                // if (!trees) {
+                //     this.loading = false;
+                //     continue;
+                // }
+
+                const configFilename = {
+                    pdf: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
+                        "DMMYYYYHHmmss"
+                    )}.pdf`,
+                    excel: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
+                        "DMMYYYYHHmmss"
+                    )}.xlsx`,
+                };
+                const axiosConfig = {
+                    method: "POST",
+                    url: this.configUrl['excel'],
+                    responseType: "arraybuffer",
+                    data: {
+                        data: this.exportData,
+                        exportBy: this.exportBy,
+                        program_year: this.$store.state.tmpProgramYear,
+                    },
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                if (!exported) {
+                    this.loadingExportByMU = false;
+                    continue;
+                }
+
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = configFilename[this.format];
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+
+                // reset after complete download, then filled by next UM
+                this.exportData = [];
+
+                // stop the loading when the last download completed
+                if (index === this.mu_no.length - 1) {
+                    this.loadingExportByMU = false;
+                }
+            }
+
+            this.$_alert.success("Successfully");
+            this.loading = false;
+            this.isOpen = false;
+        },
         async onSubmitByUM() {
             if (this.loadingExportByUM) return;
 
@@ -579,117 +691,6 @@ export default {
                 // stop the loading when the last download completed
                 if (index === this.employee_no_um.length - 1) {
                     this.loadingExportByUM = false;
-                }
-            }
-
-            this.$_alert.success("Successfully");
-            this.loading = false;
-            this.isOpen = false;
-        },
-        async onSubmitByMU() {
-            if (this.loadingExportByMU) return;
-
-            this.loadingExportByMU = true;
-            for (const [index, _mu] of this.mu_no.entries()) {
-                if (!_mu) continue;
-
-                let muName = this.muList.find((item) => item.mu_no == _mu)
-                    ? this.muList.find((item) => item.mu_no == _mu).name
-                    : "";
-
-                let offset = 0;
-                let trees = [];
-                while (true) {
-                    const result = await this.getExportDataCarbon(_mu, offset);
-                    if (!result) {
-                        this.loadingExportByMU = false;
-                        break;
-                    }
-
-                    if (
-                        offset == 0 && result.data.length == 0
-                    ) {
-                        this.loadingExportByMU = false;
-                        this.$_alert.error(
-                            {},
-                            "Tidak ada data",
-                            `Tidak ada data di Unit Management ${muName} ${this.$store.state.tmpProgramYear}`
-                        );
-                        return;
-                    } else {
-                        console.log(result, offset)
-                        this.exportData = [...this.exportData, ...result.data]
-                        if (result.data.length < 100) break;
-                        offset += 100;
-                    }
-                }
-
-
-                // const trees = await this.$_api
-                //     .get("GetTreesAll")
-                //     .then((res) => {
-                //         return res.data.result.data;
-                //     })
-                //     .catch((err) => {
-                //         console.log("err", err);
-                //         return false;
-                //     });
-
-                // if (!trees) {
-                //     this.loading = false;
-                //     continue;
-                // }
-
-                const configFilename = {
-                    pdf: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.pdf`,
-                    excel: `Report-${muName.replace(/ /g, "")}-${_mu}-${moment().format(
-                        "DMMYYYYHHmmss"
-                    )}.xlsx`,
-                };
-                const axiosConfig = {
-                    method: "POST",
-                    url: this.configUrl['excel'],
-                    responseType: "arraybuffer",
-                    data: {
-                        data: this.exportData,
-                        exportBy: this.exportBy,
-                        program_year: this.$store.state.tmpProgramYear,
-                    },
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `Bearer ${this.$store.state.token}`,
-                    },
-                };
-                const exported = await axios(axiosConfig)
-                    .then((res) => {
-                        return res;
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
-
-                if (!exported) {
-                    this.loadingExportByMU = false;
-                    continue;
-                }
-
-                const url = URL.createObjectURL(new Blob([exported.data]));
-                const link = document.createElement("a");
-                link.href = url;
-
-                const filename = configFilename[this.format];
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-
-                // reset after complete download, then filled by next UM
-                this.exportData = [];
-
-                // stop the loading when the last download completed
-                if (index === this.mu_no.length - 1) {
-                    this.loadingExportByMU = false;
                 }
             }
 

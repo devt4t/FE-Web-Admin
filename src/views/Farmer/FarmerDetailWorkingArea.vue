@@ -98,6 +98,33 @@
         </div>
       </div>
     </template>
+    
+    <template v-slot:item.target_areas_name="{ item }">
+      <div class="d-flex flex-column">
+        <span class="font-weight-500">{{ item.target_areas_name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge bg-light">{{ item.area_code }}</span>
+        </div>
+      </div>
+    </template>
+
+    <template v-slot:item.managementunits_name="{ item }">
+      <div class="d-flex flex-column">
+        <span class="font-weight-500">{{ item.managementunits_name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge bg-light">{{ item.mu_no }}</span>
+        </div>
+      </div>
+    </template>
+
+    <template v-slot:item.desas_name="{ item }">
+      <div class="d-flex flex-column">
+        <span class="font-weight-500">{{ item.desas_name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge bg-light">{{ item.kode_desa }}</span>
+        </div>
+      </div>
+    </template>
 
     <template v-slot:item.program_year="{ item }">
       <span class="badge bg-primary">{{ item.program_year }}</span>
@@ -183,6 +210,18 @@ export default {
           text: "Nama FF",
           key: "ff_id",
           value: "ff_id",
+          sortable: false,
+        },
+        {
+          text: "Management Unit",
+          key: "managementunits_name",
+          value: "managementunits_name",
+          sortable: false,
+        },
+        {
+          text: "Target Area",
+          key: "target_areas_name",
+          value: "target_areas_name",
           sortable: false,
         },
         {

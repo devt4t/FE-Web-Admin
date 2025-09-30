@@ -290,21 +290,25 @@ export default {
         },
         onGetListData(data) {
 
-            data.map(item => {
-                function getRandomInt(min, max) {
-                    min = Math.ceil(min);
-                    max = Math.floor(max);
-                    return Math.floor(Math.random() * (max - min + 1)) + min;
-                }
+            // data.map(item => {
+            //     function getRandomInt(min, max) {
+            //         min = Math.ceil(min);
+            //         max = Math.floor(max);
+            //         return Math.floor(Math.random() * (max - min + 1)) + min;
+            //     }
 
-                item.created_at = [
-                    "2025-09-19 09:05:22",
-                    "2025-09-19 05:53:36",
-                ][getRandomInt(0,1)];
-            })
+            //     item.created_at = [
+            //         "2025-09-19 09:05:22",
+            //         "2025-09-19 05:53:36",
+            //     ][getRandomInt(0,1)];
+            // })
+
+            let intervals = [];
 
             data.map(item => {
-                setInterval(() => {
+                console.log(moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss"), moment().format("YYYY-MM-DD HH:mm:ss"))
+                if (moment().format("YYYY-MM-DD HH:mm:ss") > moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss")) return;
+                intervals[item.soc_no] = setInterval(() => {
                     const d1 = moment().format("YYYY-MM-DD HH:mm:ss");
                     const d2 = moment(item.created_at).add(1, 'days');
 
@@ -317,9 +321,20 @@ export default {
 
                     const formatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
                     this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
+                    
+                    if (totalSeconds <= 0 ) {
+                        this.resetDistributionDate(item.soc_no,item.created_at);
+                        clearInterval(intervals[item.soc_no]);
+                    }
                 }, 1000);
             })
         },
+        async resetDistributionDate(soc_no, created_at) {
+            this.$_api.post('ResetDistributionDate', { soc_no, created_at })
+                .then(() => {
+                    this.refreshKey += 1
+                })
+        }
     },
     data() {
         return config

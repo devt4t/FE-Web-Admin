@@ -262,6 +262,7 @@ console.log('DATA CHANGED', data);
         return false;
       }
       return true;
+      // return false;
     },
 
     onCalendarPickerChange(date, oldDate, type) {

@@ -18,16 +18,7 @@
                 code: 'code',
                 display: ['label'],
               },
-              default_options: [
-                {
-                  label: 'Field Facilitator',
-                  code: 'ff',
-                },
-                {
-                  label: 'Unit Management',
-                  code: 'mu',
-                },
-              ],
+              default_options: exportByOptions
             },
           }" />
 
@@ -127,6 +118,111 @@
               </form>
             </ValidationObserver>
           </div>
+          <div :class="exportBy === 'fc' ? 'd-block' : 'd-none'">
+            <ValidationObserver ref="secondForm" v-slot="{ handleSubmit }">
+                <form @submit.prevent="handleSubmit(onSubmitByFC)" autocomplete="off">
+                    <v-row>
+                        <v-col lg="12">
+                            <geko-input v-if="fcList.length > 0" v-model="employee_no_fc" :item="{
+                                label: 'Field Coordinator',
+                                placeholder: 'Pilih Field Coordinator',
+                                type: 'select',
+                                validation: ['required'],
+                                api: 'getEmployeeList_new',
+                                param: {
+                                    page: 1,
+                                    per_page: 10,
+                                    position_no: 19,
+                                },
+                                option: {
+                                    multiple: true,
+                                    getterKey: 'data.result',
+                                    default_options: fcList,
+                                    list_pointer: {
+                                        label: 'name',
+                                        code: 'nik',
+                                        display: ['name'],
+                                    },
+                                },
+                            }" @option:selected="test2($event)" :disabled="fcList.length == 0" />
+                            <v-progress-circular v-if="fcList.length == 0" indeterminate
+                                color="primary"></v-progress-circular>
+                        </v-col>
+
+                        <v-col lg="12">
+                            <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                                <v-icon v-if="!loadingExportByFC">mdi-file-pdf-box</v-icon>
+
+                                <v-progress-circular v-else :size="20" color="danger"
+                                    indeterminate></v-progress-circular>
+                                <span class="ml-1"> Export PDF</span>
+                            </v-btn>
+                        </v-col>
+
+                        <v-col lg="12">
+                            <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                                <v-icon v-if="!loadingExportByFC">mdi-microsoft-excel</v-icon>
+                                <v-progress-circular v-else :size="20" color="danger"
+                                    indeterminate></v-progress-circular>
+                                <span class="ml-1"> Export Excel</span>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </form>
+            </ValidationObserver>
+          </div>
+          <div :class="exportBy === 'um' ? 'd-block' : 'd-none'">
+            <ValidationObserver ref="thirdForm" v-slot="{ handleSubmit }">
+                <form @submit.prevent="handleSubmit(onSubmitByUM)" autocomplete="off">
+                    <v-row>
+                        <v-col lg="12">
+                            <geko-input v-if="umList.length > 0" v-model="employee_no_um" :item="{
+                                label: 'Unit Manager',
+                                placeholder: 'Pilih Unit Manager',
+                                type: 'select',
+                                validation: ['required'],
+                                api: 'GetManagementUnitAdmin',
+                                param: {
+                                    page: 1,
+                                    per_page: 10,
+                                },
+                                option: {
+                                    multiple: true,
+                                    getterKey: 'data.result',
+                                    default_options: umList,
+                                    list_pointer: {
+                                        label: 'name',
+                                        code: 'nik',
+                                        display: ['name'],
+                                    },
+                                },
+                            }" @option:selected="test2($event)" :disabled="umList.length == 0" />
+                            <v-progress-circular v-if="umList.length == 0" indeterminate
+                                color="primary"></v-progress-circular>
+                        </v-col>
+
+                        <v-col lg="12">
+                            <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                                <v-icon v-if="!loadingExportByUM">mdi-file-pdf-box</v-icon>
+
+                                <v-progress-circular v-else :size="20" color="danger"
+                                    indeterminate></v-progress-circular>
+                                <span class="ml-1"> Export PDF</span>
+                            </v-btn>
+                        </v-col>
+
+                        <v-col lg="12">
+                            <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                                <v-icon v-if="!loadingExportByUM">mdi-microsoft-excel</v-icon>
+                                <v-progress-circular v-else :size="20" color="danger"
+                                    indeterminate></v-progress-circular>
+                                <span class="ml-1"> Export Excel</span>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </form>
+            </ValidationObserver>
+          </div>
 
         </v-card-text>
       </v-card>
@@ -143,13 +239,20 @@ export default {
     return {
       ff_code: null,
       mu_no: null,
+      employee_no_fc: null,
+      employee_no_um: null,
       isOpen: false,
       loading: false,
       loadingCarbonExport: false,
+      loadingExportByFC: false,
+      loadingExportByUM: false,
       currentFfName: "",
       exportBy: 'ff',
+      exportByOptions:[],
       ffList: [],
       muList: [],
+      fcList: [],
+      umList: [],
       exportData: [],
     };
   },
@@ -169,7 +272,43 @@ export default {
         // this.getInitialData()
         this.getFFDataForExport()
         this.getUMDataForExport()
+        this.getFCDataForExport()
+        this.getUMDataForExport()
+
+        if (this.format === 'pdf') {
+          this.exportByOptions = [
+            {
+              label: 'Field Facilitator',
+              code: 'ff',
+            },
+            {
+              label: 'Unit Management',
+              code: 'mu',
+            },
+          ];
+        } else {
+          this.exportByOptions = [
+            {
+              label: 'Field Facilitator',
+              code: 'ff',
+            },
+            {
+              label: 'Unit Management',
+              code: 'mu',
+            },
+            {
+              label: 'Field Coordinator',
+              code: 'fc',
+            },
+            {
+              label: 'Unit Manager',
+              code: 'um',
+            },
+          ];
+        }
+
         this.isOpen = true;
+
       }
 
       if (!t) {
@@ -222,6 +361,40 @@ export default {
 
       this.muList = result.data.result;
     },
+    async getFCDataForExport() {
+            if (this.fcList.length > 0) return;
+            const result = await this.$_api.get("getEmployeeList_new", {
+                limit: 2147,
+                offset: 0,
+                position_no: 19,
+                program_year: this.$store.state.tmpProgramYear,
+            });
+
+            if (!Array.isArray(result.data)) return;
+
+            for (const item of result.data) {
+                item.name = `${item.name}`;
+            }
+
+            this.fcList = result.data;
+    },
+    async getUMDataForExport() {
+        if (this.umList.length > 0) return;
+        const result = await this.$_api.get("getEmployeeList_new", {
+            limit: 2147,
+            offset: 0,
+            position_no: 20,
+            program_year: this.$store.state.tmpProgramYear,
+        });
+
+        if (!Array.isArray(result.data)) return;
+
+        for (const item of result.data) {
+            item.name = `${item.name}`;
+        }
+
+        this.umList = result.data;
+    },
     // export data
 
     getExportData(ffCode) {
@@ -247,6 +420,23 @@ export default {
           .get("lahan/export/list/carbon", {
             program_year: this.$store.state.tmpProgramYear,
             mu_no: muNo,
+            limit: 100,
+            offset,
+          })
+          .then((res) => {
+            return resolve(res);
+          })
+          .catch(() => {
+            return reject(false);
+          });
+      });
+    },
+    getExportDataByEmployee(employee_no, offset) {
+      return new Promise(async (resolve, reject) => {
+        this.$_api
+          .get("getExportDataLahanFarmerByEmployee_new", {
+            program_year: this.$store.state.tmpProgramYear,
+            employee_no: employee_no,
             limit: 100,
             offset,
           })
@@ -332,6 +522,9 @@ export default {
           data: {
             data: result.data,
             trees: trees,
+            exportBy: this.exportBy,
+            name: ffName,
+            program_year: this.$store.state.tmpProgramYear,
           },
           headers: {
             "content-type": "application/json",
@@ -489,6 +682,242 @@ export default {
       this.$_alert.success("Successfully");
       this.loading = false;
       this.isOpen = false;
+    },
+    async onSubmitByUM() {
+      if (this.loadingExportByUM) return;
+
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+      };
+
+      this.loadingExportByUM = true;
+      for (const [index, _um] of this.employee_no_um.entries()) {
+          if (!_um) continue;
+
+          let umName = this.umList.find((item) => item.nik == _um)
+              ? this.umList.find((item) => item.nik == _um).name
+              : "";
+
+          let offset = 0;
+          while (true) {
+              const result = await this.getExportDataByEmployee(_um, offset);
+              if (!result) {
+                  this.loadingExportByUM = false;
+                  break;
+              }
+
+              if (offset == 0 && result.data.length == 0) {
+                  this.loadingExportByUM = false;
+                  this.$_alert.error(
+                      {},
+                      "Tidak ada data",
+                      `Tidak ada data di Target Area ${umName} ${this.$store.state.tmpProgramYear}`
+                  );
+                  return;
+              } else {
+                  console.log(result, offset)
+                  this.exportData = [...this.exportData, ...result.data]
+                  if (result.data.length < 100) break;
+                  offset += 100;
+              }
+
+
+
+          }
+
+
+          const trees = await this.$_api
+              .get("GetTreesAll")
+              .then((res) => {
+                  return res.data.result.data;
+              })
+              .catch((err) => {
+                  console.log("err", err);
+                  return false;
+              });
+
+          if (!trees) {
+              this.loading = false;
+              continue;
+          }
+
+          const configFilename = {
+              pdf: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
+                  "DMMYYYYHHmmss"
+              )}.pdf`,
+              excel: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
+                  "DMMYYYYHHmmss"
+              )}.xlsx`,
+          };
+          const axiosConfig = {
+              method: "POST",
+              url: configUrl[this.format],
+              responseType: "arraybuffer",
+              data: {
+                  data: this.exportData,
+                  trees: trees,
+                  exportBy: this.exportBy,
+                  name: umName,
+                  program_year: this.$store.state.tmpProgramYear,
+              },
+              headers: {
+                  "content-type": "application/json",
+                  Authorization: `Bearer ${this.$store.state.token}`,
+              },
+          };
+          const exported = await axios(axiosConfig)
+              .then((res) => {
+                  return res;
+              })
+              .catch((err) => {
+                  return false;
+              });
+
+          if (!exported) {
+              this.loadingExportByUM = false;
+              continue;
+          }
+
+          const url = URL.createObjectURL(new Blob([exported.data]));
+          const link = document.createElement("a");
+          link.href = url;
+
+          const filename = configFilename[this.format];
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+
+          // reset after complete download, then filled by next UM
+          this.exportData = [];
+
+          // stop the loading when the last download completed
+          if (index === this.employee_no_um.length - 1) {
+              this.loadingExportByUM = false;
+          }
+      }
+
+      this.$_alert.success("Successfully");
+      this.loading = false;
+      this.isOpen = false;
+    },
+    async onSubmitByFC() {
+        if (this.loadingExportByFC) return;
+
+        const configUrl = {
+          pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+          excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+        };
+
+        this.loadingExportByFC = true;
+        for (const [index, _fc] of this.employee_no_fc.entries()) {
+            if (!_fc) continue;
+            
+            let fcName = this.fcList.find((item) => item.nik == _fc)
+                ? this.fcList.find((item) => item.nik == _fc).name
+                : "";
+
+            let offset = 0;
+            while (true) {
+                const result = await this.getExportDataByEmployee(_fc, offset);
+                if (!result) {
+                    this.loadingExportByFC = false;
+                    break;
+                }
+
+                if (offset == 0 && result.data.length == 0) {
+                    this.loadingExportByFC = false;
+                    this.$_alert.error(
+                        {},
+                        "Tidak ada data",
+                        `Tidak ada data dari FC ${fcName} ${this.$store.state.tmpProgramYear}`
+                    );
+                    return;
+                } else {
+                    console.log(result, offset)
+                    this.exportData = [...this.exportData, ...result.data]
+                    if (result.data.length < 100) break;
+                    offset += 100;
+                }
+
+
+
+            }
+
+
+            const trees = await this.$_api
+                .get("GetTreesAll")
+                .then((res) => {
+                    return res.data.result.data;
+                })
+                .catch((err) => {
+                    console.log("err", err);
+                    return false;
+                });
+
+            if (!trees) {
+                this.loading = false;
+                continue;
+            }
+
+            const configFilename = {
+                pdf: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
+                    "DMMYYYYHHmmss"
+                )}.pdf`,
+                excel: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
+                    "DMMYYYYHHmmss"
+                )}.xlsx`,
+            };
+            const axiosConfig = {
+                method: "POST",
+                url: configUrl[this.format],
+                responseType: "arraybuffer",
+                data: {
+                    data: this.exportData,
+                    trees: trees,
+                    exportBy: this.exportBy,
+                    name: fcName,
+                    program_year: this.$store.state.tmpProgramYear,
+                },
+                headers: {
+                    "content-type": "application/json",
+                    Authorization: `Bearer ${this.$store.state.token}`,
+                },
+            };
+            const exported = await axios(axiosConfig)
+                .then((res) => {
+                    return res;
+                })
+                .catch((err) => {
+                    return false;
+                });
+
+            if (!exported) {
+                this.loadingExportByFC = false;
+                continue;
+            }
+
+            const url = URL.createObjectURL(new Blob([exported.data]));
+            const link = document.createElement("a");
+            link.href = url;
+
+            const filename = configFilename[this.format];
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+
+            // reset after complete download, then filled by next UM
+            this.exportData = [];
+
+            // stop the loading when the last download completed
+            if (index === this.employee_no_fc.length - 1) {
+                this.loadingExportByFC = false;
+            }
+        }
+
+        this.$_alert.success("Successfully");
+        this.loading = false;
+        this.isOpen = false;
     },
 
     test(data) {
