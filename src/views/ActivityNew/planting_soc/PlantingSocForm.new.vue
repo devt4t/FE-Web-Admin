@@ -190,8 +190,7 @@
                                                 'bg-dark': farmer.project_purpose_code == 'non-carbon',
                                                 'bg-info': farmer.project_purpose_code == 'carbon'
                                             }">
-                                                {{ farmer.project_purpose_code === 'carbon' ? 'CARBON' : 'Non
-                                                Carbon' }}
+                                                {{ farmer.project_purpose_code === 'carbon' ? 'CARBON' : 'NonCarbon' }}
                                             </span>
                                         </div>
                                     </td>
