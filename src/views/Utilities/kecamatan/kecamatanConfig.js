@@ -52,91 +52,38 @@ export default [
       list: true,
       detail: true,
       create: {
-        type: "text",
+        validation: ["required"],
         col_size: 6,
-        validation: ["required"],
-      },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      filter: false,
-    },
-  },
-  {
-    id: "kabupaten_no",
-    label: "Kode Kabupaten",
-    methods: {
-      list: true,
-      detail: true,
-      create: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      filter: false,
-    },
-  },
-  {
-    id: "kabupatens_province_code",
-    label: "Kode Kab. Provinsi",
-    methods: {
-      list: true,
-      detail: true,
-      create: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-    },
-  },
-  {
-    id: "provinces_name",
-    label: "Nama Provinsi",
-    methods: {
-      list: true,
-      detail: true,
-      create: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      filter: {
-        validation: ["required"],
+        view_data: "kabupaten_no",
         type: "select",
-        col_size: 6,
-        main: true,
-        getter: "new-utilities/provinces",
-        setter: "province_code",
-        param: {
-          page: 1,
-          per_page: 10,
-        },
+        getter: "new-utilities/kabupatens",
+        setter: "kabupaten_no",
         option: {
-          getterKey: "data",
+          getterKey: 'data',
           list_pointer: {
-            code: "province_code",
-            label: "name",
-            display: ["name"],
+            code: 'kabupaten_no',
+            label: 'name',
+            display: ['name', 'kabupaten_no'],
           },
         },
       },
+      update: {
+        validation: ["required"],
+        col_size: 6,
+        view_data: "kabupaten_no",
+        type: "select",
+        getter: "new-utilities/kabupatens",
+        setter: "kabupaten_no",
+        option: {
+          getterKey: 'data',
+          list_pointer: {
+            code: 'kabupaten_no',
+            label: 'name',
+            display: ['name', 'kabupaten_no'],
+          },
+        },
+      },
+      filter: false,
     },
   },
 ];

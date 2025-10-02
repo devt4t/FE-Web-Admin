@@ -63,6 +63,15 @@ const menu = [
         permission: "EmployeeMenu",
         icon: "mdi-account-details",
       },
+      // {
+      //   title: "Employee Menu",
+      //   to: "/EmployeeMenuV2",
+      //   component: "Employee/EmployeeMenu/EmployeeV2",
+      //   name: "EmployeeMenuV2",
+      //   permission: "EmployeeMenu",
+      //   icon: "mdi-account-details",
+      //   update: true,
+      // },
       {
         title: "Employee Manager",
         to: "/EmployeeManager",

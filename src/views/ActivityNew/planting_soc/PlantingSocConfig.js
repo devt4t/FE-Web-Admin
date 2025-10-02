@@ -12,6 +12,7 @@ export default {
   importSostamKey: 1,
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
+  timelefts: [],
   config: {
     title: "Sosialisasi Tanam",
     globalFilter: {
@@ -25,7 +26,7 @@ export default {
     // totalDataKey: 'data.result.data',
     // limitKey: 'per_page',
     // offsetKey: 'page',
-    expandable: true,
+    expandable: false,
     setter: "addProjectUtils",
     setter_ext_payload: {
       project_modul: "purpose",
@@ -58,12 +59,21 @@ export default {
         id: "data-table-expand",
         label: "Detail",
         methods: {
-          list: true,
+          list: false,
         },
       },
 
       {
         id: "indicator",
+        label: " ",
+        methods: {
+          list: {
+            type: "row-slot",
+          },
+        },
+      },
+      {
+        id: "countdown_timer",
         label: " ",
         methods: {
           list: {

@@ -23,6 +23,9 @@
                 <div class="badge bg-success">{{ item.end_lahan_no }}</div>
             </div>
         </template>
+        <template v-slot:list-description="{ item }">
+            {{ item.description ?? '-' }}
+        </template>
         <template v-slot:list-lahan_amount="{ item }">
             {{
                 parseInt(item.end_lahan_no.replace('10_', '')) -

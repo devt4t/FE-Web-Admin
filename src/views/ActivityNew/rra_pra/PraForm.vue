@@ -229,9 +229,8 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
-                          item.impact_to_people =
-                          j + 1 == item.impact_to_people ? null : j + 1
+                        <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
+                          impact(j,i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.impact_to_people == j + 1,
@@ -255,9 +254,8 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
-                          item.interval_problem =
-                          j + 1 == item.interval_problem ? null : j + 1
+                        <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
+                          intervalProblem(j,i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.interval_problem == j + 1,
@@ -281,9 +279,8 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
-                          item.priority =
-                          j + 1 == item.priority ? null : j + 1
+                        <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
+                          priority(j,i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.priority == j + 1,
@@ -307,9 +304,8 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
-                          item.potential =
-                          j + 1 == item.potential ? null : j + 1
+                        <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
+                          potential(j,i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.potential == j + 1,
@@ -341,8 +337,8 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
-                          item.ranking = j + 1 == item.ranking ? null : j + 1
+                        <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
+                          ranking(j,i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.ranking == j + 1,
@@ -446,6 +442,57 @@ export default {
       console.log("remove row called", field, i);
       console.log("before remove", this.formFieldData[field]);
       this.formFieldData[field].splice(i, 1);
+    },
+
+    impact(j,i) {
+      this.$set(
+        this.formFieldData.existingProblems,
+        i,
+        {
+          ...this.formFieldData.existingProblems[i],
+          impact_to_people: j + 1 == this.formFieldData.existingProblems[i].impact_to_people ? null : j + 1,
+        }
+      );
+    },
+    intervalProblem(j,i) {
+      this.$set(
+        this.formFieldData.existingProblems,
+        i,
+        {
+          ...this.formFieldData.existingProblems[i],
+          interval_problem: j + 1 == this.formFieldData.existingProblems[i].interval_problem ? null : j + 1,
+        }
+      );
+    },
+    priority(j,i) {
+      this.$set(
+        this.formFieldData.existingProblems,
+        i,
+        {
+          ...this.formFieldData.existingProblems[i],
+          priority: j + 1 == this.formFieldData.existingProblems[i].priority ? null : j + 1,
+        }
+      );
+    },
+    potential(j,i) {
+      this.$set(
+        this.formFieldData.existingProblems,
+        i,
+        {
+          ...this.formFieldData.existingProblems[i],
+          potential: j + 1 == this.formFieldData.existingProblems[i].potential ? null : j + 1,
+        }
+      );
+    },
+    ranking(j,i) {
+      this.$set(
+        this.formFieldData.existingProblems,
+        i,
+        {
+          ...this.formFieldData.existingProblems[i],
+          ranking: j + 1 == this.formFieldData.existingProblems[i].ranking ? null : j + 1,
+        }
+      );
     },
 
     async submitMasterDetail(endPoint, data) {
@@ -1351,7 +1398,7 @@ export default {
               size: 6,
               type: "select",
               setter: "fauna_categories",
-              options: defaultData.flora_type,
+              options: defaultData.fauna_type,
             },
 
             {

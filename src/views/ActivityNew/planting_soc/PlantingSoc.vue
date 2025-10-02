@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true">
+    <geko-base-crud @onGetListData="onGetListData($event)" :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true">
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
@@ -65,6 +65,14 @@
                     <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
                         item.suggestion_note }}</span>
                 </blockquote>
+            </div>
+        </template>
+
+        <template v-slot:list-countdown_timer="{ item }">
+            <div class="d-flex flex-col">
+                <v-chip v-if="item.timeleft" small color="red" text-color="white">
+                {{ item.timeleft }}
+                </v-chip>
             </div>
         </template>
 
@@ -148,13 +156,9 @@ export default {
         UpdateDistributionLocation
     },
     watch: {},
-    // mounted() {
-    //     const ffData = await this.$_api.get('new-sostam/detail/calendar-list', {
-    //         program_year: this.$store.state.tmpProgramYear
-    //     });
-
-    //     console.log(ffData)
-    // },
+    mounted() {
+        console.log({items:this})
+    },
     methods: {
         onEditFarmer(item) {
             this.farmerEditKey += 1
@@ -283,6 +287,53 @@ export default {
         onUpdateDistributionLocation(item) {
             this.distributionLocationKey += 1
             this.distributionLocationDatas = item
+        },
+        onGetListData(data) {
+
+            // data.map(item => {
+            //     function getRandomInt(min, max) {
+            //         min = Math.ceil(min);
+            //         max = Math.floor(max);
+            //         return Math.floor(Math.random() * (max - min + 1)) + min;
+            //     }
+
+            //     item.created_at = [
+            //         "2025-09-19 09:05:22",
+            //         "2025-09-19 05:53:36",
+            //     ][getRandomInt(0,1)];
+            // })
+
+            let intervals = [];
+
+            data.map(item => {
+                console.log(moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss"), moment().format("YYYY-MM-DD HH:mm:ss"))
+                if (moment().format("YYYY-MM-DD HH:mm:ss") > moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss")) return;
+                intervals[item.soc_no] = setInterval(() => {
+                    const d1 = moment().format("YYYY-MM-DD HH:mm:ss");
+                    const d2 = moment(item.created_at).add(1, 'days');
+
+                    const diff = moment.duration(d2.diff(d1));
+
+                    const totalSeconds = diff.asSeconds();
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = Math.floor(totalSeconds % 60);
+
+                    const formatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+                    this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
+                    
+                    if (totalSeconds <= 0 ) {
+                        this.resetDistributionDate(item.soc_no,item.created_at);
+                        clearInterval(intervals[item.soc_no]);
+                    }
+                }, 1000);
+            })
+        },
+        async resetDistributionDate(soc_no, created_at) {
+            this.$_api.post('ResetDistributionDate', { soc_no, created_at })
+                .then(() => {
+                    this.refreshKey += 1
+                })
         }
     },
     data() {

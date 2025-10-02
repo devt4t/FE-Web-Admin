@@ -68,6 +68,15 @@ export default reactive({
       },
     },
     {
+      id: "description",
+      label: "Deskripsi",
+      methods: {
+        list: {
+          type: "row-slot",
+        },
+      },
+    },
+    {
       id: "employees_name_generator",
       label: "Digenerate Oleh",
       methods: {

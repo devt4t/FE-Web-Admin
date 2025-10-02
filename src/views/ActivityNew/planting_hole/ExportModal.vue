@@ -434,7 +434,7 @@ export default {
         }
         headerBibits = Object.groupBy(headerBibits, ({ tree_name }) => tree_name);
         // Menyusun header bibit - end
-
+console.log({headerBibits})
         const axiosConfig = {
           method: "POST",
           url: configUrl[this.format],

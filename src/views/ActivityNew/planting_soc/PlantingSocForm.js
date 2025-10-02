@@ -29,6 +29,7 @@ export default {
       }
     },
     async onChangeFf(data) {
+console.log('DATA CHANGED', data);
       if (!data) {
         return;
       }
@@ -261,6 +262,7 @@ export default {
         return false;
       }
       return true;
+      // return false;
     },
 
     onCalendarPickerChange(date, oldDate, type) {

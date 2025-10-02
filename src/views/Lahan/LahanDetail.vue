@@ -53,7 +53,7 @@
                     <span>Unverifikasi GIS</span>
                   </v-btn>
 
-                  <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
+                  <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
                     @click="unverificationData('um_unverification')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi
@@ -142,7 +142,7 @@
                   <span>Unverifikasi Kelengkapan Data</span>
                 </v-btn>
 
-                <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
+                <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
                   @click="unverificationData('um_unverification')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi UM</span>

@@ -231,7 +231,7 @@
                         [undefined, null, ""].includes(stat.value)
                           ? "-"
                           : stat.value | parse(stat.transform)
-                      }}</span>
+                      }} {{ stat.append }}</span>
                     </slot>
                   </p>
                 </div>
@@ -293,7 +293,8 @@
               </slot>
 
               <slot name="list-action-update" v-bind:item="item"
-                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update)">
+                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update) && 
+                (config.hasOwnProperty('updateValidationKey')?!+item[config.updateValidationKey]:true)">
                 <button class="geko-list-action-update" @click="
                   $router.push({
                     query: {
@@ -686,6 +687,7 @@ export default {
         type: item.methods[key].type || "text",
         class: item.methods[key].class || "",
         transform: item.methods[key].transform || null,
+        append: item.methods[key].append || null,
         validation: item.methods[key].validation || [],
         input:
           typeof item.methods[key].input === "boolean"
@@ -781,7 +783,7 @@ export default {
       this.data = this.processListData(
         responseData,
         this.config.getterDataKey || "data"
-      );
+      ); this.$emit("onGetListData", this.data)
       if (this.config.statistic) {
         const statisticKey = ![null, undefined].includes(
           this.config.statistic.statistic_key
@@ -799,6 +801,7 @@ export default {
             let _processedStat = {
               label: this.config.statistic.transform_key[_key].label,
               value: statisticData[_key],
+              append: this.config.statistic.transform_key[_key].append,
               key: _key,
               icon: this.config.statistic.transform_key[_key].icon,
               color: this.config.statistic.transform_key[_key].color || "",

@@ -402,6 +402,21 @@ export default {
               icon: "mdi-close-circle-outline",
               color: "info",
             },
+            lahan_pemilik_luas: {
+              label: "Luas Lahan Pemilik",
+              icon: "mdi-arrow-expand",
+              append: "m²",
+            },
+            lahan_pengelola_luas: {
+              label: "Luas Lahan Pengelola",
+              icon: "mdi-arrow-expand",
+              append: "m²",
+            },
+            lahan_lainnya_luas: {
+              label: "Luas Lahan Lainnya",
+              icon: "mdi-arrow-expand",
+              append: "m²",
+            },
           },
         },
         fields: [

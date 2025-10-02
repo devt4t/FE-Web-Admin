@@ -504,10 +504,10 @@ export default {
             value: "status_program",
           },
           {
-            key: "pattern_new",
+            key: this.$store.state.tmpProgramYear == "2025" ? "pattern_new" : "pattern",
             sortable: false,
             text: "Pola Tanam Yang Diminati",
-            value: "pattern_new",
+            value: this.$store.state.tmpProgramYear == "2025" ? "pattern_new" : "pattern",
           },
           {
             key: "entry_data_status",

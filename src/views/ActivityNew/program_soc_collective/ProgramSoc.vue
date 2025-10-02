@@ -1,8 +1,8 @@
 <template>
   <geko-base-crud
     :config="config"
-    :hideUpdate="true"
     :hideDelete="false"
+    :hideUpdate="false"
     :hideDeleteSoft="false"
     :key="'program-soc-detail' + componentKey"
   >
@@ -43,6 +43,14 @@
           }"
         ></div>
       </div>
+    </template>
+
+    <template v-slot:detail-pattern="{ item }">
+        {{ item.pattern ? item.pattern.replace(/,/g, ', ') : '-' }}
+    </template>
+
+    <template v-slot:detail-pattern_new="{ item }">
+        {{ item.pattern_new ? item.pattern_new.replace(/,/g, ', ') : '-' }}
     </template>
 
     <template v-slot:detail-action="{ item }">
@@ -326,6 +334,7 @@ export default {
         delete: "",
 
         deleteKey: "form_no",
+        updateValidationKey: "is_verified",
         delete_ext_payload: {
           delete_type: "hard_delete",
         },
@@ -598,12 +607,38 @@ export default {
             },
           },
           {
-            id: "users_name_created_by",
+            id: "pattern",
+            label: "Pola Tanam Yg Sudah Ada",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "pattern_new",
+            label: "Pola Tanam Yg Diinginkan",
+            methods: {
+              list: false,
+              detail: {
+                type: "slot",
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+          {
+            id: "name_entry_data",
             label: "Nama Pengisi Form",
             methods: {
               list: false,
               detail: {
-                view_data: "users_name_created_by",
+                view_data: "name_entry_data",
               },
               create: true,
               update: true,
@@ -645,6 +680,7 @@ export default {
               list: false,
               detail: {
                 view_data: "age",
+                append: "Tahun",
                 transform: "no-empty",
               },
               create: true,
@@ -774,6 +810,7 @@ export default {
                 view_data: "peserta_pemilik_people",
                 transform: "no-empty",
                 class: "badge bg-info",
+                append: "peserta",
               },
               create: true,
               update: true,
@@ -789,6 +826,7 @@ export default {
                 view_data: "peserta_pemilik_lahan",
                 transform: "no-empty",
                 class: "badge bg-info",
+                append: "lahan",
               },
               create: true,
               update: true,
@@ -804,6 +842,7 @@ export default {
                 view_data: "peserta_pemilik_luas_lahan",
                 transform: "no-empty",
                 class: "badge bg-info",
+                append: "m²",
               },
               create: true,
               update: true,
@@ -819,6 +858,7 @@ export default {
                 view_data: "peserta_penggarap_people",
                 transform: "no-empty",
                 class: "badge bg-primary",
+                append: "peserta",
               },
               create: true,
               update: true,
@@ -834,6 +874,7 @@ export default {
                 view_data: "peserta_penggarap_lahan",
                 transform: "no-empty",
                 class: "badge bg-primary",
+                append: "lahan",
               },
               create: true,
               update: true,
@@ -849,6 +890,7 @@ export default {
                 view_data: "peserta_penggarap_luas_lahan",
                 transform: "no-empty",
                 class: "badge bg-primary",
+                append: "m²",
               },
               create: true,
               update: true,
@@ -864,6 +906,7 @@ export default {
                 view_data: "peserta_penggarap_people",
                 transform: "no-empty",
                 class: "badge bg-warning",
+                append: "peserta",
               },
               create: true,
               update: true,
@@ -879,6 +922,7 @@ export default {
                 view_data: "peserta_lain_lahan",
                 transform: "no-empty",
                 class: "badge bg-warning",
+                append: "lahan",
               },
               create: true,
               update: true,
@@ -894,6 +938,7 @@ export default {
                 view_data: "peserta_lain_luas_lahan",
                 transform: "no-empty",
                 class: "badge bg-warning",
+                append: "m²",
               },
               create: true,
               update: true,

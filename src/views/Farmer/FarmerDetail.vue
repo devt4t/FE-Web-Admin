@@ -540,6 +540,15 @@ export default {
               value: "photo",
             },
             {
+              label: "Foto Keluarga",
+              view_data: "family_photo",
+              value: "photo",
+            },
+            {
+              label: "Deskripsi Foto Keluarga",
+              view_data: "family_photo_description",
+            },
+            {
               label: "Suku",
               view_data: "ethnic",
             },

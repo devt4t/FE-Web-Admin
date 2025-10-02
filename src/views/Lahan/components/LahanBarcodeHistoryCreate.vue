@@ -3,7 +3,7 @@
       <template v-slot:default="{ isActive }">
         <v-card class="mx-auto">
             <v-card-title>Generate Barcode Lahan</v-card-title>
-            <v-col md="6">
+            <v-col lg="6">
                 <geko-input v-model="generate_amount" 
                 :item="{
                     label: 'Jumlah Generate',
@@ -11,6 +11,13 @@
                     col_size: 6,
                     type: 'number',
                 }" />
+            </v-col>
+            <v-col lg="6">
+              <geko-input v-model="description" :item="{
+                label: 'Deskripsi',
+                // validation: ['required'],
+                type: 'textarea',
+              }" />
             </v-col>
             <v-col>
                 <v-btn
@@ -22,6 +29,7 @@
                     <span>Generate</span>
                 </v-btn>
             </v-col>
+            
         </v-card>
       </template>
     </v-dialog>
@@ -46,7 +54,7 @@
       async Generate(){
         const prompt = await this.$_alert.confirm('Melakukan Generate Nomor Lahan?', 'Harap Cek Data Dengan Teliti!, Proses Generate Data Akan Masuk History Barcode Lahan & Tidak Bisa Dihapus!', 'Ya, Generate!', 'Batal', true)
         if (prompt.isConfirmed) {
-            this.$_api.post('lahan/generate-barcode/create', {generate_amount: this.generate_amount})
+            this.$_api.post('lahan/generate-barcode/create', {generate_amount: this.generate_amount, description: this.description })
             .then(() => {
                 this.$_alert.success('Berhasil Melakukan Generate Data Barcode Lahan, Harap Segera Export Data!')
                 this.isOpen = false;
@@ -76,6 +84,7 @@
       return {
         isOpen: false,
         generate_amount: 10,
+        description: '',
         loading: false,
         error: "",
       };

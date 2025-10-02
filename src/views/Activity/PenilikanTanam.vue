@@ -2728,7 +2728,7 @@
                 v-model="dialogs.exportFilter.filters.ta.model"
                 v-on:change="getFFbyTA('export')"
               ></v-autocomplete>
-            </v-col>
+            </v-col>    
             <!-- <v-col :cols="12">
                 <v-autocomplete
                   rounded
