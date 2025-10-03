@@ -273,7 +273,7 @@ export default {
         this.getFFDataForExport()
         this.getUMDataForExport()
         this.getFCDataForExport()
-        this.getUMDataForExport()
+        this.getMUDataForExport()
 
         if (this.format === 'pdf') {
           this.exportByOptions = [
@@ -346,7 +346,7 @@ export default {
 
       this.ffList = result.data;
     },
-    async getUMDataForExport() {
+    async getMUDataForExport() {
       if (this.muList.length > 0) return;
       const result = await this.$_api.get("GetManagementUnitAdmin", {
         page: 1,

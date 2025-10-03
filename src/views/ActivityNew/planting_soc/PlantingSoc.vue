@@ -9,7 +9,7 @@
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
-                :data="sostamDistributionData" />
+                :data="sostamDistributionData" @success="refreshKey += 1" />
             <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" />
         </template>
 
@@ -80,7 +80,7 @@
 
 
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>
@@ -95,7 +95,7 @@
 
                 <span>Export Excel</span>
             </v-btn>
-            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
+            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft" variant="success"
                 small class="mt-2" @click="onVerif(item)">
                 <v-icon small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
@@ -306,11 +306,15 @@ export default {
             let intervals = [];
 
             data.map(item => {
-                console.log(moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss"), moment().format("YYYY-MM-DD HH:mm:ss"))
-                if (moment().format("YYYY-MM-DD HH:mm:ss") > moment(item.created_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss")) return;
+                console.log(moment(item.updated_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss"), moment().format("YYYY-MM-DD HH:mm:ss"))
+                if (
+                    moment().format("YYYY-MM-DD HH:mm:ss") > moment(item.updated_at).add(1, 'days').format("YYYY-MM-DD HH:mm:ss") ||
+                    item.verified == 1
+                ) return;
+
                 intervals[item.soc_no] = setInterval(() => {
                     const d1 = moment().format("YYYY-MM-DD HH:mm:ss");
-                    const d2 = moment(item.created_at).add(1, 'days');
+                    const d2 = moment(item.updated_at).add(1, 'days');
 
                     const diff = moment.duration(d2.diff(d1));
 
@@ -323,17 +327,16 @@ export default {
                     this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
                     
                     if (totalSeconds <= 0 ) {
-                        this.resetDistributionDate(item.soc_no,item.created_at);
+                        this.resetDistributionDate(item.soc_no,item.updated_at);
                         clearInterval(intervals[item.soc_no]);
                     }
                 }, 1000);
             })
         },
-        async resetDistributionDate(soc_no, created_at) {
-            this.$_api.post('ResetDistributionDate', { soc_no, created_at })
-                .then(() => {
-                    this.refreshKey += 1
-                })
+        async resetDistributionDate(soc_no, updated_at) {
+            this.$_api.post('ResetDistributionDate', { soc_no, updated_at }).then(() => {
+                this.refreshKey += 1
+            })
         }
     },
     data() {
