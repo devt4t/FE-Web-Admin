@@ -2,7 +2,7 @@ export default {
   version: "2.5.0",
   baseUrl: "https://api.t4t-api.org/api/",
   baseUrlUpload: "https://geko-asset.t4t-api.org",
-  baseUrlExport: "https://geko-export.t4t-api.org:3001/",
+  baseUrlExport: "https://geko-export.t4t-api.org:8081/",
   // baseUrlExport: "http://localhost:9056/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   mapBoxApi:
