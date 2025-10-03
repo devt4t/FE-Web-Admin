@@ -213,7 +213,6 @@ export default {
             mapOptions.loading.show = true;
             // console.log(layers[layIndex].url)
             const url = `${this.$_config.baseUrlUpload}/${layers[layIndex].url}`;
-            console.log(this.$store.state);
             let layerId = mapOptions.layerId;
             const layerStyle = mapOptions.layerStyle;
             const sourceId = this._utils.generateRandomString(5) + Date.now();
