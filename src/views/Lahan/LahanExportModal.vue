@@ -102,7 +102,11 @@
                     <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
                       <v-icon v-if="!loadingCarbonExport">mdi-file-pdf-box</v-icon>
 
-                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
+                      </v-progress-circular> 
+                      <span v-if="loadingCarbonExport">
+                        &nbsp; {{ muLoadingProgress }}%
+                      </span>
                       <span class="ml-1"> Export PDF</span>
                     </v-btn>
                   </v-col>
@@ -110,7 +114,11 @@
                   <v-col lg="12">
                     <v-btn variant="success" type="submit" v-if="format == 'excel'">
                       <v-icon v-if="!loadingCarbonExport">mdi-microsoft-excel</v-icon>
-                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
+                      </v-progress-circular> 
+                      <span v-if="loadingCarbonExport">
+                        &nbsp; {{ muLoadingProgress }}%
+                      </span>
                       <span class="ml-1"> Export Excel</span>
                     </v-btn>
                   </v-col>
@@ -248,6 +256,7 @@ export default {
       loadingExportByUM: false,
       currentFfName: "",
       exportBy: 'ff',
+      muLoadingProgress: 0,
       exportByOptions:[],
       ffList: [],
       muList: [],
@@ -362,38 +371,38 @@ export default {
       this.muList = result.data.result;
     },
     async getFCDataForExport() {
-            if (this.fcList.length > 0) return;
-            const result = await this.$_api.get("getEmployeeList_new", {
-                limit: 2147,
-                offset: 0,
-                position_no: 19,
-                program_year: this.$store.state.tmpProgramYear,
-            });
+      if (this.fcList.length > 0) return;
+      const result = await this.$_api.get("getEmployeeList_new", {
+          limit: 2147,
+          offset: 0,
+          position_no: 19,
+          program_year: this.$store.state.tmpProgramYear,
+      });
 
-            if (!Array.isArray(result.data)) return;
+      if (!Array.isArray(result.data)) return;
 
-            for (const item of result.data) {
-                item.name = `${item.name}`;
-            }
+      for (const item of result.data) {
+          item.name = `${item.name}`;
+      }
 
-            this.fcList = result.data;
+      this.fcList = result.data;
     },
     async getUMDataForExport() {
-        if (this.umList.length > 0) return;
-        const result = await this.$_api.get("getEmployeeList_new", {
-            limit: 2147,
-            offset: 0,
-            position_no: 20,
-            program_year: this.$store.state.tmpProgramYear,
-        });
+      if (this.umList.length > 0) return;
+      const result = await this.$_api.get("getEmployeeList_new", {
+          limit: 2147,
+          offset: 0,
+          position_no: 20,
+          program_year: this.$store.state.tmpProgramYear,
+      });
 
-        if (!Array.isArray(result.data)) return;
+      if (!Array.isArray(result.data)) return;
 
-        for (const item of result.data) {
-            item.name = `${item.name}`;
-        }
+      for (const item of result.data) {
+          item.name = `${item.name}`;
+      }
 
-        this.umList = result.data;
+      this.umList = result.data;
     },
     // export data
 
@@ -596,6 +605,7 @@ export default {
             return;
           } else {
             console.log(result, offset)
+            this.muLoadingProgress = result.total ? Math.min(100, Math.round((this.exportData.length / result.total) * 100)) : 100;
             this.exportData = [...this.exportData, ...result.result]
             if (result.result.length < 100) break;
             offset += 100;

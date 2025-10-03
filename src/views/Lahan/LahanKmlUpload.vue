@@ -865,7 +865,7 @@ export default {
     },
     onSubmitCoordinate() {
       if (this.lahans.length == 0) {
-        this.$_alert.error("Error", "Data lahan belum ditambahkan");
+        this.$_alert.error("Data lahan belum ditambahkan");
         return;
       }
       this.loading = true;
@@ -873,7 +873,7 @@ export default {
         (l) => !l.lahan_no || !l.latitude || !l.longitude
       );
       if (invalidData.length > 0) {
-        this.$_alert.error("Error", "Data lahan tidak valid");
+        this.$_alert.error("Data lahan tidak valid");
         this.loading = false;
         return;
       }
