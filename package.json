@@ -46,7 +46,8 @@
     "vue2-leaflet": "^2.7.1",
     "vuejs-countdown": "^0.2.1",
     "vuetify": "^2.4.0",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.1.66",
