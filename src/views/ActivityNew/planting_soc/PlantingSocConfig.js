@@ -12,6 +12,7 @@ export default {
   importSostamKey: 1,
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
+  intervals: {},
   timelefts: [],
   config: {
     title: "Sosialisasi Tanam",

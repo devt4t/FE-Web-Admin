@@ -80,7 +80,7 @@
 
 
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') ">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>
@@ -251,6 +251,8 @@ export default {
                     .then(() => {
                         this.$_alert.success('Sostam berhasil diverifikasi')
                         this.refreshKey += 1
+                    }).finally(() => {
+                        clearInterval(this.intervals[item.soc_no])
                     })
 
             }
@@ -312,7 +314,7 @@ export default {
                     item.verified == 1
                 ) return;
 
-                intervals[item.soc_no] = setInterval(() => {
+                this.intervals[item.soc_no] = setInterval(() => {
                     const d1 = moment().format("YYYY-MM-DD HH:mm:ss");
                     const d2 = moment(item.updated_at).add(1, 'days');
 
