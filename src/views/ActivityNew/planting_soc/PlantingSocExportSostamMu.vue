@@ -123,9 +123,9 @@ export default {
                         );
                         return;
                     } else {
-                        if (result.length < 10) break;
                         console.log(result, offset)
                         this.exportData = [...this.exportData, ...result]
+                        if (result.length < 10) break;
                         offset += 10;
                     }
 

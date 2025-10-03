@@ -32,6 +32,7 @@
 
 <script>
 import moment from "moment";
+import { ref } from "vue";
 export default {
     name: 'planting-soc-distribution-date-edit',
     data() {
@@ -53,7 +54,7 @@ export default {
         data: {
             required: false,
             default: null
-        }
+        },
     },
 
     mounted() {
@@ -89,7 +90,8 @@ export default {
 
                 const updatePayload = {
                     distribution_date: this.formData.distribution_date,
-                    soc_no: this.formData.soc_no
+                    soc_no: this.formData.soc_no,
+                    program_year: this.$_config.programYear.model
                 }
                 this.loading = true
                 const updating = await this.$_api.post('sostam/update/distribution-date', updatePayload)
@@ -171,8 +173,9 @@ export default {
                         location_nursery_id: nursery.data[0].location_nursery_id,
                     };
 
-                    const allocationList = nursery.data[0].allocation_periode_days;
-                    this.allocations = allocationList.filter(
+                    const nurseryAllocationList = nursery.data[0].allocation_periode_days;
+                    console.log({ nurseryAllocationList })
+                    this.allocations = nurseryAllocationList.filter(
                         (nursery) => {
                             let pointerGEKO = bibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
                             console.log({ pointerGEKO })
@@ -180,7 +183,9 @@ export default {
                                 console.log(parseInt(nursery.qty_allocation), pointerGEKO[0].total_seed, totalSeedFF)
                                 let result = parseInt(nursery.qty_allocation) - (pointerGEKO[0].total_seed + totalSeedFF);
                                 console.log({ result })
-                                return parseInt(result) > 0
+                                return result > 0
+                            } else {
+                                return 1
                             }
                         });
                     for (const allocation of this.allocations) {
