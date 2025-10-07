@@ -89,10 +89,11 @@ export default {
             try {
 
                 const updatePayload = {
-                    distribution_date: this.formData.distribution_date,
+                    distribution_date: moment(this.formData.distribution_date).format("YYYY-MM-DD"),
                     soc_no: this.formData.soc_no,
                     program_year: this.$_config.programYear.model
                 }
+
                 this.loading = true
                 const updating = await this.$_api.post('sostam/update/distribution-date', updatePayload)
                     .catch(() => false)
@@ -114,13 +115,13 @@ export default {
             }
         },
         onCalendarPickerChange(date, oldDate, type) {
-            console.log(date)
             const dateDistributionNew = moment(date).format("YYYY-MM-DD");
             if (dateDistributionNew !== this.distribution_date) {
                 this.disableSubmit = false;
                 this.distribution_date = dateDistributionNew;
                 this.onChangeFf(this.data);
             }
+            console.log(date, dateDistributionNew,this.distribution_date)
         },
         async onChangeFf(data) {
             if (!data) {
