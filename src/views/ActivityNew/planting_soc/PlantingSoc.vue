@@ -328,7 +328,7 @@ export default {
                     const formatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
                     this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
                     
-                    console.log(totalSeconds, item.verified);
+                    // console.log(totalSeconds, item.verified);
                     if (totalSeconds <= 0 && item.verified == 0) {
                         this.resetDistributionDate(item.soc_no,item.updated_at);
                         clearInterval(intervals[item.soc_no]);

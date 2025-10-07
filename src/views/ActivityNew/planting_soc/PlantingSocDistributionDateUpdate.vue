@@ -153,16 +153,16 @@ export default {
                     ff_no: this.data.ff_no,
                     program_year: this.$_config.programYear.model,
                 });
-                let bibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
+                let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
                     month: moment(this.distribution_date).month() + 1,
                     year: moment(this.distribution_date).year(),
                     program_year: this.$_config.programYear.model,
                 });
-                // let [ffLahans, bibitGEKOs, nurserys] = await Promise.all([ffLahan, bibitGEKO, nursery]);
-                // console.log(ffLahans, bibitGEKOs, nurserys);
+                // let [ffLahans, allocatedBibitGEKOs, nurserys] = await Promise.all([ffLahan, allocatedBibitGEKO, nursery]);
+                // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});
 
                 let totalSeedFF = 0;
-                for (const farmer of ffLahan.data.result.lahans) {
+                for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
                     totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
                 }
 
@@ -174,19 +174,13 @@ export default {
                     };
 
                     const nurseryAllocationList = nursery.data[0].allocation_periode_days;
-                    console.log({ nurseryAllocationList })
                     this.allocations = nurseryAllocationList.filter(
                         (nursery) => {
-                            let pointerGEKO = bibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
-                            console.log({ pointerGEKO })
-                            if (pointerGEKO.length) {
-                                console.log(parseInt(nursery.qty_allocation), pointerGEKO[0].total_seed, totalSeedFF)
-                                let result = parseInt(nursery.qty_allocation) - (pointerGEKO[0].total_seed + totalSeedFF);
-                                console.log({ result })
-                                return result > 0
-                            } else {
-                                return 1
-                            }
+                            let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
+                            let totalBibitNeeded = totalSeedFF + (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
+                            // console.log({ nursery, pointerGEKO, totalBibitNeeded })
+                            let result = parseInt(nursery.qty_allocation) - totalBibitNeeded;
+                            return result > 0
                         });
                     for (const allocation of this.allocations) {
                         this.availableDate.push(allocation.date_allocation);
