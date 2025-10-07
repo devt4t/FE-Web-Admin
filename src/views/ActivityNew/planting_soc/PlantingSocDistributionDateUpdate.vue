@@ -163,7 +163,7 @@ export default {
                 // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});
 
                 let totalSeedFF = 0;
-                for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
+                for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
                     totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
                 }
 
@@ -179,7 +179,7 @@ export default {
                         (nursery) => {
                             let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
                             let totalBibitNeeded = totalSeedFF + (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
-                            // console.log({ nursery, pointerGEKO, totalBibitNeeded })
+                            console.log({ nursery, pointerGEKO, totalBibitNeeded })
                             let result = parseInt(nursery.qty_allocation) - totalBibitNeeded;
                             return result > 0
                         });

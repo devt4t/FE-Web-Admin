@@ -80,7 +80,7 @@
 
 
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.verified && !item.timeleft">
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>
@@ -177,7 +177,7 @@ export default {
                 if (this.exportIds.includes(item.ff_no)) return
                 this.exportIds.push(item.ff_no)
                 const ffData = await this.$_api.get('GetSosisalisasiTanamAdmin', {
-                    program_year: 2024,
+                    program_year: this.$_config.programYear.model,
                     ff_no: item.ff_no,
                     typegetdata: 'all',
                     limit: 10000,
