@@ -95,7 +95,11 @@ console.log('DATA CHANGED', data);
         (nursery) => {
             let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
             let totalBibitNeeded = totalSeedFF + (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
-            console.log({ nursery, pointerGEKO, totalBibitNeeded })
+            this.remainingSeedAMonth.push({
+                date: nursery.date_allocation,
+                remaining: parseInt(nursery.qty_allocation) - (pointerGEKO.length ? pointerGEKO[0].total_seed : 0),
+                totalBibitNeeded,
+            });
             let result = parseInt(nursery.qty_allocation) - totalBibitNeeded;
             return result > 0
         });
@@ -288,6 +292,7 @@ console.log('DATA CHANGED', data);
         this.dateDistributionCurrent = dateDistributionNew;
         this.onChangeFf(this.ffCurrent);
       }
+
     },
   },
   watch: {
@@ -330,6 +335,7 @@ console.log('DATA CHANGED', data);
       plantingRealizationStart: null,
       plantingRealizationEnd: null,
       nurseryLocation: null,
+      remainingSeedAMonth: [],
       formatDate: (date, format = "YYYY-MM-DD") => {
         return moment(date).format(format);
       },

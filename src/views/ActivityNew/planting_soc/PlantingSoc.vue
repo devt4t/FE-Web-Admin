@@ -80,7 +80,7 @@
 
 
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>

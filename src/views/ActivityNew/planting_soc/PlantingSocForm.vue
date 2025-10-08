@@ -45,7 +45,8 @@
                             <date-picker @calendar-change="onCalendarPickerChange" :disabled-date="dateDisabled"
                                 title-format="YYYY-MMMM-DD" class="distribution-calendar"
                                 v-model="formData.distribution_date" format="YYYY-MM-DD" type="date"
-                                placeholder="Select date" inline></date-picker>
+                                placeholder="Select date" :popup-style="{a:5}" inline>
+                            </date-picker>
                             <v-overlay v-if="loading" absolute opacity="0.5">
                                 <v-progress-circular indeterminate size="50"></v-progress-circular>
                                 <span>Mengambil data bibit</span>
@@ -106,6 +107,29 @@
                                             v-if="plantingRealizationStart && plantingRealizationEnd">
                                             {{ formatDate(plantingRealizationStart, 'D MMM YYYY') }} -
                                             {{ formatDate(plantingRealizationEnd, 'D MMM YYYY') }}
+                                        </div>
+                                        <div class="distribution-date-label" v-else>-</div>
+                                    </div>
+                                </div>
+                            </v-col>
+
+                            <v-col md="12" sm="6">
+                                <div class="distribution-date">
+                                    <v-icon>mdi-sprout</v-icon>
+                                    <div class="pl-3">
+                                        <label for="">Alokasi Bibit Tersisa</label>
+                                        <div class="distribution-date-label" v-if="nurseryLocation">
+                                            {{
+                                                remainingSeedAMonth.find(d => {
+                                                    const selectedDate = () => {
+                                                        const d = new Date(JSON.parse(JSON.stringify(formData))?.distribution_date);
+                                                        d.setDate(d.getDate() + 1);
+                                                        return d.toISOString().split('T')[0];
+                                                    };
+                                                    return d.date === selectedDate();
+                                                })?.remaining | parse('ts') ?? '-'
+                                                
+                                            }}
                                         </div>
                                         <div class="distribution-date-label" v-else>-</div>
                                     </div>
