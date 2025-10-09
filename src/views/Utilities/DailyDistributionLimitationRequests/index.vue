@@ -16,15 +16,15 @@ export default {
         },
         model_api: null,
         getter: "",
-        setter: "addProjectUtils",
+        setter: "",
         setter_ext_payload: {
           project_modul: "type",
         },
-        update: "updateProjectUtils",
+        update: "",
         update_ext_payload: {
           project_modul: "type",
         },
-        delete: "deleteProjectUtils",
+        delete: "",
         delete_ext_payload: {
           delete_type: "hard_delete",
           project_modul: "type",
