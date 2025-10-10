@@ -74,8 +74,6 @@ console.log('DATA CHANGED', data);
       );
 
       nursery.data = nursery.data.data.result[0] || {};
-
-      console.log({ nursery });
       nursery.allocation_periode_days = this.getDatesBetween(
           nursery.data.start_distribution_time, 
           nursery.data.end_distribution_time
@@ -87,7 +85,6 @@ console.log('DATA CHANGED', data);
               mpts_allocation: nursery.data.mpts_limitation,
           }
       });
-      console.log({ nursery });
 
       let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
           month: moment(this.dateDistributionCurrent).month() + 1,

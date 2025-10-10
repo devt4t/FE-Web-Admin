@@ -43,7 +43,49 @@ export default {
             availableDate: [],
             allocations: [],
             distribution_date: moment().format("YYYY-MM-DD"),
-            disableSubmit: true
+            disableSubmit: true,
+            nurserys: [
+                {
+                    id: 4,
+                    name:'Kebumen'
+                },
+                {
+                    id: 5,
+                    name:'Pati'
+                },
+                {
+                    id: 6,
+                    name:'SMG Testing'
+                },
+                {
+                    id: 7,
+                    name:'Semarang'
+                },
+                {
+                    id: 1,
+                    name:'Ciminyak'
+                },
+                {
+                    id: 9,
+                    name:'Cidaun'
+                },
+                {
+                    id: 10,
+                    name:'Bali Barat'
+                },
+                {
+                    id: 2,
+                    name:'Soreang'
+                },
+                {
+                    id: 3,
+                    name:'Cirasea'
+                },
+                {
+                    id: 8,
+                    name:'Citanduy'
+                },
+            ],
         }
     },
     props: {
@@ -170,18 +212,17 @@ export default {
                 );
 
                 nursery.data = nursery.data.data.result[0] || {};
-
-                console.log({ nursery });
                 nursery.allocation_periode_days = this.getDatesBetween(
                     nursery.data.start_distribution_time, 
                     nursery.data.end_distribution_time
                 ).map(date => {
                     return {
                         date_allocation: date,
-                        qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation
+                        qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation,
+                        kayu_allocation: nursery.data.wood_limitation,
+                        mpts_allocation: nursery.data.mpts_limitation,
                     }
                 });
-                console.log({ nursery });
 
                 let ffLahan = await this.$_api.get("getFFLahanSostamNew", {
                     ff_no: this.data.ff_no,
@@ -195,27 +236,42 @@ export default {
                 // let [ffLahans, allocatedBibitGEKOs, nurserys] = await Promise.all([ffLahan, allocatedBibitGEKO, nursery]);
                 // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});
 
-                let totalSeedFF = 0;
+                let totalSeedFF = {
+                    kayu: 0,
+                    mpts: 0,
+                };
                 for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
-                    totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
+                    totalSeedFF.kayu += parseInt(farmer.total_kayu);
+                    totalSeedFF.mpts += parseInt(farmer.total_mpts);
                 }
 
-                if (Array.isArray(nursery.data) && nursery.data.length > 0) {
+                if (nursery.data) {
                     this.nurseryLocation = {
-                        address_nursery: '',
-                        name_location_nursery: '',
-                        location_nursery_id: nursery.data.nursery_locations_id,
+                    address_nursery: '',
+                    name_location_nursery: this.nurserys.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
+                    location_nursery_id: nursery.data.nursery_locations_id,
                     };
 
+                    console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
                     const nurseryAllocationList = nursery.allocation_periode_days;
                     this.allocations = nurseryAllocationList.filter(
-                        (nursery) => {
-                            let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
-                            let totalBibitNeeded = totalSeedFF + (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
-                            console.log({ nursery, pointerGEKO, totalBibitNeeded })
-                            let result = parseInt(nursery.qty_allocation) - totalBibitNeeded;
-                            return result > 0
-                        });
+                    (nsry) => {
+                        let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
+                        
+                        let totalBibitNeeded = {
+                            kayu: totalSeedFF.kayu,
+                            mpts: totalSeedFF.mpts,
+                        }
+                        totalBibitNeeded.kayu += (pointerGEKO.length ? pointerGEKO[0].total_seed_kayu : 0)
+                        totalBibitNeeded.mpts += (pointerGEKO.length ? pointerGEKO[0].total_seed_mpts : 0)
+
+                        let result = (parseInt(nsry.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
+                        (parseInt(nsry.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+
+                        console.log({totalBibitNeeded}, {totalSeedFF}, {pointerGEKO}, {nsry});
+
+                        return result;
+                    });
                     for (const allocation of this.allocations) {
                         this.availableDate.push(allocation.date_allocation);
                     }
