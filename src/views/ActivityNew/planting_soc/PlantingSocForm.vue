@@ -27,7 +27,7 @@
                                 },
                             },
                         }" @selected="onChangeFf($event)" />
-                    </v-col>
+                     </v-col>
 
                     <v-col md="12">
                         <geko-input v-model="formData.soc_date" :item="{
@@ -41,7 +41,7 @@
                     <v-col md="8">
 
                         <span class="geko-input" style="position: relative;">
-                            <label class="required mb-3"> Tanggal Distribusi</label>
+                            <label class="required mb-3"> Tanggal Distribusi</label> 
                             <date-picker @calendar-change="onCalendarPickerChange" :disabled-date="dateDisabled"
                                 title-format="YYYY-MMMM-DD" class="distribution-calendar"
                                 v-model="formData.distribution_date" format="YYYY-MM-DD" type="date"
@@ -113,11 +113,11 @@
                                 </div>
                             </v-col>
 
-                            <v-col md="12" sm="6">
+                            <v-col md="12" sm="6" v-if="false">
                                 <div class="distribution-date">
                                     <v-icon>mdi-sprout</v-icon>
                                     <div class="pl-3">
-                                        <label for="">Alokasi Bibit Tersisa</label>
+                                        <label for="">Alokasi Bibit Tersedia</label>
                                         <div class="distribution-date-label" v-if="nurseryLocation">
                                             {{
                                                 remainingSeedAMonth.find(d => {

@@ -28,6 +28,19 @@ export default {
         }
       }
     },
+    getDatesBetween(start, end) {
+        const dateArray = []
+        const startDate = new Date(start)
+        const endDate = new Date(end)
+
+        // pastikan urutan benar
+        while (startDate <= endDate) {
+            dateArray.push(startDate.toISOString().split('T')[0])
+            startDate.setDate(startDate.getDate() + 1)
+        }
+
+        return dateArray
+    },
     async onChangeFf(data) {
 console.log('DATA CHANGED', data);
       if (!data) {
@@ -44,15 +57,37 @@ console.log('DATA CHANGED', data);
       const endDate = moment(this.dateDistributionCurrent, "YYYY-MM-DD")
         .endOf("month")
         .format("YYYY-MM-DD");
-      const response = await this.$_api.getNursery(
-        "custom/gekoDistributionAllocationPeriodes",
-        {
-          mu_no: data.mu_no,
-          program_year: this.$_config.programYear.model,
-          start_date: startDate,
-          end_date: endDate,
-        }
+
+      let nursery = {
+          data: [],
+          allocation_periode_days: []
+      };
+
+      nursery.data = await this.$_api.get(
+          "sostam/calendar/daily-distribution-limit/get",
+          {
+              mu_no: data.mu_no,
+              program_year: this.$_config.programYear.model,
+              start_date: startDate,
+              end_date: endDate,
+          }
       );
+
+      nursery.data = nursery.data.data.result[0] || {};
+
+      console.log({ nursery });
+      nursery.allocation_periode_days = this.getDatesBetween(
+          nursery.data.start_distribution_time, 
+          nursery.data.end_distribution_time
+      ).map(date => {
+          return {
+              date_allocation: date,
+              qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation,
+              kayu_allocation: nursery.data.wood_limitation,
+              mpts_allocation: nursery.data.mpts_limitation,
+          }
+      });
+      console.log({ nursery });
 
       let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
           month: moment(this.dateDistributionCurrent).month() + 1,
@@ -78,30 +113,39 @@ console.log('DATA CHANGED', data);
         ffLahanData = ffLahan.data.result.lahans;
       } catch { }
 
-      let totalSeedFF = 0;
+      let totalSeedFF = {
+        kayu: 0,
+        mpts: 0,
+      };
       for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
-          totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
+          totalSeedFF.kayu += parseInt(farmer.total_kayu);
+          totalSeedFF.mpts += parseInt(farmer.total_mpts);
       }
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
+      if (nursery.data) {
         this.nurseryLocation = {
-          address_nursery: response.data[0].address_nursery,
-          name_location_nursery: response.data[0].name_location_nursery,
-          location_nursery_id: response.data[0].location_nursery_id,
+          address_nursery: '',
+          name_location_nursery: this.nurserys.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
+          location_nursery_id: nursery.data.nursery_locations_id,
         };
 
-        const nurseryAllocationList = response.data[0].allocation_periode_days;
+        console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
+        const nurseryAllocationList = nursery.allocation_periode_days;
         this.allocations = nurseryAllocationList.filter(
-        (nursery) => {
-            let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
-            let totalBibitNeeded = totalSeedFF + (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
-            this.remainingSeedAMonth.push({
-                date: nursery.date_allocation,
-                remaining: parseInt(nursery.qty_allocation) - (pointerGEKO.length ? pointerGEKO[0].total_seed : 0),
-                totalBibitNeeded,
-            });
-            let result = parseInt(nursery.qty_allocation) - totalBibitNeeded;
-            return result > 0
+        (nsry) => {
+            let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
+            
+            let totalBibitNeeded = {
+                kayu: totalSeedFF.kayu,
+                mpts: totalSeedFF.mpts,
+            }
+            totalBibitNeeded.kayu += (pointerGEKO.length ? pointerGEKO[0].total_seed_kayu : 0)
+            totalBibitNeeded.mpts += (pointerGEKO.length ? pointerGEKO[0].total_seed_mpts : 0)
+
+            let result = (parseInt(nsry.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
+              (parseInt(nsry.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+
+            return result;
         });
 
         for (const allocation of this.allocations) {
@@ -339,6 +383,48 @@ console.log('DATA CHANGED', data);
       formatDate: (date, format = "YYYY-MM-DD") => {
         return moment(date).format(format);
       },
+      nurserys: [
+          {
+            id: 4,
+            name:'Kebumen'
+          },
+          {
+            id: 5,
+            name:'Pati'
+          },
+          {
+            id: 6,
+            name:'SMG Testing'
+          },
+          {
+            id: 7,
+            name:'Semarang'
+          },
+          {
+            id: 1,
+            name:'Ciminyak'
+          },
+          {
+            id: 9,
+            name:'Cidaun'
+          },
+          {
+            id: 10,
+            name:'Bali Barat'
+          },
+          {
+            id: 2,
+            name:'Soreang'
+          },
+          {
+            id: 3,
+            name:'Cirasea'
+          },
+          {
+            id: 8,
+            name:'Citanduy'
+          },
+      ],
       maps: {
         center: [113.9213, -0.7893],
         zoom: 3,

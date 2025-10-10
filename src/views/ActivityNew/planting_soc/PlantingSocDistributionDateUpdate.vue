@@ -123,6 +123,19 @@ export default {
             }
             console.log(date, dateDistributionNew,this.distribution_date)
         },
+        getDatesBetween(start, end) {
+            const dateArray = []
+            const startDate = new Date(start)
+            const endDate = new Date(end)
+
+            // pastikan urutan benar
+            while (startDate <= endDate) {
+                dateArray.push(startDate.toISOString().split('T')[0])
+                startDate.setDate(startDate.getDate() + 1)
+            }
+
+            return dateArray
+        },
         async onChangeFf(data) {
             if (!data) {
                 return;
@@ -141,8 +154,13 @@ export default {
 
 
             try {
-                let nursery = await this.$_api.getNursery(
-                    "custom/gekoDistributionAllocationPeriodes",
+                let nursery = {
+                    data: [],
+                    allocation_periode_days: []
+                };
+
+                nursery.data = await this.$_api.get(
+                    "sostam/calendar/daily-distribution-limit/get",
                     {
                         mu_no: data.mu_no,
                         program_year: this.$_config.programYear.model,
@@ -150,6 +168,21 @@ export default {
                         end_date: endDate,
                     }
                 );
+
+                nursery.data = nursery.data.data.result[0] || {};
+
+                console.log({ nursery });
+                nursery.allocation_periode_days = this.getDatesBetween(
+                    nursery.data.start_distribution_time, 
+                    nursery.data.end_distribution_time
+                ).map(date => {
+                    return {
+                        date_allocation: date,
+                        qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation
+                    }
+                });
+                console.log({ nursery });
+
                 let ffLahan = await this.$_api.get("getFFLahanSostamNew", {
                     ff_no: this.data.ff_no,
                     program_year: this.$_config.programYear.model,
@@ -169,12 +202,12 @@ export default {
 
                 if (Array.isArray(nursery.data) && nursery.data.length > 0) {
                     this.nurseryLocation = {
-                        address_nursery: nursery.data[0].address_nursery,
-                        name_location_nursery: nursery.data[0].name_location_nursery,
-                        location_nursery_id: nursery.data[0].location_nursery_id,
+                        address_nursery: '',
+                        name_location_nursery: '',
+                        location_nursery_id: nursery.data.nursery_locations_id,
                     };
 
-                    const nurseryAllocationList = nursery.data[0].allocation_periode_days;
+                    const nurseryAllocationList = nursery.allocation_periode_days;
                     this.allocations = nurseryAllocationList.filter(
                         (nursery) => {
                             let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
