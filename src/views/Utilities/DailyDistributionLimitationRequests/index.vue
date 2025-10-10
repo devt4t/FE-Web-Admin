@@ -1,13 +1,150 @@
 <template>
-  <geko-base-crud :config="config"> </geko-base-crud>
+  <geko-base-crud 
+    :config="config" 
+    :hideDelete="false"
+    :hideUpdate="false"
+  > 
+    <template v-slot:create-form>
+        <create />
+    </template>
+
+    <template v-slot:list-nursery_locations_id="{ item }">
+      {{ nurserys.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+    </template>
+
+    <template v-slot:list-wood_limitation="{ item }">
+        <span class="badge bg-primary">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.wood_limitation }}
+        </span>
+    </template>
+
+    <template v-slot:list-mpts_limitation="{ item }">
+        <span class="badge bg-primary">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.mpts_limitation }}
+        </span>
+    </template>
+
+    <template v-slot:list-total_limitation="{ item }">
+        <span class="badge bg-warning">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;
+            {{ Number(item.wood_limitation) + Number(item.mpts_limitation) }}
+        </span>
+    </template>
+
+    <template v-slot:list-program_year="{ item }">
+        <span class="badge bg-info">
+            {{ item.program_year }}
+        </span>
+    </template>
+
+    <template v-slot:list-start_distribution_time="{ item }">
+        <span class="badge bg-info">
+            {{ item.start_distribution_time | parse('date') }}
+        </span>
+    </template>
+
+    <template v-slot:list-end_distribution_time="{ item }">
+        <span class="badge bg-info">
+            {{ item.end_distribution_time | parse('date') }}
+        </span>
+    </template>
+    
+
+    <template v-slot:detail-nursery_locations_id="{ item }">
+      {{ nurserys.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+    </template>
+
+    <template v-slot:detail-wood_limitation="{ item }">
+        <span class="badge bg-primary">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.wood_limitation }}
+        </span>
+    </template>
+
+    <template v-slot:detail-mpts_limitation="{ item }">
+        <span class="badge bg-primary">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.mpts_limitation }}
+        </span>
+    </template>
+
+    <template v-slot:detail-total_limitation="{ item }">
+        <span class="badge bg-warning">
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;
+            {{ Number(item.wood_limitation) + Number(item.mpts_limitation) }}
+        </span>
+    </template>
+
+    <template v-slot:detail-program_year="{ item }">
+        <span class="badge bg-info">
+            {{ item.program_year }}
+        </span>
+    </template>
+
+    <template v-slot:detail-start_distribution_time="{ item }">
+        <span class="badge bg-info">
+            {{ item.start_distribution_time | parse('date') }}
+        </span>
+    </template>
+
+    <template v-slot:detail-end_distribution_time="{ item }">
+        <span class="badge bg-info">
+            {{ item.end_distribution_time | parse('date') }}
+        </span>
+    </template>
+
+  </geko-base-crud>
 </template>
 
 <script>
+import Create from './create.vue';
+
 export default {
-  name: "crud-project-type",
+  name: "crud-daily-distribution-limit",
+  components: { Create },
   watch: {},
   data() {
     return {
+      nurserys: [
+          {
+            id: 4,
+            name:'Kebumen'
+          },
+          {
+            id: 5,
+            name:'Pati'
+          },
+          {
+            id: 6,
+            name:'SMG Testing'
+          },
+          {
+            id: 7,
+            name:'Semarang'
+          },
+          {
+            id: 1,
+            name:'Ciminyak'
+          },
+          {
+            id: 9,
+            name:'Cidaun'
+          },
+          {
+            id: 10,
+            name:'Bali Barat'
+          },
+          {
+            id: 2,
+            name:'Soreang'
+          },
+          {
+            id: 3,
+            name:'Cirasea'
+          },
+          {
+            id: 8,
+            name:'Citanduy'
+          },
+      ],
       config: {
         title: "Permintaan Limitasi Distribusi Harian",
         program_year: {
@@ -15,7 +152,7 @@ export default {
           model: "2024",
         },
         model_api: null,
-        getter: "",
+        getter: "sostam/calendar/daily-distribution-limit/list",
         setter: "",
         setter_ext_payload: {
           project_modul: "type",
@@ -24,12 +161,11 @@ export default {
         update_ext_payload: {
           project_modul: "type",
         },
-        delete: "",
+        delete: "sostam/calendar/daily-distribution-limit/delete",
         delete_ext_payload: {
-          delete_type: "hard_delete",
-          project_modul: "type",
+          delete_type: "hard_delete"
         },
-        deleteKey: "code",
+        deleteKey: "id",
         pk_field: null,
         filter_api: {
           project_modul: "type",
@@ -81,7 +217,7 @@ export default {
 
           
           {
-            id: "mu_no",
+            id: "managementunits_name",
             label: "Management Unit",
             methods: {
               list: true,
@@ -93,11 +229,15 @@ export default {
           },
 
           {
-            id: "kayu_limitation",
+            id: "wood_limitation",
             label: "Limitasi Kayu",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot',
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -108,8 +248,12 @@ export default {
             id: "mpts_limitation",
             label: "Limitasi MPTS",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot',
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -120,8 +264,12 @@ export default {
             id: "total_limitation",
             label: "Total Limitasi Bibit",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot',
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -133,8 +281,12 @@ export default {
             id: "program_year",
             label: "Tahun Program",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot',
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -145,8 +297,12 @@ export default {
             id: "nursery_locations_id",
             label: "Lokasi Persemaian",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot'
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -156,10 +312,14 @@ export default {
           
           {
             id: "start_distribution_time",
-            label: "Tanggal Mulai Distribusi",
+            label: "Waktu Mulai Distribusi",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot'
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
@@ -168,10 +328,14 @@ export default {
 
           {
             id: "end_distribution_time",
-            label: "Tanggal Selesai Distribusi",
+            label: "Waktu Selesai Distribusi",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot'
+              },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
