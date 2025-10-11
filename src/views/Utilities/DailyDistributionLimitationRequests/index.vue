@@ -9,7 +9,7 @@
     </template>
 
     <template v-slot:list-nursery_locations_id="{ item }">
-      {{ nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+      {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
     </template>
 
     <template v-slot:list-wood_limitation="{ item }">
@@ -51,7 +51,7 @@
     
 
     <template v-slot:detail-nursery_locations_id="{ item }">
-      {{ nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+      {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
     </template>
 
     <template v-slot:detail-wood_limitation="{ item }">
@@ -96,7 +96,6 @@
 
 <script>
 import Create from './create.vue';
-import nurseries from './nurseries';
 
 export default {
   name: "crud-daily-distribution-limit",
@@ -104,7 +103,6 @@ export default {
   watch: {},
   data() {
     return {
-      nurseries,
       config: {
         title: "Permintaan Limitasi Distribusi Harian",
         program_year: {

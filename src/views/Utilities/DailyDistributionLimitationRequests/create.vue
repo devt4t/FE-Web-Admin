@@ -37,7 +37,7 @@
               setter: 'id',
               option: {
                 getterKey: 'data',
-                default_options: nurseries,
+                default_options: $store.state.nurseries,
                 list_pointer: {
                   code: 'id',
                   label: 'name',
@@ -158,7 +158,6 @@
 </template>
 
 <script>
-import nurseries from './nurseries';
 
 export default {
   name: "daily-distribution-limit-form",
@@ -363,8 +362,7 @@ export default {
           tree_category: null,
           tree_code: null,
         },
-      ],
-      nurseries
+      ]
     };
   },
 };
