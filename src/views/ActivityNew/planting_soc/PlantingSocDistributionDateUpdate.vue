@@ -170,9 +170,15 @@ export default {
             const startDate = new Date(start)
             const endDate = new Date(end)
 
-            // pastikan urutan benar
             while (startDate <= endDate) {
-                dateArray.push(startDate.toISOString().split('T')[0])
+                // Format manual ke YYYY-MM-DD
+                const year = startDate.getFullYear()
+                const month = String(startDate.getMonth() + 1).padStart(2, '0')
+                const day = String(startDate.getDate()).padStart(2, '0')
+
+                dateArray.push(`${year}-${month}-${day}`)
+
+                // tambah 1 hari
                 startDate.setDate(startDate.getDate() + 1)
             }
 
@@ -196,6 +202,9 @@ export default {
 
 
             try {
+
+                this.availableDate = [];
+
                 let nursery = {
                     data: [],
                     allocation_periode_days: []
@@ -206,8 +215,8 @@ export default {
                     {
                         mu_no: data.mu_no,
                         program_year: this.$_config.programYear.model,
-                        start_date: startDate,
-                        end_date: endDate,
+                        // start_date: startDate,
+                        // end_date: endDate,
                     }
                 );
 

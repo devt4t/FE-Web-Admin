@@ -29,17 +29,23 @@ export default {
       }
     },
     getDatesBetween(start, end) {
-        const dateArray = []
-        const startDate = new Date(start)
-        const endDate = new Date(end)
+      const dateArray = []
+      const startDate = new Date(start)
+      const endDate = new Date(end)
 
-        // pastikan urutan benar
-        while (startDate <= endDate) {
-            dateArray.push(startDate.toISOString().split('T')[0])
-            startDate.setDate(startDate.getDate() + 1)
-        }
+      while (startDate <= endDate) {
+        // Format manual ke YYYY-MM-DD
+        const year = startDate.getFullYear()
+        const month = String(startDate.getMonth() + 1).padStart(2, '0')
+        const day = String(startDate.getDate()).padStart(2, '0')
 
-        return dateArray
+        dateArray.push(`${year}-${month}-${day}`)
+
+        // tambah 1 hari
+        startDate.setDate(startDate.getDate() + 1)
+      }
+
+      return dateArray
     },
     async onChangeFf(data) {
 console.log('DATA CHANGED', data);
@@ -58,6 +64,8 @@ console.log('DATA CHANGED', data);
         .endOf("month")
         .format("YYYY-MM-DD");
 
+      this.availableDate = [];
+
       let nursery = {
           data: [],
           allocation_periode_days: []
@@ -68,8 +76,8 @@ console.log('DATA CHANGED', data);
           {
               mu_no: data.mu_no,
               program_year: this.$_config.programYear.model,
-              start_date: startDate,
-              end_date: endDate,
+              // start_date: startDate,
+              // end_date: endDate,
           }
       );
 
@@ -141,6 +149,8 @@ console.log('DATA CHANGED', data);
 
             let result = (parseInt(nsry.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
               (parseInt(nsry.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+
+
 
             return result;
         });
