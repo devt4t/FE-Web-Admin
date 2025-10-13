@@ -44,48 +44,6 @@ export default {
             allocations: [],
             distribution_date: moment().format("YYYY-MM-DD"),
             disableSubmit: true,
-            nurserys: [
-                {
-                    id: 4,
-                    name:'Kebumen'
-                },
-                {
-                    id: 5,
-                    name:'Pati'
-                },
-                {
-                    id: 6,
-                    name:'SMG Testing'
-                },
-                {
-                    id: 7,
-                    name:'Semarang'
-                },
-                {
-                    id: 1,
-                    name:'Ciminyak'
-                },
-                {
-                    id: 9,
-                    name:'Cidaun'
-                },
-                {
-                    id: 10,
-                    name:'Bali Barat'
-                },
-                {
-                    id: 2,
-                    name:'Soreang'
-                },
-                {
-                    id: 3,
-                    name:'Cirasea'
-                },
-                {
-                    id: 8,
-                    name:'Citanduy'
-                },
-            ],
         }
     },
     props: {
@@ -257,7 +215,7 @@ export default {
                 if (nursery.data) {
                     this.nurseryLocation = {
                     address_nursery: '',
-                    name_location_nursery: this.nurserys.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
+                    name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
                     location_nursery_id: nursery.data.nursery_locations_id,
                     };
 
