@@ -91,7 +91,7 @@ export default {
                 const updatePayload = {
                     distribution_date: moment(this.formData.distribution_date).format("YYYY-MM-DD"),
                     soc_no: this.formData.soc_no,
-                    program_year: this.$_config.programYear.model
+                    program_year: this.$store.state.tmpProgramYear
                 }
 
                 this.loading = true
@@ -172,7 +172,7 @@ export default {
                     "sostam/calendar/daily-distribution-limit/get",
                     {
                         mu_no: data.mu_no,
-                        program_year: this.$_config.programYear.model,
+                        program_year: this.$store.state.tmpProgramYear,
                         // start_date: startDate,
                         // end_date: endDate,
                     }
@@ -193,12 +193,12 @@ export default {
 
                 let ffLahan = await this.$_api.get("getFFLahanSostamNew", {
                     ff_no: this.data.ff_no,
-                    program_year: this.$_config.programYear.model,
+                    program_year: this.$store.state.tmpProgramYear,
                 });
                 let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
                     month: moment(this.distribution_date).month() + 1,
                     year: moment(this.distribution_date).year(),
-                    program_year: this.$_config.programYear.model,
+                    program_year: this.$store.state.tmpProgramYear,
                 });
                 // let [ffLahans, allocatedBibitGEKOs, nurserys] = await Promise.all([ffLahan, allocatedBibitGEKO, nursery]);
                 // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});

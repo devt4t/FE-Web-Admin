@@ -102,7 +102,7 @@ export default {
             this.formData = this.data
             const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
                 ff_no: this.data.ff_no,
-                program_year: this.$_config.programYear.model,
+                program_year: this.$store.state.tmpProgramYear,
             });
 
             let farmerList = []

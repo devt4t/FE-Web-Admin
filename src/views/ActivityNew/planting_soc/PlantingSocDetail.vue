@@ -448,7 +448,7 @@ export default {
                     await this.$_api.post('new-sostam/add-on/refresh-seed', {
                         form_no: farmer.form_no,
                         lahan_no: farmer.no_lahan,
-                        program_year: this.$_config.programYear.model
+                        program_year: this.$store.state.tmpProgramYear
                     })
 
 

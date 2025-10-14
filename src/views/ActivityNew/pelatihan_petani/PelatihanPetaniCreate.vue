@@ -233,7 +233,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-if="allFFByDesa.length > 0" key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+            <geko-input v-if="allFFByDesa.length > 0" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
               || !formData.village || !farmerByAllFF.size
               " :item="{
                 label: 'Field Facilitator Aktif',
@@ -679,6 +679,7 @@ export default {
     },
     handleOnSelectDesa(value) {
       this.selectedDesaName = value.Desaname;
+      this.allFFByDesa = [];
       // api: 'GetFFDesa_new',
       // param: {
       //   kode_desa: formData.village
@@ -687,8 +688,9 @@ export default {
         village_code: value.kode_desa,
         limit: 1000
       }).then(res => {
-        // this.$set(this, 'allFFByDesa', res.data.result);
-        this.allFFByDesa = res.data;
+        this.$set(this, 'allFFByDesa', res.data);
+        // this.allFFByDesa = res.data;
+        console.log(this.allFFByDesa); 
       })
     },
     countTotalPeseerta() {

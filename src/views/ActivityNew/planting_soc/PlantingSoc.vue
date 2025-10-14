@@ -177,7 +177,7 @@ export default {
                 if (this.exportIds.includes(item.ff_no)) return
                 this.exportIds.push(item.ff_no)
                 const ffData = await this.$_api.get('GetSosisalisasiTanamAdmin', {
-                    program_year: this.$_config.programYear.model,
+                    program_year: this.$store.state.tmpProgramYear,
                     ff_no: item.ff_no,
                     typegetdata: 'all',
                     limit: 10000,

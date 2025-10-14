@@ -89,7 +89,7 @@ export default {
                     offset: 0,
                     ff_no: this.data.ff_no,
                     soc_no: this.data.soc_no,
-                    program_year: this.$_config.programYear.model
+                    program_year: this.$store.state.tmpProgramYear
                 })
                     .catch(() => false)
 

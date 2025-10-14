@@ -47,7 +47,7 @@ export default {
         "custom/gekoDistributionAllocationPeriodes",
         {
           mu_no: data.mu_no,
-          program_year: this.$_config.programYear.model,
+          program_year: this.$store.state.tmpProgramYear,
           start_date: startDate,
           end_date: endDate,
         }
@@ -74,13 +74,13 @@ export default {
       // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
       //     month: moment().format('MM'),
       //     year: moment().format('YYYY'),
-      //     program_year: this.$_config.programYear.model,
+      //     program_year: this.$store.state.tmpProgramYear,
       //     nursery_location_id: null
       // })
 
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
       });
 
       let ffLahanData = [];
@@ -222,7 +222,7 @@ export default {
       let payload = {
         ...formData,
         lahans: this.lahans,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
         distribution_time: moment(formData.distribution_date).format(
           "YYYY-MM-DD"
         ),

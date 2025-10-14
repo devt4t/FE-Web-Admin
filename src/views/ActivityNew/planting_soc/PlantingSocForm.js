@@ -75,7 +75,7 @@ console.log('DATA CHANGED', data);
           "sostam/calendar/daily-distribution-limit/get",
           {
               mu_no: data.mu_no,
-              program_year: this.$_config.programYear.model,
+              program_year: this.$store.state.tmpProgramYear,
               // start_date: startDate,
               // end_date: endDate,
           }
@@ -97,12 +97,12 @@ console.log('DATA CHANGED', data);
       let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
           month: moment(this.dateDistributionCurrent).month() + 1,
           year: moment(this.dateDistributionCurrent).year(),
-          program_year: this.$_config.programYear.model,
+          program_year: this.$store.state.tmpProgramYear,
       });
 
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
         type: "new",
       });
 
@@ -193,7 +193,7 @@ console.log('DATA CHANGED', data);
       // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
       //     month: moment().format('MM'),
       //     year: moment().format('YYYY'),
-      //     program_year: this.$_config.programYear.model,
+      //     program_year: this.$store.state.tmpProgramYear,
       //     nursery_location_id: null
       // })
       this.validateSostam();
@@ -303,7 +303,7 @@ console.log('DATA CHANGED', data);
       let payload = {
         ...formData,
         lahans: this.lahans,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
         distribution_time: moment(formData.distribution_date).format(
           "YYYY-MM-DD"
         ),
