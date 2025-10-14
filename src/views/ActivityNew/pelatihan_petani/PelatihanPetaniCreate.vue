@@ -483,7 +483,7 @@
 
               <v-row>
                 <v-col md="12">
-                  <v-btn variant="primary" @click="tambahPesertaUmun">
+                  <v-btn type="button" variant="primary" @click="tambahPesertaUmun">
                     <v-icon>mdi-plus</v-icon>
                     <span>Tambah Peserta Umum</span>
                   </v-btn>
@@ -541,7 +541,6 @@
             <geko-input v-model="formData.absent2" :item="{
               label: 'Foto Absensi Tertulis (2)',
               type: 'upload',
-              validation: ['required'],
               api: '/farmer-training/upload1.php',
               directory: 'absensi-images',
               upload_type: 'image/*',
