@@ -122,6 +122,22 @@
             }" />
           </v-col>
 
+          <v-col lg="6">
+            <geko-input v-model="formData.nursery_days_off_amount" :item="{
+                label: 'Jumlah Hari Libur',
+                validation: ['required'],
+                type: 'number',
+              }" />
+          </v-col>
+
+          <v-col lg="6" v-if="Number(formData.nursery_days_off_amount) > 0">
+            <geko-input :disabled="Number(formData.nursery_days_off_amount) <= 0" v-model="formData.nursery_days_off_interval" :item="{
+                label: 'Interval Hari Libur',
+                validation: ['required'],
+                type: 'number',
+              }" />
+          </v-col>
+
           <v-col md="12" class="form-separator">
             <h4>Limitasi Bibit</h4>
           </v-col>
@@ -172,12 +188,6 @@ export default {
     }
   },
   methods: {
-    // async onChangeVillage(data) {
-    //   this.potentialStatus = data.scooping_visits_potential_status
-    //   if ([2, 3].includes(this.potentialStatus)) {
-    //     this.projectPurpose = data.scooping_visits_potential_status
-    //   }
-    // },
     async onSubmit() {
       if (this.loading) return;
       this.loading = true;
@@ -229,13 +239,6 @@ export default {
         return;
       }
 
-      //insert farmers
-      // for (const farmer of _trees) {
-      //   if (!farmer.name || !farmer.status_program) continue;
-      //   farmer.form_no = resultMain;
-      //   await this.$_api.post("AddFormMinatFarmers_new", farmer);
-      // }
-
       
     },
     async initData() {
@@ -261,6 +264,8 @@ export default {
         ['program_year'],
         ['wood_limitation'],
         ['mpts_limitation'],
+        ['nursery_days_off_amount'],
+        ['nursery_days_off_interval'],
     ];
       // console.log("thi", detailData);
 
@@ -309,32 +314,6 @@ export default {
     deleteRow(i) {
       this.trees.splice(i, 1);
     },
-
-    onSelectTree(i, v) {
-      if (
-        Array.isArray(this.trees[i].trees) &&
-        this.trees[i].trees.length > 2
-      ) {
-        this.$_alert.error(
-          {},
-          "",
-          "Pohon yang dipilih tidak boleh lebih dari 3"
-        );
-        // this.$set(this.trees[i], "trees", v);
-      }
-    },
-    selectedTree(tree, i) {
-    console.log("selectedTree", tree, i);
-    if (tree && tree.tree_code) {
-      this.$set(this.trees[i], "tree_code", tree.tree_code);
-      this.$set(this.trees[i], "tree_name", tree.tree_name);
-      this.$set(this.trees[i], "tree_category", tree.tree_category);
-    } else {
-      this.$set(this.trees[i], "tree_code", null);
-      this.$set(this.trees[i], "tree_name", null);
-      this.$set(this.trees[i], "tree_category", null);
-    }
-  }, 
   },
 
   watch: {
@@ -353,7 +332,8 @@ export default {
         mpts_limitation: 0,
         code: null,
         name: null,
-        
+        nursery_days_off_amount: 0,
+        nursery_days_off_interval: 0,
       },
       projectPurpose: null,
       trees: [

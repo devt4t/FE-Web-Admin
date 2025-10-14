@@ -234,23 +234,6 @@ export default {
             },
           },
 
-          
-          {
-            id: "program_year",
-            label: "Tahun Program",
-            methods: {
-              list: {
-                type:'row-slot'
-              },
-              detail: {
-                type:'slot',
-              },
-              create: { validation: ["required"] },
-              update: { validation: ["required"] },
-              filter: false,
-            },
-          },
-
           {
             id: "nursery_locations_id",
             label: "Lokasi Persemaian",
@@ -267,6 +250,50 @@ export default {
             },
           },
 
+
+          {
+            id: "nursery_days_off_amount",
+            label: "Jumlah Hari Libur",
+            methods: {
+              list: true,
+              detail: {
+                append: ' Hari'
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+
+          {
+            id: "nursery_days_off_interval",
+            label: "Interval Hari Libur",
+            methods: {
+              list: true,
+              detail: {
+                append: ' Hari'
+              },
+              create: true,
+              update: true,
+              filter: false,
+            },
+          },
+
+          {
+            id: "program_year",
+            label: "Tahun Program",
+            methods: {
+              list: {
+                type:'row-slot'
+              },
+              detail: {
+                type:'slot',
+              },
+              create: { validation: ["required"] },
+              update: { validation: ["required"] },
+              filter: false,
+            },
+          },
           
           {
             id: "start_distribution_time",
@@ -299,6 +326,8 @@ export default {
               filter: false,
             },
           },
+
+          
 
         ],
       },
