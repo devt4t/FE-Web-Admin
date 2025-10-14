@@ -163,12 +163,12 @@ export default {
 
                 this.availableDate = [];
 
-                let nursery = {
+                let geko = {
                     data: [],
                     allocation_periode_days: []
                 };
 
-                nursery.data = await this.$_api.get(
+                geko.data = await this.$_api.get(
                     "sostam/calendar/daily-distribution-limit/get",
                     {
                         mu_no: data.mu_no,
@@ -178,16 +178,16 @@ export default {
                     }
                 );
 
-                nursery.data = nursery.data.data.result[0] || {};
-                nursery.allocation_periode_days = this.getDatesBetween(
-                    nursery.data.start_distribution_time, 
-                    nursery.data.end_distribution_time
+                geko.data = geko.data.data.result[0] || {};
+                geko.allocation_periode_days = this.getDatesBetween(
+                    geko.data.start_distribution_time, 
+                    geko.data.end_distribution_time
                 ).map(date => {
                     return {
                         date_allocation: date,
-                        qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation,
-                        kayu_allocation: nursery.data.wood_limitation,
-                        mpts_allocation: nursery.data.mpts_limitation,
+                        qty_allocation: geko.data.wood_limitation + geko.data.mpts_limitation,
+                        kayu_allocation: geko.data.wood_limitation,
+                        mpts_allocation: geko.data.mpts_limitation,
                     }
                 });
 
@@ -212,18 +212,18 @@ export default {
                     totalSeedFF.mpts += parseInt(farmer.total_mpts);
                 }
 
-                if (nursery.data) {
+                if (geko.data) {
                     this.nurseryLocation = {
                     address_nursery: '',
-                    name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
-                    location_nursery_id: nursery.data.nursery_locations_id,
+                    name_location_nursery: this.$store.state.nurseries.find(n => n.id == geko.data.nursery_locations_id)?.name || '',
+                    location_nursery_id: geko.data.nursery_locations_id,
                     };
 
-                    console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
-                    const nurseryAllocationList = nursery.allocation_periode_days;
-                    this.allocations = nurseryAllocationList.filter(
-                    (nsry) => {
-                        let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
+                    console.log({ geko, totalSeedFF, allocatedBibitGEKO });
+                    const gekoAllocationList = geko.allocation_periode_days;
+                    this.allocations = gekoAllocationList.filter(
+                    (gko) => {
+                        let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === gko.date_allocation)
                         
                         let totalBibitNeeded = {
                             kayu: totalSeedFF.kayu,
@@ -232,10 +232,10 @@ export default {
                         totalBibitNeeded.kayu += (pointerGEKO.length ? pointerGEKO[0].total_seed_kayu : 0)
                         totalBibitNeeded.mpts += (pointerGEKO.length ? pointerGEKO[0].total_seed_mpts : 0)
 
-                        let result = (parseInt(nsry.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
-                        (parseInt(nsry.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+                        let result = (parseInt(gko.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
+                        (parseInt(gko.mpts_allocation) - totalBibitNeeded.mpts) >= 0
 
-                        console.log({totalBibitNeeded}, {totalSeedFF}, {pointerGEKO}, {nsry});
+                        console.log({totalBibitNeeded}, {totalSeedFF}, {pointerGEKO}, {gko});
 
                         return result;
                     });

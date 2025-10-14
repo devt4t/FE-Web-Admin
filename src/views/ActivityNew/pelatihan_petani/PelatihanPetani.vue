@@ -1,5 +1,5 @@
 <template>
-  <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideCreate="true" :hideUpdate="true" :refreshKey="refreshKey">
+  <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideCreate="false" :hideUpdate="true" :refreshKey="refreshKey">
 
     <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
       <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">

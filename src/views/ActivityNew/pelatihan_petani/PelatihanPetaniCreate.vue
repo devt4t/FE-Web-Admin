@@ -495,7 +495,7 @@
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="form--" class="mr-3">Back</v-btn>
-            <v-btn type="submit" variant="success" :disabled="loading">
+            <v-btn type="button" @click="handleNextButtonPage2" variant="success" :disabled="loading">
               <v-icon>mdi-chevron-right</v-icon>
               <span>Selanjutnya</span>
             </v-btn>
@@ -541,6 +541,7 @@
             <geko-input v-model="formData.absent2" :item="{
               label: 'Foto Absensi Tertulis (2)',
               type: 'upload',
+              validation: ['required'],
               api: '/farmer-training/upload1.php',
               directory: 'absensi-images',
               upload_type: 'image/*',
@@ -810,6 +811,16 @@ export default {
       this.farmerByAllFF.clear()
       this.farmerBySelectedFF = new Object()
       this.formData.ff_additional = []
+    },
+    handleNextButtonPage2(){
+      let emptyForm = 0;
+      for (const key in this.formData.peserta_tambahan) {
+        if (this.formData.peserta_tambahan[key].name == '' || this.formData.peserta_tambahan[key].address == '' || this.formData.peserta_tambahan[key].phone == '' || this.formData.peserta_tambahan[key].gender == '') {
+          emptyForm++;
+        }
+      }
+      
+      if (!emptyForm) this.form++;
     }
   },
 }
