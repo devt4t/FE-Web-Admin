@@ -135,7 +135,17 @@ console.log('DATA CHANGED', data);
         };
 
         console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
-        const nurseryAllocationList = nursery.allocation_periode_days;
+        let nurseryAllocationList = nursery.allocation_periode_days;
+
+        const off_interval = +nursery.data.nursery_days_off_interval;
+        const off_amount = +nursery.data.nursery_days_off_amount;
+
+        if (off_interval > 0 && off_amount > 0) {
+          let offIndex = this.getIndicesByInterval(off_interval, off_amount, nurseryAllocationList, off_interval);
+          console.log({offIndex})
+          nurseryAllocationList = nurseryAllocationList.filter((_, index) => !offIndex.includes(index));
+        }
+
         this.allocations = nurseryAllocationList.filter(
         (nsry) => {
             let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
@@ -158,7 +168,7 @@ console.log('DATA CHANGED', data);
         for (const allocation of this.allocations) {
           this.availableDate.push(allocation.date_allocation);
         }
-
+        
       }
 
       var _lastFarmer = "";
@@ -199,6 +209,22 @@ console.log('DATA CHANGED', data);
       this.validateSostam();
       this.loading = false;
     },
+
+    getIndicesByInterval(interval, indexAmount, array, start = 0) {
+      const result = [];
+
+      while (start < array.length) {
+        for (let i = 0; i < indexAmount; i++) {
+          const index = start + i;
+          if (index < array.length) result.push(index);
+        }
+        start += interval + indexAmount; // lompat ke batch berikutnya
+      }
+
+      return result;
+
+    },
+
 
     validateSostam() {
       if (!this.ffCurrent) return;
