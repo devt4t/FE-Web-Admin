@@ -475,7 +475,7 @@
 
                 <v-col md="1" class="d-flex flex-column justify-content-center"
                   style="justify-content: center; align-items: flex-start">
-                  <button @click="hapusPesertaUmum(i)">
+                  <button type="button" @click="hapusPesertaUmum(i)">
                     <v-icon color="red">mdi-close</v-icon>
                   </button>
                 </v-col>

@@ -109,20 +109,20 @@ console.log('DATA CHANGED', data);
       let ffLahanData = [];
       try {
 
-        if (ffLahan.data.result.lahans.length == 0) {
+        if (ffLahan.data.result.lahans1.length == 0) {
           this.$_alert.error("Terdapat lahan yang belum diverifikasi");
           this.loading = false;
           return;
         }
 
-        ffLahanData = ffLahan.data.result.lahans;
+        ffLahanData = ffLahan.data.result.lahans1;
       } catch { }
 
       let totalSeedFF = {
         kayu: 0,
         mpts: 0,
       };
-      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
+      for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
           totalSeedFF.kayu += parseInt(farmer.total_kayu);
           totalSeedFF.mpts += parseInt(farmer.total_mpts);
       }

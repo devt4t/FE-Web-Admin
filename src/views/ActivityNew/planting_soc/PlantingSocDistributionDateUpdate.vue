@@ -214,13 +214,22 @@ export default {
 
                 if (geko.data) {
                     this.nurseryLocation = {
-                    address_nursery: '',
-                    name_location_nursery: this.$store.state.nurseries.find(n => n.id == geko.data.nursery_locations_id)?.name || '',
-                    location_nursery_id: geko.data.nursery_locations_id,
+                        address_nursery: '',
+                        name_location_nursery: this.$store.state.nurseries.find(n => n.id == geko.data.nursery_locations_id)?.name || '',
+                        location_nursery_id: geko.data.nursery_locations_id,
                     };
 
+                    let gekoAllocationList = geko.allocation_periode_days;
+                    const off_interval = +geko.data.nursery_days_off_interval;
+                    const off_amount = +geko.data.nursery_days_off_amount;
+
+                    if (off_interval > 0 && off_amount > 0) {
+                        let offIndex = this.getIndicesByInterval(off_interval, off_amount, gekoAllocationList, off_interval);
+                        console.log({offIndex})
+                        gekoAllocationList = gekoAllocationList.filter((_, index) => !offIndex.includes(index));
+                    }
+
                     console.log({ geko, totalSeedFF, allocatedBibitGEKO });
-                    const gekoAllocationList = geko.allocation_periode_days;
                     this.allocations = gekoAllocationList.filter(
                     (gko) => {
                         let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === gko.date_allocation)
@@ -248,6 +257,19 @@ export default {
             } catch (error) {
                 console.error('Error occurred:', error);
             }
+        },
+        getIndicesByInterval(interval, indexAmount, array, start = 0) {
+            const result = [];
+
+            while (start < array.length) {
+                for (let i = 0; i < indexAmount; i++) {
+                const index = start + i;
+                if (index < array.length) result.push(index);
+                }
+                start += interval + indexAmount; // lompat ke batch berikutnya
+            }
+
+            return result;
         },
         dateDisabled(date) {
             if (this.availableDate.includes(moment(date).format("YYYY-MM-DD"))) {
