@@ -712,12 +712,14 @@ export default {
 
         for (let ff_no in this.farmerBySelectedFF) {
           if (this.farmerBySelectedFF[ff_no].selectedFarmers.length) {
+            console.log('farmerBySelectedFF ', this.farmerBySelectedFF[ff_no].selectedFarmers);
             ff_selected_farmer.push(ff_no)
-
+            
             for (let selectedFarmerKey in this.farmerBySelectedFF[ff_no].selectedFarmers) {
               this.formData.farmers.push({
                 farmer_no: this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey].kode
               });
+              console.log('selectedFarmers ', this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey]);
             }
           }
         }
@@ -730,7 +732,8 @@ export default {
             this.$refreshKey += 1;
             this.$_alert.success("Data pelatihan petani berhasil ditambahkan");
           }).catch(err => {
-            // 
+            this.formData.farmers = [];
+            this.$_alert.error("Terjadi kesalahan saat menambahkan data pelatihan petani"); 
           });
       }
     },

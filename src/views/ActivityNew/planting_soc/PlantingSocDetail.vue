@@ -159,7 +159,7 @@
                 </template>
 
                 <template v-slot:item.action="{ item, index }">
-                    <div class="d-flex flex-col flex-column">
+                    <div class="d-flex flex-col flex-column" v-if="item.verified">
                         <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update')" variant="warning" small
                             @click="openEditModal(item)">
                             <v-icon small>mdi-pencil</v-icon>
