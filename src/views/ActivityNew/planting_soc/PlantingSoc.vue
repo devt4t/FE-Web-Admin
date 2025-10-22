@@ -69,7 +69,7 @@
         </template>
 
         <template v-slot:list-countdown_timer="{ item }">
-            <div class="d-flex flex-col">
+            <div class="">
                 <v-chip v-if="item.timeleft" small color="red" text-color="white">
                 {{ item.timeleft }}
                 </v-chip>
@@ -105,7 +105,7 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create')" variant="info" small class="mt-2"
+            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create') && !item.verified" variant="info" small class="mt-2"
                 @click="onUpdateDistributionLocation(item)">
                 <v-icon left small>mdi-update</v-icon>
                 <span>Edit Alamat Distribusi</span>

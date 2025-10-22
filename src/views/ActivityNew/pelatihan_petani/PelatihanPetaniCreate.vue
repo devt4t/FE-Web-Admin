@@ -208,7 +208,8 @@
                 type: 'select',
                 api: 'village/dataset',
                 param: {
-                  area_code: formData.target_area
+                  area_code: formData.target_area,
+                  program_year: formData.program_year
                 },
                 setter: 'village',
                 option: {
@@ -528,6 +529,7 @@
               upload_type: 'image/*',
               setter: 'absent',
               view_data: 'absent',
+              isButtonDeleteHidden: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -565,6 +567,7 @@
               upload_type: 'image/*',
               setter: 'dokumentasi',
               view_data: 'dokumentasi',
+              isButtonDeleteHidden: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -686,6 +689,7 @@ export default {
       // },
       this.$_api.get('field-facilitator/dataset', {
         village_code: value.kode_desa,
+        program_year: this.formData.program_year,
         limit: 1000
       }).then(res => {
         this.$set(this, 'allFFByDesa', res.data);
