@@ -736,8 +736,9 @@ export default {
             this.$refreshKey += 1;
             this.$_alert.success("Data pelatihan petani berhasil ditambahkan");
           }).catch(err => {
+            console.log(err);
             this.formData.farmers = [];
-            this.$_alert.error("Terjadi kesalahan saat menambahkan data pelatihan petani"); 
+            this.$_alert.error(err?.data?.data?.result ?? "Terjadi kesalahan saat menambahkan data pelatihan petani"); 
           });
       }
     },
