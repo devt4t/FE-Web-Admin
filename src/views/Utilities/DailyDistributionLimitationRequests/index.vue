@@ -129,12 +129,12 @@ export default {
           project_modul: "type",
         },
         permission: {
-          create: "sosialisasi-tanam-create",
-          read: "sosialisasi-tanam-list",
-          update: "sosialisasi-tanam-update",
-          detail: "sosialisasi-tanam-detail",
-          lookup: "sosialisasi-tanam-lookup",
-          delete: "sosialisasi-tanam-delete",
+          create: "project-type-create",
+          read: "project-type-list",
+          update: "project-type-update",
+          detail: "project-type-detail",
+          lookup: "project-type-lookup",
+          delete: "project-type-delete",
         },
         slave: [],
         fields: [
