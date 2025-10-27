@@ -185,9 +185,7 @@ export default {
                 ).map(date => {
                     return {
                         date_allocation: date,
-                        qty_allocation: geko.data.wood_limitation + geko.data.mpts_limitation,
-                        kayu_allocation: geko.data.wood_limitation,
-                        mpts_allocation: geko.data.mpts_limitation,
+                        qty_allocation: geko.data.seed_limitation
                     }
                 });
 
@@ -203,13 +201,10 @@ export default {
                 // let [ffLahans, allocatedBibitGEKOs, nurserys] = await Promise.all([ffLahan, allocatedBibitGEKO, nursery]);
                 // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});
 
-                let totalSeedFF = {
-                    kayu: 0,
-                    mpts: 0,
-                };
+                let totalSeedFF = 0;
                 for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
-                    totalSeedFF.kayu += parseInt(farmer.total_kayu);
-                    totalSeedFF.mpts += parseInt(farmer.total_mpts);
+                    totalSeedFF += parseInt(farmer.total_kayu);
+                    totalSeedFF += parseInt(farmer.total_mpts);
                 }
 
                 if (geko.data) {
@@ -234,15 +229,11 @@ export default {
                     (gko) => {
                         let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === gko.date_allocation)
                         
-                        let totalBibitNeeded = {
-                            kayu: totalSeedFF.kayu,
-                            mpts: totalSeedFF.mpts,
-                        }
-                        totalBibitNeeded.kayu += (pointerGEKO.length ? pointerGEKO[0].total_seed_kayu : 0)
-                        totalBibitNeeded.mpts += (pointerGEKO.length ? pointerGEKO[0].total_seed_mpts : 0)
+                        let totalBibitNeeded = totalSeedFF;
 
-                        let result = (parseInt(gko.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
-                        (parseInt(gko.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+                        totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
+
+                        let result = (parseInt(gko.qty_allocation) - totalBibitNeeded) >= 0
 
                         console.log({totalBibitNeeded}, {totalSeedFF}, {pointerGEKO}, {gko});
 

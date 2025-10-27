@@ -12,22 +12,9 @@
       {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
     </template>
 
-    <template v-slot:list-wood_limitation="{ item }">
+    <template v-slot:list-seed_limitation="{ item }">
         <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.wood_limitation }}
-        </span>
-    </template>
-
-    <template v-slot:list-mpts_limitation="{ item }">
-        <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.mpts_limitation }}
-        </span>
-    </template>
-
-    <template v-slot:list-total_limitation="{ item }">
-        <span class="badge bg-warning">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;
-            {{ Number(item.wood_limitation) + Number(item.mpts_limitation) }}
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
         </span>
     </template>
 
@@ -54,22 +41,9 @@
       {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
     </template>
 
-    <template v-slot:detail-wood_limitation="{ item }">
+    <template v-slot:detail-seed_limitation="{ item }">
         <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.wood_limitation }}
-        </span>
-    </template>
-
-    <template v-slot:detail-mpts_limitation="{ item }">
-        <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.mpts_limitation }}
-        </span>
-    </template>
-
-    <template v-slot:detail-total_limitation="{ item }">
-        <span class="badge bg-warning">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;
-            {{ Number(item.wood_limitation) + Number(item.mpts_limitation) }}
+            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
         </span>
     </template>
 
@@ -129,12 +103,12 @@ export default {
           project_modul: "type",
         },
         permission: {
-          create: "project-type-create",
+          create: "sosialisasi-tanam-create",
           read: "project-type-list",
-          update: "project-type-update",
+          update: "sosialisasi-tanam-create",
           detail: "project-type-detail",
           lookup: "project-type-lookup",
-          delete: "project-type-delete",
+          delete: "sosialisasi-tanam-create",
         },
         slave: [],
         fields: [
@@ -187,40 +161,8 @@ export default {
           },
 
           {
-            id: "wood_limitation",
-            label: "Limitasi Kayu",
-            methods: {
-              list: {
-                type:'row-slot'
-              },
-              detail: {
-                type:'slot',
-              },
-              create: { validation: ["required"] },
-              update: { validation: ["required"] },
-              filter: false,
-            },
-          },
-
-          {
-            id: "mpts_limitation",
-            label: "Limitasi MPTS",
-            methods: {
-              list: {
-                type:'row-slot'
-              },
-              detail: {
-                type:'slot',
-              },
-              create: { validation: ["required"] },
-              update: { validation: ["required"] },
-              filter: false,
-            },
-          },
-
-          {
-            id: "total_limitation",
-            label: "Total Limitasi Bibit",
+            id: "seed_limitation",
+            label: "Limitasi Bibit",
             methods: {
               list: {
                 type:'row-slot'

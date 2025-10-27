@@ -143,16 +143,8 @@
           </v-col>
 
           <v-col lg="6">
-            <geko-input v-model="formData.wood_limitation" :item="{
-                label: 'Limitasi Kayu',
-                validation: ['required'],
-                type: 'number',
-              }" />
-          </v-col>
-
-          <v-col lg="6">
-            <geko-input v-model="formData.mpts_limitation" :item="{
-                label: 'Limitasi MPTS',
+            <geko-input v-model="formData.seed_limitation" :item="{
+                label: 'Limitasi Bibit',
                 validation: ['required'],
                 type: 'number',
               }" />
@@ -262,8 +254,7 @@ export default {
         ['mu_no'],
         ['form_date'],
         ['program_year'],
-        ['wood_limitation'],
-        ['mpts_limitation'],
+        ['seed_limitation'],
         ['nursery_days_off_amount'],
         ['nursery_days_off_interval'],
     ];

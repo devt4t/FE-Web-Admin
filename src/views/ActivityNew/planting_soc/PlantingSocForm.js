@@ -88,9 +88,7 @@ console.log('DATA CHANGED', data);
       ).map(date => {
           return {
               date_allocation: date,
-              qty_allocation: nursery.data.wood_limitation + nursery.data.mpts_limitation,
-              kayu_allocation: nursery.data.wood_limitation,
-              mpts_allocation: nursery.data.mpts_limitation,
+              qty_allocation: nursery.data.seed_limitation
           }
       });
 
@@ -109,22 +107,19 @@ console.log('DATA CHANGED', data);
       let ffLahanData = [];
       try {
 
-        if (ffLahan.data.result.lahans.length == 0) {
+        if (ffLahan.data.result.lahans1.length == 0) {
           this.$_alert.error("Terdapat lahan yang belum diverifikasi");
           this.loading = false;
           return;
         }
 
-        ffLahanData = ffLahan.data.result.lahans;
+        ffLahanData = ffLahan.data.result.lahans1;
       } catch { }
 
-      let totalSeedFF = {
-        kayu: 0,
-        mpts: 0,
-      };
-      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
-          totalSeedFF.kayu += parseInt(farmer.total_kayu);
-          totalSeedFF.mpts += parseInt(farmer.total_mpts);
+      let totalSeedFF = 0;
+      for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
+          totalSeedFF += parseInt(farmer.total_kayu);
+          totalSeedFF += parseInt(farmer.total_mpts);
       }
 
       if (nursery.data) {
@@ -150,15 +145,10 @@ console.log('DATA CHANGED', data);
         (nsry) => {
             let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
             
-            let totalBibitNeeded = {
-                kayu: totalSeedFF.kayu,
-                mpts: totalSeedFF.mpts,
-            }
-            totalBibitNeeded.kayu += (pointerGEKO.length ? pointerGEKO[0].total_seed_kayu : 0)
-            totalBibitNeeded.mpts += (pointerGEKO.length ? pointerGEKO[0].total_seed_mpts : 0)
+            let totalBibitNeeded = totalSeedFF;
+            totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
 
-            let result = (parseInt(nsry.kayu_allocation) - totalBibitNeeded.kayu) >= 0 && 
-              (parseInt(nsry.mpts_allocation) - totalBibitNeeded.mpts) >= 0
+            let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
 
 
 
