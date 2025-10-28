@@ -96,6 +96,7 @@ console.log('DATA CHANGED', data);
           month: moment(this.dateDistributionCurrent).month() + 1,
           year: moment(this.dateDistributionCurrent).year(),
           program_year: this.$store.state.tmpProgramYear,
+          nursery_location_id: nursery.data.nursery_locations_id,
       });
 
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
@@ -107,17 +108,17 @@ console.log('DATA CHANGED', data);
       let ffLahanData = [];
       try {
 
-        if (ffLahan.data.result.lahans1.length == 0) {
+        if (ffLahan.data.result.lahans.length == 0) {
           this.$_alert.error("Terdapat lahan yang belum diverifikasi");
           this.loading = false;
           return;
         }
 
-        ffLahanData = ffLahan.data.result.lahans1;
+        ffLahanData = ffLahan.data.result.lahans;
       } catch { }
 
       let totalSeedFF = 0;
-      for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
+      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
           totalSeedFF += parseInt(farmer.total_kayu);
           totalSeedFF += parseInt(farmer.total_mpts);
       }

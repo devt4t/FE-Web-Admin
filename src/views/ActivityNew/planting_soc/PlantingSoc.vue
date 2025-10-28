@@ -95,7 +95,7 @@
 
                 <span>Export Excel</span>
             </v-btn>
-            <v-btn v-if="item.is_signed && !item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft" variant="success"
+            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft" variant="success"
                 small class="mt-2" @click="onVerif(item)">
                 <v-icon small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
