@@ -255,6 +255,14 @@
                             </v-col>
 
                             <v-col md="12">
+                                <geko-input v-model="formData.latlng" :item="{
+                                    label: 'Titik Koordinat',
+                                    type: 'text',
+                                    placeholder: 'longitude, latitude'
+                                }" />
+                            </v-col>
+
+                            <v-col md="12">
                                 <geko-input v-model="formData.distribution_location" :item="{
                                     label: 'Detail Alamat',
                                     validation: ['required'],

@@ -130,7 +130,7 @@
           <v-col>
             <geko-input v-model="formData.second_material" :item="{
               label: 'Materi Pelatihan 2',
-              validation: ['required'],
+              // validation: ['required'],
               col_size: 6,
               type: 'select',
               param: {},
@@ -531,27 +531,11 @@
               view_data: 'absent',
               isButtonDeleteHidden: true,
               option: {
+                max: 5,
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 0.5,
-              },
-            }" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col md="12">
-            <geko-input v-model="formData.absent2" :item="{
-              label: 'Foto Absensi Tertulis (2)',
-              type: 'upload',
-              api: '/farmer-training/upload1.php',
-              directory: 'absensi-images',
-              upload_type: 'image/*',
-              setter: 'absent2',
-              view_data: 'absent2',
-              option: {
-                label_hint:
-                  'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 0.5,
+                max_size: 2.5,
+                multiple: true,
               },
             }" />
           </v-col>

@@ -362,6 +362,16 @@ console.log('DATA CHANGED', data);
       }
 
     },
+    isValidCoordinate(lat, lng) {
+      const numLat = parseFloat(lat);
+      const numLng = parseFloat(lng);
+
+      if (isNaN(numLat) || isNaN(numLng)) return false;
+      if (numLat < -90 || numLat > 90) return false;
+      if (numLng < -180 || numLng > 180) return false;
+
+      return true;
+    }
   },
   watch: {
     ready(val) {
@@ -374,6 +384,20 @@ console.log('DATA CHANGED', data);
     "formData.distribution_date"(val) {
       if (val) {
         this.calculatePlantingDate();
+      }
+    },
+    async "formData.latlng"(val) {
+      if (val.includes(',')) {
+        val=val.replace(/ /g,'');
+        val=val.split(',');
+
+        if (!this.isValidCoordinate(val[1],val[0])) return;
+        this.marker.setLngLat(val);
+        
+        await this.maps.flyTo({ 
+          center: [val[0],val[1]], 
+          zoom: 13 
+        });
       }
     },
   },
