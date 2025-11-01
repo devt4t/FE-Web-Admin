@@ -8,8 +8,8 @@
             <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
               <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
                 <v-row class="assign-ff-wrapper" v-if="socData">
-                  <v-col lg="12">
-                    <v-row class="mx-3 bg-grey">
+                  <v-col lg="6">
+                    <v-row class="mx-3">
                       <v-col>
                         <geko-input
                           v-model="new_address"
@@ -22,8 +22,39 @@
                         />
                       </v-col>
                     </v-row>
+                    <v-row class="mx-3">
+                      <v-col md="12">
+                          <geko-input v-model="latlng" :item="{
+                              label: 'Titik Koordinat',
+                              type: 'text',
+                              placeholder: 'longitude, latitude'
+                          }" />
+                      </v-col>
+                    </v-row>
                   </v-col>
+
+
+
+
+                  <v-col lg="6">
+                    <v-row class="mx-3 bg-grey">
+                      <v-col>
+    
+                          <v-col md="12" class="form-separator ml-0 pl-0 ">
+                              <h4>Koordinat Lokasi Distribusi</h4>
+                          </v-col>
+                          <span class="geko-input">
+                              <div ref="mapContainer" id="mapContainer" class="map-container"
+                                  style="width: 100%; height: 300px;"></div>
+                          </span>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+
                 </v-row>
+
+
+                
   
                 <v-row>
                   <v-col lg="12" class="d-flex flex-row justify-content-center">
@@ -63,14 +94,60 @@
   
     methods: {
       onOpen() {
-        
+        this.$nextTick(() => {
+          this.initializeMap();
+        });
+      },
+      async initializeMap() {
+        mapboxgl.accessToken = this.$_config.mapBoxApi;
+        this.maps = await new mapboxgl.Map({
+          container: "mapContainer",
+          style: this.$_config.mapBoxStyle,
+          zoom: 12,
+          projection: "globe",
+          maxZoom: 100,
+          preserveDrawingBuffer: true,
+          center: [110.41467292861057, -7.024947076120682],
+        });
+
+        const geolocate = new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          trackUserLocation: true,
+          showUserHeading: true,
+        });
+        await this.maps.dragRotate.disable();
+        await this.maps.touchZoomRotate.disableRotation();
+        await this.maps.addControl(new mapboxgl.FullscreenControl());
+        await this.maps.addControl(new mapboxgl.NavigationControl());
+        await this.maps.addControl(geolocate);
+
+        let coord = this.data.distribution_coordinates;
+        coord = coord.replace(/ /g,'');
+        coord = coord.split(',');
+
+        this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
+          .setLngLat([coord[1], coord[0]])
+          .addTo(this.maps);
+          
+        await this.maps.flyTo({ 
+          center: [coord[1],coord[0]], 
+          zoom: 13 
+        });
+
+        this.maps.on("click", (data) => { 
+          this.marker.setLngLat(data.lngLat);
+          this.$set(this,'latlng',data.lngLat.lng + ", " + data.lngLat.lat)
+        });
       },
   
       onSubmit() {
         let payload = {
           ff_no: this.socData.ff_no,
           program_year: this.socData.program_year,
-          new_address: this.new_address
+          new_address: this.new_address,
+          latlng: this.latlng.split(',').map(item => item.trim()).reverse().join(', '),
         };
         console.log(payload)
         this.$_api
@@ -83,9 +160,20 @@
         })
         .catch(() => {
           this.loading = false;
+          this.$emit('success');
         });
   
       },
+      isValidCoordinate(lat, lng) {
+        const numLat = parseFloat(lat);
+        const numLng = parseFloat(lng);
+
+        if (isNaN(numLat) || isNaN(numLng)) return false;
+        if (numLat < -90 || numLat > 90) return false;
+        if (numLng < -180 || numLng > 180) return false;
+
+        return true;
+      }
     },
   
     watch: {
@@ -93,7 +181,14 @@
         if (t > 0) {
           this.isOpen = true;
           this.socData = this.data;
+
           this.new_address = this.socData.distribution_location
+          this.latlng = this.socData.distribution_coordinates.split(',').map(item => item.trim()).reverse().join(', ');
+
+          let val=this.latlng.replace(/ /g,'');
+          val=val.split(',');
+
+          this.marker.setLngLat(val);
         }
       },
       isOpen(t) {
@@ -108,6 +203,20 @@
 
         }
       },
+      async latlng(val) {
+      if (val.includes(',')) {
+        val=val.replace(/ /g,'');
+        val=val.split(',');
+
+        if (!this.isValidCoordinate(val[1],val[0])) return;
+        this.marker.setLngLat(val);
+        
+        await this.maps.flyTo({ 
+          center: [val[0],val[1]], 
+          zoom: 13 
+        });
+      }
+    },
     },
     data() {
       return {
@@ -116,6 +225,9 @@
         loading: false,
         program_year: "",
         new_address: "",
+        latlng: "",
+        maps: null,
+        marker: null
       };
     },
   };

@@ -10,7 +10,7 @@
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                 :data="sostamDistributionData" @success="refreshKey += 1" />
-            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" />
+            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" @success="refreshKey += 1" />
         </template>
 
         <template v-slot:list-after-filter>

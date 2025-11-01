@@ -306,6 +306,7 @@ console.log('DATA CHANGED', data);
         .addTo(this.maps);
       this.maps.on("click", (data) => {
         this.marker.setLngLat(data.lngLat);
+        this.$set(this.formData,'latlng',data.lngLat.lng + ", " + data.lngLat.lat)
       });
     },
     async onSubmit() {
@@ -327,7 +328,7 @@ console.log('DATA CHANGED', data);
         distribution_latitude: this.marker._lngLat.lat,
         distribution_longitude: this.marker._lngLat.lng,
         distribution_rec_armada: formData.rec_armada,
-        distribution_coordinates: `${this.marker._lngLat.lat} ${this.marker._lngLat.lng}`,
+        distribution_coordinates: `${this.marker._lngLat.lat}, ${this.marker._lngLat.lng}`,
         planting_time: this.plantingRealizationStart,
         end_planting_time: this.plantingRealizationEnd,
         penlub_time: this.plantingHoleEnd,

@@ -520,7 +520,7 @@ export default {
                 response.data.distribution_location = response.farmers[0].distribution_location
                 response.data.distribution_coordinates = response.farmers[0].distribution_coordinates
                 this.farmers = response.farmers
-                console.log(response)
+                console.log(this.farmers)
 
                 const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
                     program_year: this.$store.state.tmpProgramYear,
@@ -544,9 +544,9 @@ export default {
             let mapLatitude = -7.024947076120682
             let mapLongitude = 110.41467292861057
             try {
-                mapLatitude = this.farmers[0].distribution_coordinates.split(' ')[0]
-                mapLongitude = this.farmers[0].distribution_coordinates.split(' ')[1]
-
+                let coord = this.farmers[0].distribution_coordinates.replace(/ /g,'') ;
+                mapLatitude = coord.split(',')[0]
+                mapLongitude = coord.split(',')[1]
             }
             catch { }
             this.maps = await new mapboxgl.Map({
