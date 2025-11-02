@@ -331,6 +331,7 @@ export default {
                     
                     // console.log(totalSeconds, item.verified);
                     if (totalSeconds <= 0) {
+                        this.refreshKey += 1
                         // this.resetDistributionDate(item.soc_no,item.updated_at);
                         clearInterval(this.intervals[item.soc_no]);
                     }
