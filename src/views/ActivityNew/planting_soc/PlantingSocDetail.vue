@@ -544,9 +544,9 @@ export default {
             let mapLatitude = -7.024947076120682
             let mapLongitude = 110.41467292861057
             try {
-                let coord = this.farmers[0].distribution_coordinates.replace(/ /g,'') ;
-                mapLatitude = coord.split(',')[0]
-                mapLongitude = coord.split(',')[1]
+                let coord = this.farmers[0].distribution_coordinates;
+                mapLatitude = coord.split(' ')[0]
+                mapLongitude = coord.split(' ')[1]
             }
             catch { }
             this.maps = await new mapboxgl.Map({

@@ -124,8 +124,7 @@
         await this.maps.addControl(geolocate);
 
         let coord = this.data.distribution_coordinates;
-        coord = coord.replace(/ /g,'');
-        coord = coord.split(',');
+        coord = coord.split(' ');
 
         this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
           .setLngLat([coord[1], coord[0]])
@@ -136,9 +135,13 @@
           zoom: 13 
         });
 
-        this.maps.on("click", (data) => { 
+        this.maps.on("click", async (data) => { 
           this.marker.setLngLat(data.lngLat);
-          this.$set(this,'latlng',data.lngLat.lng + ", " + data.lngLat.lat)
+          this.$set(this,'latlng',data.lngLat.lat + " " + data.lngLat.lng)
+          await this.maps.flyTo({ 
+            center: [data.lngLat.lng,data.lngLat.lat], 
+            zoom: 13 
+          });
         });
       },
   
@@ -147,7 +150,7 @@
           ff_no: this.socData.ff_no,
           program_year: this.socData.program_year,
           new_address: this.new_address,
-          latlng: this.latlng.split(',').map(item => item.trim()).reverse().join(', '),
+          latlng: this.latlng,
         };
         console.log(payload)
         this.$_api
@@ -177,17 +180,18 @@
     },
   
     watch: {
-      dataKey(t) {
+      async dataKey(t) {
+
+
         if (t > 0) {
           this.isOpen = true;
           this.socData = this.data;
 
           this.new_address = this.socData.distribution_location
-          this.latlng = this.socData.distribution_coordinates.split(',').map(item => item.trim()).reverse().join(', ');
+          this.latlng = this.socData.distribution_coordinates[0] != '-' ? this.socData.distribution_coordinates.split(' ').map(item => item.trim()).reverse().join(' ') : this.socData.distribution_coordinates;
+          let val=this.latlng.split(' ');
 
-          let val=this.latlng.replace(/ /g,'');
-          val=val.split(',');
-
+          console.log({val})
           this.marker.setLngLat(val);
         }
       },
@@ -204,15 +208,16 @@
         }
       },
       async latlng(val) {
-      if (val.includes(',')) {
-        val=val.replace(/ /g,'');
-        val=val.split(',');
+      if (val.includes(' ')) {
+        val=val.split(' ');
 
-        if (!this.isValidCoordinate(val[1],val[0])) return;
-        this.marker.setLngLat(val);
+        console.log({fufu:!this.isValidCoordinate(val[0],val[1]), val})
+        if (!this.isValidCoordinate(val[0],val[1])) return;
         
+        this.marker.setLngLat({
+          lng:val[1],lat:val[0]});
         await this.maps.flyTo({ 
-          center: [val[0],val[1]], 
+          center: [val[1],val[0]], 
           zoom: 13 
         });
       }

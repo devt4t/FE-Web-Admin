@@ -306,7 +306,7 @@ console.log('DATA CHANGED', data);
         .addTo(this.maps);
       this.maps.on("click", (data) => {
         this.marker.setLngLat(data.lngLat);
-        this.$set(this.formData,'latlng',data.lngLat.lng + ", " + data.lngLat.lat)
+        this.$set(this.formData,'latlng',data.lngLat.lat + " " + data.lngLat.lng)
       });
     },
     async onSubmit() {
@@ -328,7 +328,7 @@ console.log('DATA CHANGED', data);
         distribution_latitude: this.marker._lngLat.lat,
         distribution_longitude: this.marker._lngLat.lng,
         distribution_rec_armada: formData.rec_armada,
-        distribution_coordinates: `${this.marker._lngLat.lat}, ${this.marker._lngLat.lng}`,
+        distribution_coordinates: `${this.marker._lngLat.lat} ${this.marker._lngLat.lng}`,
         planting_time: this.plantingRealizationStart,
         end_planting_time: this.plantingRealizationEnd,
         penlub_time: this.plantingHoleEnd,
@@ -388,15 +388,17 @@ console.log('DATA CHANGED', data);
       }
     },
     async "formData.latlng"(val) {
-      if (val.includes(',')) {
-        val=val.replace(/ /g,'');
-        val=val.split(',');
+      if (val.includes(' ')) {
+        val=val.split(' ');
 
-        if (!this.isValidCoordinate(val[1],val[0])) return;
-        this.marker.setLngLat(val);
+        if (!this.isValidCoordinate(val[0],val[1])) return;
+        this.marker.setLngLat({
+          lat:val[0],
+          lng:val[1]
+        });
         
         await this.maps.flyTo({ 
-          center: [val[0],val[1]], 
+          center: [val[1],val[0]], 
           zoom: 13 
         });
       }
