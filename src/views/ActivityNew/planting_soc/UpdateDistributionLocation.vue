@@ -125,6 +125,7 @@
 
         let coord = this.data.distribution_coordinates;
         coord = coord.split(' ');
+        console.log('initializeMap()',{coord})
 
         this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
           .setLngLat([coord[1], coord[0]])
@@ -211,11 +212,12 @@
       if (val.includes(' ')) {
         val=val.split(' ');
 
-        console.log({fufu:!this.isValidCoordinate(val[0],val[1]), val})
         if (!this.isValidCoordinate(val[0],val[1])) return;
         
         this.marker.setLngLat({
-          lng:val[1],lat:val[0]});
+          lng:val[1],lat:val[0]
+        });
+        
         await this.maps.flyTo({ 
           center: [val[1],val[0]], 
           zoom: 13 

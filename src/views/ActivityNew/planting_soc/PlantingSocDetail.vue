@@ -508,7 +508,7 @@ export default {
                 if (!response) throw true
 
                 let seedTotal = 0;
-                for (const farmer of response.farmers) {
+                for (const farmer of response.farmers.filter(d=>d.signature!=null)) {
                     seedTotal += farmer.total_seed
                     console.log(farmer.total_seed);
                 }

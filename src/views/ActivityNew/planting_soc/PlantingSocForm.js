@@ -151,6 +151,7 @@ console.log('DATA CHANGED', data);
 
             let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
 
+            console.log({result, sisa:(parseInt(nsry.qty_allocation) - totalBibitNeeded)})
 
 
             return result;

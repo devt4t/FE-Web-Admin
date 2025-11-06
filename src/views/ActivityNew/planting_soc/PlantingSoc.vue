@@ -105,7 +105,7 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create') && !item.verified" variant="info" small class="mt-2"
+            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small class="mt-2"
                 @click="onUpdateDistributionLocation(item)">
                 <v-icon left small>mdi-update</v-icon>
                 <span>Edit Alamat Distribusi</span>
@@ -190,7 +190,7 @@ export default {
                 if (ffData.data.length == 0) throw "err"
 
                 //EXPORT DATA
-                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel`
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel` 
                 const exportPayload = {
                     data: ffData.data
                 }
