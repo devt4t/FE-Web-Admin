@@ -48,6 +48,7 @@ export default {
       return dateArray
     },
     async onChangeFf(data) {
+
 console.log('DATA CHANGED', data);
       if (!data) {
         return;
@@ -250,10 +251,10 @@ console.log('DATA CHANGED', data);
 
     calculatePlantingDate() {
       this.plantingHoleStart = moment(this.formData.distribution_date)
-        .subtract(40, "days")
+        .subtract(33, "days")
         .format("YYYY-MM-DD");
       this.plantingHoleEnd = moment(this.formData.distribution_date)
-        .subtract(14, "days")
+        .subtract(7, "days")
         .format("YYYY-MM-DD");
       this.plantingRealizationStart = moment(this.formData.distribution_date)
         .add(1, "days")
