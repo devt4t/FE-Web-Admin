@@ -17,6 +17,36 @@
             </v-btn>
         </template>
 
+        <template v-slot:list-ff_id="{ item }">
+            <span class="d-block">
+            {{ item.field_facilitators_name }}</span>
+
+            <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <span v-on="on" class="text-08-em badge bg-light mt-1">{{
+                item.user_id
+                }}</span>
+            </template>
+
+            <span>Kode FF</span>
+            </v-tooltip>
+        </template>
+
+        <template v-slot:list-farmer_id="{ item }">
+            <span class="d-block">
+            {{ item.farmers_name }}</span>
+
+            <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <span v-on="on" class="text-08-em badge bg-light mt-1">{{
+                item.lahans_farmer_no
+                }}</span>
+            </template>
+
+            <span>Kode Petani</span>
+            </v-tooltip>
+        </template>
+
         <template v-slot:detail-slave-raw="{ data }">
             <planting-hole-detail :data="data"></planting-hole-detail>
         </template>

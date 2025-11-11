@@ -156,6 +156,33 @@
                         </div>
 
                     </div>
+
+                    <div class="statistics mb-3 mx-3 d-flex flex-row">
+                        <!-- <div class="statistic-item light">
+                            <v-icon>mdi-account-group</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Total Petani</p>
+                                <p class="mb-0 value">{{ farmers.reduce((p,c)=>p.farmer_no!=c.farmer_no,[]).length ?? 0 }}</p>
+                            </div>
+                        </div> -->
+
+                        <div class="statistic-item light">
+                            <v-icon>mdi-land-fields</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Total Lahan</p>
+                                <p class="mb-0 value">{{ farmers.length ?? 0 }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="statistic-item light">
+                            <v-icon>mdi-land-fields</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Progress Penlub</p>
+                                <p class="mb-0 value">{{ farmers.filter(t=>t.planting_hole != null).length }}/{{ farmers.length ?? 0 }}</p>
+                            </div>
+                        </div>
+
+                    </div>
                 </template>
 
                 <template v-slot:item.action="{ item, index }">
@@ -522,12 +549,12 @@ export default {
                 this.farmers = response.farmers
                 console.log(this.farmers)
 
-                const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
-                    program_year: this.$store.state.tmpProgramYear,
-                    nursery_location_id: response.data.nursery_location_id
-                });
+                // const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
+                //     program_year: this.$store.state.tmpProgramYear,
+                //     nursery_location_id: response.data.nursery_location_id
+                // });
 
-                console.log({ calendar })
+                // console.log({ calendar })
 
                 this.data = response.data
                 this.loading = false
