@@ -300,7 +300,7 @@ export default [
     id: "pohon_mpts",
     label: "Total Pohon MPTS",
     methods: {
-      list: false,
+      list: true,
       detail: true,
       create: {
         type: "text",
@@ -319,7 +319,7 @@ export default [
     id: "tanaman_bawah",
     label: "Total Crops",
     methods: {
-      list: true,
+      list: false,
       detail: true,
       create: {
         type: "text",

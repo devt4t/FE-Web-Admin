@@ -227,6 +227,7 @@ export default {
       const result = await this.$_api.get("GetFFAllWeb_new", {
         limit: 10000,
         offset: 0,
+        program_year: this.$store.state.tmpProgramYear,
       });
 
       if (!Array.isArray(result.data)) return;
@@ -357,7 +358,8 @@ export default {
           responseType: "arraybuffer",
           data: {
             exportBy: this.exportBy,
-            data: result.data
+            data: result.data,
+            total_lahan: result.total_lahan,
           },
           headers: {
             "content-type": "application/json",

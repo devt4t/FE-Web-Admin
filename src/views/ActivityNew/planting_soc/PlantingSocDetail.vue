@@ -158,13 +158,19 @@
                     </div>
 
                     <div class="statistics mb-3 mx-3 d-flex flex-row">
-                        <!-- <div class="statistic-item light">
+                        <div class="statistic-item light">
                             <v-icon>mdi-account-group</v-icon>
                             <div class="statistic-data">
                                 <p class="mb-0 label">Total Petani</p>
-                                <p class="mb-0 value">{{ farmers.reduce((p,c)=>p.farmer_no!=c.farmer_no,[]).length ?? 0 }}</p>
+                                <p class="mb-0 value">
+                                    {{ [
+                                        ...new Map(
+                                            farmers.map(item => [item.farmer_no, item])
+                                        ).values()
+                                    ].length ?? 0 }}
+                                </p>
                             </div>
-                        </div> -->
+                        </div>
 
                         <div class="statistic-item light">
                             <v-icon>mdi-land-fields</v-icon>
@@ -219,9 +225,15 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span>
-                    <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
-                        dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
+                    <span @click="openPagePenlub(item.planting_hole)" class="d-block min-w-100px badge cursor-pointer bg-primary" >
+                        {{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}
+                        <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
+                    </span>
+                    <p class="text-center"> ~ </p> 
+                    <span @click="openPagePenlub(item.planting_hole)" class="d-block min-w-150px badge cursor-pointer bg-info">
+                        {{dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}
+                        <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
+                    </span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
                     <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span>
@@ -462,6 +474,18 @@ export default {
         this.getData()
     },
     methods: {
+        openPagePenlub(planting_hole) {
+            if (!planting_hole) return;
+            const routeData = this.$router.resolve({
+                path: "LubangTanamV2",
+                query: {
+                view: "detail",
+                id: planting_hole.id,
+                ph_form_no: planting_hole.ph_form_no
+                },
+            });
+            window.open(routeData.href, "_blank");
+        },
 
         async syncSeed() {
             const isConfirmed = await this.$_alert.confirm('Sync Ulang Bibit', 'Apakah anda yakin akan melakukan sync ulang data bibit?', 'Ya', 'Tidak')
