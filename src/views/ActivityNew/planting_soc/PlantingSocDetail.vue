@@ -559,19 +559,19 @@ export default {
                 if (!response) throw true
 
                 let seedTotal = 0;
-                for (const farmer of response.farmers.filter(d=>d.signature!=null)) {
-                    seedTotal += farmer.total_seed
-                    console.log(farmer.total_seed);
-                }
+                // for (const farmer of response.farmers.filter(d=>d.signature!=null)) {
+                //     seedTotal += farmer.total_seed
+                //     console.log(farmer.total_seed);
+                // }
 
-
-
+                seedTotal = response.farmers.filter(d=>d.signature!=null).reduce((f,c)=>{
+                    return +f+c.seeds.reduce((a,b)=>+a+b.total_seed,0);
+                },0);
 
                 response.data.total_seed = seedTotal
                 response.data.distribution_location = response.farmers[0].distribution_location
                 response.data.distribution_coordinates = response.farmers[0].distribution_coordinates
                 this.farmers = response.farmers
-                console.log(this.farmers)
 
                 // const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
                 //     program_year: this.$store.state.tmpProgramYear,
