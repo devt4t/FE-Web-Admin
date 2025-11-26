@@ -82,87 +82,99 @@ console.log('DATA CHANGED', data);
           }
       );
 
-      nursery.data = nursery.data.data.result[0] || {};
-      nursery.allocation_periode_days = this.getDatesBetween(
-          nursery.data.start_distribution_time, 
-          nursery.data.end_distribution_time
-      ).map(date => {
-          return {
-              date_allocation: date,
-              qty_allocation: nursery.data.seed_limitation
-          }
-      });
-
-      let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
-          month: moment(this.dateDistributionCurrent).month() + 1,
-          year: moment(this.dateDistributionCurrent).year(),
-          program_year: this.$store.state.tmpProgramYear,
-          nursery_location_id: nursery.data.nursery_locations_id,
-      });
-
+      nursery.data = nursery.data.data.result || [];
+      
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
         program_year: this.$store.state.tmpProgramYear,
         type: "new",
       });
 
+      let dates = [];
+
+      for (const data of nursery.data) {
+
+        let date = this.getDatesBetween(
+            data.start_distribution_time, 
+            data.end_distribution_time
+          ).map(date => { return {
+                date_allocation: date,
+                qty_allocation: data.seed_limitation
+          }}) // loop
+
+        dates = dates.concat(date);
+        
+        console.log('apd',dates)
+      }
+      nursery.allocation_periode_days = dates;
+        
+      let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
+        month: moment(this.dateDistributionCurrent).month() + 1,
+        year: moment(this.dateDistributionCurrent).year(),
+        program_year: this.$store.state.tmpProgramYear,
+        nursery_location_id: nursery.data[0].nursery_locations_id,
+        mu_no: data.mu_no
+      });
+      
+      this.nurseryLocation = {
+        address_nursery: '',
+        name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data[0].nursery_locations_id)?.name || '',
+        location_nursery_id: nursery.data[0].nursery_locations_id,
+      };
+      
+      let totalSeedFF = 0;
+      for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
+          totalSeedFF += parseInt(farmer.total_kayu);
+          totalSeedFF += parseInt(farmer.total_mpts);
+      }
+
+      console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
+      let nurseryAllocationList = nursery.allocation_periode_days;
+      
+      const off_interval = +nursery.data[0].nursery_days_off_interval;
+      const off_amount = +nursery.data[0].nursery_days_off_amount;
+
+      if (off_interval > 0 && off_amount > 0) {
+        let offIndex = this.getIndicesByInterval(off_interval, off_amount, nurseryAllocationList, off_interval);
+        console.log({offIndex})
+        nurseryAllocationList = nurseryAllocationList.filter((_, index) => !offIndex.includes(index));
+      }
+
+      this.allocations = nurseryAllocationList.filter(
+      (nsry) => {
+          let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
+          
+          let totalBibitNeeded = totalSeedFF;
+          totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
+
+          let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
+
+          console.log({result, sisa:(parseInt(nsry.qty_allocation) - totalBibitNeeded)})
+
+
+          return result;
+      });
+
+      for (const allocation of this.allocations) {
+        this.availableDate.push(allocation.date_allocation);
+      }
+
+
       let ffLahanData = [];
       try {
 
-        if (ffLahan.data.result.lahans.length == 0) {
+        if (ffLahan.data.result.lahans1.length == 0) {
           this.$_alert.error("Terdapat lahan yang belum diverifikasi");
           this.loading = false;
           return;
         }
 
-        ffLahanData = ffLahan.data.result.lahans;
+        ffLahanData = ffLahan.data.result.lahans1;
       } catch { }
 
-      let totalSeedFF = 0;
-      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
-          totalSeedFF += parseInt(farmer.total_kayu);
-          totalSeedFF += parseInt(farmer.total_mpts);
-      }
+      
 
-      if (nursery.data) {
-        this.nurseryLocation = {
-          address_nursery: '',
-          name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data.nursery_locations_id)?.name || '',
-          location_nursery_id: nursery.data.nursery_locations_id,
-        };
-
-        console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
-        let nurseryAllocationList = nursery.allocation_periode_days;
-
-        const off_interval = +nursery.data.nursery_days_off_interval;
-        const off_amount = +nursery.data.nursery_days_off_amount;
-
-        if (off_interval > 0 && off_amount > 0) {
-          let offIndex = this.getIndicesByInterval(off_interval, off_amount, nurseryAllocationList, off_interval);
-          console.log({offIndex})
-          nurseryAllocationList = nurseryAllocationList.filter((_, index) => !offIndex.includes(index));
-        }
-
-        this.allocations = nurseryAllocationList.filter(
-        (nsry) => {
-            let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
-            
-            let totalBibitNeeded = totalSeedFF;
-            totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
-
-            let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
-
-            console.log({result, sisa:(parseInt(nsry.qty_allocation) - totalBibitNeeded)})
-
-
-            return result;
-        });
-
-        for (const allocation of this.allocations) {
-          this.availableDate.push(allocation.date_allocation);
-        }
-        
-      }
+      
 
       var _lastFarmer = "";
       var _index = 1;
