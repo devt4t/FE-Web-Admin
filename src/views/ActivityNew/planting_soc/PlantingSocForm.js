@@ -18,7 +18,6 @@ export default {
     },
 
     onChangeAttendance(event, value) {
-      console.log("event", event, value);
 
       const _farmerLahan = this.lahans;
 
@@ -49,7 +48,6 @@ export default {
     },
     async onChangeFf(data) {
 
-console.log('DATA CHANGED', data);
       if (!data) {
         return;
       }
@@ -104,7 +102,6 @@ console.log('DATA CHANGED', data);
 
         dates = dates.concat(date);
         
-        console.log('apd',dates)
       }
       nursery.allocation_periode_days = dates;
         
@@ -128,7 +125,6 @@ console.log('DATA CHANGED', data);
           totalSeedFF += parseInt(farmer.total_mpts);
       }
 
-      console.log({ nursery, totalSeedFF, allocatedBibitGEKO });
       let nurseryAllocationList = nursery.allocation_periode_days;
       
       const off_interval = +nursery.data[0].nursery_days_off_interval;
@@ -136,7 +132,6 @@ console.log('DATA CHANGED', data);
 
       if (off_interval > 0 && off_amount > 0) {
         let offIndex = this.getIndicesByInterval(off_interval, off_amount, nurseryAllocationList, off_interval);
-        console.log({offIndex})
         nurseryAllocationList = nurseryAllocationList.filter((_, index) => !offIndex.includes(index));
       }
 
@@ -149,7 +144,6 @@ console.log('DATA CHANGED', data);
 
           let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
 
-          console.log({result, sisa:(parseInt(nsry.qty_allocation) - totalBibitNeeded)})
 
 
           return result;
@@ -234,8 +228,6 @@ console.log('DATA CHANGED', data);
     validateSostam() {
       if (!this.ffCurrent) return;
 
-      console.log(this.availableDate);
-      console.log("date", this.dateDistributionCurrent);
 
       const isJateng = [
         "000",
