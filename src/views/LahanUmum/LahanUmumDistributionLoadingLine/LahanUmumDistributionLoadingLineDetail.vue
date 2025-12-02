@@ -631,7 +631,7 @@ export default {
       modal_signature_photo: null,
       modal_receiver_photo: null,
       farmer_id: 0,
-      nurseryToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg",
+      nurseryToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3NjI3NTYyNzAsImV4cCI6MTc5Mzg2MDI3MCwibmJmIjoxNzYyNzU2MjcwLCJqdGkiOiJ4VHF4cUV6VlQwZEkxSkRwIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ZAlixQ8QWw1EjgPH3wBN6vWitt7TijMqoyCRmGCHzp0",
       configAllocationTransportDetail: {
         table: {
           header: DetailUnloadAllocationTransportField
@@ -698,7 +698,7 @@ export default {
     async updateVerifikasiReportNursery(item, type){
       
       let User = JSON.parse(localStorage.getItem("User"))
-      let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg"
+      let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3NjI3NTYyNzAsImV4cCI6MTc5Mzg2MDI3MCwibmJmIjoxNzYyNzU2MjcwLCJqdGkiOiJ4VHF4cUV6VlQwZEkxSkRwIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ZAlixQ8QWw1EjgPH3wBN6vWitt7TijMqoyCRmGCHzp0"
       if(type == 'verification'){
         const prompt = await this.$_alert.confirm('Verifikasi Distribusi?', 'Apakah Anda Yakin Untuk Melakukan VERIFIKASI Data Distribusi?', 'Ya, Verifikasi', 'Batal', true)
           if (prompt.isConfirmed) {
