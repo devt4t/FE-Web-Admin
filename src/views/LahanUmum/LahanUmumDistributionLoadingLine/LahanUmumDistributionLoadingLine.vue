@@ -84,8 +84,8 @@ export default {
         async onBASTCheck(item) {
             const prompt = await this.$_alert.confirm('Cek Status BAST?', 'Apakah Anda Yakin Untuk Melakukan Cek Status BAST?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
-                // console.log(item)
-                this.$_api.get('distribution/nursery/check-bast', {
+                console.log('fufuf')
+                this.$_api.get('distribution/nursery/check-bast-lahan-umum', {
                     loading_line_id: item.id,
                 })
                     .then(() => {
