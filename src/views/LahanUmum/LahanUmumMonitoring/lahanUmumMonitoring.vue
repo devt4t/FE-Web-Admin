@@ -1,6 +1,6 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="false">
         <template v-slot:create-form>
             <lahan-umum-monitoring-create :user="user"></lahan-umum-monitoring-create>
         </template>
