@@ -49,13 +49,13 @@
 
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.gambar1 ?? '')"
+                    @click="showLightbox($_config.baseUrlUpload + '/general-lands/first-monitorings' + monitoring.data.gambar1 ?? '')"
                     v-bind:style="{
                         backgroundImage:
                         'url(' +
                         $_config.baseUrlUpload +
-                        '/' +
-                        data.gambar1 ?? '' +
+                        '/general-lands/first-monitorings' +
+                        monitoring.data.gambar1 ?? '' +
                         ')',
                     }">
                     <h6>Foto Realisasi Tanam</h6>
@@ -63,13 +63,13 @@
                 </div>
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.gambar2 ?? '')"
+                    @click="showLightbox($_config.baseUrlUpload + '/general-lands/first-monitorings' + monitoring.data.gambar2 ?? '')"
                     v-bind:style="{
                         backgroundImage:
                         'url(' +
                         $_config.baseUrlUpload +
-                        '/' +
-                        data.gambar2 ?? '' +
+                        '/general-lands/first-monitorings' +
+                        monitoring.data.gambar2 ?? '' +
                         ')',
                     }">
                     <h6>Foto Realisasi Tanam</h6>
@@ -78,16 +78,16 @@
                 
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.gambar3 ?? '')"
+                    @click="showLightbox($_config.baseUrlUpload + '/general-lands/first-monitorings' + monitoring.data.gambar3 ?? '')"
                     v-bind:style="{
                         backgroundImage:
                         'url(' +
                         $_config.baseUrlUpload +
-                        '/' +
-                        data.gambar3 ?? '' +
+                        '/general-lands/first-monitorings' +
+                        monitoring.data.gambar3 ?? '' +
                         ')',
                     }">
-                    <h6>Foto Tanaman Mati</h6>
+                    <h6>Foto Realisasi Tanam</h6>
                     </div>
                 </div>
             
@@ -124,6 +124,13 @@
         this.$store.state.lightbox.show = true;
       },
     },
+    async mounted(){
+      const result = await this.$_api.get("general-land/first-monitriong/detail", {
+        monitoring_no: this.$route.query.monitoring_no,
+      });
+      this.monitoring = result;
+      console.log('get data')
+    },
     data() {
       return {
         configMonitoringDetail: {
@@ -156,6 +163,7 @@
                 ]
             }
         },
+        monitoring: {},
       }
     }
   }

@@ -11,6 +11,18 @@
             <div class="indicator-wrapper pt-1">
                 <div class="indicator" :class="{danger: item.is_verified == 0, success: item.is_verified == 1}"></div>
             </div>
+        </template>	
+        <template v-slot:list-bottom-action="{ item }">
+            <v-btn v-if="item.is_verified == 1 && $_sys.isAllowed('lahan-umum-unverification-update')" variant="danger" small
+                class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
+            <v-btn v-else-if="item.is_verified == 0 && $_sys.isAllowed('lahan-umum-verification-update')" variant="success" small
+                class="mt-2" @click="onVerif(item)">
+                <v-icon left small>mdi-check-bold</v-icon>
+                <span>Verifikasi</span>
+            </v-btn>
         </template>
     </geko-base-crud>
 
@@ -74,14 +86,14 @@ export default {
     },
     methods: {
         async onVerif(item){
-            const prompt = await this.$_alert.confirm('Verifikasi Data Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Verifikasi Data Monitoring Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Monitoring Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('VerificationLahanUmum', {
-                lahan_no: item.lahan_no,
-                verified_by: this.user.email,
+                this.$_api.post('ValidateMonitoringLahanUmum', {
+                monitoring_no: item.monitoring_no,
+                validate_by: this.user.email,
                 })
                 .then(() => {
-                    this.$_alert.success('Berhasil Melakukan Verifikasi Lahan Umum, Silahkan Lanjutkan Ke Proses Penilikan Lubang')
+                    this.$_alert.success('Berhasil Melakukan Verifikasi Monitoring Lahan Umum')
                     this.refreshKey += 1
                 })
 
@@ -92,14 +104,14 @@ export default {
             //     "lahan_no": item.lahan_no
             // }
             // console.log(payload);
-            const prompt = await this.$_alert.confirm('Unverifikasi Data Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Unverifikasi Data Monitoring Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Monitoring Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
-                this.$_api.post('general-land/main/unverification', {
-                lahan_no: item.lahan_no,
-                verified_by: this.user.email,
+                this.$_api.post('UnverificationMonitoringLahanUmum', {
+                monitoring_no: item.monitoring_no,
+                // verified_by: this.user.email,
                 })
                 .then(() => {
-                    this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
+                    this.$_alert.success('Berhasil Melakukan Unverifikasi Monitoring Lahan Umum')
                     this.refreshKey += 1
                 })
 
