@@ -3,7 +3,7 @@
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title>
-          <span>Export Pendataan (Petani - Lahan - Polygon)</span>
+          <span>Export Pendataan Lahan Umum</span>
         </v-card-title>
 
         <v-card-text class="farmer-assign-wrapper mt-3">
@@ -255,7 +255,7 @@ export default {
       loadingExportByFC: false,
       loadingExportByUM: false,
       currentFfName: "",
-      exportBy: 'ff',
+      exportBy: 'mu',
       muLoadingProgress: 0,
       exportByOptions:[],
       ffList: [],
@@ -286,10 +286,10 @@ export default {
 
         if (this.format === 'pdf') {
           this.exportByOptions = [
-            {
-              label: 'Field Facilitator',
-              code: 'ff',
-            },
+            // {
+            //   label: 'Field Facilitator',
+            //   code: 'ff',
+            // },
             {
               label: 'Unit Management',
               code: 'mu',
@@ -298,21 +298,21 @@ export default {
         } else {
           this.exportByOptions = [
             {
-              label: 'Field Facilitator',
-              code: 'ff',
-            },
-            {
               label: 'Unit Management',
               code: 'mu',
             },
-            {
-              label: 'Field Coordinator',
-              code: 'fc',
-            },
-            {
-              label: 'Unit Manager',
-              code: 'um',
-            },
+            // {
+            //   label: 'Field Facilitator',
+            //   code: 'ff',
+            // },
+            // {
+            //   label: 'Field Coordinator',
+            //   code: 'fc',
+            // },
+            // {
+            //   label: 'Unit Manager',
+            //   code: 'um',
+            // },
           ];
         }
 
