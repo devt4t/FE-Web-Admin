@@ -263,6 +263,7 @@ export default {
       fcList: [],
       umList: [],
       exportData: [],
+      exportData2: [],
     };
   },
   props: {
@@ -751,6 +752,7 @@ export default {
             console.log(result, offset)
             this.muLoadingProgress = result.total ? Math.min(100, Math.round((this.exportData.length / result.total) * 100)) : 100;
             this.exportData = [...this.exportData, ...result.data]
+            this.exportData2 = [...this.exportData2, ...this.exportData]
             if (result.data.length < 500) break;
             offset += 500;
           }
@@ -759,6 +761,12 @@ export default {
 
         }
 
+        this.exportData2.map(item => {
+          item.carbon_stock = item.carbon_stock ? item.carbon_stock : 0
+          return item
+        });
+
+        console.log({exportData2: this.exportData2})
 
         const trees = await this.$_api
           .get("GetTreesAll")
