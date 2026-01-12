@@ -111,7 +111,10 @@ export default [
       id: "planting_date",
       label: "Tanggal Tanam",
       methods: {
-        list: true,
+        list: {
+          transform: "date",
+          class:" badge bg-primary",
+        },
         detail: true,
         create: false,
         update: false,
@@ -120,7 +123,7 @@ export default [
     },
     {
       id: "lahan_umums_pic_lahan",
-      label: "",
+      label: "pic lahan umum",
       methods: {
         list: true,
         detail: true,
@@ -131,7 +134,7 @@ export default [
     },
     {
       id: "employees_name",
-      label: "",
+      label: "employee name",
       methods: {
         list: true,
         detail: true,

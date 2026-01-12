@@ -4524,7 +4524,7 @@ export default {
             url = `https://api-nursery.t4t-api.org/api/custom/reportGecko?program_year=${this.generalSettings.programYear}&&ff_no=${this.dialogFormLahanUmum.inputs.selectedMouDatas.ktp_no}`;
           const res = await axios .get(url, {
               headers: {
-                Authorization: `Bearer ` + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3MzE1NTM1NDMsImV4cCI6MTc2MjY1NzU0MywibmJmIjoxNzMxNTUzNTQzLCJqdGkiOiJhdm50YjVwNVhUNUVKMmMyIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.QX3XMyMTzQYoXMzqlecIK5ImC9siz26Ri8nMaYkiYgg",
+                Authorization: `Bearer ` + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3NjI3NTYyNzAsImV4cCI6MTc5Mzg2MDI3MCwibmJmIjoxNzYyNzU2MjcwLCJqdGkiOiJ4VHF4cUV6VlQwZEkxSkRwIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ZAlixQ8QWw1EjgPH3wBN6vWitt7TijMqoyCRmGCHzp0",
               },
             });
           const resData = res.data.data.detail_farmers[0].detail_seed_farmers;

@@ -451,16 +451,16 @@
               </ValidationObserver>
             </div>
           </div>
-          <div v-if="kmlType == 'coord'">
+          <div class="upload" v-if="kmlType == 'coord'">
           <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
             <form @submit.prevent="handleSubmit(onSubmitCoordinate)" autocomplete="off">
               <v-row>
                 <v-col lg="12">
-                  <geko-input @selected="handleLahanSelect" v-model="_" :item="{
+                  <geko-input @selected="handleLahanSelect" :item="{
                     label: 'Lahan',
                     placeholder: 'Pilih Lahan',
                     type: 'select',
-                    validation: ['required'],
+                    // validation: ['required'],
                     api: 'GetLahanAll_new',
                     param: {
                       limit: 10,
@@ -475,6 +475,26 @@
                       },
                     },
                   }" />
+                </v-col>
+                <v-col lg="12">
+                  <div class="upload-file-wrapper">
+                    <label for="coordFile" class="kml-file">
+                      <div class="wrapper-coord">
+                        <v-icon size="25px">mdi-microsoft-excel</v-icon>
+                      </div>
+                    </label>
+
+                    <p class="kml-label">
+                      <span v-if="!coord_file" class="ml-2">Upload excel koordinat lahan</span>
+                      <span class="ml-2" v-else>{{ coord_file_name }}</span>
+                    </p> 
+
+                    <button @click="coord_file = null; coord_file_name = null; lahans= []; fileInputKey++" type="button" v-if="coord_file" class="btn btn-icon btn-sm btn-light-danger">
+                      <v-icon>mdi-close-circle</v-icon>
+                    </button>
+
+                    <input :key="fileInputKey" id="coordFile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type="file" @change="handleFileCoordChange($event)" />
+                  </div>
                 </v-col>
 
                 <v-row>
@@ -539,6 +559,8 @@
 <script>
 import axios from "axios";
 import lahanData from "./LahanData.js";
+import { readFile } from "xlsx";
+
 export default {
   name: "lahan-kml-upload",
   props: {
@@ -561,6 +583,9 @@ export default {
       uploadProgress: "0",
       lahans: [],
       peserta_tambahan: [],
+      coord_file_name: null,
+      coord_file: null,
+      fileInputKey: 0,
     };
   },
 
@@ -821,6 +846,34 @@ export default {
       this.files = e.target.files[0];
       this.files_name = e.target.files[0].name;
     },
+    handleFileCoordChange(event) {
+      this.coord_file = event.target.files[0];
+      this.coord_file_name = event.target.files[0].name;
+
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        // Ubah hasil bacaan jadi Uint8Array
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Ambil sheet pertama
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        let jsonData = { value: [] };
+        // Konversi ke JSON
+        jsonData.value = XLSX.utils.sheet_to_json(worksheet);
+
+        this.$set(this, "lahans", jsonData.value);
+      };
+
+      // Baca file sebagai ArrayBuffer
+      reader.readAsArrayBuffer(file);
+    },
     onUplaod() {
       if (!this.files || this.loading) return;
       this.loading = true;
@@ -863,6 +916,13 @@ export default {
     hapusLahan(i) {
       this.lahans.splice(i, 1);
     },
+    chunkArray(arr, size = 10) {
+      const chunks = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+      }
+      return chunks;
+    },
     onSubmitCoordinate() {
       if (this.lahans.length == 0) {
         this.$_alert.error("Data lahan belum ditambahkan");
@@ -878,6 +938,23 @@ export default {
         return;
       }
 
+      // for (const [i,lahan] of this.chunkArray(this.lahans, 20).entries()) {
+        //  this.$_api.post("update-lahans/coordinate", {lahans: lahan}).then(() => {
+        //   if(i == Math.floor(this.lahans.length/20)) {
+        //     this.$_alert.success(
+        //       "Koordinat lahan berhasil diupdate",
+        //     );
+        //     this.isOpen = false;
+        //     this.loading = false;
+        //     this.lahans = [];
+        //   }
+        // }).catch((err) => {
+        //   this.$_alert.error("Error", err.response.data.message);
+        //   this.loading = false;
+        // });
+        // console.log("lahan", lahan);
+      // }
+        
       let payload = {
         lahans: this.lahans,
       };
@@ -916,6 +993,14 @@ export default {
     files(t) {
       if (!t) {
         this.files_name = "";
+      }
+    },
+    coord_file(t) {
+      if (!t) {
+        this.coord_file_name = "";
+      } else {
+        console.log(t)
+        
       }
     },
   },

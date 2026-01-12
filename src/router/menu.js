@@ -771,6 +771,14 @@ const menu = [
         icon: "mdi-application-array",
       },
       {
+        title: "Permintaan Limitasi Distribusi Harian",
+        to: "/DailyDistributionLimitationRequests",
+        component: "Utilities/DailyDistributionLimitationRequests/index",
+        name: "DailyDistributionLimitationRequests",
+        permission: "SosialisasiTanam",
+        icon: "mdi-database-edit",
+      },
+      {
         title: "Tipe Project",
         to: "/ProjectTypes",
         component: "Utilities/ProjectTypes",

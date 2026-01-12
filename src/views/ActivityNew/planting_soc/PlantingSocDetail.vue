@@ -156,10 +156,43 @@
                         </div>
 
                     </div>
+
+                    <div class="statistics mb-3 mx-3 d-flex flex-row">
+                        <div class="statistic-item light">
+                            <v-icon>mdi-account-group</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Total Petani</p>
+                                <p class="mb-0 value">
+                                    {{ [
+                                        ...new Map(
+                                            farmers.map(item => [item.farmer_no, item])
+                                        ).values()
+                                    ].length ?? 0 }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="statistic-item light">
+                            <v-icon>mdi-land-fields</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Total Lahan</p>
+                                <p class="mb-0 value">{{ farmers.length ?? 0 }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="statistic-item light">
+                            <v-icon>mdi-land-fields</v-icon>
+                            <div class="statistic-data">
+                                <p class="mb-0 label">Progress Penlub</p>
+                                <p class="mb-0 value">{{ farmers.filter(t=>t.planting_hole != null).length }}/{{ farmers.length ?? 0 }}</p>
+                            </div>
+                        </div>
+
+                    </div>
                 </template>
 
                 <template v-slot:item.action="{ item, index }">
-                    <div class="d-flex flex-col flex-column">
+                    <div class="d-flex flex-col flex-column" v-if="!item.validation">
                         <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update')" variant="warning" small
                             @click="openEditModal(item)">
                             <v-icon small>mdi-pencil</v-icon>
@@ -192,9 +225,15 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span>
-                    <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
-                        dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
+                    <span @click="openPagePenlub(item.planting_hole)" class="d-block min-w-100px badge cursor-pointer bg-primary" >
+                        {{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}
+                        <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
+                    </span>
+                    <p class="text-center"> ~ </p> 
+                    <span @click="openPagePenlub(item.planting_hole)" class="d-block min-w-150px badge cursor-pointer bg-info">
+                        {{dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}
+                        <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
+                    </span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
                     <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span>
@@ -435,6 +474,18 @@ export default {
         this.getData()
     },
     methods: {
+        openPagePenlub(planting_hole) {
+            if (!planting_hole) return;
+            const routeData = this.$router.resolve({
+                path: "LubangTanamV2",
+                query: {
+                view: "detail",
+                id: planting_hole.id,
+                ph_form_no: planting_hole.ph_form_no
+                },
+            });
+            window.open(routeData.href, "_blank");
+        },
 
         async syncSeed() {
             const isConfirmed = await this.$_alert.confirm('Sync Ulang Bibit', 'Apakah anda yakin akan melakukan sync ulang data bibit?', 'Ya', 'Tidak')
@@ -448,7 +499,7 @@ export default {
                     await this.$_api.post('new-sostam/add-on/refresh-seed', {
                         form_no: farmer.form_no,
                         lahan_no: farmer.no_lahan,
-                        program_year: this.$_config.programYear.model
+                        program_year: this.$store.state.tmpProgramYear
                     })
 
 
@@ -508,26 +559,26 @@ export default {
                 if (!response) throw true
 
                 let seedTotal = 0;
-                for (const farmer of response.farmers) {
-                    seedTotal += farmer.total_seed
-                    console.log(farmer.total_seed);
-                }
+                // for (const farmer of response.farmers.filter(d=>d.signature!=null)) {
+                //     seedTotal += farmer.total_seed
+                //     console.log(farmer.total_seed);
+                // }
 
-
-
+                seedTotal = response.farmers.filter(d=>d.signature!=null).reduce((f,c)=>{
+                    return +f+c.seeds.reduce((a,b)=>+a+b.total_seed,0);
+                },0);
 
                 response.data.total_seed = seedTotal
                 response.data.distribution_location = response.farmers[0].distribution_location
                 response.data.distribution_coordinates = response.farmers[0].distribution_coordinates
                 this.farmers = response.farmers
-                console.log(response)
 
-                const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
-                    program_year: this.$store.state.tmpProgramYear,
-                    nursery_location_id: response.data.nursery_location_id
-                });
+                // const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
+                //     program_year: this.$store.state.tmpProgramYear,
+                //     nursery_location_id: response.data.nursery_location_id
+                // });
 
-                console.log({ calendar })
+                // console.log({ calendar })
 
                 this.data = response.data
                 this.loading = false
@@ -544,9 +595,9 @@ export default {
             let mapLatitude = -7.024947076120682
             let mapLongitude = 110.41467292861057
             try {
-                mapLatitude = this.farmers[0].distribution_coordinates.split(' ')[0]
-                mapLongitude = this.farmers[0].distribution_coordinates.split(' ')[1]
-
+                let coord = this.farmers[0].distribution_coordinates;
+                mapLatitude = coord.split(' ')[0]
+                mapLongitude = coord.split(' ')[1]
             }
             catch { }
             this.maps = await new mapboxgl.Map({

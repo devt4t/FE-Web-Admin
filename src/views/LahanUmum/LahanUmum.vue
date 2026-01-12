@@ -1,6 +1,9 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" @onExportExcel="onExportExcel($event)" @onExportPdf="onExportPdf($event)">
+        <template v-slot:list-before-create>
+            <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
+        </template>
         <template v-slot:list-scooping_visits_data_no="{ item }">
             <span v-if="!item.scooping_visits_data_no" class="badge bg-danger min-w-10px d-flex">
                 <v-icon size="small">mdi-close-circle</v-icon> &nbsp; <strong>Desa Diluar Program</strong>
@@ -64,6 +67,7 @@ import LahanUmumDetail from "./LahanUmumDetail.vue";
 import LahanUmumDetailMap from "@/views/Lahan/components/DetailLahanMap";
 import LahanUmumCreate from "./lahanUmumCreate.vue"
 import LahanUmumUpdate from "./lahanUmumUpdate.vue";
+import LahanExportModal from "./LahanExportModal.vue";
 
 export default {
     components: {
@@ -71,7 +75,8 @@ export default {
         LahanUmumDetail,
         LahanUmumDetailMap,
         LahanUmumCreate,
-        LahanUmumUpdate
+        LahanUmumUpdate,
+        LahanExportModal
     },
     name: "crud-public-land",
     watch: {},
@@ -118,6 +123,19 @@ export default {
         this.user = user;
     },
     methods: {
+        onExportExcel() {
+            if ([16, 1, 3].includes(this.$store.state.User.role)) {
+                this.exportSocialImpactModal += 1;
+            } else {
+                this.exportModal += 1;
+                this.exportFormat = "excel";
+            }
+        },
+
+        onExportPdf() {
+            this.exportModal += 1;
+            this.exportFormat = "pdf";
+        },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {

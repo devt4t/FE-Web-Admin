@@ -256,14 +256,14 @@
           :item="{
             type: 'select',
             label: 'Target Area',
-            api: 'GetTargetArea',
+            api: 'new-utilities/target-areas',
             validation: ['required'],
             param: {
               program_year: formData.program_year,
               mu_no: formData.mu_no,
             },
             option: {
-              getterKey: 'data.result',
+              getterKey: 'data',
               list_pointer: {
                 label: 'name',
                 code: 'area_code',

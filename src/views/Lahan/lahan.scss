@@ -28,6 +28,26 @@
       }
     }
 
+    .wrapper-coord {
+      width: 4em;
+      height: 4em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #a6a6b728;
+      border: 1px dashed grey;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      &:hover {
+        cursor: pointer;
+      }
+  
+      i {
+        font-size: 3em;
+      }
+    }
+
     .kml-label {
       font-size: 1.2em;
       font-weight: 500;

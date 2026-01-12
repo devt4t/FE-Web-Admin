@@ -130,7 +130,7 @@
           <v-col>
             <geko-input v-model="formData.second_material" :item="{
               label: 'Materi Pelatihan 2',
-              validation: ['required'],
+              // validation: ['required'],
               col_size: 6,
               type: 'select',
               param: {},
@@ -208,7 +208,8 @@
                 type: 'select',
                 api: 'village/dataset',
                 param: {
-                  area_code: formData.target_area
+                  area_code: formData.target_area,
+                  program_year: formData.program_year
                 },
                 setter: 'village',
                 option: {
@@ -233,7 +234,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-if="allFFByDesa.length > 0" key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+            <geko-input v-if="allFFByDesa.length > 0" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
               || !formData.village || !farmerByAllFF.size
               " :item="{
                 label: 'Field Facilitator Aktif',
@@ -475,7 +476,7 @@
 
                 <v-col md="1" class="d-flex flex-column justify-content-center"
                   style="justify-content: center; align-items: flex-start">
-                  <button @click="hapusPesertaUmum(i)">
+                  <button type="button" @click="hapusPesertaUmum(i)">
                     <v-icon color="red">mdi-close</v-icon>
                   </button>
                 </v-col>
@@ -483,7 +484,7 @@
 
               <v-row>
                 <v-col md="12">
-                  <v-btn variant="primary" @click="tambahPesertaUmun">
+                  <v-btn type="button" variant="primary" @click="tambahPesertaUmun">
                     <v-icon>mdi-plus</v-icon>
                     <span>Tambah Peserta Umum</span>
                   </v-btn>
@@ -495,7 +496,7 @@
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="form--" class="mr-3">Back</v-btn>
-            <v-btn type="submit" variant="success" :disabled="loading">
+            <v-btn type="button" @click="handleNextButtonPage2" variant="success" :disabled="loading">
               <v-icon>mdi-chevron-right</v-icon>
               <span>Selanjutnya</span>
             </v-btn>
@@ -528,28 +529,13 @@
               upload_type: 'image/*',
               setter: 'absent',
               view_data: 'absent',
+              isButtonDeleteHidden: true,
               option: {
+                max: 5,
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 0.5,
-              },
-            }" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col md="12">
-            <geko-input v-model="formData.absent2" :item="{
-              label: 'Foto Absensi Tertulis (2)',
-              type: 'upload',
-              api: '/farmer-training/upload1.php',
-              directory: 'absensi-images',
-              upload_type: 'image/*',
-              setter: 'absent2',
-              view_data: 'absent2',
-              option: {
-                label_hint:
-                  'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 0.5,
+                max_size: 2.5,
+                multiple: true,
               },
             }" />
           </v-col>
@@ -565,6 +551,7 @@
               upload_type: 'image/*',
               setter: 'dokumentasi',
               view_data: 'dokumentasi',
+              isButtonDeleteHidden: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -679,16 +666,19 @@ export default {
     },
     handleOnSelectDesa(value) {
       this.selectedDesaName = value.Desaname;
+      this.allFFByDesa = [];
       // api: 'GetFFDesa_new',
       // param: {
       //   kode_desa: formData.village
       // },
       this.$_api.get('field-facilitator/dataset', {
         village_code: value.kode_desa,
+        program_year: this.formData.program_year,
         limit: 1000
       }).then(res => {
-        // this.$set(this, 'allFFByDesa', res.data.result);
-        this.allFFByDesa = res.data;
+        this.$set(this, 'allFFByDesa', res.data);
+        // this.allFFByDesa = res.data;
+        console.log(this.allFFByDesa); 
       })
     },
     countTotalPeseerta() {
@@ -710,12 +700,14 @@ export default {
 
         for (let ff_no in this.farmerBySelectedFF) {
           if (this.farmerBySelectedFF[ff_no].selectedFarmers.length) {
+            console.log('farmerBySelectedFF ', this.farmerBySelectedFF[ff_no].selectedFarmers);
             ff_selected_farmer.push(ff_no)
-
+            
             for (let selectedFarmerKey in this.farmerBySelectedFF[ff_no].selectedFarmers) {
               this.formData.farmers.push({
                 farmer_no: this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey].kode
               });
+              console.log('selectedFarmers ', this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey]);
             }
           }
         }
@@ -728,7 +720,9 @@ export default {
             this.$refreshKey += 1;
             this.$_alert.success("Data pelatihan petani berhasil ditambahkan");
           }).catch(err => {
-            // 
+            console.log(err);
+            this.formData.farmers = [];
+            this.$_alert.error(err?.data?.data?.result ?? "Terjadi kesalahan saat menambahkan data pelatihan petani"); 
           });
       }
     },
@@ -810,6 +804,16 @@ export default {
       this.farmerByAllFF.clear()
       this.farmerBySelectedFF = new Object()
       this.formData.ff_additional = []
+    },
+    handleNextButtonPage2(){
+      let emptyForm = 0;
+      for (const key in this.formData.peserta_tambahan) {
+        if (this.formData.peserta_tambahan[key].name == '' || this.formData.peserta_tambahan[key].address == '' || this.formData.peserta_tambahan[key].phone == '' || this.formData.peserta_tambahan[key].gender == '') {
+          emptyForm++;
+        }
+      }
+      
+      if (!emptyForm) this.form++;
     }
   },
 }

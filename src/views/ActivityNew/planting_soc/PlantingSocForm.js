@@ -18,7 +18,6 @@ export default {
     },
 
     onChangeAttendance(event, value) {
-      console.log("event", event, value);
 
       const _farmerLahan = this.lahans;
 
@@ -28,8 +27,27 @@ export default {
         }
       }
     },
+    getDatesBetween(start, end) {
+      const dateArray = []
+      const startDate = new Date(start)
+      const endDate = new Date(end)
+
+      while (startDate <= endDate) {
+        // Format manual ke YYYY-MM-DD
+        const year = startDate.getFullYear()
+        const month = String(startDate.getMonth() + 1).padStart(2, '0')
+        const day = String(startDate.getDate()).padStart(2, '0')
+
+        dateArray.push(`${year}-${month}-${day}`)
+
+        // tambah 1 hari
+        startDate.setDate(startDate.getDate() + 1)
+      }
+
+      return dateArray
+    },
     async onChangeFf(data) {
-console.log('DATA CHANGED', data);
+
       if (!data) {
         return;
       }
@@ -44,37 +62,97 @@ console.log('DATA CHANGED', data);
       const endDate = moment(this.dateDistributionCurrent, "YYYY-MM-DD")
         .endOf("month")
         .format("YYYY-MM-DD");
-      const response = await this.$_api.getNursery(
-        "custom/gekoDistributionAllocationPeriodes",
-        {
-          mu_no: data.mu_no,
-          program_year: this.$_config.programYear.model,
-          start_date: startDate,
-          end_date: endDate,
-        }
+
+      this.availableDate = [];
+
+      let nursery = {
+          data: [],
+          allocation_periode_days: []
+      };
+
+      nursery.data = await this.$_api.get(
+          "sostam/calendar/daily-distribution-limit/get",
+          {
+              mu_no: data.mu_no,
+              program_year: this.$store.state.tmpProgramYear,
+              // start_date: startDate,
+              // end_date: endDate,
+          }
       );
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        this.nurseryLocation = {
-          address_nursery: response.data[0].address_nursery,
-          name_location_nursery: response.data[0].name_location_nursery,
-          location_nursery_id: response.data[0].location_nursery_id,
-        };
-
-        const allocationList = response.data[0].allocation_periode_days;
-
-        this.allocations = allocationList.filter(
-          (x) => parseInt(x.qty_allocation) > 0
-        );
-        for (const allocation of this.allocations) {
-          this.availableDate.push(allocation.date_allocation);
-        }
-      }
-
+      nursery.data = nursery.data.data.result || [];
+      
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
+        type: "new",
       });
+
+      let dates = [];
+
+      for (const data of nursery.data) {
+
+        let date = this.getDatesBetween(
+            data.start_distribution_time, 
+            data.end_distribution_time
+          ).map(date => { return {
+                date_allocation: date,
+                qty_allocation: data.seed_limitation
+          }}) // loop
+
+        dates = dates.concat(date);
+        
+      }
+      nursery.allocation_periode_days = dates;
+        
+      let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
+        month: moment(this.dateDistributionCurrent).month() + 1,
+        year: moment(this.dateDistributionCurrent).year(),
+        program_year: this.$store.state.tmpProgramYear,
+        nursery_location_id: nursery.data[0].nursery_locations_id,
+        mu_no: data.mu_no
+      });
+      
+      this.nurseryLocation = {
+        address_nursery: '',
+        name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data[0].nursery_locations_id)?.name || '',
+        location_nursery_id: nursery.data[0].nursery_locations_id,
+      };
+      
+      let totalSeedFF = 0;
+      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
+          totalSeedFF += parseInt(farmer.total_kayu);
+          totalSeedFF += parseInt(farmer.total_mpts);
+      }
+
+      let nurseryAllocationList = nursery.allocation_periode_days;
+      
+      const off_interval = +nursery.data[0].nursery_days_off_interval;
+      const off_amount = +nursery.data[0].nursery_days_off_amount;
+
+      if (off_interval > 0 && off_amount > 0) {
+        let offIndex = this.getIndicesByInterval(off_interval, off_amount, nurseryAllocationList, off_interval);
+        nurseryAllocationList = nurseryAllocationList.filter((_, index) => !offIndex.includes(index));
+      }
+
+      this.allocations = nurseryAllocationList.filter(
+      (nsry) => {
+          let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
+          
+          let totalBibitNeeded = totalSeedFF;
+          totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
+
+          let result = (parseInt(nsry.qty_allocation) - totalBibitNeeded) >= 0
+
+
+
+          return result;
+      });
+
+      for (const allocation of this.allocations) {
+        this.availableDate.push(allocation.date_allocation);
+      }
+
 
       let ffLahanData = [];
       try {
@@ -87,6 +165,10 @@ console.log('DATA CHANGED', data);
 
         ffLahanData = ffLahan.data.result.lahans;
       } catch { }
+
+      
+
+      
 
       var _lastFarmer = "";
       var _index = 1;
@@ -120,18 +202,32 @@ console.log('DATA CHANGED', data);
       // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
       //     month: moment().format('MM'),
       //     year: moment().format('YYYY'),
-      //     program_year: this.$_config.programYear.model,
+      //     program_year: this.$store.state.tmpProgramYear,
       //     nursery_location_id: null
       // })
       this.validateSostam();
       this.loading = false;
     },
 
+    getIndicesByInterval(interval, indexAmount, array, start = 0) {
+      const result = [];
+
+      while (start < array.length) {
+        for (let i = 0; i < indexAmount; i++) {
+          const index = start + i;
+          if (index < array.length) result.push(index);
+        }
+        start += interval + indexAmount; // lompat ke batch berikutnya
+      }
+
+      return result;
+
+    },
+
+
     validateSostam() {
       if (!this.ffCurrent) return;
 
-      console.log(this.availableDate);
-      console.log("date", this.dateDistributionCurrent);
 
       const isJateng = [
         "000",
@@ -159,10 +255,10 @@ console.log('DATA CHANGED', data);
 
     calculatePlantingDate() {
       this.plantingHoleStart = moment(this.formData.distribution_date)
-        .subtract(40, "days")
+        .subtract(33, "days")
         .format("YYYY-MM-DD");
       this.plantingHoleEnd = moment(this.formData.distribution_date)
-        .subtract(14, "days")
+        .subtract(7, "days")
         .format("YYYY-MM-DD");
       this.plantingRealizationStart = moment(this.formData.distribution_date)
         .add(1, "days")
@@ -216,6 +312,7 @@ console.log('DATA CHANGED', data);
         .addTo(this.maps);
       this.maps.on("click", (data) => {
         this.marker.setLngLat(data.lngLat);
+        this.$set(this.formData,'latlng',data.lngLat.lat + " " + data.lngLat.lng)
       });
     },
     async onSubmit() {
@@ -230,7 +327,7 @@ console.log('DATA CHANGED', data);
       let payload = {
         ...formData,
         lahans: this.lahans,
-        program_year: this.$_config.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
         distribution_time: moment(formData.distribution_date).format(
           "YYYY-MM-DD"
         ),
@@ -262,7 +359,6 @@ console.log('DATA CHANGED', data);
         return false;
       }
       return true;
-      // return false;
     },
 
     onCalendarPickerChange(date, oldDate, type) {
@@ -271,7 +367,18 @@ console.log('DATA CHANGED', data);
         this.dateDistributionCurrent = dateDistributionNew;
         this.onChangeFf(this.ffCurrent);
       }
+
     },
+    isValidCoordinate(lat, lng) {
+      const numLat = parseFloat(lat);
+      const numLng = parseFloat(lng);
+
+      if (isNaN(numLat) || isNaN(numLng)) return false;
+      if (numLat < -90 || numLat > 90) return false;
+      if (numLng < -180 || numLng > 180) return false;
+
+      return true;
+    }
   },
   watch: {
     ready(val) {
@@ -284,6 +391,22 @@ console.log('DATA CHANGED', data);
     "formData.distribution_date"(val) {
       if (val) {
         this.calculatePlantingDate();
+      }
+    },
+    async "formData.latlng"(val) {
+      if (val.includes(' ')) {
+        val=val.split(' ');
+
+        if (!this.isValidCoordinate(val[0],val[1])) return;
+        this.marker.setLngLat({
+          lat:val[0],
+          lng:val[1]
+        });
+        
+        await this.maps.flyTo({ 
+          center: [val[1],val[0]], 
+          zoom: 13 
+        });
       }
     },
   },
@@ -313,6 +436,7 @@ console.log('DATA CHANGED', data);
       plantingRealizationStart: null,
       plantingRealizationEnd: null,
       nurseryLocation: null,
+      remainingSeedAMonth: [],
       formatDate: (date, format = "YYYY-MM-DD") => {
         return moment(date).format(format);
       },

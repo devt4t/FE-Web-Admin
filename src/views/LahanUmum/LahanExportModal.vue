@@ -3,7 +3,7 @@
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title>
-          <span>Export Pendataan (Petani - Lahan - Polygon)</span>
+          <span>Export Pendataan Lahan Umum</span>
         </v-card-title>
 
         <v-card-text class="farmer-assign-wrapper mt-3">
@@ -255,7 +255,7 @@ export default {
       loadingExportByFC: false,
       loadingExportByUM: false,
       currentFfName: "",
-      exportBy: 'ff',
+      exportBy: 'mu',
       muLoadingProgress: 0,
       exportByOptions:[],
       ffList: [],
@@ -263,6 +263,7 @@ export default {
       fcList: [],
       umList: [],
       exportData: [],
+      exportData2: [],
     };
   },
   props: {
@@ -286,10 +287,10 @@ export default {
 
         if (this.format === 'pdf') {
           this.exportByOptions = [
-            {
-              label: 'Field Facilitator',
-              code: 'ff',
-            },
+            // {
+            //   label: 'Field Facilitator',
+            //   code: 'ff',
+            // },
             {
               label: 'Unit Management',
               code: 'mu',
@@ -298,21 +299,21 @@ export default {
         } else {
           this.exportByOptions = [
             {
-              label: 'Field Facilitator',
-              code: 'ff',
-            },
-            {
               label: 'Unit Management',
               code: 'mu',
             },
-            {
-              label: 'Field Coordinator',
-              code: 'fc',
-            },
-            {
-              label: 'Unit Manager',
-              code: 'um',
-            },
+            // {
+            //   label: 'Field Facilitator',
+            //   code: 'ff',
+            // },
+            // {
+            //   label: 'Field Coordinator',
+            //   code: 'fc',
+            // },
+            // {
+            //   label: 'Unit Manager',
+            //   code: 'um',
+            // },
           ];
         }
 
@@ -751,6 +752,7 @@ export default {
             console.log(result, offset)
             this.muLoadingProgress = result.total ? Math.min(100, Math.round((this.exportData.length / result.total) * 100)) : 100;
             this.exportData = [...this.exportData, ...result.data]
+            this.exportData2 = [...this.exportData2, ...this.exportData]
             if (result.data.length < 500) break;
             offset += 500;
           }
@@ -759,6 +761,12 @@ export default {
 
         }
 
+        this.exportData2.map(item => {
+          item.carbon_stock = item.carbon_stock ? item.carbon_stock : 0
+          return item
+        });
+
+        console.log({exportData2: this.exportData2})
 
         const trees = await this.$_api
           .get("GetTreesAll")

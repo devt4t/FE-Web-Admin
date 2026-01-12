@@ -1,5 +1,5 @@
 <template>
-  <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideCreate="true" :hideUpdate="true" :refreshKey="refreshKey">
+  <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideCreate="false" :hideUpdate="true" :refreshKey="refreshKey">
 
     <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
       <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">
@@ -30,8 +30,14 @@
 
     <template v-if="this.$_sys.isAllowed('pelatihan-petani-update')" v-slot:detail-action="{ item }">
       <div>
-        <v-btn v-if="!item.status" variant="success" @click="onVerifDetail(item)">Verifikasi</v-btn>
-        <v-btn v-else variant="danger" @click="onUnverifDetail(item)">Unverifikasi</v-btn>
+        <v-btn v-if="!item.status" variant="success" @click="onVerifDetail(item)">
+          <v-icon left small>mdi-check-bold</v-icon>
+          Verifikasi
+        </v-btn>
+        <v-btn v-else variant="danger" @click="onUnverifDetail(item)">
+          <v-icon left small>mdi-undo</v-icon>
+          Unverifikasi
+        </v-btn>
       </div>
     </template>
 
@@ -77,10 +83,10 @@ export default {
           training_no: item.training_no,
           verified_by: this.user.employee_no,
         })
-          .then(() => {
-            this.$_alert.success('Pelatihan berhasil diverifikasi')
-            this.refreshKey += 1
-          })
+        .then(() => {
+          this.$_alert.success('Pelatihan berhasil diverifikasi')
+          this.refreshKey += 1
+        })
       }
     },
     async onUnverif(item) {
@@ -99,11 +105,11 @@ export default {
     },
     async onVerifDetail(item) {
       await this.onVerif(item);
-      this.$router.go(-1);
+      setTimeout(()=>{this.$router.go(-1)}, 500);
     },
     async onUnverifDetail(item) {
       await this.onUnverif(item);
-      this.$router.go(-1);
+      setTimeout(()=>{this.$router.go(-1)}, 500);
     },
     async onExportExcel(item) {
       try {

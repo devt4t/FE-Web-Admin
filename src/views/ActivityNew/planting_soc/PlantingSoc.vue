@@ -10,7 +10,7 @@
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                 :data="sostamDistributionData" @success="refreshKey += 1" />
-            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" />
+            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" @success="refreshKey += 1" />
         </template>
 
         <template v-slot:list-after-filter>
@@ -69,7 +69,7 @@
         </template>
 
         <template v-slot:list-countdown_timer="{ item }">
-            <div class="d-flex flex-col">
+            <div class="">
                 <v-chip v-if="item.timeleft" small color="red" text-color="white">
                 {{ item.timeleft }}
                 </v-chip>
@@ -80,7 +80,7 @@
 
 
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') ">
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>
@@ -105,7 +105,7 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create')" variant="info" small class="mt-2"
+            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small class="mt-2"
                 @click="onUpdateDistributionLocation(item)">
                 <v-icon left small>mdi-update</v-icon>
                 <span>Edit Alamat Distribusi</span>
@@ -177,7 +177,7 @@ export default {
                 if (this.exportIds.includes(item.ff_no)) return
                 this.exportIds.push(item.ff_no)
                 const ffData = await this.$_api.get('GetSosisalisasiTanamAdmin', {
-                    program_year: 2024,
+                    program_year: this.$store.state.tmpProgramYear,
                     ff_no: item.ff_no,
                     typegetdata: 'all',
                     limit: 10000,
@@ -190,7 +190,7 @@ export default {
                 if (ffData.data.length == 0) throw "err"
 
                 //EXPORT DATA
-                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel`
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel` 
                 const exportPayload = {
                     data: ffData.data
                 }
@@ -249,6 +249,7 @@ export default {
                     program_year: this.$store.state.tmpProgramYear
                 })
                     .then(() => {
+                        clearInterval(this.intervals[item.soc_no]);
                         this.$_alert.success('Sostam berhasil diverifikasi')
                         this.refreshKey += 1
                     }).finally(() => {
@@ -328,10 +329,11 @@ export default {
                     const formatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
                     this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
                     
-                    console.log(totalSeconds, item.verified);
-                    if (totalSeconds <= 0 && item.verified == 0) {
-                        this.resetDistributionDate(item.soc_no,item.updated_at);
-                        clearInterval(intervals[item.soc_no]);
+                    // console.log(totalSeconds, item.verified);
+                    if (totalSeconds <= 0) {
+                        clearInterval(this.intervals[item.soc_no]);
+                        this.refreshKey += 1
+                        // this.resetDistributionDate(item.soc_no,item.updated_at);
                     }
                 }, 1000);
             })

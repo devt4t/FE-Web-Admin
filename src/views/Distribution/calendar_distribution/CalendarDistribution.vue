@@ -177,7 +177,7 @@ export default {
         this.isLoading = true;
         this.$_api
           .get("sostam/calendar/nursery", {
-            program_year: 2024,
+            program_year: this.$_config.programYear.model,
             // year: 2025,
             // month: "01",
             start_date: start.date,

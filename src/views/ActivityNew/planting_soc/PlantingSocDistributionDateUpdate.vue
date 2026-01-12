@@ -43,7 +43,7 @@ export default {
             availableDate: [],
             allocations: [],
             distribution_date: moment().format("YYYY-MM-DD"),
-            disableSubmit: true
+            disableSubmit: true,
         }
     },
     props: {
@@ -89,10 +89,11 @@ export default {
             try {
 
                 const updatePayload = {
-                    distribution_date: this.formData.distribution_date,
+                    distribution_date: moment(this.formData.distribution_date).format("YYYY-MM-DD"),
                     soc_no: this.formData.soc_no,
-                    program_year: this.$_config.programYear.model
+                    program_year: this.$store.state.tmpProgramYear
                 }
+
                 this.loading = true
                 const updating = await this.$_api.post('sostam/update/distribution-date', updatePayload)
                     .catch(() => false)
@@ -114,13 +115,32 @@ export default {
             }
         },
         onCalendarPickerChange(date, oldDate, type) {
-            console.log(date)
             const dateDistributionNew = moment(date).format("YYYY-MM-DD");
             if (dateDistributionNew !== this.distribution_date) {
                 this.disableSubmit = false;
                 this.distribution_date = dateDistributionNew;
                 this.onChangeFf(this.data);
             }
+            console.log(date, dateDistributionNew,this.distribution_date)
+        },
+        getDatesBetween(start, end) {
+            const dateArray = []
+            const startDate = new Date(start)
+            const endDate = new Date(end)
+
+            while (startDate <= endDate) {
+                // Format manual ke YYYY-MM-DD
+                const year = startDate.getFullYear()
+                const month = String(startDate.getMonth() + 1).padStart(2, '0')
+                const day = String(startDate.getDate()).padStart(2, '0')
+
+                dateArray.push(`${year}-${month}-${day}`)
+
+                // tambah 1 hari
+                startDate.setDate(startDate.getDate() + 1)
+            }
+
+            return dateArray
         },
         async onChangeFf(data) {
             if (!data) {
@@ -140,54 +160,85 @@ export default {
 
 
             try {
-                let nursery = await this.$_api.getNursery(
-                    "custom/gekoDistributionAllocationPeriodes",
+
+                this.availableDate = [];
+
+                let geko = {
+                    data: [],
+                    allocation_periode_days: []
+                };
+
+                geko.data = await this.$_api.get(
+                    "sostam/calendar/daily-distribution-limit/get",
                     {
                         mu_no: data.mu_no,
-                        program_year: this.$_config.programYear.model,
-                        start_date: startDate,
-                        end_date: endDate,
+                        program_year: this.$store.state.tmpProgramYear,
+                        // start_date: startDate,
+                        // end_date: endDate,
                     }
                 );
+
+                geko.data = geko.data.data.result[0] || {};
+                geko.allocation_periode_days = this.getDatesBetween(
+                    geko.data.start_distribution_time, 
+                    geko.data.end_distribution_time
+                ).map(date => {
+                    return {
+                        date_allocation: date,
+                        qty_allocation: geko.data.seed_limitation
+                    }
+                });
+
                 let ffLahan = await this.$_api.get("getFFLahanSostamNew", {
                     ff_no: this.data.ff_no,
-                    program_year: this.$_config.programYear.model,
+                    program_year: this.$store.state.tmpProgramYear,
                 });
-                let bibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
+                let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
                     month: moment(this.distribution_date).month() + 1,
                     year: moment(this.distribution_date).year(),
-                    program_year: this.$_config.programYear.model,
+                    program_year: this.$store.state.tmpProgramYear,
                 });
-                // let [ffLahans, bibitGEKOs, nurserys] = await Promise.all([ffLahan, bibitGEKO, nursery]);
-                // console.log(ffLahans, bibitGEKOs, nurserys);
+                // let [ffLahans, allocatedBibitGEKOs, nurserys] = await Promise.all([ffLahan, allocatedBibitGEKO, nursery]);
+                // console.log({ffLahan}, {allocatedBibitGEKO}, {nursery});
 
                 let totalSeedFF = 0;
-                for (const farmer of ffLahan.data.result.lahans) {
-                    totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
+                for (const [i,farmer] of ffLahan.data.result.lahans1.entries()) {
+                    totalSeedFF += parseInt(farmer.total_kayu);
+                    totalSeedFF += parseInt(farmer.total_mpts);
                 }
 
-                if (Array.isArray(nursery.data) && nursery.data.length > 0) {
+                if (geko.data) {
                     this.nurseryLocation = {
-                        address_nursery: nursery.data[0].address_nursery,
-                        name_location_nursery: nursery.data[0].name_location_nursery,
-                        location_nursery_id: nursery.data[0].location_nursery_id,
+                        address_nursery: '',
+                        name_location_nursery: this.$store.state.nurseries.find(n => n.id == geko.data.nursery_locations_id)?.name || '',
+                        location_nursery_id: geko.data.nursery_locations_id,
                     };
 
-                    const nurseryAllocationList = nursery.data[0].allocation_periode_days;
-                    console.log({ nurseryAllocationList })
-                    this.allocations = nurseryAllocationList.filter(
-                        (nursery) => {
-                            let pointerGEKO = bibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
-                            console.log({ pointerGEKO })
-                            if (pointerGEKO.length) {
-                                console.log(parseInt(nursery.qty_allocation), pointerGEKO[0].total_seed, totalSeedFF)
-                                let result = parseInt(nursery.qty_allocation) - (pointerGEKO[0].total_seed + totalSeedFF);
-                                console.log({ result })
-                                return result > 0
-                            } else {
-                                return 1
-                            }
-                        });
+                    let gekoAllocationList = geko.allocation_periode_days;
+                    const off_interval = +geko.data.nursery_days_off_interval;
+                    const off_amount = +geko.data.nursery_days_off_amount;
+
+                    if (off_interval > 0 && off_amount > 0) {
+                        let offIndex = this.getIndicesByInterval(off_interval, off_amount, gekoAllocationList, off_interval);
+                        console.log({offIndex})
+                        gekoAllocationList = gekoAllocationList.filter((_, index) => !offIndex.includes(index));
+                    }
+
+                    console.log({ geko, totalSeedFF, allocatedBibitGEKO });
+                    this.allocations = gekoAllocationList.filter(
+                    (gko) => {
+                        let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === gko.date_allocation)
+                        
+                        let totalBibitNeeded = totalSeedFF;
+
+                        totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
+
+                        let result = (parseInt(gko.qty_allocation) - totalBibitNeeded) >= 0
+
+                        console.log({totalBibitNeeded}, {totalSeedFF}, {pointerGEKO}, {gko});
+
+                        return result;
+                    });
                     for (const allocation of this.allocations) {
                         this.availableDate.push(allocation.date_allocation);
                     }
@@ -197,6 +248,19 @@ export default {
             } catch (error) {
                 console.error('Error occurred:', error);
             }
+        },
+        getIndicesByInterval(interval, indexAmount, array, start = 0) {
+            const result = [];
+
+            while (start < array.length) {
+                for (let i = 0; i < indexAmount; i++) {
+                const index = start + i;
+                if (index < array.length) result.push(index);
+                }
+                start += interval + indexAmount; // lompat ke batch berikutnya
+            }
+
+            return result;
         },
         dateDisabled(date) {
             if (this.availableDate.includes(moment(date).format("YYYY-MM-DD"))) {

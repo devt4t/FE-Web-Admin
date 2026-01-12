@@ -83,11 +83,11 @@ export default [
     },
   },
   {
-    id: "field_facilitators_name",
+    id: "ff_id",
     label: "Field Facilitator",
     methods: {
       list: {
-        view_data: "field_facilitators_name"
+        type: "row-slot"
       },
       detail: {
         view_data: "field_facilitators_name"
@@ -124,10 +124,12 @@ export default [
     }
   },
   {
-    id: "farmers_name",
+    id: "farmer_id",
     label: "Nama Petani",
     methods: {
-      list: true,
+      list: {
+        type: "row-slot"
+      },
       detail: {
         view_data: "farmers_name"
       },
@@ -298,7 +300,7 @@ export default [
     id: "pohon_mpts",
     label: "Total Pohon MPTS",
     methods: {
-      list: false,
+      list: true,
       detail: true,
       create: {
         type: "text",
@@ -317,7 +319,7 @@ export default [
     id: "tanaman_bawah",
     label: "Total Crops",
     methods: {
-      list: true,
+      list: false,
       detail: true,
       create: {
         type: "text",

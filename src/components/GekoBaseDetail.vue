@@ -134,7 +134,6 @@ export default {
           this.response = res;
           return this.getValue(this.dataKey, res);
         });
-console.log('fields ',this.fields);
       this.data = Object.assign(this.$route.params, detail);
     },
 

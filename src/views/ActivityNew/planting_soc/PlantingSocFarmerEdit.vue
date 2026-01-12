@@ -10,7 +10,7 @@
                         <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
                             <v-row>
                                 <v-col lg="12">
-                                    <geko-input v-model="formData.farmers_name" :item="{
+                                    <geko-input v-model="formData.farmer_name" :item="{
                                         type: 'text',
                                         label: 'Petani'
                                     }" :disabled="true" />

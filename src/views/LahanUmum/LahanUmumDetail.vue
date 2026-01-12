@@ -156,7 +156,7 @@
             </div> -->
   
           </v-card>
-          <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+          <v-card v-if="false" data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
   
                 <div class="list-header py-3 mt-1">
                     <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
