@@ -5,6 +5,13 @@ export default {
     return moment(date).format(format);
   },
   loading: false,
+  pivot_program_year_list: [
+    {
+        label: '2025',
+        code: '2025',
+    },
+  ],
+  pivot_program_year_item: '',
   trees: [],
   treesActive: "2024",
   map: null,

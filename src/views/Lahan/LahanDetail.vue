@@ -735,6 +735,21 @@
                   }" @click="treesActive = tree.label">{{ tree.label }}
                 </v-btn>
               </div>
+              <div class="trees-filter" v-if="pivot_program_year_list.length > 0">
+                <geko-input v-model="pivot_program_year_item" :item="{
+                    type: 'select-radio',
+                    label: 'Tahun Tanam',
+                    validation: ['required'],
+                    option: {
+                        list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label']
+                        },
+                        default_options: pivot_program_year_list
+                    }
+                }" :disabled="true" />
+              </div>
             </div>
 
             <div class="d-flex flex-row align-items-center bg-warning-light px-3 py-3 br-8 mb-4 mt-3" v-if="
@@ -949,6 +964,13 @@ import SeedAdjustment from "./components/SeedAdjustment.vue";
 
 export default {
   name: "land-detail",
+  watch: {
+    'pivot_program_year_item': {
+      handler() {
+        this.getData()
+      }
+    },
+  },
   components: {
     "qr-code": VueQRCodeComponent,
     LahanGisVerification,
@@ -1279,11 +1301,36 @@ export default {
     async getData() {
       let result = await this.$_api.get("getDetailLahan_new", {
         id: this.$route.query.id,
+        program_year: this.pivot_program_year_item
       });
       result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![23, 24, 25].includes(x.id))
       this.data = result;
 
       console.log("result", result);
+      //set list program year from pivots
+      if(result.lahan_pivot_years.length > 0){
+        this.pivot_program_year_list = [];
+        for(const i of result.lahan_pivot_years){
+          if(i.program_year.length == 4){
+            let tempA = {
+              label: i.program_year,
+              code: i.program_year,
+            }
+            this.pivot_program_year_list.push(tempA);
+          } else{
+            let py_array = i.split(", ")
+            for(const j of py_array){
+              let tempB = {
+                label: j,
+                code: j,
+              }
+              this.pivot_program_year_list.push(tempB);
+            }
+          }
+        }
+        console.log('program_years', this.pivot_program_year_list)
+      }
+
       // set trees data
       let _trees = [];
       for (const tree of result.lahan_detail) {
@@ -1299,6 +1346,8 @@ export default {
           _trees[idx].data.push(tree);
         }
       }
+
+
 
       this.trees = _trees;
       console.log("trees", this.trees);
