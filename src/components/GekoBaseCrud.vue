@@ -292,9 +292,8 @@
                 </button>
               </slot>
 
-              <slot name="list-action-update" v-bind:item="item"
-                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update) && 
-                (config.hasOwnProperty('updateValidationKey')?!+item[config.updateValidationKey]:true)">
+              <slot name="list-action-update" v-bind:item="item" v-if="!hideUpdate && $_sys.isAllowed(config.permission.update) &&
+                (config.hasOwnProperty('updateValidationKey') ? !+item[config.updateValidationKey] : true)">
                 <button class="geko-list-action-update" @click="
                   $router.push({
                     query: {
@@ -310,7 +309,8 @@
                   <v-icon small>mdi-pencil-minus</v-icon>
                 </button>
               </slot>
-              <slot name="geko-list-action-delete" v-if="!hideDelete && $_sys.isAllowed(config.permission.delete)">
+              <slot name="geko-list-action-delete" v-bind:item="item" v-if="!hideDelete && $_sys.isAllowed(config.permission.delete) &&
+                (config.hasOwnProperty('deleteValidationKey') ? !+item[config.deleteValidationKey] : true)">
                 <button class="geko-list-action-delete" @click="onDelete(item)" v-if="config.delete">
                   <v-icon small>mdi-trash-can-outline</v-icon>
                 </button>

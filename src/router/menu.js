@@ -148,7 +148,7 @@ const menu = [
       //   permission: "LahanUmum",
       //   icon: "mdi-square-rounded-badge",
       // },
-      
+
       {
         title: "Donor",
         to: "/Donor",
@@ -217,7 +217,7 @@ const menu = [
   {
     title: "Lahan Umum / Event",
     icon: "mdi-square-rounded-badge",
-    items:[
+    items: [
       {
         title: "Lahan Umum / Event",
         to: "/LahanUmumV2",
@@ -254,9 +254,68 @@ const menu = [
         icon: "mdi-sprout",
         update: true,
       },
-      
     ]
   },
+
+  /**
+   * TODO: edit untuk pisah dari lahan umum event
+   */
+  /**
+  * @editanku sukodayo
+  * untuk task lahan umum - event monitoring tahunan
+  * icon hanya bisa di oleh yang ada outline
+  */
+  {
+    title: "Lahan Umum / Event - Monitoring Tahunan",
+    icon: "mdi-eye-check-outline",
+    items: [
+      /**
+       * Todo: monitoring ke 2
+       * * populate pertama dan monitoring di tahun pertama (monitoring 2)
+       */
+      {
+        title: "Lahan Umum / Event - Monitoring Populate 1",
+        to: "/MonitoringLahanUmumMonitoringPopulate1",
+        component: "LahanUmum/LahanUmumMonitoringPopulate/PopulatePertama/LahanUmumMonitoringPopulatePertama",
+        name: "LahanUmumMonitoringPopulatePertama",
+        permission: "Monitoring",
+        icon: "mdi-eye",
+        // update: true,
+      },
+      {
+        title: "Lahan Umum / Event - Monitoring 2",
+        to: "/MonitoringLahanUmumMonitoring2",
+        component: "LahanUmum/LahanUmumMonitoringTahunan/TahunPertama/LahanUmumMonitoringDua",
+        name: "LahanUmumMonitoringDua",
+        permission: "Monitoring",
+        icon: "mdi-eye",
+        // update: true,
+      },
+      /**
+       * Todo: monitoring ke 3
+       * * populate ke 2 dan monitoring tahun ke 2
+       */
+      // {
+      //   title: "Lahan Umum / Event - Monitoring Populate 2",
+      //   to: "/MonitoringLahanUmumTahunan3",
+      //   component: "LahanUmum/LahanUmumMonitoringPopulate/PopulateKedua/LahanUmumMonitoringPopulateKedua",
+      //   name: "LahanUmumMonitoringPopulateKedua",
+      //   permission: "DistributionUnload",
+      //   icon: "mdi-eye",
+      //   // update: true,
+      // },
+      // {
+      //   title: "Lahan Umum / Event - Monitoring Tahunan 3",
+      //   to: "/MonitoringLahanUmumTahunan3",
+      //   component: "LahanUmum/LahanUmumMonitoringTahunan/TahunKeDua/LahanUmumMonitoringTahunKeDua",
+      //   name: "LahanUmumMonitoringTahunKeDua",
+      //   permission: "DistributionUnload",
+      //   icon: "mdi-eye",
+      //   // update: true,
+      // },
+    ],
+  },
+
   {
     title: "Activities",
     icon: "mdi-calendar-check",
@@ -512,7 +571,7 @@ const menu = [
   {
     title: "Distribusi",
     icon: "mdi-truck-delivery",
-    items:[
+    items: [
       {
         title: "Distribusi - Kalender",
         to: "/Distribusi",
@@ -548,7 +607,7 @@ const menu = [
   {
     title: "Monitoring",
     icon: "mdi-truck-delivery",
-    items:[
+    items: [
       {
         title: "Monitoring Populate",
         to: "/Monitoring2Populate_new",
@@ -671,7 +730,7 @@ const menu = [
       //   permission: "Test2",
       //   icon: "mdi-map-marker",
       // },
-      
+
       // {
       //   title: "Village",
       //   to: "/village",

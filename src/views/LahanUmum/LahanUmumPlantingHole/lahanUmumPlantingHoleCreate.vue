@@ -173,6 +173,11 @@ export default {
       type: Object,
       default: {},
     },
+    programYear: {
+      required: true,
+      type: String,
+      default: 2025,
+    }
   },
   data() {
     return {
@@ -274,7 +279,7 @@ export default {
       this.getGeneralLandOptions();
     },
     async getGeneralLandOptions(){
-      let url = this.BaseUrlGet + `lahan-umum/planting-hole/option-verificated?program_year=${this.$store.state.programYear.model}`;
+      let url = this.BaseUrlGet + `lahan-umum/planting-hole/option-verificated?program_year=${this.programYear}`;
       let resGeneralLand = await this.$_api.get(url);
       let res = 'tidak dapat memuat data'
       if(resGeneralLand){
