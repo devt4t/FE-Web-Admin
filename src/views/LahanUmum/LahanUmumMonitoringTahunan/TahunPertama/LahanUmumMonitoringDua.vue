@@ -1,6 +1,5 @@
 <template>
-
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="false">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true">
         <template v-slot:create-form>
             <lahan-umum-monitoring-create :user="user"></lahan-umum-monitoring-create>
         </template>
@@ -9,12 +8,7 @@
         </template>
         <template v-slot:list-indicator="{ item }">
             <div class="indicator-wrapper pt-1">
-                <div class="indicator" :class="{
-                    danger: item.is_verified == 0,
-                    warning: item.is_verified == 1,
-                    info: item.is_verified == 2 && item.is_populated == 0,
-                    success: item.is_verified == 2 && item.is_populated == 1
-                }"></div>
+                <div class="indicator" :class="{ danger: item.is_verified == 0, success: item.is_verified == 1 }"></div>
             </div>
         </template>
         <template v-slot:list-bottom-action="{ item }">
@@ -28,15 +22,6 @@
                 <v-icon left small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
-            <!-- <v-btn v-else-if="item.is_verified == 0">
-                <v-icon>mdi-inbox-arrow-up</v-icon>
-                <span>Populasi Data ke Monitoring 2</span>
-            </v-btn> -->
-            <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
-                @click="onGeneratePopulate(item)" v-if="item.is_verified != 0 && item.is_populated == 0">
-                <v-icon small>mdi-inbox-arrow-up</v-icon>
-                <span>Populasi Data ke Monitoring 2</span>
-            </v-btn>
         </template>
     </geko-base-crud>
 
@@ -45,15 +30,13 @@
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
-import LahanUmumMonitoringConfig from "./lahanUmumMonitoringConfig";
-import LahanUmumMonitoringCreate from "./lahanUmumMonitoringCreate.vue";
-import LahanUmumMonitoringDetail from "./lahanUmumMonitoringDetail.vue";
+import LahanUmumMonitoringTahunanConfig from "./LahanUmumMonitoringDuaConfig";
+import LahanUmumMonitoringTahunanDetail from "./LahanUmumMonitoringDuaDetail.vue";
 
 export default {
     components: {
         LottieAnimation,
-        LahanUmumMonitoringCreate,
-        LahanUmumMonitoringDetail,
+        LahanUmumMonitoringTahunanDetail,
     },
     name: "crud-general-land-monitoring",
     watch: {},
@@ -62,22 +45,36 @@ export default {
             user: {},
             refreshKey: 1,
             config: {
-                export: true,
-                title: "Realisasi Tanam - Lahan Umum",
+                // untuk export di munculkan atau tidak, true = iya false = tidak
+                export: false,
+
+                // ini akan muncul di breadcrumb dan juga di bagian header
+                title: "Monitoring 2 - Lahan Umum",
+
+                // API Endpoints untuk ambil semua data
                 getter: "general-land/first-monitoring/list",
                 getterDataKey: "result",
                 totalDataKey: 'total',
+
+                // APi Endpoints untuk ambil detail nya
                 detail: "general-land/first-monitriong/detail",
                 detailIdKey: "monitoring_no",
                 detailKey: "data",
-                // delete: "lahan-umum/main/delete",
-                // deleteKey: "lahan_no",
+
+                // API Endpoints untuk delete data
+                delete: "lahan-umum/main/delete",
+                deleteKey: "lahan_no",
+
                 pk_field: null,
+
+                // Filter global
                 globalFilter: {
                     program_year: {
                         setter: "program_year",
                     },
                 },
+
+                // Permission wajib (karena inii yang muncul di sidebar)
                 permission: {
                     create: "lahan-umum-create",
                     read: "lahan-umum-list",
@@ -87,7 +84,9 @@ export default {
                     delete: "lahan-umum-delete",
                 },
                 slave: [],
-                fields: LahanUmumMonitoringConfig,
+
+                // Fields config yang akan memuncul kan di tabel header
+                fields: LahanUmumMonitoringTahunanConfig,
             },
             lottie: maintenanceAnimation,
             exportModal: 0,
@@ -99,31 +98,6 @@ export default {
         this.user = user;
     },
     methods: {
-        /**
-         * todo: editanku => untuk menuju ke populate 
-         * @param item 
-         */
-        // ==start==
-        async onGeneratePopulate(item) {
-            const prompt = await this.$_alert.confirm('Generate Data Populasi Ke Monitoring 2?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Generate Data!', 'Ya, Generate!', 'Batal', true)
-            if (prompt.isConfirmed) {
-                // Backend expects list_monitoring1 as an array
-                const payload = {
-                    list_monitoring1: [item]
-                };
-                this.$_api.post('general-land/populate-monitoring/1-to-2/create', payload)
-                    .then(() => {
-                        this.$_alert.success('Berhasil Melakukan Generate Data Ke Populasi Monitoring 2!, Silahkan Melanjutkan Proses Monitoring 2.')
-                        this.refreshKey += 1;
-                    })
-                    .catch((error) => {
-                        console.error('Error generating populate:', error);
-                        this.$_alert.error('Gagal melakukan generate data populasi!');
-                    });
-            }
-        },
-        // ==end==
-
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data Monitoring Lahan Umum?', 'Apakah anda yakin akan Verifikasi Data Monitoring Lahan Umum ini?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {

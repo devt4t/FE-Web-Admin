@@ -1,6 +1,7 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey" @onExportExcel="onExportExcel($event)" @onExportPdf="onExportPdf($event)">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" @onExportExcel="onExportExcel($event)"
+        @onExportPdf="onExportPdf($event)">
         <template v-slot:list-before-create>
             <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
         </template>
@@ -37,17 +38,20 @@
             </span>
         </template>
         <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
-            <v-btn v-if="item.is_verified == 1 && $_sys.isAllowed('lahan-umum-update')" variant="danger" small
+            <!-- di comment karena jika sudah di verif tidak bisa di unverif tapi jangan dihapus dulu -->
+            <!-- <v-btn v-if="item.is_verified == 1 && $_sys.isAllowed('lahan-umum-update')" variant="danger" small
                 class="mt-2" @click="onUnverif(item)">
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
-            </v-btn>
-            <v-btn v-else-if="item.is_verified == 0 && $_sys.isAllowed('lahan-umum-update')" variant="success" small
+            </v-btn> -->
+
+            <v-btn v-if="item.is_verified == 0 && $_sys.isAllowed('lahan-umum-update')" variant="success" small
                 class="mt-2" @click="onVerif(item)">
                 <v-icon left small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
         </template>
+
         <template v-slot:detail-slave-raw="{ data }">
             <lahan-umum-detail-map :long="data.result.longitude" :lat="data.result.latitude" :section="`LahanUmum`" />
             <lahan-umum-detail :data="data"></lahan-umum-detail>
@@ -86,6 +90,13 @@ export default {
             user: {},
             refreshKey: 1,
             config: {
+                /**
+                 * TODO: edit => untuk disable button verifikasi, edit, dan delete jika sudah di verifikasi
+                 */
+                updateValidationKey: 'is_verified',
+                deleteValidationKey: 'is_verified',
+
+                // config sebelumnya
                 export: true,
                 title: "Lahan Umum",
                 getter: "lahan-umum/main/list",
@@ -96,6 +107,7 @@ export default {
                 detailKey: "result",
                 delete: "lahan-umum/main/delete",
                 deleteKey: "lahan_no",
+                setter: "lahan-umum/main/create",
                 pk_field: null,
                 globalFilter: {
                     program_year: {
@@ -150,24 +162,28 @@ export default {
 
             }
         },
-        async onUnverif(item) {
-            // let payload = {
-            //     "lahan_no": item.lahan_no
-            // }
-            // console.log(payload);
-            const prompt = await this.$_alert.confirm('Unverifikasi Data Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
-            if (prompt.isConfirmed) {
-                this.$_api.post('general-land/main/unverification', {
-                    lahan_no: item.lahan_no,
-                    verified_by: this.user.email,
-                })
-                    .then(() => {
-                        this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
-                        this.refreshKey += 1
-                    })
+        /**
+         * Ini di comment karena tidak ada fitur unverifikasi
+         * jangan dihapus
+         */
+        // async onUnverif(item) {
+        //     // let payload = {
+        //     //     "lahan_no": item.lahan_no
+        //     // }
+        //     // console.log(payload);
+        //     const prompt = await this.$_alert.confirm('Unverifikasi Data Lahan Umum?', 'Apakah anda yakin akan Unverifikasi Data Lahan Umum ini?', 'Ya, Unverifikasi', 'Batal', true)
+        //     if (prompt.isConfirmed) {
+        //         this.$_api.post('general-land/main/unverification', {
+        //             lahan_no: item.lahan_no,
+        //             verified_by: this.user.email,
+        //         })
+        //             .then(() => {
+        //                 this.$_alert.success('Berhasil Melakukan Unverifikasi Lahan Umum')
+        //                 this.refreshKey += 1
+        //             })
 
-            }
-        }
+        //     }
+        // }
     },
 };
 </script>

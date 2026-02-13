@@ -1,7 +1,7 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn variant="info" small class="mt-2" @click="onBASTCheck(item)">
+            <!-- <v-btn variant="info" small class="mt-2" @click="onBASTCheck(item)">
                 <v-icon left small>mdi-information-box-outline</v-icon>
                 <span>Cek Status BAST</span>
             </v-btn>
@@ -13,19 +13,19 @@
                 @click="excessOfSeedForm(item)">
                 <v-icon left small>mdi-magnify-plus</v-icon>
                 <span>Lapor Bibit Berlebih</span>
-            </v-btn>
+            </v-btn> -->
             <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
                 <v-icon v-if="!exportIds.includes(item.id)">mdi-microsoft-excel</v-icon>
                 <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
                 <span>Export Excel</span>
             </v-btn>
-            <v-btn variant="success" small class="d-block mt-2" @click="onExportProofInsentiveExcel(item)">
+            <!-- <v-btn variant="success" small class="d-block mt-2" @click="onExportProofInsentiveExcel(item)">
                 <v-icon v-if="!exportProofInsentiveIds.includes(item.id)">mdi-microsoft-excel</v-icon>
                 <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
                 <span>Proof Insentive</span>
-            </v-btn>
+            </v-btn> -->
         </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
@@ -57,18 +57,20 @@ export default {
             config: {
                 title: "Distribution Unload - Lahan Umum",
                 model_api: null,
-                getter: "general-land/distribution/list?land_status=2",
+                // getter: "general-land/distribution/list?land_status=2",
+                getter: "general-land/distribution-event/list",
                 getterDataKey: "data",
                 totalDataKey: 'total',
-                detail: "distribution/loading-line/detail",
+                // detail: "distribution/loading-line/detail",
+                detail: "general-land/distribution-event/detail",
                 detailIdKey: "id",
                 detailKey: "data.result",
                 pk_field: null,
-                globalFilter: {
-                    program_year: {
-                        setter: "program_year",
-                    },
-                },
+                // globalFilter: {
+                //     program_year: {
+                //         setter: "program_year",
+                //     },
+                // },
                 permission: {
                     read: "distribution-unload-list",
                     // update: "distribution-unload-update",
@@ -107,63 +109,63 @@ export default {
         },
 
 
-        async onExportExcel(item) {
-            try {
-                if (this.exportIds.includes(item.id)) return
-                this.exportIds.push(item.id)
-                const distribution_unload = await this.$_api.get('distribution/loading-line/detail', {
-                    id: item.id
-                })
+        // async onExportExcel(item) {
+        //     try {
+        //         if (this.exportIds.includes(item.id)) return
+        //         this.exportIds.push(item.id)
+        //         const distribution_unload = await this.$_api.get('distribution/loading-line/detail', {
+        //             id: item.id
+        //         })
 
-                if (!distribution_unload.result) throw "err"
-                //EXPORT DATA
-                const exportEndpoint = `${this.$_config.baseUrlExport}export/distribution-unload/excel`
-                const exportPayload = {
-                    data: distribution_unload.result
-                }
-                const exportFilename = `Export-Distribution-Unload-${distribution_unload.result.id}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+        //         if (!distribution_unload.result) throw "err"
+        //         //EXPORT DATA
+        //         const exportEndpoint = `${this.$_config.baseUrlExport}export/distribution-unload/excel`
+        //         const exportPayload = {
+        //             data: distribution_unload.result
+        //         }
+        //         const exportFilename = `Export-Distribution-Unload-${distribution_unload.result.id}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
 
 
-                const axiosConfig = {
-                    method: "POST",
-                    url: exportEndpoint,
-                    responseType: "arraybuffer",
-                    data: exportPayload,
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `Bearer ${this.$store.state.token}`,
-                    },
-                };
+        //         const axiosConfig = {
+        //             method: "POST",
+        //             url: exportEndpoint,
+        //             responseType: "arraybuffer",
+        //             data: exportPayload,
+        //             headers: {
+        //                 "content-type": "application/json",
+        //                 Authorization: `Bearer ${this.$store.state.token}`,
+        //             },
+        //         };
 
-                const exported = await axios(axiosConfig)
-                    .then((res) => {
-                        return res;
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
+        //         const exported = await axios(axiosConfig)
+        //             .then((res) => {
+        //                 return res;
+        //             })
+        //             .catch((err) => {
+        //                 return false;
+        //             });
 
-                if (!exported) throw "ERR"
-                const url = URL.createObjectURL(new Blob([exported.data]));
-                const link = document.createElement("a");
-                link.href = url;
+        //         if (!exported) throw "ERR"
+        //         const url = URL.createObjectURL(new Blob([exported.data]));
+        //         const link = document.createElement("a");
+        //         link.href = url;
 
-                const filename = exportFilename;
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-                let idx = this.exportIds.findIndex(x => x === item.id)
-                if (idx > -1) this.exportIds.splice(idx, 1)
+        //         const filename = exportFilename;
+        //         link.setAttribute("download", filename);
+        //         document.body.appendChild(link);
+        //         link.click();
+        //         let idx = this.exportIds.findIndex(x => x === item.id)
+        //         if (idx > -1) this.exportIds.splice(idx, 1)
 
-            }
+        //     }
 
-            catch (err) {
-                console.log('err', err);
+        //     catch (err) {
+        //         console.log('err', err);
 
-                let idx = this.exportIds.findIndex(x => x === item.id)
-                if (idx > -1) this.exportIds.splice(idx, 1)
-            }
-        },
+        //         let idx = this.exportIds.findIndex(x => x === item.id)
+        //         if (idx > -1) this.exportIds.splice(idx, 1)
+        //     }
+        // },
         async onExportProofInsentiveExcel(item) {
             try {
                 if (this.exportProofInsentiveIds.includes(item.id)) return
