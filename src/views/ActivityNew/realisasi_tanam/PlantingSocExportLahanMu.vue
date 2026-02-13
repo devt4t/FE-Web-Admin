@@ -226,19 +226,23 @@ export default {
         };
     },
     props: {
+        program_year:{
+            required: true,
+            default: 2025,
+        },
         dataKey: {
             required: false,
             default: false,
         },
         format: {
-            required: true,
+            required: false,
             default: "excel",
         },
     },
 
     watch: {
         dataKey(t) {
-            if (t > 0) {
+            if (t) {
                 // this.getInitialData()
                 this.getFFDataForExport()
                 this.getUMDataForExport()
@@ -250,6 +254,14 @@ export default {
                 this.ff_no = null;
             }
         },
+        isOpen(val) {
+            if (!val) {
+                // modal just closed
+                this.resetState()
+                this.$emit('update:dataKey', 0)
+                console.log('datakey',this.dataKey)
+            }
+        }
     },
 
     // mounted() {
@@ -258,16 +270,33 @@ export default {
     // },
 
     methods: {
+        resetState() {
+            this.ff_no = null
+            this.mu_no = null
+            this.target_area = null
+
+            this.exportData = []
+
+            this.loading = false
+            this.loadingExportByFF = false
+            this.loadingExportByMU = false
+            this.loadingExportByTA = false
+        },
         test(data) {
             console.log("data", data);
         },
         test2(data) {
             console.log("data", data);
         },
-
+        async loadData(){
+            this.getFFDataForExport()
+            this.getUMDataForExport()
+            this.getTADataForExport()
+        },
         async getFFDataForExport() {
             if (this.ffList.length > 0) return;
             const result = await this.$_api.get("GetFFAllWeb_new", {
+                program_year: this.program_year,
                 limit: 2147,
                 offset: 0,
             });

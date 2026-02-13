@@ -4,7 +4,7 @@
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
-            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
+            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" @update:dataKey="exportLahanKey = $event" :program_year="$store.state.tmpProgramYear"/>
             <populate-modal :dataKey="populateKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
@@ -30,7 +30,7 @@
 
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="info" class="mr-2" @click="exportLahanKey += 1">
+                <v-btn variant="info" class="mr-2" @click="exportLahanKey = Date.now()">
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel </span>
                 </v-btn>

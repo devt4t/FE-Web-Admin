@@ -6,7 +6,7 @@ export default reactive({
   farmerEditData: null,
   sostamCoordinateData: null,
   sostamDistributionData: null,
-  exportLahanKey: 1,
+  exportLahanKey: 0,
   populateKey: 1,
   importSostamKey: 1,
   // searchColumn: 'mu',
