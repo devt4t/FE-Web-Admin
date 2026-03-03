@@ -182,6 +182,18 @@ export default {
         }
       },
     },
+    // editanku
+    '$store.state.tmpProgramYear': {
+      handler(newVal) {
+        if (!newVal) return;
+        for (const filter of this.filters) {
+          if (filter.param && 'program_year' in filter.param) {
+            this.$set(filter.param, 'program_year', newVal);
+          }
+        }
+      },
+    },
+
   },
 };
 </script>

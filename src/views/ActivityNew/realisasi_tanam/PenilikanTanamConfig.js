@@ -6,7 +6,7 @@ export default reactive({
   farmerEditData: null,
   sostamCoordinateData: null,
   sostamDistributionData: null,
-  exportLahanKey: 0,
+  exportLahanKey: 1,
   populateKey: 1,
   importSostamKey: 1,
   // searchColumn: 'mu',
@@ -161,6 +161,7 @@ export default reactive({
             getter: "GetFFAllWeb_new",
             setter: "ff_no",
             param: {
+              program_year: "current_program_year",
               page: 1,
               per_page: 10,
             },
