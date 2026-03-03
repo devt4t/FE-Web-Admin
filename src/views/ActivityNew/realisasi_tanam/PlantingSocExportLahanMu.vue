@@ -143,7 +143,6 @@ export default {
             required: true,
             default: 2025,
         },
-<<<<<<< HEAD
         props: {
             program_year: {
                 required: true,
@@ -181,47 +180,6 @@ export default {
                     console.log('datakey', this.dataKey)
                 }
             }
-=======
-    dataKey: {
-      required: false,
-      default: false,
-    },
-    format: {
-      required: false,
-      default: "excel",
-    },
-  },
-
-  data() {
-    return {
-      loadingExport: false,
-      exportBy: "ff",
-
-      ff_no: [],
-      mu_no: [],
-      target_area: [],
-
-      ffList: [],
-      muList: [],
-      taList: [],
-
-      isOpen: false,
-    };
-  },
-
-  watch: {
-    dataKey(val) {
-      if (val) {
-        this.loadData();
-        this.isOpen = true;
-      }
-    },
-
-    exportBy() {
-      this.ff_no = [];
-      this.mu_no = [];
-      this.target_area = [];
->>>>>>> 27aff61f6b98299cc9e58294f62b8dc95c1bd7a0
         },
 
         isOpen(val) {
@@ -245,7 +203,6 @@ export default {
             ]);
         },
 
-<<<<<<< HEAD
         this.loading = false
             this.loadingExportByFF = false
             this.loadingExportByMU = false
@@ -262,8 +219,6 @@ export default {
         this.getUMDataForExport()
         this.getTADataForExport()
     },
-=======
->>>>>>> 27aff61f6b98299cc9e58294f62b8dc95c1bd7a0
     async getFFDataForExport() {
         if (this.ffList.length) return;
 
