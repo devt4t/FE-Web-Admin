@@ -325,6 +325,10 @@
               ">
                 <v-icon small>mdi-eye-off-outline</v-icon>
               </button>
+
+              <!-- editanku -->
+              <!-- untuk tambahkan action button tambahan dinamis-->
+              <slot name="list-action-extra" v-bind:item="item"></slot>
             </div>
 
             <div class="geko-list-actions-bottom">

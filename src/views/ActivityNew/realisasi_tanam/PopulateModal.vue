@@ -8,6 +8,27 @@
 
                 <v-card-text class="farmer-assign-wrapper mt-3">
 
+                    <v-col lg="12">
+                        <geko-input v-model="populateModalSwitch" :item="{
+                            type: 'select',
+                            label: 'Modul Populate Monitoring',
+                            option: {
+                                list_pointer: {
+                                    label: 'label',
+                                    code: 'code',
+                                    display: ['label'],
+                                },
+                                default_options: [
+                                    { label: 'Populate Untuk Monitoring 2', code: 0 },
+                                    { label: 'Populate Untuk Monitoring 3 (Skip Mon2)', code: 1 },
+                                    { label: 'Populate Untuk Monitoring 4 (Skip Mon2&3)', code: 2 },
+                                ],
+                            },
+                        }" />
+
+                    </v-col>
+
+
                     <geko-input v-model="exportBy" :item="{
                         type: 'select-radio',
                         label: 'Populate By',
@@ -183,20 +204,12 @@
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200, 500, 10000],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
-                                            }" :show-select="true" v-model="configMU.selected" :search="configMU.search">
+                                            }" :show-select="true" v-model="configMU.selected"
+                                            :search="configMU.search">
                                             <template v-slot:top>
-                                                <v-text-field
-                                                    v-model="configMU.search"
-                                                    append-icon="mdi-magnify"
-                                                    color="green"
-                                                    label="Pencarian"
-                                                    hide-details
-                                                    outlined
-                                                    rounded
-                                                    dense
-                                                    class="mr-2"
-                                                    @input="GetMUData()"
-                                                ></v-text-field>
+                                                <v-text-field v-model="configMU.search" append-icon="mdi-magnify"
+                                                    color="green" label="Pencarian" hide-details outlined rounded dense
+                                                    class="mr-2" @input="GetMUData()"></v-text-field>
                                             </template>
                                             <template v-slot:item.index="{ index }">
                                                 {{ index + 1 }}
@@ -282,20 +295,12 @@
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
-                                            }" :show-select="true" v-model="configTA.selected" :search="configTA.search">
+                                            }" :show-select="true" v-model="configTA.selected"
+                                            :search="configTA.search">
                                             <template v-slot:top>
-                                                <v-text-field
-                                                    v-model="configMU.search"
-                                                    append-icon="mdi-magnify"
-                                                    color="green"
-                                                    label="Pencarian"
-                                                    hide-details
-                                                    outlined
-                                                    rounded
-                                                    dense
-                                                    class="mr-2"
-                                                    @input="GetTAData()"
-                                                ></v-text-field>
+                                                <v-text-field v-model="configMU.search" append-icon="mdi-magnify"
+                                                    color="green" label="Pencarian" hide-details outlined rounded dense
+                                                    class="mr-2" @input="GetTAData()"></v-text-field>
                                             </template>
                                             <template v-slot:item.index="{ index }">
                                                 {{ index + 1 }}
@@ -319,7 +324,8 @@
                             </form>
                         </ValidationObserver>
                     </div>
-                    <div v-if="$store.state.tmpProgramYear == '2022'" :class="exportBy === 'multiple_lahans' ? 'd-block' : 'd-none'">
+                    <div v-if="$store.state.tmpProgramYear == '2022'"
+                        :class="exportBy === 'multiple_lahans' ? 'd-block' : 'd-none'">
                         <ValidationObserver ref="thirdForm" v-slot="{ handleSubmit }">
                             <form @submit.prevent="handleSubmit(onSubmit_new('multiple_lahans'))" autocomplete="off">
                                 <v-row>
@@ -340,7 +346,8 @@
                                                     return acc + parseInt(val.total_hidup);
                                                 }, 0)}} / {{ config_multiple_lahans.totalTrees }}</br>
                                                 <br>
-                                                Persentase: {{percentageFormat(config_multiple_lahans.selected.reduce((acc, val) => {
+                                                Persentase:
+                                                {{percentageFormat(config_multiple_lahans.selected.reduce((acc, val) => {
                                                     return acc + parseInt(val.total_hidup);
                                                 }, 0), config_multiple_lahans.totalTrees)}}%
                                                 </br>
@@ -350,38 +357,24 @@
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-data-table 
-                                        :headers="config_multiple_lahans.table.header" 
-                                        :items="config_multiple_lahans.allPopulateData"
-                                        :server-items-length="config_multiple_lahans.totalRecord" 
-                                        :loading="loadingExportByTA"
-                                        :items-per-page="config_multiple_lahans.perPage" 
-                                        class="elevation-1"
-                                            @update:page="onChangePage" 
-                                            :page="config_multiple_lahans.page"
-                                            @update:items-per-page="updatePerPage" 
-                                            :footer-props="{
+                                        <v-data-table :headers="config_multiple_lahans.table.header"
+                                            :items="config_multiple_lahans.allPopulateData"
+                                            :server-items-length="config_multiple_lahans.totalRecord"
+                                            :loading="loadingExportByTA"
+                                            :items-per-page="config_multiple_lahans.perPage" class="elevation-1"
+                                            @update:page="onChangePage" :page="config_multiple_lahans.page"
+                                            @update:items-per-page="updatePerPage" :footer-props="{
                                                 itemsPerPageText: 'Jumlah Data Per Halaman',
                                                 itemsPerPageOptions: [10, 25, 50, 100, 200],
                                                 showCurrentPage: true,
                                                 showFirstLastPage: true,
-                                            }" 
-                                            :show-select="true" 
-                                            v-model="config_multiple_lahans.selected"
+                                            }" :show-select="true" v-model="config_multiple_lahans.selected"
                                             :search="config_multiple_lahans.search">
                                             <template v-slot:top>
-                                                <v-text-field
-                                                    v-model="config_multiple_lahans.search"
-                                                    append-icon="mdi-magnify"
-                                                    color="green"
-                                                    label="Pencarian"
-                                                    hide-details
-                                                    outlined
-                                                    rounded
-                                                    dense
-                                                    class="mr-2"
-                                                    @input="GetUniqueData()"
-                                                ></v-text-field>
+                                                <v-text-field v-model="config_multiple_lahans.search"
+                                                    append-icon="mdi-magnify" color="green" label="Pencarian"
+                                                    hide-details outlined rounded dense class="mr-2"
+                                                    @input="GetUniqueData()"></v-text-field>
                                             </template>
                                             <template v-slot:item.index="{ index }">
                                                 {{ index + 1 }}
@@ -394,7 +387,8 @@
                                     </v-col>
 
                                     <v-col lg="12">
-                                        <v-btn :disabled="!config_multiple_lahans.selected.length" variant="success" type="submit">
+                                        <v-btn :disabled="!config_multiple_lahans.selected.length" variant="success"
+                                            type="submit">
                                             <v-icon v-if="!loadingExportBy_multiple_lahans">mdi-file-tree</v-icon>
                                             <v-progress-circular v-else :size="20" color="danger"
                                                 indeterminate></v-progress-circular>
@@ -417,6 +411,8 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import Swal from "sweetalert2"
+
 export default {
     name: "populate-modal",
     data() {
@@ -663,7 +659,14 @@ export default {
                         }
                     ]
                 }
-            }
+            },
+            populateModalSwitch: 0,
+            // populateSwitchItem: [
+            //     { text: "Populate Untuk Monitoring 2", value: 0 },
+            //     { text: "Populate Untuk Monitoring 3", value: 1 },
+            //     { text: "Populate Untuk Monitoring 4", value: 2 },
+            // ],
+            populateDataSwitch: false,
         };
     },
     props: {
@@ -676,7 +679,7 @@ export default {
     watch: {
         dataKey(t) {
             if (t > 0) {
-                
+
                 this.getFFDataForExport()
                 this.getUMDataForExport()
                 this.getTADataForExport()
@@ -714,20 +717,20 @@ export default {
     // },
 
     methods: {
-        GetTAData(){
+        GetTAData() {
             this.configTA.allPopulateData = [];
             this.configTA.totalRecord = 0;
             this.loadingExportByTA = true;
             this.page = 1;
             this.getData()
         },
-        GetMUData(){
+        GetMUData() {
             this.configMU.allPopulateData = [];
             this.configMU.totalRecord = 0;
             this.loadingExportByMU = true;
             this.getData()
         },
-        GetUniqueData(){
+        GetUniqueData() {
             this.config_multiple_lahans.allPopulateData = [];
             this.config_multiple_lahans.totalRecord = 0;
             this.loadingExportBy_multiple_lahans = true;
@@ -743,17 +746,16 @@ export default {
                 offset: 0,
                 typegetdata: 'all'
             }
-            if(this.$store.state.tmpProgramYear == '2022' && this.exportBy == 'multiple_lahans')
-            {
-                payload ={
+            if (this.$store.state.tmpProgramYear == '2022' && this.exportBy == 'multiple_lahans') {
+                payload = {
                     ...payload,
-                        'program_year': '2022',
-                        'multiple_lahans': 1,
-                        'limit': this.config_multiple_lahans.perPage,
-                        'offset': this.config_multiple_lahans.perPage * (this.config_multiple_lahans.page - 1),
-                        'search_value': this.config_multiple_lahans.search
+                    'program_year': '2022',
+                    'multiple_lahans': 1,
+                    'limit': this.config_multiple_lahans.perPage,
+                    'offset': this.config_multiple_lahans.perPage * (this.config_multiple_lahans.page - 1),
+                    'search_value': this.config_multiple_lahans.search
                 }
-            }else if (this.exportBy == 'ta') {
+            } else if (this.exportBy == 'ta') {
                 payload = {
                     ...payload,
                     'target_area': this.target_area,
@@ -782,12 +784,12 @@ export default {
 
             const result = await this.$_api.get("first-monitorings/main/options", payload);
 
-            if(this.exportBy == 'multiple_lahans'){
+            if (this.exportBy == 'multiple_lahans') {
                 this.loadingExportBy_multiple_lahans = false;
                 this.config_multiple_lahans.allPopulateData = result.result ?? [];
                 this.config_multiple_lahans.totalRecord = result.total ?? 0;
                 this.config_multiple_lahans.totalTrees = result.total_life_trees ?? 0;
-            }else if (this.exportBy == 'ta') {
+            } else if (this.exportBy == 'ta') {
                 this.loadingExportByTA = false;
                 this.configTA.allPopulateData = result.result ?? [];
                 this.configTA.totalRecord = result.total ?? 0;
@@ -923,7 +925,45 @@ export default {
             console.log(configData)
             try {
 
-                const creating = await this.$_api.post('populate-monitoring/1-to-2/create', {
+                // const creating = await this.$_api.post('populate-monitoring/1-to-2/create', {
+                //     list_monitoring1: configData,
+                // })
+                //     .catch(() => false)
+
+                // if (!creating) {
+                //     throw "err"
+                // }
+
+                // editanku
+                let url = ''
+                let alertText = ''
+                if (this.populateModalSwitch == 0) {
+                    url = 'AddMonitoring1Populate'
+                    alertText = 'Untuk Monitoring 2'
+                } else if (this.populateModalSwitch == 1) {
+                    url = 'AddMonitoring1PopulateTo2'
+                    alertText = 'Untuk Monitoring 3'
+                } else if (this.populateModalSwitch == 2) {
+                    url = 'AddMonitoring1PopulateTo3'
+                    alertText = 'Untuk Monitoring 4'
+                }
+
+                const confirmation = await Swal.fire({
+                    title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,
+                    text: "Proses Tidak Dapat Dikembalikan!",
+                    icon: "warning",
+                    color: "#000000",
+                    confirmButtonColor: "#00FF4C",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Okay",
+                    showCancelButton: true,
+                });
+
+                if (!confirmation.isConfirmed) {
+                    return;
+                }
+
+                const creating = await this.$_api.post(url, {
                     list_monitoring1: configData,
                 })
                     .catch(() => false)

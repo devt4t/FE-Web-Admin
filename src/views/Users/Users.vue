@@ -1,56 +1,23 @@
 <template>
   <div>
-    <v-breadcrumbs
-      :dark="$store.state.theme == 'dark'"
-      class="breadcrumbsmain"
-      :items="itemsbr"
-      divider=">"
-      large
-      data-aos="fade-right"
-    ></v-breadcrumbs>
+    <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="itemsbr" divider=">" large
+      data-aos="fade-right"></v-breadcrumbs>
 
-    <v-data-table
-      :headers="headers"
-      :items="dataobject"
-      :search="search"
-      :loading="table.loading"
-      :footer-props="{
-        itemsPerPageText: 'Jumlah Data Per Halaman',
-      }"
-      class="rounded-xl elevation-6 mx-3 pa-1"
-      data-aos="fade-up"
-      data-aos-delay="200"
-      @update:page="($p) => (page = $p)"
-      @update:items-per-page="($p) => (itemsPerPage = $p)"
-    >
+    <v-data-table :headers="headers" :items="dataobject" :search="search" :loading="table.loading" :footer-props="{
+      itemsPerPageText: 'Jumlah Data Per Halaman',
+    }" class="rounded-xl elevation-6 mx-3 pa-1" data-aos="fade-up" data-aos-delay="200"
+      @update:page="($p) => (page = $p)" @update:items-per-page="($p) => (itemsPerPage = $p)">
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Pencarian"
-            placeholder="Pencarian..."
-            hide-details
-            dense
-            rounded
-            outlined
-            color="green"
-            style="max-width: 350px"
-          ></v-text-field>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Pencarian" placeholder="Pencarian..."
+            hide-details dense rounded outlined color="green" style="max-width: 350px"></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn
-            dark
-            rounded
-            class="mb-2"
-            @click="showAddModal()"
-            color="green"
-            v-if="$_sys.isAllowed('user-create')"
-          >
+          <!-- <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green" v-if="$_sys.isAllowed('user-create')">
             <v-icon small>mdi-plus</v-icon> Tambah Data
-          </v-btn>
+          </v-btn> -->
 
           <!-- Create Form Modal -->
-          <v-dialog v-model="dialog" max-width="700px">
+          <!-- <v-dialog v-model="dialog" max-width="700px">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-card-title>
@@ -130,8 +97,8 @@
                 </v-card-actions>
               </v-form>
             </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogReset" max-width="500px">
+          </v-dialog> -->
+          <!-- <v-dialog v-model="dialogReset" max-width="500px">
             <v-card>
               <v-card-title class="headline"
                 >Apa Anda Yakin Untuk Reset Password?</v-card-title
@@ -147,8 +114,8 @@
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
+          </v-dialog> -->
+          <!-- <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="headline"
                 >Apa Anda Yakin Menghapus Data Ini?</v-card-title
@@ -164,43 +131,26 @@
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
-          </v-dialog>
+          </v-dialog> -->
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
         {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon
-          class="mr-2"
-          @click="editItem(item)"
-          color="warning"
-          v-if="$_sys.isAllowed('user-update')"
-        >
+      <!-- <template v-slot:item.actions="{ item }">
+        <v-icon class="mr-2" @click="editItem(item)" color="warning" v-if="$_sys.isAllowed('user-update')">
           mdi-pencil
         </v-icon>
-        <v-icon
-          @click="resetItem(item)"
-          color="red"
-          v-if="$_sys.isAllowed('user-update')"
-        >
+        <v-icon @click="resetItem(item)" color="red" v-if="$_sys.isAllowed('user-update')">
           mdi-autorenew
         </v-icon>
-        <v-icon
-          @click="deleteItem(item)"
-          color="red"
-          v-if="$_sys.isAllowed('user-delete')"
-        >
+        <v-icon @click="deleteItem(item)" color="red" v-if="$_sys.isAllowed('user-delete')">
           mdi-delete
         </v-icon>
-      </template>
+      </template> -->
     </v-data-table>
 
-    <v-snackbar
-      v-model="snackbar"
-      :color="colorsnackbar"
-      :timeout="timeoutsnackbar"
-    >
+    <v-snackbar v-model="snackbar" :color="colorsnackbar" :timeout="timeoutsnackbar">
       {{ textsnackbar }}
     </v-snackbar>
   </div>
@@ -258,7 +208,7 @@ export default {
       { text: "Nama", value: "name", width: "25%" },
       { text: "Peran", value: "role", width: "20%" },
       { text: "Email", value: "email", width: "25%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      // { text: "Actions", value: "actions", sortable: false, width: "15%" },
     ],
     defaultItem: {
       id: "",

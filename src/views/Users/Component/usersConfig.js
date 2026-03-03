@@ -6,7 +6,10 @@ export default reactive({
   getter: "GetUser_new",
   getterDataKey: "data",
   totalDataKey: 'total',
-  detail: "",
+  // editanku
+  detail: "GetUserDetail",
+  delete: "DeleteUser",
+  // -----
   detailIdKey: "id",
   detailKey: "result",
   pk_field: null,
@@ -17,7 +20,11 @@ export default reactive({
   },
   permission: {
     read: "user-list",
-    },
+    detail: "user-detail",
+    create: "user-create",
+    delete: "user-delete",
+    reset_password: "user-reset-password",
+  },
   slave: [],
   fields: [
     {

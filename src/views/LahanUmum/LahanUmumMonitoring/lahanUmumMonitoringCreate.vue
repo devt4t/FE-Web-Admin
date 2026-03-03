@@ -170,7 +170,7 @@
           </v-col>
 
           <v-col md="12"
-            v-if="!onSelectedLahan || !formData.data_distribution || !formData.project_no || !formData.date_distribution">
+            v-if="!formData.lahan_no || !formData.data_distribution || !formData.project_no || !formData.date_distribution">
             <div class="d-flex align-items-center">
               <v-alert type="info" outlined>
                 Silahkan pilih No Lahan terlebih dahulu!

@@ -226,7 +226,7 @@ export default {
         };
     },
     props: {
-        program_year:{
+        program_year: {
             required: true,
             default: 2025,
         },
@@ -259,7 +259,7 @@ export default {
                 // modal just closed
                 this.resetState()
                 this.$emit('update:dataKey', 0)
-                console.log('datakey',this.dataKey)
+                console.log('datakey', this.dataKey)
             }
         }
     },
@@ -288,7 +288,7 @@ export default {
         test2(data) {
             console.log("data", data);
         },
-        async loadData(){
+        async loadData() {
             this.getFFDataForExport()
             this.getUMDataForExport()
             this.getTADataForExport()
@@ -368,7 +368,7 @@ export default {
                     offset: offset,
                 };
                 if (this.exportBy == 'ta') {
-                    payload = { ...payload, 'ta_code': value };
+                    payload = { ...payload, 'target_area': value };
                 } else if (this.exportBy == 'mu') {
                     payload = { ...payload, 'mu_no': value };
                 } else if (this.exportBy == 'ff') {
