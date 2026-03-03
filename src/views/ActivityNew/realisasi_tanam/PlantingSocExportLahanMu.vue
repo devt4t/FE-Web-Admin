@@ -203,10 +203,10 @@ export default {
             ]);
         },
 
-        this.loading = false
-            this.loadingExportByFF = false
-            this.loadingExportByMU = false
-            this.loadingExportByTA = false
+        // this.loading = false
+        //     this.loadingExportByFF = false
+        //     this.loadingExportByMU = false
+        //     this.loadingExportByTA = false
     },
     test(data) {
         console.log("data", data);
@@ -346,6 +346,5 @@ export default {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(link);
     }
-},
-};
+}
 </script>
