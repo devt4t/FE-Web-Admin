@@ -9,6 +9,7 @@ export default reactive({
   // editanku
   detail: "GetUserDetail",
   delete: "DeleteUser",
+  deleteKey: 'id',
   // -----
   detailIdKey: "id",
   detailKey: "result",

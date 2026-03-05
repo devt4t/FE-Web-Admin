@@ -1,5 +1,5 @@
 <template>
-  <div class="program-soc-form">
+  <div class="lahan-umum-monitoring-create">
     <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
         <v-row lg="12" class="px-5 py-5">
@@ -96,6 +96,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'text',
+              setter: 'lahan_condition',
             }" />
           </v-col>
 
@@ -158,7 +159,6 @@
           <!-- end foto dokumentasi -->
 
           <!-- editan ku -->
-          <!-- === start === -->
           <!-- ========== SECTION: DATA BIBIT ========== -->
           <v-col md="12" class="form-separator">
             <div class="d-flex align-items-center">
@@ -190,8 +190,39 @@
             </v-alert>
           </v-col>
 
+          <!-- SUMMARY -->
+          <v-col md="12" v-if="hasSeeds">
+            <v-card outlined class="pa-4">
+              <h5 class="mb-3">Ringkasan Input</h5>
+              <v-simple-table dense>
+                <tbody>
+                  <tr>
+                    <td>Total Bibit</td>
+                    <td class="text-right"><strong>{{ totalDistributedSeeds }}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Total Input</td>
+                    <td class="text-right">
+                      <strong :class="isValidSeedInput ? 'success--text' : 'error--text'">
+                        {{ totalInputSeeds }}
+                      </strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td class="text-right">
+                      <v-chip small :color="isValidSeedInput ? 'success' : 'error'">
+                        {{ isValidSeedInput ? 'Valid ✓' : 'Melebihi Batas ✗' }}
+                      </v-chip>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-simple-table>
+            </v-card>
+          </v-col>
+
           <!-- Expansion Panels untuk tiap bibit -->
-          <v-col md="12" v-else-if="isDistributionSelected && hasSeeds">
+          <v-col md="12" v-if="isDistributionSelected && hasSeeds">
             <v-expansion-panels focusable multiple>
               <v-expansion-panel v-for="(seed, index) in distributionSeeds" :key="seed.tree_code || index" class="mb-3">
                 <!-- Header -->
@@ -276,38 +307,6 @@
             </v-expansion-panels>
           </v-col>
 
-          <!-- SUMMARY -->
-          <v-col md="12" v-if="hasSeeds">
-            <v-card outlined class="pa-4">
-              <h5 class="mb-3">Ringkasan Input</h5>
-              <v-simple-table dense>
-                <tbody>
-                  <tr>
-                    <td>Total Bibit</td>
-                    <td class="text-right"><strong>{{ totalDistributedSeeds }}</strong></td>
-                  </tr>
-                  <tr>
-                    <td>Total Input</td>
-                    <td class="text-right">
-                      <strong :class="isValidSeedInput ? 'success--text' : 'error--text'">
-                        {{ totalInputSeeds }}
-                      </strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Status</td>
-                    <td class="text-right">
-                      <v-chip small :color="isValidSeedInput ? 'success' : 'error'">
-                        {{ isValidSeedInput ? 'Valid ✓' : 'Melebihi Batas ✗' }}
-                      </v-chip>
-                    </td>
-                  </tr>
-                </tbody>
-              </v-simple-table>
-            </v-card>
-          </v-col>
-
-
           <v-col lg="12">
             <div class="d-flex flex-row" style="justify-content: flex-end">
               <v-btn variant="success" type="submit" :disabled="loading || !canSubmit">
@@ -337,7 +336,6 @@ export default {
     },
     isCreate: {
       type: Boolean,
-      required: true,
       default: true,
     },
   },
@@ -349,90 +347,65 @@ export default {
      * Handler ketika lahan dipilih - ambil data bibit dari detail
      */
     // ==start==
-    async onSelectedLahan(lahan) {
-      console.log('Lahan dipilih:', lahan);
+    // helper method
+    getTotalPlanted(seed) {
+      return (seed.planted_alive || 0) + (seed.planted_dead || 0) + (seed.planted_missing || 0);
+    },
+    getTotalNotPlanted(seed) {
+      return (seed.not_planted_alive || 0) + (seed.not_planted_dead || 0) + (seed.not_planted_missing || 0);
+    },
+    getTotalInputPerSeed(seed) {
+      return this.getTotalPlanted(seed) + this.getTotalNotPlanted(seed);
+    },
+    isSeedOverLimit(seed) {
+      return this.getTotalInputPerSeed(seed) > seed.amount;
+    },
+    getSeedStatusColor(seed) {
+      if (this.isSeedOverLimit(seed)) return 'error';
+      if (this.getTotalInputPerSeed(seed) === seed.amount) return 'success';
+      return 'warning';
+    },
 
-      if (!lahan || !lahan.id) {
-        this.distributionSeeds = [];
+    async onSelectedLahan(lahan) {
+      this.distributionSeeds = [];
+
+      if (!lahan?.id || !this.formData.data_distribution) {
         return;
       }
 
       this.loadingSeeds = true;
 
       try {
-        // Fetch detail untuk dapat data bibit
-        const response = await this.$_api.get('general-land/distribution-event/detail', {
-          id: this.formData.data_distribution,
-        });
+        const response = await this.$_api.get(
+          'general-land/distribution-event/detail',
+          { id: this.formData.data_distribution }
+        );
 
-        console.log('Detail lahan response:', response);
-        console.log('Detail distribusi response:', response);
+        const seeds = response?.detail_custom_allocation_seeds ?? response.data?.detail_custom_allocation_seeds ?? [];
 
-        // Cek dulu field apa yang berisi data bibit
-        const seedData = response.data?.detail_custom_allocation_seeds || [];
-
-        // map untuk menggabungkan bibit dengan nama yang sama
-        const seedMap = new Map()
-
-        // loop data bibit dan gabungkan data
-        seedData.forEach(seed => {
-          const key = seed.tree_code
-
-          if (seedMap.has(key)) {
-            // jika bibit sudah ada di Map tambahkan jumlahnya
-            const existing = seedMap.get(key)
-            existing.amount += Number(seed.amount || 0)
+        const seedMap = seeds.reduce((map, seed) => {
+          const existing = map.get(seed.tree_code);
+          if (existing) {
+            existing.amount += Number(seed.amount ?? 0);
           } else {
-            // jika bibit belum ada buat entry baru
-            seedMap.set(key, {
+            map.set(seed.tree_code, {
               tree_code: seed.tree_code,
               tree_name: seed.rel_tree_id,
               tree_id: seed.tree_id,
-              amount: Number(seed.amount || 0),
-
-              // Input user - Sudah Ditanam
-              planted_alive: 0,
-              planted_dead: 0,
-              planted_missing: 0,
-
-              // Input user - Belum Ditanam
-              not_planted_alive: 0,
-              not_planted_dead: 0,
-              not_planted_missing: 0,
-            })
+              amount: Number(seed.amount ?? 0),
+              planted_alive: 0, planted_dead: 0, planted_missing: 0,
+              not_planted_alive: 0, not_planted_dead: 0, not_planted_missing: 0,
+            });
           }
-        })
+          return map;
+        }, new Map());
 
-        // convert map ke array
-        this.distributionSeeds = Array.from(seedMap.values())
-
-        console.log('Seed data yang sudah digabungkan: ', this.distributionSeeds)
-
-        // // Transform ke format yang dibutuhkan
-        // this.distributionSeeds = seedData.map(seed => ({
-        //   // Data dari API (read-only)
-        //   tree_code: seed.tree_code,
-        //   tree_name: seed.rel_tree_id,
-        //   tree_id: seed.tree_id,
-        //   amount: Number(seed.amount || 0),
-
-        //   // Input user - Sudah Ditanam
-        //   planted_alive: 0,
-        //   planted_dead: 0,
-        //   planted_missing: 0,
-
-        //   // Input user - Belum Ditanam
-        //   not_planted_alive: 0,
-        //   not_planted_dead: 0,
-        //   not_planted_missing: 0,
-        // }));
-
-        // console.log('Seed data:', this.distributionSeeds);
+        this.distributionSeeds = [...seedMap.values()];
+        this.selectedDistribution = lahan;
 
       } catch (error) {
-        console.error('Error fetching lahan detail:', error);
+        console.error('[onSelectedLahan] Failed to fetch seed data:', error);
         this.$_alert.error('Gagal mengambil data bibit');
-        this.distributionSeeds = [];
       } finally {
         this.loadingSeeds = false;
       }
@@ -446,7 +419,7 @@ export default {
       this.loading = true;
 
       const endpoint =
-        this.$route.query.view == "create"
+        this.$route.query.view === "create"
           ? "CreateMonitoringLahanUmum"
           : "UpdateFormMinatCollective";
 
@@ -454,31 +427,42 @@ export default {
 
       // editanku
       // == start ==
-      // Siapkan payload
       const payload = {
         ...this.formData,
 
+        program_year: this.selectedDistribution?.program_year || new Date().getFullYear().toString(),
+        planting_date: this.formData.date_distribution,
+
+        mou_no: this.selectedDistribution?.mou_no,
         distribution_id: this.selectedDistribution?.id,
 
-        // Transform data bibit ke format yang backend butuhkan
-        list_trees: this.distributionSeeds.map(seed => ({
-          tree_code: seed.tree_code,
-          tree_name: seed.tree_name,
-          // tree_category: seed.tree_category,
-          // total_distributed: seed.total_distributed,
-          amount: seed.amount,
-
-          // Sudah Ditanam
-          planted_alive: Number(seed.planted_alive || 0),
-          planted_dead: Number(seed.planted_dead || 0),
-          planted_missing: Number(seed.planted_missing || 0),
-
-          // Belum Ditanam
-          not_planted_alive: Number(seed.not_planted_alive || 0),
-          not_planted_dead: Number(seed.not_planted_dead || 0),
-          not_planted_missing: Number(seed.not_planted_missing || 0),
-        })),
+        list_trees: this.distributionSeeds.flatMap(seed => {
+          const rows = [];
+          const combinations = [
+            { qty: seed.planted_alive, status: 'sudah_ditanam', condition: 'hidup' },
+            { qty: seed.planted_dead, status: 'sudah_ditanam', condition: 'mati' },
+            { qty: seed.planted_missing, status: 'sudah_ditanam', condition: 'hilang' },
+            { qty: seed.not_planted_alive, status: 'belum_ditanam', condition: 'hidup' },
+            { qty: seed.not_planted_dead, status: 'belum_ditanam', condition: 'mati' },
+            { qty: seed.not_planted_missing, status: 'belum_ditanam', condition: 'hilang' },
+          ];
+          combinations.forEach(combo => {
+            const qty = Number(combo.qty || 0);
+            if (qty > 0) {
+              rows.push({
+                tree_code: seed.tree_code,
+                tree_name: seed.tree_name,
+                tree_id: seed.tree_id,
+                qty: qty,
+                status: combo.status,
+                condition: combo.condition,
+              })
+            }
+          })
+          return rows;
+        }),
       };
+      // == end ==
 
       console.log("Payload to submit:", payload);
 
@@ -497,83 +481,7 @@ export default {
       } finally {
         this.loading = false;
       }
-
-      // == end ==
-
-      // //insert main program soc
-      // this.formData.list_trees = this.trees;
-      // await this.$_api
-      //   .post(endpoint, this.formData)
-      //   .then((res) => {
-      //     console.log("res", res);
-
-      //     this.loading = false;
-      //     this.$_alert.success(
-      //       `Data monitoring berhasil ${this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
-      //       }`
-      //     );
-      //     this.$router.replace({
-      //       query: {
-      //         view: "list",
-      //       },
-      //     });
-      //     this.loading = false;
-      //   })
-      //   .catch((err) => {
-      //     this.$_alert.error(err);
-      //     return false;
-      //   });
-
-      // if (!resultMain) {
-      //   this.loading = false;
-      //   return;
-      // }
-
-      //insert farmers
-      // for (const farmer of _trees) {
-      //   if (!farmer.name || !farmer.status_program) continue;
-      //   farmer.form_no = resultMain;
-      //   await this.$_api.post("AddFormMinatFarmers_new", farmer);
-      // }
     },
-
-    addRow() {
-      this.trees.push({
-        tree_name: null,
-        tree_category: null,
-        tree_code: null,
-      });
-    },
-
-    deleteRow(i) {
-      this.trees.splice(i, 1);
-    },
-
-    onSelectTree(i, v) {
-      if (
-        Array.isArray(this.trees[i].trees) &&
-        this.trees[i].trees.length > 2
-      ) {
-        this.$_alert.error(
-          {},
-          "",
-          "Pohon yang dipilih tidak boleh lebih dari 3"
-        );
-        // this.$set(this.trees[i], "trees", v);
-      }
-    },
-    selectedTree(tree, i) {
-      console.log("selectedTree", tree, i);
-      if (tree && tree.tree_code) {
-        this.$set(this.trees[i], "tree_code", tree.tree_code);
-        this.$set(this.trees[i], "tree_name", tree.tree_name);
-        this.$set(this.trees[i], "tree_category", tree.tree_category);
-      } else {
-        this.$set(this.trees[i], "tree_code", null);
-        this.$set(this.trees[i], "tree_name", null);
-        this.$set(this.trees[i], "tree_category", null);
-      }
-    }
   },
 
   data() {
@@ -582,30 +490,67 @@ export default {
       formData: {
         created_by: this.user.email,
 
-        /**
-         * todo: editanku
-         */
+        // editanku
         // == start ===
         project_no: null,
         date_distribution: null,
         data_distribution: null,
-        // == end ==
+        lahan_condition: null,
+        lahan_no: null,
+        photo1: null,
+        photo2: null,
+        photo3: null,
       },
-      projectPurpose: null,
-      trees: [
-        {
-          tree_name: null,
-          tree_category: null,
-          tree_code: null,
-          qty: null,
-          status: null,
-          condition: null,
-        },
-      ],
       distributionSeeds: [],
       loadingSeeds: false,
       selectedDistribution: null,
     };
   },
+  // editanku => untuk memvalidasi form
+  // ===start===
+  computed: {
+    isDistributionSelected() {
+      return !!(this.formData.lahan_no && this.formData.data_distribution);
+    },
+
+    hasSeeds() {
+      return this.distributionSeeds.length > 0;
+    },
+
+    totalDistributedSeeds() {
+      return this.distributionSeeds.reduce((sum, s) => sum + (s.amount || 0), 0);
+    },
+
+    totalInputSeeds() {
+      return this.distributionSeeds.reduce((sum, s) =>
+        sum + this.getTotalInputPerSeed(s), 0
+      );
+    },
+
+    isValidSeedInput() {
+      return this.distributionSeeds.every(seed => !this.isSeedOverLimit(seed));
+    },
+
+    canSubmit() {
+      return this.hasSeeds && this.isValidSeedInput && !this.loadingSeeds;
+    }
+  },
+
+  watch: {
+    'formData.project_no'() {
+      // Reset semua field turunan ketika project berubah
+      this.formData.date_distribution = null;
+      this.formData.data_distribution = null;
+      this.formData.lahan_no = null;
+      this.distributionSeeds = [];
+    },
+    'formData.data_distribution'() {
+      // Reset lahan ketika distribusi berubah
+      this.formData.lahan_no = null;
+      this.distributionSeeds = [];
+    },
+  }
+  // ===end===
+
 };
 </script>

@@ -59,12 +59,12 @@ export default [
       detail: true,
       create: {
         type: "text",
-        validation: [],
+        validation: ['required'], // editanku => untuk memastikan wajib diisi 
         col_size: 6,
       },
       update: {
         type: "text",
-        validation: [],
+        validation: ['required'], // editanku => untuk memastikan wajib diisi 
         col_size: 6,
       },
       filter: false,
@@ -511,18 +511,18 @@ export default [
 
   {
     id: "email",
-    label: "Email",
+    label: "Email Trees4Trees",
     methods: {
       list: false,
       detail: true,
       create: {
         type: "text",
-        validation: ["required", "email"],
+        validation: ["required", "email", "regex:^[^@]+@trees4trees\\.org$"],
         col_size: 6,
       },
       update: {
         type: "text",
-        validation: ["required", "email"],
+        validation: ["required", "email", "regex:^[^@]+@trees4trees\\.org$"],
         col_size: 6,
         disabled: true,
       },

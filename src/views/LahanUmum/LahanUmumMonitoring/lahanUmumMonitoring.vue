@@ -1,6 +1,7 @@
 <template>
 
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="false">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="false"
+        :hideDelete="false">
         <template v-slot:create-form>
             <lahan-umum-monitoring-create :user="user"></lahan-umum-monitoring-create>
         </template>
@@ -28,15 +29,17 @@
                 <v-icon left small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
-            <!-- <v-btn v-else-if="item.is_verified == 0">
-                <v-icon>mdi-inbox-arrow-up</v-icon>
-                <span>Populasi Data ke Monitoring 2</span>
-            </v-btn> -->
             <v-btn variant="success" small class="d-flex flex-row align-items-center mt-2"
                 @click="onGeneratePopulate(item)" v-if="item.is_verified != 0 && item.is_populated == 0">
-                <v-icon small>mdi-inbox-arrow-up</v-icon>
+                <v-icon left small>mdi-inbox-arrow-up</v-icon>
                 <span>Populasi Data ke Monitoring 2</span>
             </v-btn>
+        </template>
+        <template v-slot:list-action-extra="{ item }">
+            <button v-if="item.is_verified == 0 && $_sys.isAllowed('lahan-umum-delete')" variant="danger" small
+                @click="onDelete(item)" title="Hapus Data" class="geko-list-action-delete">
+                <v-icon small>mdi-delete</v-icon>
+            </button>
         </template>
     </geko-base-crud>
 
@@ -70,8 +73,9 @@ export default {
                 detail: "general-land/first-monitriong/detail",
                 detailIdKey: "monitoring_no",
                 detailKey: "data",
-                // delete: "lahan-umum/main/delete",
-                // deleteKey: "lahan_no",
+                // delete: "DeleteMonitoringLahanUmum",
+                // deleteKey: "monitoring_no",
+                // deleteLabel: "monitoring_no",
                 pk_field: null,
                 globalFilter: {
                     program_year: {
@@ -107,7 +111,6 @@ export default {
         async onGeneratePopulate(item) {
             const prompt = await this.$_alert.confirm('Generate Data Populasi Ke Monitoring 2?', 'Harap Cek Data Dengan Teliti Sebelum Melakukan Generate Data!', 'Ya, Generate!', 'Batal', true)
             if (prompt.isConfirmed) {
-                // Backend expects list_monitoring1 as an array
                 const payload = {
                     list_monitoring1: [item]
                 };
@@ -154,6 +157,23 @@ export default {
                         this.refreshKey += 1
                     })
 
+            }
+        },
+        // // editanku => untuk delete monitoring
+        async onDelete(item) {
+            const prompt = await this.$_alert.confirm('Hapus Data Monitoring Lahan Umum?', 'Data yang dihapus tidak dapat dikembalikan. Apakah anda yakin?', 'Ya, Hapus', 'Batal', true);
+            if (prompt.isConfirmed) {
+                this.$_api.post('DeleteMonitoringLahanUmum', {
+                    monitoring_no: item.monitoring_no,
+                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Hapus Data Monitoring Lahan Umum')
+                        this.refreshKey += 1
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting monitoring:', error)
+                        this.$_alert.error('Gagal Hapus Data Monitoring Lahan Umum')
+                    })
             }
         }
     },

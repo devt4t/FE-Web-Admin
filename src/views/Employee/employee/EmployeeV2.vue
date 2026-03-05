@@ -1,16 +1,13 @@
 <template>
-  <geko-base-crud :config="config">
+  <geko-base-crud :config="config" @create-success="onCreateSuccess">
     <!-- :hideCreate="!['4', '13'].includes($store.state.User.role)"
     :hideUpdate="!['4', '13'].includes($store.state.User.role)" -->
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            info: item.job_status == 'Training',
-            success: item.job_status == 'Active',
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          info: item.job_status == 'Training',
+          success: item.job_status == 'Active',
+        }"></div>
       </div>
     </template>
   </geko-base-crud>
@@ -53,12 +50,13 @@ export default {
             setter: "program_year",
           },
         },
-        delete: "DeleteEmployee",
+        delete: "deleteEmployeeData_new",
+        deleteLabel: "employee_no", // field yang dikirim ke API atau lewat API payload nya
+        deleteKey: "nik", // field untuk Key yang sesuai di kolom table
         // delete_ext_payload: {
         //     delete_type: "hard_delete",
         //     project_modul: 'environment',
         // },
-        deleteKey: "id",
         pk_field: null,
         // filter_api: {
         //     project_modul: 'environment',
@@ -103,8 +101,17 @@ export default {
         },
         slave: [],
         fields: employeeConfig,
+        // editanku untuk menampilkan custom alert
+        formConfig: {
+          hideCreateAlert: true,
+        },
       },
     };
+  },
+  methods: {
+    onCreateSuccess() {
+      this.$_alert.success(null, "Employee berhasil ditambahkan dan akun user telah dibuat!");
+    },
   },
 };
 </script>

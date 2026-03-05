@@ -87,7 +87,7 @@
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
                                     <v-text-field v-model="defaultItem.email" label="Email"
-                                        :rules="rules"></v-text-field>
+                                        :rules="emailRules"></v-text-field>
                                 </v-col>
                             </v-row>
                             <v-row>
@@ -159,6 +159,11 @@ export default {
             rules: [
                 (value) => !!value || "Wajib diisi.",
                 (value) => (value && value.length >= 1) || "Min 1 karakter",
+            ],
+            emailRules: [
+                (value) => !!value || "Email wajib diisi.",
+                (value) => /.+@.+\..+/.test(value) || "Format email tidak valid.",
+                (value) => (value && value.endsWith('@trees4trees.org')) || "Email harus menggunakan domain @trees4trees.org",
             ],
             itemsType: [
                 { text: "FF", value: "FF" },
