@@ -38,11 +38,12 @@ export default [
         col_size: 6,
         validation: ["required"],
       },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
+      // update: {
+      //   type: "text",
+      //   col_size: 6,
+      //   validation: ["required"],
+      // },
+      update: false,
       filter: false,
     },
   },
@@ -74,7 +75,23 @@ export default [
       list: true,
       detail: true,
       create: false,
-      update: false,
+      update: {
+        type: 'select',
+        col_size: 6,
+        validation: ['required'],
+        getter: 'new-utilities/kecamatans',
+        setter: 'kode_kecamatan',
+        option: {
+          getterKey: 'data',
+          getter: 'kode_kecamatan',
+          default_label: 'kecamatans_name',
+          list_pointer: {
+            code: 'kode_kecamatan',
+            label: 'name',
+            display: ['name'],
+          },
+        }
+      },
       filter: {
         validation: ["required"],
         type: "select",
@@ -120,11 +137,12 @@ export default [
           },
         },
       },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
+      // update: {
+      //   type: "text",
+      //   col_size: 6,
+      //   validation: ["required"],
+      // },
+      update: false,
     },
   },
   {
