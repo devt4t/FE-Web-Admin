@@ -37,7 +37,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 
 extend("phone", {
   validate: (value) => {
-    return new RegExp(/^(\+62|62|0)8[1-9][0-9]{6,9}$/).test(value);
+    return new RegExp(/^(\+62|62|0)8[1-9][0-9]{6,10}$/).test(value);
   },
 });
 extend("decimal", {
