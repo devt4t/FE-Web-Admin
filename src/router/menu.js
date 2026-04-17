@@ -604,6 +604,36 @@ const menu = [
       },
     ]
   },
+  // todo: untuk monitoring AZ (astra zeneca)
+  // ? editan ku => monitoring v3
+  // * == start ==
+  {
+    title: "Monitoring - V3",
+    icon: 'mdi-clipboard-check-multiple',
+    items: [
+      {
+        title: "Monitoring Populate v3",
+        to: '/monitoring-v3/populate',
+        component: 'MonitoringV3/PopulateV3',
+        name: 'crud-monitoring-v3-populate',
+        permission: 'Monitoring',
+        icon: 'maginfy-expand',
+        type: ['non-carbon'],
+      },
+      {
+        title: "Monitoring v3",
+        to: '/monitoring-v3',
+        component: 'MonitoringV3/MonitoringV3',
+        name: 'crud-monitoring-v3',
+        permission: 'Monitoring',
+        icon: 'maginfy-expand',
+        type: ['non-carbon'],
+      }
+    ]
+  },
+
+  // * == end ==
+
   {
     title: "Monitoring",
     icon: "mdi-truck-delivery",

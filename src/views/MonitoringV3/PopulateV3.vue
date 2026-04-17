@@ -1,0 +1,214 @@
+<template>
+    <div>
+
+        <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"
+            :hideCreate="true">
+
+            <!-- detail -->
+            <template v-slot:detail-slave-raw="{ data }">
+                <populate-detail :data="data" />
+            </template>
+
+            <!-- action buttons -->
+            <template v-slot:list-bottom-action="{ item }">
+                <!-- assign/edit data populasi -->
+                <v-btn variant="primary" small @click="assignDataPopulate(item)">
+                    <v-icon small>mdi-pencil-plus</v-icon>
+                    <span v-if="isNotAssigned(item)">Lengkapi Data Populasi</span>
+                    <span v-else>Edit Data Populasi</span>
+                </v-btn>
+
+                <!-- reset assignment -->
+                <v-btn variant="warning" small @click="onResetAssignment(item)"
+                    v-if="!isNotAssigned(item) && item.is_monitoring == 0">
+                    <v-icon small>mdi-alert-warning</v-icon>
+                    <span>Reset Data Populasi</span>
+                </v-btn>
+
+                <!-- generate monitoring data -->
+                <v-btn variant="success" small @click="onGenerateMonitoring(item)"
+                    v-if="!isNotAssigned(item) && item.is_monitoring == 0">
+                    <v-icon small>mdi-check-all</v-icon>
+                    <span>Generate Data Monitoring</span>
+                </v-btn>
+
+                <!-- delete populate -->
+                <v-btn variant="danger" small @click="onDeletePopulate(item)" v-if="item.is_monitoring == 0">
+                    <v-icon small>mdi-backspace</v-icon>
+                    <span>Hapus Data Populasi</span>
+                </v-btn>
+            </template>
+
+            <!-- status badge (custom-slot) -->
+            <template v-slot:list-status_data="{ item }">
+                <status-badge :item="item" />
+            </template>
+            <template v-slot:detail-status_data="{ item }">
+                <status-badge :item="item" />
+            </template>
+
+            <!-- assign to (custom display) -->
+            <template v-slot:list-assigned_to="{ item }">
+                {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }}
+                ({{ item.assigned_to ?? '-' }})
+            </template>
+            <template v-slot:detail-assigned_to="{ item }">
+                {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }}
+                ({{ item.assigned_to ?? '-' }})
+            </template>
+
+            <!-- assignment form -->
+            <template v-slot:list-after-filter>
+                <div class="d-flex flex-row justify-content-end align-items-center pb-2">
+                    <!-- Form Component (Hidden by default) -->
+                    <assignment-form :data="formData" :dataKey="formDataKey" :stage="activePopulateStage"
+                        @success="refreshKey += 1" />
+                </div>
+            </template>
+        </geko-base-crud>
+    </div>
+</template>
+
+<script>
+import { buildPopulateCrudConfig, POPULATE_STAGE_REGISTRY } from './config'
+import PopulateDetail from './components/populate/PopulateDetail.vue'
+import AssignmentForm from './components/populate/AssignmentForm.vue'
+import StatusBadge from './components/populate/StatusBadge.vue'
+
+export default {
+    name: 'populate-v3',
+    components: { PopulateDetail, AssignmentForm, StatusBadge },
+
+    data() {
+        return {
+            activePopulateStage: '1-to-2',
+            config: buildPopulateCrudConfig('1-to-2'),
+            refreshKey: 1,
+            formData: null,
+            formDataKey: 0,
+        }
+    },
+
+    computed: {
+        populateStageOptions() {
+            return Object.entries(POPULATE_STAGE_REGISTRY).map(([stageKey, val]) => ({
+                stageKey: stageKey,
+                label: val.label,
+            }))
+        },
+        programYear() {
+            return this.$store.state.tmpProgramYear || new Date().getFullYear()
+        },
+        stageConfig() {
+            return POPULATE_STAGE_REGISTRY[this.activePopulateStage]
+        }
+    },
+
+    watch: {
+        programYear(newVal) {
+            this.recalculateStage(newVal);
+        }
+    },
+
+    mounted() {
+        this.recalculateStage(this.programYear);
+    },
+
+    methods: {
+        recalculateStage(pYearVal) {
+            const currentYear = new Date().getFullYear();
+            const pYear = parseInt(pYearVal);
+
+            let step = currentYear - pYear;
+            if (step < 1) step = 1;
+            if (step > 4) step = 4;
+
+            this.activePopulateStage = `${step}-to-${step + 1}`;
+            this.config = buildPopulateCrudConfig(this.activePopulateStage);
+            this.refreshKey += 1;
+            this.formData = null;
+        },
+
+        // helper: untuk cek apakah belum di assign
+        isNotAssigned(item) {
+            return (item.assigned_to == '-' && item.sampling == '-')
+                || (item.assigned_to == null && item.sampling == null)
+        },
+
+        assignDataPopulate(item) {
+            this.formData = item
+            this.formDataKey += 1
+        },
+
+        async onResetAssignment(item) {
+            const prompt = await this.$_alert.confirm(
+                'Reset Assignment Populasi?',
+                'Data assignment akan direset!',
+                'Ya, Reset', 'Batal', true
+            )
+            if (prompt.isConfirmed) {
+                const payload = { id: item.id, stage: this.stageConfig.stageNumber }
+                this.$_api.post(this.stageConfig.api.resetAssignment, payload)
+                    .then(() => {
+                        this.$_alert.success('Berhasil Reset Assignment!')
+                        this.refreshKey += 1
+                    })
+                    .catch((err) => {
+                        this.$_alert.error('Gagal Reset Assignment!')
+                        console.log('gagal reset data assignment, error => ', err)
+                        this.refreshKey += 1
+                    })
+            }
+        },
+
+        async onGenerateMonitoring(item) {
+            const prompt = await this.$_alert.confirm(
+                'Generate Data Monitoring?',
+                'Proses ini tidak dapat dikembalikan!',
+                'Ya, Generate!', 'Batal', true
+            )
+            if (prompt.isConfirmed) {
+                this.$_api.post(this.stageConfig.api.generateMonitoring, {
+                    ...item,
+                    stage: this.stageConfig.stageNumber,
+                })
+                    .then(() => {
+                        this.$_alert.success(
+                            `Berhasil Generate ke Monitoring ${this.stageConfig.targetMonitoring}!`
+                        )
+                        this.refreshKey += 1
+                    })
+                    .catch((err) => {
+                        this.$_alert.error('Gagal Generate ke Monitoring!')
+                        console.log('gagal generate ke monitoring, error =>', err)
+                        this.refreshKey += 1
+                    })
+            }
+        },
+
+        async onDeletePopulate(item) {
+            const prompt = await this.$_alert.confirm(
+                'Hapus Data Populasi?',
+                'Yakin Menghapus?',
+                'Ya, Hapus!', 'Batal', true
+            )
+
+            if (prompt.isConfirmed) {
+                const payload = { stage: this.stageConfig.stageNumber }
+                this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = (item[k]));
+                this.$_api.post(this.stageConfig.api.delete, payload)
+                    .then(() => {
+                        this.$_alert.success('Berhasil menghapus data populasi!')
+                        this.refreshKey += 1
+                    })
+                    .catch((err) => {
+                        this.$_alert.error('Gagal menghapus data populasi!')
+                        console.log('gagal menghapus data populasi, error =>', err)
+                        this.refreshKey += 1
+                    })
+            }
+        }
+    }
+}
+
+</script>

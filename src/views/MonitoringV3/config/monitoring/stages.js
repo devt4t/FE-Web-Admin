@@ -1,0 +1,131 @@
+export const MONITORING_STAGES_REGISTRY = {
+    2: {
+        label: 'Monitoring 2',
+        stageNumber: 2,
+        key: 'monitoring_no',
+        api: {
+            list: 'monitoring-v3/main/list',
+            detail: 'monitoring-v3/main/detail',
+            verifFC: 'monitoring-v3/main/verification-fc',
+            verifUM: 'monitoring-v3/main/verification-um',
+            unverif: 'monitoring-v3/main/unverification',
+            delete: 'monitoring-v3/main/delete',
+            export: 'monitoring-v3/main/export',
+        },
+        deletePayloadKeys: ['monitoring_no'],
+        features: {
+            hasExportSummary: true,
+            hasGeneratePopulate: true,
+            hasPrintLabel: true,
+        },
+        populate: {
+            targetStage: 3,
+            endpoint: 'monitoring-v3/populate/create',
+        },
+        treeDetailHeaders: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kondisi Sekitar', value: 'tree_condition' },
+            { text: 'Tinggi (cm)', value: 'height' },
+            { text: 'Diameter (cm)', value: 'diameter' },
+            { text: 'Pupuk', value: 'pest' }
+        ],
+    },
+    3: {
+        label: 'Monitoring 3',
+        stageNumber: 3,
+        key: 'monitoring_no',
+        api: {
+            list: 'monitoring-v3/main/list',
+            detail: 'monitoring-v3/main/detail',
+            verifFC: 'monitoring-v3/main/verification-fc',
+            verifUM: 'monitoring-v3/main/verification-um',
+            unverif: 'monitoring-v3/main/unverification',
+            delete: 'monitoring-v3/main/delete',
+            export: 'monitoring-v3/main/export',
+        },
+        deletePayloadKeys: ['monitoring_no'],
+        features: {
+            hasExportSummary: true,
+            hasGeneratePopulate: true,
+            hasPrintLabel: true,
+        },
+        populate: {
+            targetStage: 4,
+            endpoint: 'monitoring-v3/populate/create',
+        },
+        treeDetailHeaders: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kondisi Sekitar', value: 'tree_condition' },
+            { text: 'Tinggi (cm)', value: 'height' },
+            { text: 'Diameter (cm)', value: 'diameter' },
+            { text: 'Pupuk', value: 'pest' }
+        ],
+    },
+    4: {
+        label: 'Monitoring 4',
+        stageNumber: 4,
+        key: 'monitoring_no',
+        api: {
+            list: 'monitoring-v3/main/list',
+            detail: 'monitoring-v3/main/detail',
+            verifFC: 'monitoring-v3/main/verification-fc',
+            verifUM: 'monitoring-v3/main/verification-um',
+            unverif: 'monitoring-v3/main/unverification',
+            delete: 'monitoring-v3/main/delete',
+            export: 'monitoring-v3/main/export',
+        },
+        deletePayloadKeys: ['monitoring_no'],
+        features: {
+            hasExportSummary: true,
+            hasGeneratePopulate: true,
+            hasPrintLabel: true,
+        },
+        populate: {
+            targetStage: 5,
+            endpoint: 'monitoring-v3/populate/create',
+        },
+        treeDetailHeaders: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kondisi Sekitar', value: 'tree_condition' },
+            { text: 'Tinggi (cm)', value: 'height' },
+            { text: 'Diameter (cm)', value: 'diameter' },
+            { text: 'Pupuk', value: 'pest' }
+        ],
+    },
+    5: {
+        label: 'Monitoring 5',
+        stageNumber: 5,
+        key: 'monitoring_no',
+        api: {
+            list: 'monitoring-v3/main/list',
+            detail: 'monitoring-v3/main/detail',
+            verifFC: 'monitoring-v3/main/verification-fc',
+            verifUM: 'monitoring-v3/main/verification-um',
+            unverif: 'monitoring-v3/main/unverification',
+            delete: 'monitoring-v3/main/delete',
+            export: 'monitoring-v3/main/export',
+        },
+        deletePayloadKeys: ['monitoring_no'],
+        features: {
+            hasExportSummary: true,
+            hasGeneratePopulate: false,
+            hasPrintLabel: true,
+        },
+        populate: null,
+        treeDetailHeaders: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kondisi Sekitar', value: 'tree_condition' },
+            { text: 'Tinggi (cm)', value: 'height' },
+            { text: 'Diameter (cm)', value: 'diameter' },
+            { text: 'Pupuk', value: 'pest' }
+        ],
+    },
+}
