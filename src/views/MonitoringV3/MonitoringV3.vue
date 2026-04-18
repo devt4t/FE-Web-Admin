@@ -54,19 +54,26 @@
                 </v-btn>
             </template>
 
-            <!-- EXPORT BUTTONS -->
+            <!-- EXPORT BUTTONS AND PLANTING YEAR -->
             <template v-slot:list-after-filter>
-                <!-- Export Buttons -->
-                <div class="d-flex align-items-center">
-                    <v-btn variant="info" small class="mr-2" @click="exportKey += 1">
-                        <v-icon small>mdi-table-arrow-right</v-icon>
-                        <span>Export Excel</span>
-                    </v-btn>
-                    <v-btn variant="success" small class="mr-2" @click="exportSummaryKey += 1"
-                        v-if="stageConfig.features.hasExportSummary">
-                        <v-icon small>mdi-table-arrow-right</v-icon>
-                        <span>Export Summary Per FF</span>
-                    </v-btn>
+                <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                    <!-- Export Buttons -->
+                    <div class="d-flex align-items-center">
+                        <v-btn variant="info" small class="mr-2" @click="exportKey += 1">
+                            <v-icon small>mdi-table-arrow-right</v-icon>
+                            <span>Export Excel</span>
+                        </v-btn>
+                        <v-btn variant="success" small class="mr-2" @click="exportSummaryKey += 1"
+                            v-if="stageConfig.features.hasExportSummary">
+                            <v-icon small>mdi-table-arrow-right</v-icon>
+                            <span>Export Summary Per FF</span>
+                        </v-btn>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
+                            label="Pilih Tahun Tanam" dense outlined hide-details style="max-width: 200px;"
+                            @change="recalculateStage(programYear)"></v-select>
+                    </div>
                 </div>
             </template>
         </geko-base-crud>
@@ -89,6 +96,7 @@ export default {
             exportKey: 0,
             exportSummaryKey: 0,
             user: {},
+            localPlantingYear: 2025,
         }
     },
 
@@ -119,17 +127,25 @@ export default {
 
     methods: {
         recalculateStage(pYearVal) {
-            const currentYear = new Date().getFullYear();
+            const currentYear = parseInt(this.localPlantingYear);
             const pYear = parseInt(pYearVal);
 
             let step = currentYear - pYear;
-            if (step < 1) step = 1;
-            if (step > 4) step = 4;
+
+            if (step > 4) {
+                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
+                return;
+            }
+            if (step < 1) {
+                this.$_alert.error('Tahun Program tidak valid (melebihi atau sama Tahun Tanam).');
+                return;
+            }
 
             this.activeStage = step + 1;
             this.config = buildMonitoringCrudConfig(this.activeStage);
             this.refreshKey += 1;
         },
+
 
         async onVerifFC(item) {
             const prompt = await this.$_alert.confirm(

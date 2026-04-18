@@ -63,6 +63,11 @@
                     <!-- Form Component (Hidden by default) -->
                     <assignment-form :data="formData" :dataKey="formDataKey" :stage="activePopulateStage"
                         @success="refreshKey += 1" />
+                    <div class="d-flex align-items-center">
+                        <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
+                            label="Pilih Tahun Tanam" dense outlined hide-details style="max-width: 200px;"
+                            @change="recalculateStage(programYear)"></v-select>
+                    </div>
                 </div>
             </template>
         </geko-base-crud>
@@ -86,6 +91,7 @@ export default {
             refreshKey: 1,
             formData: null,
             formDataKey: 0,
+            localPlantingYear: 2025,
         }
     },
 
@@ -111,17 +117,25 @@ export default {
     },
 
     mounted() {
+        this.user = JSON.parse(localStorage.getItem('User'))
         this.recalculateStage(this.programYear);
     },
 
     methods: {
         recalculateStage(pYearVal) {
-            const currentYear = new Date().getFullYear();
+            const currentYear = parseInt(this.localPlantingYear);
             const pYear = parseInt(pYearVal);
 
             let step = currentYear - pYear;
-            if (step < 1) step = 1;
-            if (step > 4) step = 4;
+
+            if (step > 4) {
+                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
+                return;
+            }
+            if (step < 1) {
+                this.$_alert.error('Tahun Program tidak valid (melebihi atau sama Tahun Tanam).');
+                return;
+            }
 
             this.activePopulateStage = `${step}-to-${step + 1}`;
             this.config = buildPopulateCrudConfig(this.activePopulateStage);
