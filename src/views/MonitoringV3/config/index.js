@@ -1,5 +1,6 @@
 // config/index.js
 import { buildCrudConfig } from '../utils/config-builder'
+import { buildCrudConfigFCFF } from '../utils/config-builder-fc-ff'
 
 // Populate imports
 import { POPULATE_STAGE_REGISTRY } from './populate/stages'
@@ -21,6 +22,16 @@ export function buildPopulateCrudConfig(stageKey) {
 export function buildMonitoringCrudConfig(stageNumber) {
     const stageConfig = MONITORING_STAGES_REGISTRY[stageNumber]
     return buildCrudConfig(MONITORING_BASE_FIELDS, MONITORING_EXTRA_FIELDS, stageNumber, stageConfig)
+}
+
+// Helper untuk FC monitoring
+export function buildFCMonitoringConfig(baseFields) {
+    return buildCrudConfigFCFF(baseFields, 'fc')
+}
+
+// Helper untuk FF monitoring
+export function buildFFMonitoringConfig(baseFields) {
+    return buildCrudConfigFCFF(baseFields, 'ff')
 }
 
 // Re-export registries

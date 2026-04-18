@@ -612,6 +612,26 @@ const menu = [
     icon: 'mdi-clipboard-check-multiple',
     items: [
       {
+        title: "FC Monitoring V3",
+        to: '/monitoring-v3/rm',
+        component: 'MonitoringV3/FCMonitoringV3',
+        name: 'crud-monitoring-v3-rm',
+        permission: 'Monitoring',
+        icon: 'maginfy-expand',
+        type: ['non-carbon'],
+        // roles: ['42'],
+      },
+      {
+        title: "FF Monitoring V3",
+        to: '/monitoring-v3/fc',
+        component: 'MonitoringV3/FFMonitoringV3',
+        name: 'crud-monitoring-v3-fc',
+        permission: 'Monitoring',
+        icon: 'maginfy-expand',
+        type: ['non-carbon'],
+        // roles: ['42']
+      },
+      {
         title: "Monitoring Populate v3",
         to: '/monitoring-v3/populate',
         component: 'MonitoringV3/PopulateV3',

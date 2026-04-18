@@ -209,7 +209,7 @@
       :index="$store.state.lightbox.index" @hide="() => {
         $store.state.lightbox.show = false;
       }
-        "></vue-easy-lightbox>
+      "></vue-easy-lightbox>
   </v-app>
 </template>
 
@@ -437,7 +437,25 @@ export default {
                   _component.default.data().config.permission.read
                 )
               ) {
-                if (!submenu.hide) {
+                // if (!submenu.hide) {
+                //   _listMenuItem.items.push({
+                //     title: submenu.title,
+                //     to: submenu.to,
+                //     icon: submenu.icon,
+                //     update: submenu.update,
+                //     new: submenu.new,
+                //     third: submenu.third,
+                //     type: Array.isArray(submenu.type) ? submenu.type : [],
+                //   });
+                // }
+                // todo: editanku 
+                // === start ===
+                // Validasi Role dari menu.js
+                let isRoleAllowed = true;
+                if (submenu.roles && Array.isArray(submenu.roles)) {
+                  isRoleAllowed = submenu.roles.includes(String(this.$store.state.User.role));
+                }
+                if (!submenu.hide && isRoleAllowed) {
                   _listMenuItem.items.push({
                     title: submenu.title,
                     to: submenu.to,
@@ -448,6 +466,7 @@ export default {
                     type: Array.isArray(submenu.type) ? submenu.type : [],
                   });
                 }
+                // === end ===
 
                 if (
                   this.$router
