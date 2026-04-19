@@ -1,5 +1,6 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="false">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="false"
+        :hideCreate="false">
         <template v-slot:create-city="{ formData, setFormData, item }">
             <v-col lg="6">
                 <geko-input v-model="formData.city" :item="{
@@ -159,7 +160,7 @@
                             label: 'Pilih Karyawan',
                             api: 'GetFFAllWeb_new',
                             param: {
-                                is_monitoring: 1
+                                is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
                             },
                             option: {
                                 getterKey: 'data',

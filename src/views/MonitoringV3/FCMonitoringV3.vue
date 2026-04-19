@@ -1,5 +1,6 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="false">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="false"
+        :hideCreate="false">
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-between">
                 <!-- SWITCH DATA SOURCE -->
@@ -27,7 +28,7 @@
                             label: 'Pilih Karyawan',
                             api: 'getEmployeeList_new',
                             param: {
-                                is_monitoring: 1
+                                is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
                             },
                             option: {
                                 list_pointer: { label: 'name', code: 'nik', display: ['name', 'nik'] }

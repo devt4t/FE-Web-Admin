@@ -1,4 +1,5 @@
 import { reactive } from "vue"
+import store from "@/store"
 
 export function buildCrudConfigFCFF(baseFields, moduleType) {
     const isFC = moduleType === 'fc';
@@ -22,17 +23,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType) {
         get getterDataKey() {
             return 'data'
         },
-
-        // Delete Dinamis
-        get delete() {
-            let flag = this.dataSource === 'external' ? 'true' : 'false'
-            return `monitoring-officer-v3/${moduleType}/delete?is_external=${flag}`
-        },
-
-        get deleteKey() {
-            return isFC ? 'nik' : 'ff_no'
-        },
-
 
         // setter Dinamis
         get setter() {
@@ -65,17 +55,33 @@ export function buildCrudConfigFCFF(baseFields, moduleType) {
 
             return clonedFields.map(f => {
                 if (this.dataSource === 'external') {
-                    if (f.id === 'nik') setSafe(f.methods, 'list', isFC ? 'employee_nik' : 'ff_no');
-                    if (f.id === 'name') setSafe(f.methods, 'list', isFC ? 'employees_name' : 'field_facilitators_name');
-                    if (f.id === 'email') setSafe(f.methods, 'list', 'users_email');
-                } else {
-                    if (f.id === 'email' && !isFC) setSafe(f.methods, 'list', 'ff_users_data.email');
+                    if (f.id === 'nik') setSafe(f.methods, 'list', isFC ? 'nik' : 'ff_no');
+                    if (f.id === 'name') setSafe(f.methods, 'list', isFC ? 'name' : 'users_name');
+                    if (f.id === 'email') setSafe(f.methods, 'list', isFC ? 'email' : 'users_email');
                 }
                 return f;
             });
         },
 
-        detailIdKey: isFC ? 'id' : 'ff_no',
+        // Delete Dinamis
+        get delete() {
+            let flag = this.dataSource === 'external' ? 'true' : 'false'
+            let py = store.state.tmpProgramYear
+            return `monitoring-officer-v3/${moduleType}/delete?is_external=${flag}&program_year=${py}`
+        },
+
+        get deleteKey() {
+            if (isFC) {
+                return this.dataSource === 'external' ? 'nik' : 'employee_nik';
+            }
+            return 'ff_no';
+        },
+
+        get deleteLabel() {
+            return isFC ? 'employee_no' : 'ff_no';
+        },
+
+        detailIdKey: isFC ? 'employee_no' : 'ff_no',
         globalFilter: {
             program_year: { setter: 'program_year' },
         },
