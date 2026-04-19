@@ -144,7 +144,7 @@
                     <!-- Tombol Assign Existing -->
                     <v-btn color="success" class="mr-2" @click="isAssignModalOpen = true">
                         <v-icon small>mdi-account-arrow-right</v-icon>
-                        <span class="ms-2">Assign Karyawan Lama</span>
+                        <span class="ms-2">Assign Karyawan</span>
                     </v-btn>
                 </div>
             </div>
@@ -152,15 +152,19 @@
             <!-- TINY MODAL FOR ASSIGN EXISTING -->
             <v-dialog v-model="isAssignModalOpen" max-width="500">
                 <v-card>
-                    <v-card-title>Assign Karyawan Lama</v-card-title>
+                    <v-card-title>Assign Karyawan FF</v-card-title>
                     <v-card-text class="pt-4">
                         <geko-input v-model="assignPayload.ff_no" :item="{
                             type: 'select',
                             label: 'Pilih Karyawan',
                             api: 'GetFFAllWeb_new',
+                            param: {
+                                is_monitoring: 1
+                            },
                             option: {
+                                getterKey: 'data',
                                 list_pointer: { label: 'name', code: 'ff_no', display: ['name', 'ff_no'] }
-                            }
+                            },
                         }" />
                     </v-card-text>
                     <v-card-actions>
@@ -187,33 +191,37 @@ export default {
             detailDataKey: 0,
             isAssignModalOpen: false,
             isAssignLoading: false,
-            assignPayload: { ff_no: null, user_id: null }
+            assignPayload: { ff_no: null, user_id: null },
         }
     },
     methods: {
         async submitAssignExisting() {
+
             if (!this.assignPayload.ff_no) {
-                return this.$_alert.error(null, "Harap pilih Karyawan terlebih dahulu.");
+                return this.$_alert.error(null, "Harap pilih FF terlebih dahulu.");
             }
 
             this.isAssignLoading = true;
+
             try {
                 const payload = {
                     ff_no: this.assignPayload.ff_no,
                     user_id: this.user.id,
-                    program_year: this.config.globalFilter.program_year.value
-                }
-                await this.$axios.post('monitoring-officer-v3/ff/assign', payload);
+                    program_year: this.$store.state.tmpProgramYear,
+                };
 
-                this.$_alert.success(null, "Berhasil assign karyawan lama.");
+                console.log('[DEBUG] assign payload', payload);
+
+                await this.$_api.post('monitoring-officer-v3/ff/assign', payload);
+
+                this.$_alert.success(null, "Berhasil assign FF.");
                 this.isAssignModalOpen = false;
                 this.assignPayload.ff_no = null;
                 this.assignPayload.user_id = null;
-
                 this.refreshKey += 1;
             } catch (e) {
-                console.error(e);
-                this.$_alert.error(null, "Gagal melakukan assign");
+                console.error('[DEBUG] assign error', e);
+                this.$_alert.error(null, 'Gagal melakukan assign data FF,')
             } finally {
                 this.isAssignLoading = false;
             }

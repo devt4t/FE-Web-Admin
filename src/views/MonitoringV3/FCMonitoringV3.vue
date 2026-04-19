@@ -26,6 +26,9 @@
                             type: 'select',
                             label: 'Pilih Karyawan',
                             api: 'getEmployeeList_new',
+                            param: {
+                                is_monitoring: 1
+                            },
                             option: {
                                 list_pointer: { label: 'name', code: 'nik', display: ['name', 'nik'] }
                             }
