@@ -36,7 +36,7 @@ export function buildCrudConfigFCFF(baseFields, moduleType) {
 
         // setter Dinamis
         get setter() {
-            return `AddEmployee`
+            return isFC ? 'AddEmployee' : 'AddFieldFacilitator'
         },
 
         // Filter API

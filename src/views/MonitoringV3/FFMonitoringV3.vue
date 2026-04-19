@@ -120,6 +120,17 @@
             </v-col>
         </template>
 
+        <!-- list -->
+        <template v-slot:list-indicator="{ item }">
+            <div class="indicator-wrapper pt-1">
+                <div class="indicator" :class="{
+                    danger: item.active == 0,
+                    success: item.active == 1,
+                }"></div>
+            </div>
+        </template>
+
+        <!-- button or filter -->
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-between">
                 <!-- SWITCH DATA SOURCE -->
@@ -209,16 +220,29 @@ export default {
         }
     },
     mounted() {
+        const userStore = this.$store.state.User
+
+        console.log("[DEBUG] Is Role an Array?", Array.isArray(userStore.role));
+        console.log("[DEBUG] What is the Role value?", userStore.role);
+
         // Base payload
         const payload = {
             user_id: this.$store.state.User.employee_no,
             position_no: '43',
-            is_monitoring: true,
+            is_monitoring: 1,
+            fc_no: this.$store.state.User.employee_no,
+            active: '1'
         };
 
-        const userRole = String(this.$store.state.User.role);
-        if (['19', '42'].includes(userRole)) {
-            payload.fc_no = this.$store.state.User.employee_no;
+        const userRoles = Array.isArray(userStore.role)
+            ? userStore.role.map(String)
+            : [String(userStore.role)];
+
+        const allowedRoles = ['19', '42'];
+        const hasAccessAsFC = userRoles.some(role => allowedRoles.includes(role));
+
+        if (hasAccessAsFC) {
+            payload.fc_no = userStore.employee_no;
         }
 
         this.$set(this.config, "setter_ext_payload", payload);
