@@ -1,5 +1,6 @@
 import { reactive } from "vue"
 export default reactive({
+  localPlantingYear: 2025,
   exportIds: [],
   refreshKey: 1,
   farmerEditKey: 1,
@@ -12,6 +13,8 @@ export default reactive({
   // searchColumn: 'mu',
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
+  targetMonitoringStage: 0,
+  isV3Mode: false,
   config: {
     title: "Realisasi Tanam",
     globalFilter: {
@@ -57,6 +60,7 @@ export default reactive({
     pk_field: null,
     filter_api: {
       typegetdata: "all",
+      is_populated_v3: 0,
     },
     permission: {
       create: "sosialisasi-tanam-create",

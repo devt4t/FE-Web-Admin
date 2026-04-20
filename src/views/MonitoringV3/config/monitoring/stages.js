@@ -20,7 +20,7 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         populate: {
             targetStage: 3,
-            endpoint: 'monitorings-v3/populate/create',
+            endpoint: 'populate-monitorings-v3/create',
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
@@ -53,7 +53,7 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         populate: {
             targetStage: 4,
-            endpoint: 'monitorings-v3/populate/create',
+            endpoint: 'populate-monitorings-v3/create',
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
@@ -86,7 +86,7 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         populate: {
             targetStage: 5,
-            endpoint: 'monitorings-v3/populate/create',
+            endpoint: 'populate-monitorings-v3/create',
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },

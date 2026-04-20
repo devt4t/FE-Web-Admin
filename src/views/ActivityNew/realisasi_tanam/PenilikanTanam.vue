@@ -4,8 +4,10 @@
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
-            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" @update:dataKey="exportLahanKey = $event" :program_year="$store.state.tmpProgramYear"/>
-            <populate-modal :dataKey="populateKey" />
+            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" @update:dataKey="exportLahanKey = $event"
+                :program_year="$store.state.tmpProgramYear" />
+            <populate-modal :dataKey="populateKey" :is-v3="isV3Mode" :target-stage="targetMonitoringStage"
+                :current-year="localPlantingYear" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
@@ -29,16 +31,55 @@
         </template>
 
         <template v-slot:list-after-filter>
-            <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="info" class="mr-2" @click="exportLahanKey = Date.now()">
-                    <v-icon>mdi-table-arrow-right</v-icon>
-                    <span>Export Excel </span>
-                </v-btn>
+            <div class="d-flex flex-column pb-2 pt-2 border-bottom mb-3">
+                <div class="d-flex flex-row justify-content-between align-items-center mb-2">
+                    <div class="d-flex flex-row justify-content-start">
+                        <v-btn variant="info" class="mr-2" @click="exportLahanKey = Date.now()">
+                            <v-icon>mdi-table-arrow-right</v-icon>
+                            <span>Export Excel </span>
+                        </v-btn>
 
-                <v-btn variant="success" class="mr-2" @click="populateKey += 1">
-                    <v-icon>mdi-file-tree</v-icon>
-                    <span>Populate Data </span>
-                </v-btn>
+                        <v-btn variant="success" class="mr-2" @click="populateKey += 1">
+                            <v-icon>mdi-file-tree</v-icon>
+                            <span>Populate Data </span>
+                        </v-btn>
+                    </div>
+                    <!-- MODE SWITCHER -->
+                    <div class="d-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm">
+                        <span class="mr-2 font-weight-bold"
+                            :class="isV3Mode ? 'text-muted' : 'text-success'">Legacy</span>
+                        <v-switch v-model="isV3Mode" hide-details class="mt-0 pt-0" color="success"
+                            @change="toggleV3Mode"></v-switch>
+                        <span class="ml-2 font-weight-bold" :class="isV3Mode ? 'text-success' : 'text-muted'">Monitoring
+                            V3</span>
+                    </div>
+                </div>
+
+                <!-- CONTEXT MONITORING V3 -->
+                <v-expand-transition>
+                    <div v-if="isV3Mode" class="d-flex flex-row align-items-center bg-success-lighten-5 p-3 rounded">
+                        <div class="mr-4">
+                            <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
+                                label="Tahun Tanam (Current Year)" dense outlined hide-details
+                                style="max-width: 150px; background: white;" @change="recalculateStage"></v-select>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="text-caption text-uppercase font-weight-black text-success">Target
+                                Populate</span>
+                            <div class="d-flex align-items-center">
+                                <v-chip color="success" label x-large class="mr-2 px-4 shadow-sm">
+                                    <v-icon left>mdi-chevron-double-right</v-icon>
+                                    MONITORING {{ targetMonitoringStage }}
+                                </v-chip>
+                                <span class="text-muted italic small">
+                                    (Dihitung dari Program: {{ $store.state.tmpProgramYear }} ke Tanam: {{
+                                        localPlantingYear
+                                    }})
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </v-expand-transition>
             </div>
         </template>
 
@@ -377,7 +418,21 @@ export default {
         PlantingSocDistributionDateUpdate,
         PopulateModal
     },
-    watch: {},
+    watch: {
+        localPlantingYear() {
+            if (this.isV3Mode) {
+                this.recalculateStage();
+            }
+        },
+        '$store.state.tmpProgramYear'() {
+            if (this.isV3Mode) {
+                this.recalculateStage();
+            }
+        },
+        isV3Mode(val) {
+            if (val) this.recalculateStage()
+        },
+    },
     methods: {
         onEditFarmer(item) {
             this.farmerEditKey += 1
@@ -538,9 +593,38 @@ export default {
                 this.$router.go(-1);
             }
         },
+        // for populate v3
+        toggleV3Mode(val) {
+            if (val) {
+                // this.config.filter_api.is_populated_v3 = 0;
+                this.recalculateStage();
+            }
+            this.refreshKey += 1;
+        },
+        recalculateStage() {
+            const currentYear = parseInt(this.localPlantingYear);
+            const pYear = parseInt(this.$store.state.tmpProgramYear);
+
+            let step = (currentYear - pYear) + 1;
+
+            if (step > 5) {
+                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
+                this.targetMonitoringStage = 5;
+            } else if (step < 1) {
+                this.$_alert.error('Tahun Program tidak valid (melebihi Tahun Tanam).');
+                this.targetMonitoringStage = 1;
+            } else {
+                this.targetMonitoringStage = step;
+            }
+
+            this.refreshKey += 1;
+        },
     },
     data() {
         return config
+    },
+    mounted() {
+        if (this.isV3Mode) this.recalculateStage();
     },
 
 };

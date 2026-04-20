@@ -1,7 +1,7 @@
 import { reactive } from "vue"
 import store from "@/store"
 
-export function buildCrudConfigFCFF(baseFields, moduleType) {
+export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
     const isFC = moduleType === 'fc';
     const label = isFC ? 'Field Coordinator' : 'Field Facilitator'
 
@@ -85,13 +85,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType) {
         globalFilter: {
             program_year: { setter: 'program_year' },
         },
-        permission: {
-            create: 'monitoring-create',
-            read: 'monitoring-list',
-            update: 'monitoring-update',
-            detail: 'monitoring-detail',
-            lookup: 'monitoring-lookup',
-            delete: 'monitoring-delete',
-        },
+        permission: permissions,
     })
 }

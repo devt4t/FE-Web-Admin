@@ -7,9 +7,21 @@
                 </v-card-title>
 
                 <v-card-text class="farmer-assign-wrapper mt-3">
-
                     <v-col lg="12">
-                        <geko-input v-model="populateModalSwitch" :item="{
+                        <div v-if="isV3" class="mb-4">
+                            <v-alert colored-border border="left" color="success" class="bg-success-lighten-5">
+                                <div class="d-flex align-items-center">
+                                    <!-- <v-icon color="success" class="mr-3" large>mdi-auto-fix</v-icon> -->
+                                    <div>
+                                        <div class="text-h6 font-weight-bold text-success mb-0">Mode Monitoring V3 Aktif
+                                        </div>
+                                        <div class="text-caption">Data akan dipopulasi otomatis ke <strong>Monitoring
+                                                {{ targetStage }}</strong></div>
+                                    </div>
+                                </div>
+                            </v-alert>
+                        </div>
+                        <geko-input v-if="!isV3" v-model="populateModalSwitch" :item="{
                             type: 'select',
                             label: 'Modul Populate Monitoring',
                             option: {
@@ -674,6 +686,18 @@ export default {
             required: false,
             default: false,
         },
+        isV3: {
+            type: Boolean,
+            default: false
+        },
+        targetStage: {
+            type: [Number, String],
+            default: 0
+        },
+        currentYear: {
+            type: [Number, String],
+            default: 2025
+        }
     },
 
     watch: {
@@ -742,9 +766,11 @@ export default {
         async getData() {
             let payload = {
                 program_year: this.$store.state.tmpProgramYear,
+                // current_year: this.currentYear,
                 limit: 10,
                 offset: 0,
-                typegetdata: 'all'
+                typegetdata: 'all',
+                is_populated_v3: 0
             }
             if (this.$store.state.tmpProgramYear == '2022' && this.exportBy == 'multiple_lahans') {
                 payload = {
@@ -753,7 +779,8 @@ export default {
                     'multiple_lahans': 1,
                     'limit': this.config_multiple_lahans.perPage,
                     'offset': this.config_multiple_lahans.perPage * (this.config_multiple_lahans.page - 1),
-                    'search_value': this.config_multiple_lahans.search
+                    'search_value': this.config_multiple_lahans.search,
+                    'is_populated_v3': this.isV3 ? 0 : null
                 }
             } else if (this.exportBy == 'ta') {
                 payload = {
@@ -761,7 +788,8 @@ export default {
                     'target_area': this.target_area,
                     'limit': this.configTA.perPage,
                     'offset': this.configTA.perPage * (this.configTA.page - 1),
-                    'search_value': this.configTA.search
+                    'search_value': this.configTA.search,
+                    'is_populated_v3': this.isV3 ? 0 : null
                 };
             } else if (this.exportBy == 'mu') {
                 payload = {
@@ -769,14 +797,16 @@ export default {
                     'mu_no': this.mu_no,
                     'limit': this.configMU.perPage,
                     'offset': this.configMU.perPage * (this.configMU.page - 1),
-                    'search_value': this.configMU.search
+                    'search_value': this.configMU.search,
+                    'is_populated_v3': this.isV3 ? 0 : null
                 };
             } else if (this.exportBy == 'ff') {
                 payload = {
                     ...payload,
                     'ff_no': this.ff_no,
                     'limit': this.configFF.perPage,
-                    'offset': this.configFF.perPage * (this.configFF.page - 1)
+                    'offset': this.configFF.perPage * (this.configFF.page - 1),
+                    'is_populated_v3': this.isV3 ? 0 : null
                 };
             } else {
                 return;
@@ -822,7 +852,7 @@ export default {
             } else if (this.exportBy == 'ff') {
                 this.loadingExportByFF = false;
                 this.configFF.allPopulateData = result.result ?? [];
-                this.configff.totalTrees = result.total_life_trees ?? 0;
+                this.configFF.totalTrees = result.total_life_trees ?? 0;
                 this.configFF.totalRecord = result.total ?? 0;
             } else {
                 return;
@@ -937,7 +967,10 @@ export default {
                 // editanku
                 let url = ''
                 let alertText = ''
-                if (this.populateModalSwitch == 0) {
+                if (this.isV3) {
+                    url = `populate-monitorings-v3/create?current_year=${this.currentYear}&program_year=${this.$store.state.tmpProgramYear}`
+                    alertText = `Untuk Monitoring V3 (Target Stage: ${this.targetStage})`
+                } else if (this.populateModalSwitch == 0) {
                     url = 'AddMonitoring1Populate'
                     alertText = 'Untuk Monitoring 2'
                 } else if (this.populateModalSwitch == 1) {

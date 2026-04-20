@@ -26,12 +26,28 @@ export function buildMonitoringCrudConfig(stageNumber) {
 
 // Helper untuk FC monitoring
 export function buildFCMonitoringConfig(baseFields) {
-    return buildCrudConfigFCFF(baseFields, 'fc')
+    const permissionFC = {
+        create: 'fc-monitoring-v3-create',
+        read: 'fc-monitoring-v3-list',
+        update: 'fc-monitoring-v3-update',
+        detail: 'fc-monitoring-v3-detail',
+        lookup: 'fc-monitoring-v3-lookup',
+        delete: 'fc-monitoring-v3-delete',
+    }
+    return buildCrudConfigFCFF(baseFields, 'fc', permissionFC)
 }
 
 // Helper untuk FF monitoring
 export function buildFFMonitoringConfig(baseFields) {
-    return buildCrudConfigFCFF(baseFields, 'ff')
+    const permissionFF = {
+        create: 'ff-monitoring-v3-create',
+        read: 'ff-monitoring-v3-list',
+        update: 'ff-monitoring-v3-update',
+        detail: 'ff-monitoring-v3-detail',
+        lookup: 'ff-monitoring-v3-lookup',
+        delete: 'ff-monitoring-v3-delete',
+    }
+    return buildCrudConfigFCFF(baseFields, 'ff', permissionFF)
 }
 
 // Re-export registries
