@@ -613,9 +613,9 @@ const menu = [
     items: [
       {
         title: "FC Monitoring V3",
-        to: '/monitoring-v3/rm',
+        to: '/monitoring-v3/fc',
         component: 'MonitoringV3/FCMonitoringV3',
-        name: 'crud-monitoring-v3-rm',
+        name: 'crud-monitoring-v3-fc',
         permission: 'Monitoring',
         icon: 'maginfy-expand',
         type: ['non-carbon'],
@@ -623,9 +623,9 @@ const menu = [
       },
       {
         title: "FF Monitoring V3",
-        to: '/monitoring-v3/fc',
+        to: '/monitoring-v3/ff',
         component: 'MonitoringV3/FFMonitoringV3',
-        name: 'crud-monitoring-v3-fc',
+        name: 'crud-monitoring-v3-ff',
         permission: 'Monitoring',
         icon: 'maginfy-expand',
         type: ['non-carbon'],
