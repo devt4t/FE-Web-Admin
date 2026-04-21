@@ -66,20 +66,22 @@ export default {
             },
             assignedToField: {
                 id: 'assigned_to',
-                label: 'Petugas FF Monitoring',
                 type: 'select',
-                validation: ['required'],
-                getter: 'new-utilities/field-facilitators',
-                setter: 'ff_no',
-                form_param: {
-                    // kaitkan ke MU dari data yg dipilih agar list FF terfilter
-                    mu_no: 'mu_no'
+                label: 'Petugas FF Monitoring',
+                api: 'GetFFAllWeb_new',
+                param: {
+                    is_monitoring: 0,
+                    active: 1,
+                    program_year: this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear')
                 },
-                param: { page: 1, per_page: 100 },
                 option: {
                     getterKey: 'data',
-                    list_pointer: { code: 'ff_no', label: 'name', display: ['name', 'ff_no'] }
-                }
+                    list_pointer: {
+                        label: 'name',
+                        code: 'ff_no',
+                        display: ['name', 'ff_no']
+                    }
+                },
             }
         }
     },
@@ -97,13 +99,11 @@ export default {
     },
     watch: {
         dataKey() {
-            // Ketika tombol Assign diklik di list, data + dataKey berubah, trigger modal open
             if (this.data) {
-                // clone initial value if edit mode
                 this.formValue = {
                     sampling: this.data.sampling !== '-' ? this.data.sampling : null,
                     assigned_to: this.data.assigned_to !== '-' ? this.data.assigned_to : null,
-                    mu_no: this.data.mu_no // Inject mu_no ke value untuk form_param getter FF
+                    mu_no: this.data.mu_no
                 };
 
                 this.isOpen = true;
