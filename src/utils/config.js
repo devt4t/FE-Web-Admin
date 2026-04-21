@@ -11,7 +11,7 @@ export default {
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",
   mapBoxStyleLight: "mapbox://styles/mapbox/light-v11",
   programYear: {
-    model: "2025",
-    options: ["2020", "2021", "2022", "2023", "2024", "2025"],
+    model: "2026",
+    options: ["2020", "2021", "2022", "2023", "2024", "2025", "2026"],
   },
 };

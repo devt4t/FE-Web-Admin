@@ -93,6 +93,10 @@
               label: '2025',
               code: '2025',
             },
+            {
+              label: '2026',
+              code: '2026',
+            },
           ]" @option:selected="
             setGlobalFilter('program_year', $event.code, 'tmpProgramYear')
             " />
