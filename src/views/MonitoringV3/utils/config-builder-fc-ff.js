@@ -72,7 +72,7 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
 
         get deleteKey() {
             if (isFC) {
-                return this.dataSource === 'external' ? 'nik' : 'employee_nik';
+                return this.dataSource === 'external' ? 'nik' : 'employee_no';
             }
             return 'ff_no';
         },
@@ -81,7 +81,29 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
             return isFC ? 'employee_no' : 'ff_no';
         },
 
-        detailIdKey: isFC ? 'employee_no' : 'ff_no',
+        // detailIdKey: isFC ? 'employee_no' : 'ff_no',
+        // detail dinamis
+        get detail() {
+            let flag = this.dataSource === 'external' ? 'true' : 'false'
+            let py = store.state.tmpProgramYear
+            return `monitoring-officer-v3/${moduleType}/detail?is_external=${flag}&program_year=${py}`
+        },
+        // Key untuk BACA value dari list item (nik ada di response list external)
+        get detailIdKey() {
+            if (isFC) return this.dataSource === 'external' ? 'nik' : 'employee_nik';
+            return 'ff_no';
+        },
+
+        // Key untuk NAMA PARAMETER yang dikirim ke API detail (backend expects employee_no / ff_no)
+        get detailApiIdKey() {
+            return isFC ? 'employee_no' : 'ff_no';
+        },
+
+        // Key untuk EXTRACT data dari response detail (response.data)
+        get detailKey() {
+            return 'data';
+        },
+
         globalFilter: {
             program_year: { setter: 'program_year' },
         },

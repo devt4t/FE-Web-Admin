@@ -3,11 +3,15 @@
         <v-divider class="my-5"></v-divider>
         <!-- DETAIL POHON -->
         <div v-if="treeDetailHeaders && treeDetailHeaders.length" class="mb-5">
-            <h5 class="mb-4 text-success">
-                <v-icon left color="success">mdi-tree-outline</v-icon> Detail Per Pohon
-            </h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="text-success mb-0">
+                    <v-icon left color="success">mdi-tree-outline</v-icon> Detail Per Pohon
+                </h5>
+                <v-text-field v-model="searchTreeDetail" append-icon="mdi-magnify" label="Cari Kode Pohon..."
+                    single-line hide-details dense outlined style="max-width: 300px;"></v-text-field>
+            </div>
             <v-data-table :headers="treeDetailHeaders" :items="data.monitoring_detail || []" :items-per-page="10"
-                class="elevation-1 border">
+                :search="searchTreeDetail" class="elevation-1 border">
                 <template v-slot:item.index="{ index }">
                     <span class="font-weight-bold">{{ index + 1 }}</span>
                 </template>
@@ -17,11 +21,15 @@
 
         <!-- AKUMULASI POHON -->
         <div v-if="monitoringTreeDetailHeaders && monitoringTreeDetailHeaders.length" class="mb-5">
-            <h5 class="mb-4 text-info">
-                <v-icon left color="info">mdi-format-list-bulleted-type</v-icon> Akumulasi Per Jenis Pohon
-            </h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="text-info mb-0">
+                    <v-icon left color="info">mdi-format-list-bulleted-type</v-icon> Akumulasi Per Jenis Pohon
+                </h5>
+                <v-text-field v-model="searchTreeAcumulation" append-icon="mdi-magnify" label="Cari Jenis Pohon..."
+                    single-line hide-details dense outlined style="max-width: 300px;"></v-text-field>
+            </div>
             <v-data-table :headers="monitoringTreeDetailHeaders" :items="data.monitoring_tree_detail || []"
-                :items-per-page="10" class="elevation-1 border">
+                :search="searchTreeAcumulation" :items-per-page="10" class="elevation-1 border">
                 <template v-slot:item.index="{ index }">
                     <span class="font-weight-bold">{{ index + 1 }}</span>
                 </template>
@@ -109,6 +117,12 @@ export default {
         data: { type: Object, required: true },
         treeDetailHeaders: { type: Array, default: () => [] },
         monitoringTreeDetailHeaders: { type: Array, default: () => [] }
+    },
+    data() {
+        return {
+            searchTreeDetail: '',
+            searchTreeAcumulation: ''
+        }
     },
     methods: {
         showLightbox(imgs) {

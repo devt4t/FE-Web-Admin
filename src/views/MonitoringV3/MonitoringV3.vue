@@ -101,7 +101,7 @@ export default {
             exportKey: 0,
             exportSummaryKey: 0,
             user: {},
-            localPlantingYear: 2025,
+            localPlantingYear: '2025',
         }
     },
 

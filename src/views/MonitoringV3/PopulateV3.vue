@@ -14,7 +14,7 @@
             <template v-slot:list-bottom-action="{ item }">
                 <!-- assign/edit data populasi -->
                 <v-btn class="d-flex flex-row align-items-center mt-2" variant="primary" small
-                    @click="assignDataPopulate(item)">
+                    @click="assignDataPopulate(item)" v-if="item.is_monitoring == 0">
                     <v-icon small>mdi-pencil-plus</v-icon>
                     <span v-if="isNotAssigned(item)">Lengkapi Data Populasi</span>
                     <span v-else>Edit Data Populasi</span>
@@ -94,7 +94,7 @@ export default {
             refreshKey: 1,
             formData: null,
             formDataKey: 0,
-            localPlantingYear: 2025,
+            localPlantingYear: '2025',
         }
     },
 
