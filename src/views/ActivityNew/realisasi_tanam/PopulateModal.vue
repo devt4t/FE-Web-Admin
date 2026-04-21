@@ -15,7 +15,8 @@
                                     <div>
                                         <div class="text-h6 font-weight-bold text-success mb-0">Mode Monitoring V3 Aktif
                                         </div>
-                                        <div class="text-caption">Data akan dipopulasi otomatis ke <strong>Monitoring
+                                        <div class="text-caption">Data akan dipopulasi otomatis ke <strong>Populate
+                                                {{ targetPopulate }} To Monitoring
                                                 {{ targetStage }}</strong></div>
                                     </div>
                                 </div>
@@ -690,6 +691,10 @@ export default {
             type: Boolean,
             default: false
         },
+        targetPopulate: {
+            type: [Number, String],
+            default: 0
+        },
         targetStage: {
             type: [Number, String],
             default: 0
@@ -969,7 +974,7 @@ export default {
                 let alertText = ''
                 if (this.isV3) {
                     url = `populate-monitorings-v3/create?current_year=${this.currentYear}&program_year=${this.$store.state.tmpProgramYear}`
-                    alertText = `Untuk Monitoring V3 (Target Stage: ${this.targetStage})`
+                    alertText = `Untuk Monitoring V3 (Target Populate:${this.targetPopulate}  to Monitoring: ${this.targetStage})`
                 } else if (this.populateModalSwitch == 0) {
                     url = 'AddMonitoring1Populate'
                     alertText = 'Untuk Monitoring 2'

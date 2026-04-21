@@ -1,6 +1,6 @@
 import { reactive } from "vue"
 export default reactive({
-  localPlantingYear: 2025,
+  localPlantingYear: '2025',
   exportIds: [],
   refreshKey: 1,
   farmerEditKey: 1,
@@ -13,6 +13,7 @@ export default reactive({
   // searchColumn: 'mu',
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
+  targetPopulateStage: 0,
   targetMonitoringStage: 0,
   isV3Mode: false,
   config: {

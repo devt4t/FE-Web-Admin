@@ -7,7 +7,7 @@
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" @update:dataKey="exportLahanKey = $event"
                 :program_year="$store.state.tmpProgramYear" />
             <populate-modal :dataKey="populateKey" :is-v3="isV3Mode" :target-stage="targetMonitoringStage"
-                :current-year="localPlantingYear" />
+                :target-populate="targetPopulateStage" :current-year="localPlantingYear" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
@@ -65,7 +65,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <span class="text-caption text-uppercase font-weight-black text-success">Target
-                                Populate</span>
+                                Populate {{ targetPopulateStage }}</span>
                             <div class="d-flex align-items-center">
                                 <v-chip color="success" label x-large class="mr-2 px-4 shadow-sm">
                                     <v-icon left>mdi-chevron-double-right</v-icon>
@@ -610,12 +610,13 @@ export default {
             if (step > 5) {
                 this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
                 this.targetMonitoringStage = 5;
-            } else if (step < 1) {
-                this.$_alert.error('Tahun Program tidak valid (melebihi Tahun Tanam).');
-                this.targetMonitoringStage = 1;
+            } else if (step <= 1) {
+                this.$_alert.error('Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).');
+                this.targetMonitoringStage = 2; // Default limit fallback is 2
             } else {
                 this.targetMonitoringStage = step;
             }
+            this.targetPopulateStage = this.targetMonitoringStage - 1;
 
             this.refreshKey += 1;
         },
