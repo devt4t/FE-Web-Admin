@@ -547,7 +547,7 @@ export const FC_BASE_FIELDS = [
     },
 
     {
-        id: "village",
+        id: "kelurahan",
         label: "Desa",
         methods: {
             list: false,
@@ -563,7 +563,7 @@ export const FC_BASE_FIELDS = [
     },
 
     {
-        id: "zip_code",
+        id: "zipcode",
         label: "Kode Pos",
         methods: {
             list: false,

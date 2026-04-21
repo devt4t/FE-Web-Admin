@@ -96,15 +96,11 @@ export const FF_BASE_FIELDS = [
     },
 
     {
-        id: "email",
+        id: "users_email",
         label: "Email",
         methods: {
-            list: {
-                view_data: "ff_users_data.email"
-            },
-            detail: {
-                type: "slot",
-            },
+            list: true,
+            detail: true,
         },
     },
     {
@@ -335,96 +331,96 @@ export const FF_BASE_FIELDS = [
         },
     },
 
-    {
-        id: "province",
-        label: "Provinsi",
-        methods: {
-            detail: {
-                view_data: "provinces_name_domicile",
-                transform: "no-empty",
-            },
-            create: {
-                separator: "Domisili FF",
-                validation: ["required"],
-                type: "select",
-                getter: "GetProvince",
-                col_size: 6,
-                option: {
-                    getterKey: "data.result",
-                    list_pointer: {
-                        code: "province_code",
-                        label: "name",
-                        display: ["name"],
-                    },
-                },
-            },
-            update: {
-                separator: "Domisili FF",
-                validation: ["required"],
-                type: "select",
-                getter: "GetProvince",
-                col_size: 6,
-                option: {
-                    default_label: "provinces_name_domicile",
-                    getterKey: "data.result",
-                    list_pointer: {
-                        code: "province_code",
-                        label: "name",
-                        display: ["name"],
-                    },
-                },
-            },
-        },
-    },
+    // {
+    //     id: "province",
+    //     label: "Provinsi",
+    //     methods: {
+    //         detail: {
+    //             view_data: "provinces_name_domicile",
+    //             transform: "no-empty",
+    //         },
+    //         create: {
+    //             separator: "Domisili FF",
+    //             validation: ["required"],
+    //             type: "select",
+    //             getter: "GetProvince",
+    //             col_size: 6,
+    //             option: {
+    //                 getterKey: "data.result",
+    //                 list_pointer: {
+    //                     code: "province_code",
+    //                     label: "name",
+    //                     display: ["name"],
+    //                 },
+    //             },
+    //         },
+    //         update: {
+    //             separator: "Domisili FF",
+    //             validation: ["required"],
+    //             type: "select",
+    //             getter: "GetProvince",
+    //             col_size: 6,
+    //             option: {
+    //                 default_label: "provinces_name_domicile",
+    //                 getterKey: "data.result",
+    //                 list_pointer: {
+    //                     code: "province_code",
+    //                     label: "name",
+    //                     display: ["name"],
+    //                 },
+    //             },
+    //         },
+    //     },
+    // },
 
-    {
-        id: "city",
-        label: "Kota",
-        methods: {
-            detail: {
-                view_data: "kabupatens_name_domicile",
-                transform: "no-empty",
-            },
-            create: {
-                type: "row-slot",
-                validation: ["required"],
-                getter: "GetKabupaten",
-                col_size: 6,
-            },
-            update: {
-                validation: ["required"],
-                type: "row-slot",
-                base_type: "select",
-                option: {
-                    default_label: "kabupatens_name_domicile",
-                },
-                getter: "GetKabupaten",
-                col_size: 6,
-            },
-        },
-    },
+    // {
+    //     id: "city",
+    //     label: "Kota",
+    //     methods: {
+    //         detail: {
+    //             view_data: "kabupatens_name_domicile",
+    //             transform: "no-empty",
+    //         },
+    //         create: {
+    //             type: "row-slot",
+    //             validation: ["required"],
+    //             getter: "GetKabupaten",
+    //             col_size: 6,
+    //         },
+    //         update: {
+    //             validation: ["required"],
+    //             type: "row-slot",
+    //             base_type: "select",
+    //             option: {
+    //                 default_label: "kabupatens_name_domicile",
+    //             },
+    //             getter: "GetKabupaten",
+    //             col_size: 6,
+    //         },
+    //     },
+    // },
 
-    {
-        id: "kecamatan",
-        label: "Kecamatan",
-        methods: {
-            list: false,
-            detail: {
-                view_data: "kecamatans_name_domicile",
-                transform: "no-empty",
-            },
-            create: {
-                type: "row-slot",
-            },
-            update: {
-                type: "row-slot",
-                base_type: "select",
-                option: {
-                    default_label: "kecamatans_name_domicile",
-                },
-            },
-        },
-    },
+    // {
+    //     id: "kecamatan",
+    //     label: "Kecamatan",
+    //     methods: {
+    //         list: false,
+    //         detail: {
+    //             view_data: "kecamatans_name_domicile",
+    //             transform: "no-empty",
+    //         },
+    //         create: {
+    //             type: "row-slot",
+    //         },
+    //         update: {
+    //             type: "row-slot",
+    //             base_type: "select",
+    //             option: {
+    //                 default_label: "kecamatans_name_domicile",
+    //             },
+    //         },
+    //     },
+    // },
 
     {
         id: "village",
