@@ -1,5 +1,6 @@
 // config/index.js
-import { buildCrudConfig } from '../utils/config-builder'
+import { buildCrudConfigMonitoring } from '../utils/config-builder-monitoring'
+import { baseCrudConfigPopulate } from '../utils/config-builder-populate'
 import { buildCrudConfigFCFF } from '../utils/config-builder-fc-ff'
 
 // Populate imports
@@ -15,13 +16,13 @@ import { MONITORING_EXTRA_FIELDS } from './monitoring/fields.per-stage'
 // Helper untuk populate
 export function buildPopulateCrudConfig(stageKey) {
     const stageConfig = POPULATE_STAGE_REGISTRY[stageKey]
-    return buildCrudConfig(POPULATE_BASE_FIELDS, POPULATE_EXTRA_FIELDS, stageKey, stageConfig)
+    return baseCrudConfigPopulate(POPULATE_BASE_FIELDS, POPULATE_EXTRA_FIELDS, stageKey, stageConfig)
 }
 
-// Helper untuk monitoring (uncomment nanti)
+// Helper untuk monitoring
 export function buildMonitoringCrudConfig(stageNumber) {
     const stageConfig = MONITORING_STAGES_REGISTRY[stageNumber]
-    return buildCrudConfig(MONITORING_BASE_FIELDS, MONITORING_EXTRA_FIELDS, stageNumber, stageConfig)
+    return buildCrudConfigMonitoring(MONITORING_BASE_FIELDS, MONITORING_EXTRA_FIELDS, stageNumber, stageConfig)
 }
 
 // Helper untuk FC monitoring

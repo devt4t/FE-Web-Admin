@@ -2,7 +2,7 @@ export const MONITORING_STAGES_REGISTRY = {
     2: {
         label: 'Monitoring 2',
         stageNumber: 2,
-        key: 'monitoring_no',
+        key: 'monitoring2_no',
         api: {
             list: 'monitorings-v3/list',
             detail: 'monitorings-v3/detail',
@@ -12,7 +12,7 @@ export const MONITORING_STAGES_REGISTRY = {
             delete: 'monitorings-v3/delete',
             export: 'monitorings-v3/export',
         },
-        deletePayloadKeys: ['monitoring_no'],
+        deletePayloadKeys: ['monitoring2_no'],
         features: {
             hasExportSummary: true,
             hasGeneratePopulate: true,
@@ -24,18 +24,29 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
-            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nomor Pohon', value: 'tree_no' },
+            { text: 'Kode Pohon', value: 'tree_code' },
             { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Umur Pohon', value: 'tree_age' },
             { text: 'Kondisi Sekitar', value: 'tree_condition' },
             { text: 'Tinggi (cm)', value: 'height' },
             { text: 'Diameter (cm)', value: 'diameter' },
-            { text: 'Pupuk', value: 'pest' }
+            { text: 'Status Hidup', value: 'life_status' },
+            { text: 'Pupuk', value: 'pest' },
+            { text: 'Deskripsi Pupuk', value: 'pest_description' },
+        ],
+        monitoringTreeDetail: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_code' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kategori Pohon', value: 'tree_category' },
+            { text: 'Jumlah Hidup', value: 'life' },
         ],
     },
     3: {
         label: 'Monitoring 3',
         stageNumber: 3,
-        key: 'monitoring_no',
+        key: 'monitoring3_no',
         api: {
             list: 'monitorings-v3/list',
             detail: 'monitorings-v3/detail',
@@ -45,7 +56,7 @@ export const MONITORING_STAGES_REGISTRY = {
             delete: 'monitorings-v3/delete',
             export: 'monitorings-v3/export',
         },
-        deletePayloadKeys: ['monitoring_no'],
+        deletePayloadKeys: ['monitoring3_no'],
         features: {
             hasExportSummary: true,
             hasGeneratePopulate: true,
@@ -57,18 +68,29 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
-            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nomor Pohon', value: 'tree_no' },
+            { text: 'Kode Pohon', value: 'tree_code' },
             { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Umur Pohon', value: 'tree_age' },
             { text: 'Kondisi Sekitar', value: 'tree_condition' },
             { text: 'Tinggi (cm)', value: 'height' },
             { text: 'Diameter (cm)', value: 'diameter' },
-            { text: 'Pupuk', value: 'pest' }
+            { text: 'Status Hidup', value: 'life_status' },
+            { text: 'Pupuk', value: 'pest' },
+            { text: 'Deskripsi Pupuk', value: 'pest_description' },
+        ],
+        monitoringTreeDetail: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_code' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kategori Pohon', value: 'tree_category' },
+            { text: 'Jumlah Hidup', value: 'life' },
         ],
     },
     4: {
         label: 'Monitoring 4',
         stageNumber: 4,
-        key: 'monitoring_no',
+        key: 'monitoring4_no',
         api: {
             list: 'monitorings-v3/list',
             detail: 'monitorings-v3/detail',
@@ -78,7 +100,7 @@ export const MONITORING_STAGES_REGISTRY = {
             delete: 'monitorings-v3/delete',
             export: 'monitorings-v3/export',
         },
-        deletePayloadKeys: ['monitoring_no'],
+        deletePayloadKeys: ['monitoring4_no'],
         features: {
             hasExportSummary: true,
             hasGeneratePopulate: true,
@@ -90,18 +112,29 @@ export const MONITORING_STAGES_REGISTRY = {
         },
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
-            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nomor Pohon', value: 'tree_no' },
+            { text: 'Kode Pohon', value: 'tree_code' },
             { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Umur Pohon', value: 'tree_age' },
             { text: 'Kondisi Sekitar', value: 'tree_condition' },
             { text: 'Tinggi (cm)', value: 'height' },
             { text: 'Diameter (cm)', value: 'diameter' },
-            { text: 'Pupuk', value: 'pest' }
+            { text: 'Status Hidup', value: 'life_status' },
+            { text: 'Pupuk', value: 'pest' },
+            { text: 'Deskripsi Pupuk', value: 'pest_description' },
+        ],
+        monitoringTreeDetail: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_code' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kategori Pohon', value: 'tree_category' },
+            { text: 'Jumlah Hidup', value: 'life' },
         ],
     },
     5: {
         label: 'Monitoring 5',
         stageNumber: 5,
-        key: 'monitoring_no',
+        key: 'monitoring5_no',
         api: {
             list: 'monitorings-v3/list',
             detail: 'monitorings-v3/detail',
@@ -111,7 +144,7 @@ export const MONITORING_STAGES_REGISTRY = {
             delete: 'monitorings-v3/delete',
             export: 'monitorings-v3/export',
         },
-        deletePayloadKeys: ['monitoring_no'],
+        deletePayloadKeys: ['monitoring5_no'],
         features: {
             hasExportSummary: true,
             hasGeneratePopulate: false,
@@ -120,12 +153,23 @@ export const MONITORING_STAGES_REGISTRY = {
         populate: null,
         treeDetailHeaders: [
             { text: 'No', value: 'index', sortable: false },
-            { text: 'Kode Pohon', value: 'tree_no' },
+            { text: 'Nomor Pohon', value: 'tree_no' },
+            { text: 'Kode Pohon', value: 'tree_code' },
             { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Umur Pohon', value: 'tree_age' },
             { text: 'Kondisi Sekitar', value: 'tree_condition' },
             { text: 'Tinggi (cm)', value: 'height' },
             { text: 'Diameter (cm)', value: 'diameter' },
-            { text: 'Pupuk', value: 'pest' }
+            { text: 'Status Hidup', value: 'life_status' },
+            { text: 'Pupuk', value: 'pest' },
+            { text: 'Deskripsi Pupuk', value: 'pest_description' },
+        ],
+        monitoringTreeDetail: [
+            { text: 'No', value: 'index', sortable: false },
+            { text: 'Kode Pohon', value: 'tree_code' },
+            { text: 'Nama Pohon', value: 'tree_name' },
+            { text: 'Kategori Pohon', value: 'tree_category' },
+            { text: 'Jumlah Hidup', value: 'life' },
         ],
     },
 }

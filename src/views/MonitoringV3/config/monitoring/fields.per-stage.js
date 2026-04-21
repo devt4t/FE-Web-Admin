@@ -5,14 +5,7 @@ export const MONITORING_EXTRA_FIELDS = {
 
     3: {
         inheritsFrom: 2,
-        additions: [
-            {
-                afterFieldId: 'monitoring_end',
-                fields: [
-                    { id: 'last_monitoring', label: 'Nomor Monitoring Sebelumnya', methods: { list: true, detail: true } },
-                ]
-            }
-        ]
+        additions: []
     },
 
     4: {

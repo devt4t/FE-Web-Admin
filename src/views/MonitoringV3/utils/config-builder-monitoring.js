@@ -32,22 +32,33 @@ function mergeFields(baseFields, additions) {
     return fields
 }
 
-export function buildCrudConfig(baseFields, extraFieldsMap, stageKey, stageConfig) {
+export function buildCrudConfigMonitoring(baseFields, extraFieldsMap, stageKey, stageConfig) {
     // Resolve semua additions (termasuk dari parent stages)
     const allAdditions = resolveInheritance(stageKey, extraFieldsMap)
 
     // merge base fields + additions
     const mergedFields = mergeFields(baseFields, allAdditions)
 
+    // dinamis: ganti id 'monitoring_no' sesuai dengan stage nya
+    const mappedFields = mergedFields.map(field => {
+        if (field.id !== 'monitoring_no') return field
+
+        return {
+            ...field,
+            id: stageConfig.key,
+            // label: `Nomor Monitoring ${stageConfig.stageNumber}`
+        }
+    })
+
     // build final config project
     return reactive({
         title: stageConfig.label,
-        getter: `${stageConfig.api.list}?monitoring_step=${stageConfig.stageNumber}`,
-        getterDataKey: 'result',
+        getter: stageConfig.api.list,
+        getterDataKey: 'data',
         totalDataKey: 'total',
-        detail: stageConfig.api.detail ? `${stageConfig.api.detail}?monitoring_step=${stageConfig.stageNumber}` : null,
+        detail: stageConfig.api.detail,
         detailIdKey: 'id',
-        detailKey: 'result',
+        detailKey: 'data',
         pk_field: null,
         globalFilter: {
             program_year: { setter: 'program_year' },
@@ -61,7 +72,8 @@ export function buildCrudConfig(baseFields, extraFieldsMap, stageKey, stageConfi
             delete: 'monitoring-delete',
         },
         slave: [],
-        fields: mergedFields,
-        treeDetailHeaders: stageConfig.treeDetailHeaders || null
+        fields: mappedFields,
+        treeDetailHeaders: stageConfig.treeDetailHeaders || null,
+        monitoringTreeDetailHeaders: stageConfig.monitoringTreeDetail || null
     })
 }

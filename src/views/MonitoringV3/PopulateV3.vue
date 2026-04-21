@@ -6,34 +6,37 @@
 
             <!-- detail -->
             <template v-slot:detail-slave-raw="{ data }">
-                <populate-detail :data="data" />
+                <!-- <populate-detail :data="data" /> -->
+                <!-- di render oleh base model geko base crud -->
             </template>
 
             <!-- action buttons -->
             <template v-slot:list-bottom-action="{ item }">
                 <!-- assign/edit data populasi -->
-                <v-btn variant="primary" small @click="assignDataPopulate(item)">
+                <v-btn class="d-flex flex-row align-items-center mt-2" variant="primary" small
+                    @click="assignDataPopulate(item)">
                     <v-icon small>mdi-pencil-plus</v-icon>
                     <span v-if="isNotAssigned(item)">Lengkapi Data Populasi</span>
                     <span v-else>Edit Data Populasi</span>
                 </v-btn>
 
                 <!-- reset assignment -->
-                <v-btn variant="warning" small @click="onResetAssignment(item)"
-                    v-if="!isNotAssigned(item) && item.is_monitoring == 0">
+                <v-btn class="d-flex flex-row align-items-center mt-2" variant="warning" small
+                    @click="onResetAssignment(item)" v-if="!isNotAssigned(item) && item.is_monitoring == 0">
                     <v-icon small>mdi-alert-warning</v-icon>
                     <span>Reset Data Populasi</span>
                 </v-btn>
 
                 <!-- generate monitoring data -->
-                <v-btn variant="success" small @click="onGenerateMonitoring(item)"
-                    v-if="!isNotAssigned(item) && item.is_monitoring == 0">
+                <v-btn class="d-flex flex-row align-items-center mt-2" variant="success" small
+                    @click="onGenerateMonitoring(item)" v-if="!isNotAssigned(item) && item.is_monitoring == 0">
                     <v-icon small>mdi-check-all</v-icon>
                     <span>Generate Data Monitoring</span>
                 </v-btn>
 
                 <!-- delete populate -->
-                <v-btn variant="danger" small @click="onDeletePopulate(item)" v-if="item.is_monitoring == 0">
+                <v-btn class="d-flex flex-row align-items-center mt-2" variant="danger" small
+                    @click="onDeletePopulate(item)" v-if="item.is_monitoring == 0">
                     <v-icon small>mdi-backspace</v-icon>
                     <span>Hapus Data Populasi</span>
                 </v-btn>
@@ -81,7 +84,7 @@ import AssignmentForm from './components/populate/AssignmentForm.vue'
 import StatusBadge from './components/populate/StatusBadge.vue'
 
 export default {
-    name: 'populate-v3',
+    name: 'crud-monitoring-v3-populate',
     components: { PopulateDetail, AssignmentForm, StatusBadge },
 
     data() {
@@ -103,7 +106,7 @@ export default {
             }))
         },
         programYear() {
-            return this.$store.state.tmpProgramYear || new Date().getFullYear()
+            return this.$store.state.tmpProgramYear
         },
         stageConfig() {
             return POPULATE_STAGE_REGISTRY[this.activePopulateStage]
@@ -139,7 +142,13 @@ export default {
 
             this.activePopulateStage = `${step}-to-${step + 1}`;
             this.config = buildPopulateCrudConfig(this.activePopulateStage);
-            this.refreshKey += 1;
+            this.config.getter = `${this.config.getter}?current_year=${currentYear}`;
+            if (this.config.detail) {
+                this.config.detail = `${this.config.detail}?current_year=${currentYear}&program_year=${this.programYear}`;
+            }
+            this.$nextTick(() => {
+                this.refreshKey += 1;
+            });
             this.formData = null;
         },
 
@@ -161,7 +170,12 @@ export default {
                 'Ya, Reset', 'Batal', true
             )
             if (prompt.isConfirmed) {
-                const payload = { id: item.id, stage: this.stageConfig.stageNumber }
+                const payload = {
+                    id: item.id,
+                    monitoring_step: this.stageConfig.stageNumber,
+                    program_year: item.program_year,
+                    current_year: this.localPlantingYear,
+                }
                 this.$_api.post(this.stageConfig.api.resetAssignment, payload)
                     .then(() => {
                         this.$_alert.success('Berhasil Reset Assignment!')
@@ -183,8 +197,10 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.generateMonitoring, {
-                    ...item,
-                    stage: this.stageConfig.stageNumber,
+                    populate_id: item.id,
+                    monitoring_step: this.stageConfig.targetMonitoring,
+                    program_year: item.program_year,
+                    current_year: this.localPlantingYear,
                 })
                     .then(() => {
                         this.$_alert.success(

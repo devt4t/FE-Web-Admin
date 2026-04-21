@@ -128,6 +128,7 @@ export default {
             const payload = {
                 id: this.data.id,
                 monitoring_step: this.stageConfig.stageNumber,
+                program_year: this.data.program_year,
                 sampling: this.formValue.sampling,
                 assigned_to: this.formValue.assigned_to
             };

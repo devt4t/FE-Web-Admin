@@ -5,7 +5,12 @@ export const MONITORING_BASE_FIELDS = [
         methods: { list: { type: 'row-slot' } },
     },
     {
-        id: 'monitoring_no',
+        id: 'monitoring_prev',
+        label: 'Nomor Monitoring Sebelumnya',
+        methods: { list: false, detail: true }
+    },
+    {
+        id: 'monitoring_no', // nih bisa berganti sesuai dengan monitoring yang dipilih
         label: 'Nomor Monitoring',
         methods: { list: true, detail: true },
     },
@@ -45,20 +50,25 @@ export const MONITORING_BASE_FIELDS = [
         },
     },
     {
-        id: 'farmers_name',
+        id: 'farmer_name',
         label: 'Nama Petani',
         methods: { list: true, detail: true },
     },
     {
-        id: 'sampling',
-        label: 'Metode Sampling',
+        id: 'qty_trees',
+        label: 'Total Pohon',
         methods: { list: true, detail: true },
     },
-    {
-        id: 'assign_to',
-        label: 'FF Petugas Monitoring',
-        methods: { list: true, detail: true },
-    },
+    // {
+    //     id: 'sampling',
+    //     label: 'Metode Sampling',
+    //     methods: { list: true, detail: true },
+    // },
+    // {
+    //     id: 'assign_to',
+    //     label: 'FF Petugas Monitoring',
+    //     methods: { list: true, detail: true },
+    // },
     {
         id: 'managementunits_name',
         label: 'Management Unit',
@@ -123,16 +133,16 @@ export const MONITORING_BASE_FIELDS = [
         label: 'Pola Tanam',
         methods: { list: true, detail: true },
     },
-    {
-        id: 'total_detail_life_kayu',
-        label: 'Total Kayu Hidup',
-        methods: { list: true, detail: true },
-    },
-    {
-        id: 'total_detail_life_mpts',
-        label: 'Total MPTS Hidup',
-        methods: { list: true, detail: true },
-    },
+    // {
+    //     id: 'total_detail_life_kayu',
+    //     label: 'Total Kayu Hidup',
+    //     methods: { list: true, detail: true },
+    // },
+    // {
+    //     id: 'total_detail_life_mpts',
+    //     label: 'Total MPTS Hidup',
+    //     methods: { list: true, detail: true },
+    // },
     {
         id: 'total_detail_life_trees',
         label: 'Total Pohon Hidup',
@@ -141,8 +151,23 @@ export const MONITORING_BASE_FIELDS = [
                 view_data: 'total_detail_life_trees',
                 class: { 0: 'badge bg-success' },
             },
-            detail: true,
+            detail: false,
         },
+    },
+    {
+        id: 'tutupan',
+        label: 'Tutupan Lahan (%)',
+        methods: { list: false, detail: true },
+    },
+    {
+        id: 'land_area',
+        label: 'Luas Lahan (m²)',
+        methods: { list: false, detail: true },
+    },
+    {
+        id: 'planting_area',
+        label: 'Luas Tanam (m²)',
+        methods: { list: false, detail: true },
     },
     {
         id: 'land_condition',
@@ -150,7 +175,7 @@ export const MONITORING_BASE_FIELDS = [
         methods: { list: true, detail: true },
     },
     {
-        id: 'interview',
+        id: 'inteview',
         label: 'Komentar Interview',
         methods: { list: false, detail: true },
     },

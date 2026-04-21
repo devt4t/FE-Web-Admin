@@ -16,7 +16,11 @@
 
             <!-- DETAIL SLOT -->
             <template v-slot:detail-slave-raw="{ data }">
-                <monitoring-detail :data="data" :config="config" />
+                <monitoring-detail-map :long="normalizeMonitoringDetail(data).longitude"
+                    :lat="normalizeMonitoringDetail(data).latitude" :section="`MonitoringV3`"
+                    :title="'Koordinat Monitoring'" />
+                <monitoring-detail :data="normalizeMonitoringDetail(data)" :treeDetailHeaders="config.treeDetailHeaders"
+                    :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders" />
             </template>
 
             <!-- ACTION BUTTONS -->
@@ -83,10 +87,11 @@
 <script>
 import { buildMonitoringCrudConfig, MONITORING_STAGES_REGISTRY } from './config'
 import MonitoringDetail from './components/monitoring/MonitoringDetail.vue'
+import MonitoringDetailMap from '@/views/Lahan/components/DetailLahanMap'
 
 export default {
-    name: 'monitoring-v3',
-    components: { MonitoringDetail },
+    name: 'crud-monitoring-v3',
+    components: { MonitoringDetail, MonitoringDetailMap },
 
     data() {
         return {
@@ -105,7 +110,7 @@ export default {
             return Object.values(MONITORING_STAGES_REGISTRY)
         },
         programYear() {
-            return this.$store.state.tmpProgramYear || new Date().getFullYear()
+            return this.$store.state.tmpProgramYear
         },
         stageConfig() {
             return MONITORING_STAGES_REGISTRY[this.activeStage]
@@ -126,6 +131,14 @@ export default {
     },
 
     methods: {
+        normalizeMonitoringDetail(response) {
+            return {
+                ...(response.data || {}),
+                monitoring_detail: response.detail || [],
+                monitoring_tree_detail: response.tree_detail || [],
+            }
+        },
+
         recalculateStage(pYearVal) {
             const currentYear = parseInt(this.localPlantingYear);
             const pYear = parseInt(pYearVal);
@@ -143,7 +156,13 @@ export default {
 
             this.activeStage = step + 1;
             this.config = buildMonitoringCrudConfig(this.activeStage);
-            this.refreshKey += 1;
+            this.config.getter = `${this.config.getter}?current_year=${currentYear}`;
+            if (this.config.detail) {
+                this.config.detail = `${this.config.detail}?current_year=${currentYear}&program_year=${this.programYear}`;
+            }
+            this.$nextTick(() => {
+                this.refreshKey += 1;
+            });
         },
 
 
