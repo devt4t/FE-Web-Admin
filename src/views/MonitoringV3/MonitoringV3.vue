@@ -16,11 +16,14 @@
 
             <!-- DETAIL SLOT -->
             <template v-slot:detail-slave-raw="{ data }">
-                <monitoring-detail-map :long="normalizeMonitoringDetail(data).longitude"
-                    :lat="normalizeMonitoringDetail(data).latitude" :section="`MonitoringV3`"
-                    :title="'Koordinat Monitoring'" />
-                <monitoring-detail :data="normalizeMonitoringDetail(data)" :treeDetailHeaders="config.treeDetailHeaders"
-                    :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders" />
+                <template v-if="data">
+                    <monitoring-detail-map :long="normalizeMonitoringDetail(data).longitude"
+                        :lat="normalizeMonitoringDetail(data).latitude" :section="`MonitoringV3`"
+                        :title="'Koordinat Monitoring'" />
+                    <monitoring-detail :data="normalizeMonitoringDetail(data)"
+                        :treeDetailHeaders="config.treeDetailHeaders"
+                        :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders" />
+                </template>
             </template>
 
             <!-- ACTION BUTTONS -->
@@ -131,7 +134,7 @@ export default {
     },
 
     methods: {
-        normalizeMonitoringDetail(response) {
+        normalizeMonitoringDetail(response = {}) {
             return {
                 ...(response.data || {}),
                 monitoring_detail: response.detail || [],
