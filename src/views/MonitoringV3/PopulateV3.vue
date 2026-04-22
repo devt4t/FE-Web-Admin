@@ -173,7 +173,7 @@ export default {
                     id: item.id,
                     // monitoring_step: this.stageConfig.stageNumber,
                     current_year: this.localPlantingYear,
-                    program_year: this.data.program_year,
+                    program_year: item.program_year,
                     type: 'unassign',
                 }
                 this.$_api.post(this.stageConfig.api.resetAssignment, payload)
@@ -199,7 +199,7 @@ export default {
                 this.$_api.post(this.stageConfig.api.generateMonitoring, {
                     populate_id: item.id,
                     // monitoring_step: this.stageConfig.targetMonitoring,
-                    program_year: this.data.program_year,
+                    program_year: item.program_year,
                     current_year: this.localPlantingYear,
                 })
                     .then(() => {

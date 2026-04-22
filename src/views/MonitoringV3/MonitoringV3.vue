@@ -172,9 +172,13 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.verifFC, {
-                    [this.stageConfig.key]: item[this.stageConfig.key],
-                    monitoring_step: this.activeStage,
-                    verified_by: this.user.name,
+                    // [this.stageConfig.key]: item[this.stageConfig.key],
+                    // monitoring_step: this.activeStage,
+                    id: item.id,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                    is_verified: 1,
+                    // verified_by: this.user.name,
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi FC!')
                     this.refreshKey += 1
@@ -191,9 +195,13 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.verifUM, {
-                    [this.stageConfig.key]: item[this.stageConfig.key],
-                    monitoring_step: this.activeStage,
-                    verified_by: this.user.name,
+                    // [this.stageConfig.key]: item[this.stageConfig.key],
+                    // monitoring_step: this.activeStage,
+                    id: item.id,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                    is_verified: 2,
+                    // verified_by: this.user.name,
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi UM!')
                     this.refreshKey += 1
@@ -210,8 +218,12 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.unverif, {
-                    [this.stageConfig.key]: item[this.stageConfig.key],
-                    monitoring_step: this.activeStage,
+                    // [this.stageConfig.key]: item[this.stageConfig.key],
+                    // monitoring_step: this.activeStage,
+                    id: item.id,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                    is_verified: 0,
                 }).then(() => {
                     this.$_alert.success('Berhasil Unverifikasi!')
                     this.refreshKey += 1
@@ -227,7 +239,12 @@ export default {
                 'Hapus Data?', 'Yakin menghapus?', 'Ya, Hapus!', 'Batal', true
             )
             if (prompt.isConfirmed) {
-                const payload = { monitoring_step: this.activeStage }
+                const payload = {
+                    //  monitoring_step: this.activeStage 
+                    id: item.id,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                }
                 this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = item[k])
                 this.$_api.post(this.stageConfig.api.delete, payload)
                     .then(() => {
@@ -248,8 +265,11 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.populate.endpoint, {
-                    ...item,
-                    monitoring_step: this.activeStage,
+                    // ...item,
+                    // monitoring_step: this.activeStage,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                    list_monitoring1: [item],
                 }).then(() => {
                     this.$_alert.success('Berhasil Generate Populate!')
                     this.refreshKey += 1
