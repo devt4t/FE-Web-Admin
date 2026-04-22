@@ -7,15 +7,15 @@ export const POPULATE_STAGE_REGISTRY = {
         api: {
             list: 'populate-monitorings-v3/list',
             detail: 'populate-monitorings-v3/detail',
-            assignment: 'populate-monitorings-v3/assignment',
-            resetAssignment: 'populate-monitorings-v3/resetAssignment',
+            assignment: 'populate-monitorings-v3/update',
+            resetAssignment: 'populate-monitorings-v3/update',
             generateMonitoring: 'monitorings-v3/generate',
             delete: 'populate-monitorings-v3/delete',
         },
         features: {
             hasExport: false,
         },
-        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring_no'],
+        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring2_no'],
     },
     '2-to-3': {
         label: 'Populate 2 To Monitoring 3',
@@ -24,15 +24,15 @@ export const POPULATE_STAGE_REGISTRY = {
         api: {
             list: 'populate-monitorings-v3/list',
             detail: 'populate-monitorings-v3/detail',
-            assignment: 'populate-monitorings-v3/assignment',
-            resetAssignment: 'populate-monitorings-v3/resetAssignment',
+            assignment: 'populate-monitorings-v3/update',
+            resetAssignment: 'populate-monitorings-v3/update',
             generateMonitoring: 'monitorings-v3/generate',
             delete: 'populate-monitorings-v3/delete',
         },
         features: {
             hasExport: false,
         },
-        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring_no'],
+        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring3_no'],
     },
     '3-to-4': {
         label: 'Populate 3 To Monitoring 4',
@@ -41,15 +41,15 @@ export const POPULATE_STAGE_REGISTRY = {
         api: {
             list: 'populate-monitorings-v3/list',
             detail: 'populate-monitorings-v3/detail',
-            assignment: 'populate-monitorings-v3/assignment',
-            resetAssignment: 'populate-monitorings-v3/resetAssignment',
+            assignment: 'populate-monitorings-v3/update',
+            resetAssignment: 'populate-monitorings-v3/update',
             generateMonitoring: 'monitorings-v3/generate',
             delete: 'populate-monitorings-v3/delete',
         },
         features: {
             hasExport: false,
         },
-        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring_no'],
+        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring4_no'],
     },
     '4-to-5': {
         label: 'Populate 4 To Monitoring 5',
@@ -58,14 +58,14 @@ export const POPULATE_STAGE_REGISTRY = {
         api: {
             list: 'populate-monitorings-v3/list',
             detail: 'populate-monitorings-v3/detail',
-            assignment: 'populate-monitorings-v3/assignment',
-            resetAssignment: 'populate-monitorings-v3/resetAssignment',
+            assignment: 'populate-monitorings-v3/update',
+            resetAssignment: 'populate-monitorings-v3/update',
             generateMonitoring: 'monitorings-v3/generate',
             delete: 'populate-monitorings-v3/delete',
         },
         features: {
             hasExport: false,
         },
-        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring_no'],
+        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring5_no'],
     },
 }

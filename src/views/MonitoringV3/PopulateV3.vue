@@ -65,7 +65,7 @@
                 <div class="d-flex flex-row justify-content-end align-items-center pb-2">
                     <!-- Form Component (Hidden by default) -->
                     <assignment-form :data="formData" :dataKey="formDataKey" :stage="activePopulateStage"
-                        @success="refreshKey += 1" />
+                        :currentYear="localPlantingYear" @success="refreshKey += 1" />
                     <div class="d-flex align-items-center">
                         <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
                             label="Pilih Tahun Tanam" dense outlined hide-details style="max-width: 200px;"
@@ -154,8 +154,7 @@ export default {
 
         // helper: untuk cek apakah belum di assign
         isNotAssigned(item) {
-            return (item.assigned_to == '-' && item.sampling == '-')
-                || (item.assigned_to == null && item.sampling == null)
+            return item.assigned_to == null || item.assigned_to === '-' || item.assigned_to === ''
         },
 
         assignDataPopulate(item) {
@@ -172,9 +171,10 @@ export default {
             if (prompt.isConfirmed) {
                 const payload = {
                     id: item.id,
-                    monitoring_step: this.stageConfig.stageNumber,
-                    program_year: item.program_year,
+                    // monitoring_step: this.stageConfig.stageNumber,
                     current_year: this.localPlantingYear,
+                    program_year: this.data.program_year,
+                    type: 'unassign',
                 }
                 this.$_api.post(this.stageConfig.api.resetAssignment, payload)
                     .then(() => {
@@ -198,8 +198,8 @@ export default {
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.generateMonitoring, {
                     populate_id: item.id,
-                    monitoring_step: this.stageConfig.targetMonitoring,
-                    program_year: item.program_year,
+                    // monitoring_step: this.stageConfig.targetMonitoring,
+                    program_year: this.data.program_year,
                     current_year: this.localPlantingYear,
                 })
                     .then(() => {
@@ -224,8 +224,12 @@ export default {
             )
 
             if (prompt.isConfirmed) {
-                const payload = { stage: this.stageConfig.stageNumber }
-                this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = (item[k]));
+                const payload = {
+                    id: item.id,
+                    program_year: item.program_year,
+                    current_year: this.localPlantingYear
+                }
+                // this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = (item[k]));
                 this.$_api.post(this.stageConfig.api.delete, payload)
                     .then(() => {
                         this.$_alert.success('Berhasil menghapus data populasi!')

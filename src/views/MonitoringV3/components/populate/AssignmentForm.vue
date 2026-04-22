@@ -7,9 +7,9 @@
             </v-card-title>
             <v-card-text class="pt-4">
                 <v-row>
-                    <v-col cols="12" md="6">
+                    <!-- <v-col cols="12" md="6">
                         <geko-input v-model="formValue.sampling" :item="samplingField" />
-                    </v-col>
+                    </v-col> -->
                     <v-col cols="12" md="6">
                         <geko-input v-model="formValue.assigned_to" :item="assignedToField" />
                     </v-col>
@@ -36,7 +36,8 @@ export default {
     props: {
         data: { required: false },
         dataKey: { type: Number, default: 0 },
-        stage: { type: [String, Number], required: true }
+        stage: { type: [String, Number], required: true },
+        currentYear: { type: [String, Number], required: true }
     },
     data() {
         return {
@@ -46,24 +47,10 @@ export default {
 
             // Local state untuk hold data dari form
             formValue: {
-                sampling: null,
                 assigned_to: null,
             },
 
             // Definisi property dari geko-input
-            samplingField: {
-                id: 'sampling',
-                label: 'Metode Sampling',
-                type: 'select',
-                validation: ['required'],
-                option: {
-                    default_options: [
-                        { name: 'Sensus', code: 'Sensus' },
-                        { name: 'Sampling', code: 'Sampling' }
-                    ],
-                    list_pointer: { code: 'code', label: 'name', display: ['name'] }
-                }
-            },
             assignedToField: {
                 id: 'assigned_to',
                 type: 'select',
@@ -88,22 +75,19 @@ export default {
     computed: {
         isEditing() {
             if (!this.data) return false;
-            return !(
-                (this.data.assigned_to == '-' && this.data.sampling == '-') ||
-                (this.data.assigned_to == null && this.data.sampling == null)
-            );
+
+            const assignedTo = this.data.assigned_to;
+            return assignedTo !== null && assignedTo !== undefined && assignedTo !== '-' && assignedTo !== '';
         },
         stageConfig() {
             return POPULATE_STAGE_REGISTRY[this.stage];
-        }
+        },
     },
     watch: {
         dataKey() {
             if (this.data) {
                 this.formValue = {
-                    sampling: this.data.sampling !== '-' ? this.data.sampling : null,
                     assigned_to: this.data.assigned_to !== '-' ? this.data.assigned_to : null,
-                    mu_no: this.data.mu_no
                 };
 
                 this.isOpen = true;
@@ -113,7 +97,6 @@ export default {
     },
     methods: {
         validate() {
-            if (!this.formValue.sampling) return false;
             if (!this.formValue.assigned_to) return false;
             return true;
         },
@@ -125,19 +108,19 @@ export default {
 
             this.isLoading = true;
 
-            const payload = {
+            const params = {
                 id: this.data.id,
-                monitoring_step: this.stageConfig.stageNumber,
+                current_year: this.currentYear,
                 program_year: this.data.program_year,
-                sampling: this.formValue.sampling,
-                assigned_to: this.formValue.assigned_to
+                type: 'assign',
+                ff_no: this.formValue.assigned_to
             };
 
-            this.$_api.post(this.stageConfig.api.assignment, payload)
+            this.$_api.post(this.stageConfig.api.assignment, params)
                 .then(() => {
                     this.$_alert.success('Assignment Berhasil Disimpan!');
                     this.isOpen = false;
-                    this.$emit('success'); // trigger refresh tabel di parent
+                    this.$emit('success');
                 })
                 .catch((err) => {
                     console.error('assignment populate fail => ', err);

@@ -16,9 +16,8 @@ export default {
     props: { item: { required: true } },
     computed: {
         isNotAssigned() {
-            const { assigned_to, sampling } = this.item
-            return (assigned_to == '-' && sampling == '-')
-                || (assigned_to == null && sampling == null)
+            const { assigned_to } = this.item
+            return assigned_to == null || assigned_to === '-' || assigned_to === ''
         },
         isAssignedNotMonitored() {
             return !this.isNotAssigned && this.item.is_monitoring == 0
