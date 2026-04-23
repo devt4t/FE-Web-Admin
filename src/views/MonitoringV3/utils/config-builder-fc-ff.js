@@ -29,39 +29,26 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
             return isFC ? 'AddEmployee' : 'AddFieldFacilitator'
         },
 
-        // Filter API
-        // get filter_api() {
-        //     const base = isFC ? { position_no: 19 } : {};
-        //     return base;
-        // },
-        // get filter_api() {
-        //     const base = isFC ? { position_no: 19 } : {};
-        //     return {
-        //         ...base,
-        //         is_external: this.dataSource === 'external'
-        //     };
-        // },
-
         // Fields Mapping
-        get fields() {
-            const clonedFields = JSON.parse(JSON.stringify(baseFields));
-            const setSafe = (obj, mode, key) => {
-                if (obj[mode] === true) {
-                    obj[mode] = { view_data: key };
-                } else if (obj[mode] && typeof obj[mode] === 'object') {
-                    obj[mode].view_data = key;
-                }
-            };
+        // get fields() {
+        //     const clonedFields = JSON.parse(JSON.stringify(baseFields));
+        //     const setSafe = (obj, mode, key) => {
+        //         if (obj[mode] === true) {
+        //             obj[mode] = { view_data: key };
+        //         } else if (obj[mode] && typeof obj[mode] === 'object') {
+        //             obj[mode].view_data = key;
+        //         }
+        //     };
 
-            return clonedFields.map(f => {
-                if (this.dataSource === 'external') {
-                    if (f.id === 'nik') setSafe(f.methods, 'list', isFC ? 'nik' : 'ff_no');
-                    if (f.id === 'name') setSafe(f.methods, 'list', isFC ? 'name' : 'users_name');
-                    if (f.id === 'email') setSafe(f.methods, 'list', isFC ? 'email' : 'users_email');
-                }
-                return f;
-            });
-        },
+        //     return clonedFields.map(f => {
+        //         if (this.dataSource === 'external') {
+        //             if (f.id === 'nik') setSafe(f.methods, 'list', isFC ? 'nik' : 'ff_no');
+        //             if (f.id === 'name') setSafe(f.methods, 'list', isFC ? 'name' : 'users_name');
+        //             if (f.id === 'email') setSafe(f.methods, 'list', isFC ? 'email' : 'users_email');
+        //         }
+        //         return f;
+        //     });
+        // },
 
         // Delete Dinamis
         get delete() {
@@ -75,28 +62,28 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
                 return this.dataSource === 'external' ? 'nik' : 'employee_no';
             }
             return 'ff_no';
+            // return 'id'
         },
 
         get deleteLabel() {
             return isFC ? 'employee_no' : 'ff_no';
         },
 
-        // detailIdKey: isFC ? 'employee_no' : 'ff_no',
         // detail dinamis
         get detail() {
             let flag = this.dataSource === 'external' ? 'true' : 'false'
             let py = store.state.tmpProgramYear
             return `monitoring-officer-v3/${moduleType}/detail?is_external=${flag}&program_year=${py}`
         },
-        // Key untuk BACA value dari list item (nik ada di response list external)
+
         get detailIdKey() {
-            if (isFC) return this.dataSource === 'external' ? 'nik' : 'employee_nik';
-            return 'ff_no';
+            // if (isFC) return this.dataSource === 'external' ? 'nik' : 'employee_no';
+            // return 'ff_no';
+            return 'id'
         },
 
-        // Key untuk NAMA PARAMETER yang dikirim ke API detail (backend expects employee_no / ff_no)
         get detailApiIdKey() {
-            return isFC ? 'employee_no' : 'ff_no';
+            return 'id'
         },
 
         // Key untuk EXTRACT data dari response detail (response.data)
@@ -108,5 +95,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
             program_year: { setter: 'program_year' },
         },
         permission: permissions,
+        fields: baseFields,
     })
 }
