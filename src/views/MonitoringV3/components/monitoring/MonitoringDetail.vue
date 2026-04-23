@@ -37,77 +37,99 @@
             <v-divider class="my-5"></v-divider>
         </div>
 
-        <!-- FOTO DOKUMENTASI & AKUMULASI -->
-        <h5 class="mb-4 text-secondary">
-            <v-icon left color="secondary">mdi-camera</v-icon> Foto Dokumentasi & Akumulasi
-        </h5>
-        <div class="row">
-            <!-- Foto Utama -->
-            <div class="col-6 col-md-3 mb-3 text-center" v-if="data.photo1">
-                <v-img :src="$_config.baseUrlUpload + '/' + data.photo1" aspect-ratio="1"
-                    class="grey lighten-2 rounded border cursor-pointer" @click="showLightbox(data.photo1)"></v-img>
-                <p class="mt-2 font-weight-bold text-muted">Dokumentasi 1</p>
-            </div>
-            <div class="col-6 col-md-3 mb-3 text-center" v-if="data.photo2">
-                <v-img :src="$_config.baseUrlUpload + '/' + data.photo2" aspect-ratio="1"
-                    class="grey lighten-2 rounded border cursor-pointer" @click="showLightbox(data.photo2)"></v-img>
-                <p class="mt-2 font-weight-bold text-muted">Dokumentasi 2</p>
-            </div>
+        <!-- GABUNGAN FOTO & STATISTIK (COMPACT MODE) -->
+        <v-row class="mb-5 px-2">
 
-            <!-- Foto Akumulasi (Mati / Hidup) -->
-            <template v-if="data.tree_detail_acumulation && data.tree_detail_acumulation.length > 0">
-                <div class="col-6 col-md-3 mb-3 text-center" v-if="data.tree_detail_acumulation[0].photo_dead">
-                    <v-img :src="$_config.baseUrlUpload + '/' + data.tree_detail_acumulation[0].photo_dead"
-                        aspect-ratio="1" class="grey lighten-2 rounded border cursor-pointer"
-                        @click="showLightbox(data.tree_detail_acumulation[0].photo_dead)"></v-img>
-                    <p class="mt-2 font-weight-bold text-muted">Akm. Pohon Mati</p>
+            <!-- KOLOM KIRI: FOTO DOKUMENTASI -->
+            <v-col cols="12" md="5">
+                <h6 class="mb-3 text-primary font-weight-bold">
+                    <v-icon left small color="primary">mdi-image-multiple</v-icon> Dokumentasi Akumulasi
+                </h6>
+
+                <template v-if="data.accumulated_photos && data.accumulated_photos.length > 0">
+                    <!-- Gunakan flex dengan overflow-x agar bisa di-scroll ke samping kalau foto banyak -->
+                    <div class="d-flex overflow-x-auto py-1">
+                        <v-img v-for="(img, idx) in data.accumulated_photos" :key="idx"
+                            :src="$_config.baseUrlUpload + '/' + img" width="70" height="70"
+                            class="rounded mr-2 flex-shrink-0 cursor-pointer elevation-1" @click="showLightbox(img)">
+                            <template v-slot:placeholder>
+                                <v-row class="fill-height ma-0" align="center" justify="center">
+                                    <v-progress-circular indeterminate size="20"
+                                        color="grey lighten-5"></v-progress-circular>
+                                </v-row>
+                            </template>
+                        </v-img>
+                    </div>
+                </template>
+                <template v-else>
+                    <!-- Empty state yang jauh lebih minimalis -->
+                    <div class="text-muted border rounded pa-2 d-flex align-items-center justify-content-center bg-light"
+                        style="max-width: max-content;">
+                        <v-icon size="20" color="grey" class="mr-2">mdi-image-off-outline</v-icon>
+                        <span class="small">Belum ada foto</span>
+                    </div>
+                </template>
+            </v-col>
+
+            <!-- KOLOM KANAN: STATISTIK PERTUMBUHAN -->
+            <v-col cols="12" md="7">
+                <h6 class="mb-3 text-warning font-weight-bold">
+                    <v-icon left small color="warning">mdi-chart-line</v-icon> Statistik Pertumbuhan
+                </h6>
+
+                <!-- Tambahkan h-100 agar tinggi box sama dengan box dokumentasi di sebelahnya -->
+                <div class="d-flex align-center justify-space-between bg-light border rounded pa-3 h-100">
+
+                    <!-- Metrik 1: Persentase -->
+                    <div class="text-center" style="flex: 1; border-right: 1px solid #dee2e6;">
+                        <p class="font-weight-bold mb-2">Persentase Pohon Hidup</p>
+                        <!-- Saya turunkan ukurannya sedikit ke 120 agar lebih compact & tidak mendesak -->
+                        <v-progress-circular :rotate="360" :size="120" :width="12"
+                            :value="data.life_tree_percentage || 0"
+                            :color="data.life_tree_percentage > 80 ? 'green' : (data.life_tree_percentage > 30 ? 'orange' : 'red')">
+                            <span class="font-weight-bold">{{ Number(data.life_tree_percentage || 0).toFixed(1)
+                            }}%</span>
+                        </v-progress-circular>
+                        <div class="small text-muted mt-2">
+                            {{ data.current_monitoring_total_trees || 0 }} / {{ data.previous_monitoring_total_trees ||
+                                0 }}
+                            Hidup
+                        </div>
+                    </div>
+
+                    <!-- Metrik 2 & 3: Rata-rata -->
+                    <div class="text-center d-flex flex-column justify-center" style="flex: 1">
+                        <p class="font-weight-bold mb-3">Rata-rata Pertumbuhan</p>
+
+                        <div class="d-flex justify-center align-center">
+                            <!-- Metrik 2: Tinggi -->
+                            <div class="text-center px-4">
+                                <v-icon color="primary" class="mb-1" size="24">mdi-arrow-up-bold</v-icon>
+                                <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_length || 0).toFixed(1) }}
+                                </h5>
+                                <div class="small text-muted">cm (Tinggi)</div>
+                            </div>
+
+                            <!-- INI CARA BIKIN GARIS PEMISAH VERTIKAL -->
+                            <v-divider vertical style="height: 40px; align-self: center;"></v-divider>
+
+                            <!-- Metrik 3: Diameter -->
+                            <div class="text-center px-4">
+                                <v-icon color="info" class="mb-1" size="24">mdi-diameter</v-icon>
+                                <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_diameter || 0).toFixed(1)
+                                }}</h5>
+                                <div class="small text-muted">cm (Diameter)</div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="col-6 col-md-3 mb-3 text-center" v-if="data.tree_detail_acumulation[0].photo_life">
-                    <v-img :src="$_config.baseUrlUpload + '/' + data.tree_detail_acumulation[0].photo_life"
-                        aspect-ratio="1" class="grey lighten-2 rounded border cursor-pointer"
-                        @click="showLightbox(data.tree_detail_acumulation[0].photo_life)"></v-img>
-                    <p class="mt-2 font-weight-bold text-muted">Akm. Pohon Hidup</p>
-                </div>
-            </template>
-            <template v-else>
-                <div class="col-12 text-center text-muted pa-4 border rounded bg-light">
-                    <v-icon size="48" color="grey">mdi-image-off-outline</v-icon>
-                    <p class="mt-2 mb-0">Foto akumulasi belum tersedia</p>
-                </div>
-            </template>
-        </div>
+            </v-col>
+        </v-row>
 
         <v-divider class="my-5"></v-divider>
 
-
-        <!-- STATISTIK PERTUMBUHAN -->
-        <div v-if="data.life_tree_percentage != null" class="mb-5">
-            <h5 class="mb-4 text-warning">
-                <v-icon left color="warning">mdi-chart-donut</v-icon> Statistik Pertumbuhan Pohon
-            </h5>
-            <div class="row text-center px-4">
-                <div class="col-12 col-md-4">
-                    <p class="font-weight-bold mb-3">Persentase Pohon Hidup</p>
-                    <v-progress-circular :rotate="360" :size="150" :width="15" :value="data.life_tree_percentage || 0"
-                        :color="data.life_tree_percentage > 80 ? 'green' : (data.life_tree_percentage > 30 ? 'orange' : 'red')">
-                        <h4 class="mb-0">{{ Number(data.life_tree_percentage || 0).toFixed(1) }}%</h4>
-                    </v-progress-circular>
-                    <p class="text-muted mt-3 mb-0">Total: {{ data.current_monitoring_total_trees || 0 }} / {{
-                        data.previous_monitoring_total_trees || 0 }}</p>
-                </div>
-                <div class="col-12 col-md-8 d-flex flex-column justify-content-center align-items-center">
-                    <v-chip color="primary" class="font-weight-bold mb-3" label x-large>
-                        <v-icon left>mdi-arrow-up-bold</v-icon>
-                        Tinggi Rata-rata: {{ Number(data.average_tree_length || 0).toFixed(2) }} cm
-                    </v-chip>
-                    <v-chip color="info" class="font-weight-bold" label x-large>
-                        <v-icon left>mdi-diameter</v-icon>
-                        Diameter Rata-rata: {{ Number(data.average_tree_diameter || 0).toFixed(2) }} cm
-                    </v-chip>
-                </div>
-            </div>
-            <v-divider class="my-5"></v-divider>
-        </div>
     </div>
 </template>
 
