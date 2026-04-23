@@ -1,5 +1,12 @@
 <template>
     <div>
+        <monitoring-export-modal :dataKey="exportKey" :programYear="programYear" :currentYear="localPlantingYear"
+            :monitoringStep="activeStage" exportType="detail" endpoint="v2/export/monitoring-v3/excel"
+            title="Export Monitoring V3" />
+        <monitoring-export-modal :dataKey="exportSummaryKey" :programYear="programYear" :currentYear="localPlantingYear"
+            :monitoringStep="activeStage" exportType="summary" endpoint="v2/export/monitoring-v3/summary/excel"
+            title="Export Summary Monitoring V3" />
+
         <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"
             :hideCreate="true">
 
@@ -91,10 +98,11 @@
 import { buildMonitoringCrudConfig, MONITORING_STAGES_REGISTRY } from './config'
 import MonitoringDetail from './components/monitoring/MonitoringDetail.vue'
 import MonitoringDetailMap from '@/views/Lahan/components/DetailLahanMap'
+import MonitoringExportModal from './components/monitoring/ExportModal.vue'
 
 export default {
     name: 'crud-monitoring-v3',
-    components: { MonitoringDetail, MonitoringDetailMap },
+    components: { MonitoringDetail, MonitoringDetailMap, MonitoringExportModal },
 
     data() {
         return {
