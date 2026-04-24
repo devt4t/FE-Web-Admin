@@ -202,7 +202,7 @@ export default {
 
         async onVerifUM(item) {
             const prompt = await this.$_alert.confirm(
-                'Verifikasi UM?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
+                'Verifikasi RM?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.verifUM, {
@@ -214,11 +214,11 @@ export default {
                     is_verified: 2,
                     // verified_by: this.user.name,
                 }).then(() => {
-                    this.$_alert.success('Berhasil Verifikasi UM!')
+                    this.$_alert.success('Berhasil Verifikasi RM!')
                     this.refreshKey += 1
                 }).catch(err => {
-                    this.$_alert.error('Gagal Verifikasi UM!')
-                    console.error('verif UM error =>', err)
+                    this.$_alert.error('Gagal Verifikasi RM!')
+                    console.error('verif RM error =>', err)
                 })
             }
         },

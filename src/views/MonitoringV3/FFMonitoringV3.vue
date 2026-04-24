@@ -1,7 +1,7 @@
 <template>
     <geko-base-crud v-if="hasCheckedAccess" :config="config" :refreshKey="refreshKey" :hideUpdate="true"
         :hideDelete="!isAssignedAsFC" :hideCreate="!isAssignedAsFC">
-        <template v-slot:create-city="{ formData, setFormData, item }">
+        <template v-slot:create-city="{ formData }">
             <v-col lg="6">
                 <geko-input v-model="formData.city" :item="{
                     type: 'select',
@@ -50,7 +50,7 @@
             </v-col>
         </template>
 
-        <template v-slot:create-mu_no="{ formData, setFormData, item }">
+        <template v-slot:create-mu_no="{ formData }">
             <v-col md="12" class="form-separator">
                 <h4>AREA KERJA</h4>
             </v-col>
@@ -75,7 +75,7 @@
             </v-col>
         </template>
 
-        <template v-slot:create-target_area="{ formData, setFormData, item }">
+        <template v-slot:create-target_area="{ formData }">
             <v-col lg="6">
                 <geko-input v-model="formData.target_area" :item="{
                     type: 'select',
@@ -98,7 +98,7 @@
             </v-col>
         </template>
 
-        <template v-slot:create-working_area="{ formData, setFormData, item }">
+        <template v-slot:create-working_area="{ formData }">
             <v-col lg="6">
                 <geko-input v-model="formData.working_area" :item="{
                     type: 'select',
