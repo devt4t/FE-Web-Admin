@@ -343,7 +343,7 @@ export const FF_BASE_FIELDS = [
             },
             create: {
                 separator: "Domisili FF",
-                validation: ["required"],
+                validation: [],
                 type: "select",
                 getter: "GetProvince",
                 col_size: 6,
@@ -358,7 +358,7 @@ export const FF_BASE_FIELDS = [
             },
             update: {
                 separator: "Domisili FF",
-                validation: ["required"],
+                validation: [],
                 type: "select",
                 getter: "GetProvince",
                 col_size: 6,
@@ -385,12 +385,12 @@ export const FF_BASE_FIELDS = [
             },
             create: {
                 type: "row-slot",
-                validation: ["required"],
+                validation: [],
                 getter: "GetKabupaten",
                 col_size: 6,
             },
             update: {
-                validation: ["required"],
+                validation: [],
                 type: "row-slot",
                 base_type: "select",
                 option: {
@@ -452,12 +452,12 @@ export const FF_BASE_FIELDS = [
             detail: true,
             create: {
                 type: "textarea",
-                validation: ['required'],
+                validation: [],
                 col_size: 6,
             },
             update: {
                 type: "textarea",
-                validation: ['required'],
+                validation: [],
                 col_size: 6,
             },
         },

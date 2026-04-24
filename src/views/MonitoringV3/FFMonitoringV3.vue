@@ -7,7 +7,7 @@
                     type: 'select',
                     label: 'Kota / Kabupaten',
                     api: 'GetKabupaten',
-                    validation: ['required'],
+                    validation: [],
                     param: { province_code: formData.province },
                     option: {
                         getterKey: 'data.result',
@@ -23,7 +23,7 @@
                     type: 'select',
                     label: 'Kecamatan',
                     api: 'GetKecamatan',
-                    validation: ['required'],
+                    validation: [],
                     param: { kabupaten_no: formData.city },
                     option: {
                         getterKey: 'data.result',
@@ -40,7 +40,7 @@
                     type: 'select',
                     label: 'Desa',
                     api: 'GetDesa',
-                    validation: ['required'],
+                    validation: [],
                     param: { kode_kecamatan: formData.kecamatan },
                     option: {
                         getterKey: 'data.result',
