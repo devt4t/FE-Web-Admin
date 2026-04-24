@@ -45,7 +45,8 @@
                         </v-btn>
                     </div>
                     <!-- MODE SWITCHER -->
-                    <div class="d-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm">
+                    <div v-if="canAccessMonitoringV3"
+                        class="d-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm">
                         <span class="mr-2 font-weight-bold"
                             :class="isV3Mode ? 'text-muted' : 'text-success'">Legacy</span>
                         <v-switch v-model="isV3Mode" hide-details class="mt-0 pt-0" color="success"
@@ -595,6 +596,11 @@ export default {
         },
         // for populate v3
         toggleV3Mode(val) {
+            if (!this.canAccessMonitoringV3) {
+                this.isV3Mode = false;
+                return;
+            }
+
             if (val) {
                 // this.config.filter_api.is_populated_v3 = 0;
                 this.recalculateStage();
@@ -620,9 +626,38 @@ export default {
 
             this.refreshKey += 1;
         },
+
+        async resolveMonitoringV3Access() {
+            const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
+            const roles = Array.isArray(user.role) ? user.role.map(String) : [String(user.role)];
+            const isRole42 = roles.includes('42');
+
+            if (isRole42) {
+                this.canAccessMonitoringV3 = true;
+                return;
+            }
+
+            this.canAccessMonitoringV3 = await this.checkAssignedInternalFC(user)
+        },
+
+        async checkAssignedInternalFC(user) {
+            const programYear = this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear');
+
+            const response = await this.$_api.get('monitoring-officer-v3/fc/list', {
+                is_external: false,
+                program_year: programYear
+            });
+
+            const rows = response?.data?.data || [];
+            return rows.some(item => String(item.nik) === String(user.employee_no));
+        }
     },
     data() {
-        return config
+        return {
+            ...config,
+            canAccessMonitoringV3: false,
+            isCheckingMonitoringV3Access: false,
+        }
     },
     mounted() {
         if (this.isV3Mode) this.recalculateStage();
