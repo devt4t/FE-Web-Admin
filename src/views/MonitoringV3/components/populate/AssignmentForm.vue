@@ -55,12 +55,9 @@ export default {
                 id: 'assigned_to',
                 type: 'select',
                 label: 'Petugas FF Monitoring',
-                api: 'monitoring-officer-v3/ff/list',
+                api: 'monitoring-officer-v3/ff/options',
                 param: {
-                    // is_monitoring: 0,
-                    // active: 1,
                     program_year: this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear'),
-                    is_external: true,
                 },
                 option: {
                     getterKey: 'data',
