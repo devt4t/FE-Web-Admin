@@ -72,11 +72,11 @@ export default {
             this.isAssignLoading = true;
             try {
                 const payload = {
-                    nik: this.assignPayload.nik,
+                    employee_nik: this.assignPayload.nik,
                     user_id: this.user.id,
-                    program_year: this.config.globalFilter.program_year.value
+                    program_year: this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear')
                 }
-                await this.$axios.post('monitoring-officer-v3/fc/assign', payload);
+                await this.$_api.post('monitoring-officer-v3/fc/assign', payload);
 
                 this.$_alert.success(null, "Berhasil assign karyawan lama.");
                 this.isAssignModalOpen = false;
