@@ -173,10 +173,17 @@ export default {
     valid: true,
   }),
   created() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      this.$router.push("/Dashboard");
+      return;
+    }
     this.firstAccessPage();
   },
   methods: {
     firstAccessPage() {
+      const token = localStorage.getItem("token");
+      if (token) return;
       var authtoken = localStorage.getItem("token");
       if (authtoken) {
         localStorage.removeItem("token");
@@ -197,7 +204,6 @@ export default {
       if (BaseUrlUpload) {
         localStorage.removeItem("BaseUrlUpload");
       }
-      // base url portal
       var BaseUrlPortal = localStorage.getItem("BaseUrlPortal");
       if (BaseUrlPortal) {
         localStorage.removeItem("BaseUrlPortal");
