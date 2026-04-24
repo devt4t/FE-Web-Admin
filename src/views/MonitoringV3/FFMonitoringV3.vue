@@ -243,16 +243,17 @@ export default {
             active: '1'
         };
 
-        const userRoles = Array.isArray(userStore.role)
-            ? userStore.role.map(String)
-            : [String(userStore.role)];
+        // const userRoles = Array.isArray(userStore.role)
+        //     ? userStore.role.map(String)
+        //     : [String(userStore.role)];
 
-        const allowedRoles = ['19', '42'];
-        const hasAccessAsFC = userRoles.some(role => allowedRoles.includes(role));
+        // const allowedRoles = ['19', '42'];
+        // const allowedRoles = ['42'];
+        // const hasAccessAsFC = userRoles.some(role => allowedRoles.includes(role));
 
-        if (hasAccessAsFC) {
-            payload.fc_no = userStore.employee_no;
-        }
+        // if (hasAccessAsFC) {
+        //     payload.fc_no = userStore.employee_no;
+        // }
 
         this.$set(this.config, "setter_ext_payload", payload);
         this.user = JSON.parse(localStorage.getItem('User'));
