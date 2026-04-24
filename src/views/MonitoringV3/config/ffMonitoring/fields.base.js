@@ -87,6 +87,8 @@ export const FF_BASE_FIELDS = [
         id: "ff_no",
         label: "Kode FF",
         methods: {
+            list: true,
+            detail: true,
             update: {
                 disabled: true,
                 validation: ["required"],
