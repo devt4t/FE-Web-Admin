@@ -158,8 +158,9 @@
                         <geko-input v-model="assignPayload.ff_no" :item="{
                             type: 'select',
                             label: 'Pilih Karyawan',
-                            api: 'GetFFAllWeb_new',
+                            api: 'monitoring-officer-v3/ff/options',
                             param: {
+                                program_year: $store.state.tmpProgramYear,
                                 is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
                             },
                             option: {
