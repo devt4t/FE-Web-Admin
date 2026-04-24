@@ -28,12 +28,12 @@ export function buildMonitoringCrudConfig(stageNumber) {
 // Helper untuk FC monitoring
 export function buildFCMonitoringConfig(baseFields) {
     const permissionFC = {
-        create: 'ff-monitoring-v3-create',
-        read: 'ff-monitoring-v3-list',
-        update: 'ff-monitoring-v3-update',
-        detail: 'ff-monitoring-v3-detail',
-        lookup: 'ff-monitoring-v3-lookup',
-        delete: 'ff-monitoring-v3-delete',
+        create: 'fc-monitoring-v3-create',
+        read: 'fc-monitoring-v3-list',
+        update: 'fc-monitoring-v3-update',
+        detail: 'fc-monitoring-v3-detail',
+        lookup: 'fc-monitoring-v3-lookup',
+        delete: 'fc-monitoring-v3-delete',
     }
     return buildCrudConfigFCFF(baseFields, 'fc', permissionFC)
 }

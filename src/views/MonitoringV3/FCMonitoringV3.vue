@@ -93,6 +93,19 @@ export default {
         }
     },
     mounted() {
+        const userRoles = Array.isArray(this.$store.state.User.role)
+            ? this.$store.state.User.role.map(String)
+            : [String(this.$store.state.User.role)];
+
+        const allowedRoles = ['13', '23'];
+        const hasAccess = userRoles.some(role => allowedRoles.includes(role));
+
+        if (!hasAccess) {
+            this.$_alert.error(null, 'Anda tidak memiliki akses ke modul FC Monitoring V3.');
+            this.$router.push('/');
+            return;
+        }
+
         this.$set(this.config, "setter_ext_payload", {
             user_id: this.$store.state.User.employee_no,
             position_no: '42',

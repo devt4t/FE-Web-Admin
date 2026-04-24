@@ -29,27 +29,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
             return isFC ? 'AddEmployee' : 'AddFieldFacilitator'
         },
 
-        // Fields Mapping
-        // get fields() {
-        //     const clonedFields = JSON.parse(JSON.stringify(baseFields));
-        //     const setSafe = (obj, mode, key) => {
-        //         if (obj[mode] === true) {
-        //             obj[mode] = { view_data: key };
-        //         } else if (obj[mode] && typeof obj[mode] === 'object') {
-        //             obj[mode].view_data = key;
-        //         }
-        //     };
-
-        //     return clonedFields.map(f => {
-        //         if (this.dataSource === 'external') {
-        //             if (f.id === 'nik') setSafe(f.methods, 'list', isFC ? 'nik' : 'ff_no');
-        //             if (f.id === 'name') setSafe(f.methods, 'list', isFC ? 'name' : 'users_name');
-        //             if (f.id === 'email') setSafe(f.methods, 'list', isFC ? 'email' : 'users_email');
-        //         }
-        //         return f;
-        //     });
-        // },
-
         // Delete Dinamis
         get delete() {
             let flag = this.dataSource === 'external' ? 'true' : 'false'
@@ -58,11 +37,7 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
         },
 
         get deleteKey() {
-            if (isFC) {
-                return this.dataSource === 'external' ? 'nik' : 'employee_no';
-            }
-            return 'ff_no';
-            // return 'id'
+            return isFC ? 'nik' : 'ff_no';
         },
 
         get deleteLabel() {
@@ -77,8 +52,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
         },
 
         get detailIdKey() {
-            // if (isFC) return this.dataSource === 'external' ? 'nik' : 'employee_no';
-            // return 'ff_no';
             return 'id'
         },
 

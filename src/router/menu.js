@@ -619,7 +619,7 @@ const menu = [
         permission: 'Monitoring',
         icon: 'maginfy-expand',
         type: ['non-carbon'],
-        // roles: ['42'],
+        roles: ['13', '23'],
       },
       {
         title: "FF Monitoring V3",
