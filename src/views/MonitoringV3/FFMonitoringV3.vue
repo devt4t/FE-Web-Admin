@@ -1,6 +1,6 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="false"
-        :hideCreate="false">
+    <geko-base-crud v-if="hasCheckedAccess" :config="config" :refreshKey="refreshKey" :hideUpdate="true"
+        :hideDelete="!isAssignedAsFC" :hideCreate="!isAssignedAsFC">
         <template v-slot:create-city="{ formData, setFormData, item }">
             <v-col lg="6">
                 <geko-input v-model="formData.city" :item="{
@@ -141,7 +141,7 @@
                         <v-btn value="internal" small>Data Internal (Employee)</v-btn>
                     </v-btn-toggle>
                 </div>
-                <div>
+                <div v-if="isAssignedAsFC">
                     <!-- Tombol Assign Existing -->
                     <v-btn color="success" class="mr-2" @click="isAssignModalOpen = true">
                         <v-icon small>mdi-account-arrow-right</v-icon>
@@ -158,10 +158,10 @@
                         <geko-input v-model="assignPayload.ff_no" :item="{
                             type: 'select',
                             label: 'Pilih Karyawan',
-                            api: 'monitoring-officer-v3/ff/options',
+                            api: 'monitoring-officer-v3/ff/options/public',
                             param: {
                                 program_year: $store.state.tmpProgramYear,
-                                is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
+                                is_monitoring: null // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
                             },
                             option: {
                                 getterKey: 'data',
@@ -194,6 +194,8 @@ export default {
             isAssignModalOpen: false,
             isAssignLoading: false,
             assignPayload: { ff_no: null, user_id: null },
+            isAssignedAsFC: false,
+            hasCheckedAccess: false,
         }
     },
     methods: {
@@ -227,37 +229,80 @@ export default {
             } finally {
                 this.isAssignLoading = false;
             }
-        }
-    },
-    mounted() {
-        const userStore = this.$store.state.User
+        },
 
-        console.log("[DEBUG] Is Role an Array?", Array.isArray(userStore.role));
-        console.log("[DEBUG] What is the Role value?", userStore.role);
+        async checkAssignedFC() {
+            try {
+                const programYear = this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear');
+
+                const [externalRes, internalRes] = await Promise.all([
+                    this.$_api.get('monitoring-officer-v3/fc/list', {
+                        is_external: true,
+                        program_year: programYear
+                    }),
+                    this.$_api.get('monitoring-officer-v3/fc/list', {
+                        is_external: false,
+                        program_year: programYear
+                    })
+                ]);
+
+                const externalRows = externalRes?.data || [];
+                const internalRows = internalRes?.data || [];
+                const allFCRows = [...externalRows, ...internalRows];
+
+                const currentEmployeeNo = String(this.user.employee_no || '');
+                const currentNik = String(this.user.nik || '');
+
+                this.isAssignedAsFC = allFCRows.some(item => {
+                    const itemEmployeeNo = String(item.employee_no || '');
+                    const itemNik = String(item.nik || '');
+
+                    return (
+                        itemEmployeeNo === currentEmployeeNo ||
+                        itemNik === currentEmployeeNo ||
+                        itemEmployeeNo === currentNik ||
+                        itemNik === currentNik
+                    );
+                });
+
+                console.log('[DEBUG] user', this.user);
+                console.log('[DEBUG] programYear', programYear);
+                console.log('[DEBUG] externalRes', externalRes);
+                console.log('[DEBUG] internalRes', internalRes);
+
+
+            } catch (e) {
+                console.error("Gagal mengecek assignment FC", e);
+                this.isAssignedAsFC = false;
+            } finally {
+                this.hasCheckedAccess = true;
+
+                if (!this.isAssignedAsFC) {
+                    this.$_alert.error(
+                        null,
+                        "Anda belum terdaftar/di-assign sebagai FC di Monitoring V3. Fitur penambahan FF dinonaktifkan."
+                    );
+                }
+            }
+        }
+
+    },
+    async mounted() {
+        this.user = JSON.parse(localStorage.getItem('User') || '{}');
 
         // Base payload
         const payload = {
-            user_id: this.$store.state.User.employee_no,
+            user_id: this.user.employee_no,
             position_no: '43',
             is_monitoring: 1,
-            fc_no: this.$store.state.User.employee_no,
+            fc_no: this.user.employee_no,
             active: '1'
         };
 
-        // const userRoles = Array.isArray(userStore.role)
-        //     ? userStore.role.map(String)
-        //     : [String(userStore.role)];
-
-        // const allowedRoles = ['19', '42'];
-        // const allowedRoles = ['42'];
-        // const hasAccessAsFC = userRoles.some(role => allowedRoles.includes(role));
-
-        // if (hasAccessAsFC) {
-        //     payload.fc_no = userStore.employee_no;
-        // }
-
         this.$set(this.config, "setter_ext_payload", payload);
-        this.user = JSON.parse(localStorage.getItem('User'));
+
+        // Lakukan Preemptive Check
+        await this.checkAssignedFC();
     },
 }
 </script>

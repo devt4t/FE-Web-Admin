@@ -637,19 +637,36 @@ export default {
                 return;
             }
 
-            this.canAccessMonitoringV3 = await this.checkAssignedInternalFC(user)
+            this.canAccessMonitoringV3 = await this.checkAssignedFC(user)
         },
 
-        async checkAssignedInternalFC(user) {
+        async checkAssignedFC(user) {
             const programYear = this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear');
 
-            const response = await this.$_api.get('monitoring-officer-v3/fc/list', {
-                is_external: false,
-                program_year: programYear
-            });
+            // Kita tembak KEDUA endpoint sekaligus (Internal dan External)
+            const [externalRes, internalRes] = await Promise.all([
+                this.$_api.get('monitoring-officer-v3/fc/list', { is_external: true, program_year: programYear }),
+                this.$_api.get('monitoring-officer-v3/fc/list', { is_external: false, program_year: programYear })
+            ]);
 
-            const rows = response?.data?.data || [];
-            return rows.some(item => String(item.nik) === String(user.employee_no));
+            const externalRows = externalRes?.data || [];
+            const internalRows = internalRes?.data || [];
+            const allFCRows = [...externalRows, ...internalRows];
+
+            const currentEmployeeNo = String(user.employee_no || '');
+            const currentNik = String(user.nik || '');
+
+            return allFCRows.some(item => {
+                const itemEmployeeNo = String(item.employee_no || '');
+                const itemNik = String(item.nik || '');
+
+                return (
+                    itemEmployeeNo === currentEmployeeNo ||
+                    itemNik === currentEmployeeNo ||
+                    itemEmployeeNo === currentNik ||
+                    itemNik === currentNik
+                );
+            });
         }
     },
     data() {
@@ -661,6 +678,7 @@ export default {
     },
     mounted() {
         if (this.isV3Mode) this.recalculateStage();
+        this.resolveMonitoringV3Access();
     },
 
 };
