@@ -15,8 +15,7 @@
                 <div class="indicator-wrapper pt-1">
                     <div class="indicator" :class="{
                         danger: item.is_verified == 0,
-                        warning: item.is_verified == 1,
-                        success: item.is_verified == 2,
+                        sucesss: item.is_verified == 1
                     }"></div>
                 </div>
             </template>
@@ -62,7 +61,7 @@
 
                 <!-- Generate Populate (conditional) -->
                 <v-btn variant="success" small class="mt-2" @click="onGeneratePopulate(item)"
-                    v-if="stageConfig.features.hasGeneratePopulate && item.is_verified == 2">
+                    v-if="stageConfig.features.hasGeneratePopulate && item.is_verified == 1">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Generate Populate Mon {{ stageConfig.populate.targetStage }}</span>
                 </v-btn>
@@ -129,7 +128,6 @@ export default {
     },
 
     watch: {
-        // Watch programYear agar bila user ganti filter tahun, config dibangun ulang
         programYear(newVal) {
             this.recalculateStage(newVal);
         }
@@ -137,7 +135,7 @@ export default {
 
     mounted() {
         this.user = JSON.parse(localStorage.getItem('User'))
-        // Hitung stage awal berdasarkan Vuex yang sudah siap
+
         this.recalculateStage(this.programYear);
     },
 
