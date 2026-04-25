@@ -187,7 +187,7 @@ export default {
                     current_year: this.localPlantingYear,
                     program_year: item.program_year,
                     is_verified: 1,
-                    // verified_by: this.user.name,
+                    verified_by: this.user.name,
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi FC!')
                     this.refreshKey += 1

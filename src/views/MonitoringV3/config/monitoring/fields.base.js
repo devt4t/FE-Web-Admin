@@ -232,7 +232,16 @@ export const MONITORING_BASE_FIELDS = [
             //         list_pointer: { code: 'code', label: 'name', display: ['name'] },
             //     },
             // },
-            list: true, detail: true,
+            list: { view_data: 'planting_year' },
+            detail: { view_data: 'planting_year' },
         },
     },
+    {
+        id: 'is_populated_v3',
+        label: 'Is Populated V3',
+        methods: {
+            list: { view_data: 'is_populated_v3' },
+            detail: { view_data: 'is_populated_v3' }
+        }
+    }
 ]
