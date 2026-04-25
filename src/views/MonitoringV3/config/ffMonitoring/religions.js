@@ -17,7 +17,7 @@ export default {
             label: "Hindu",
         },
         {
-            code: "budha",
+            code: "buddha",
             label: "Budha",
         },
     ],

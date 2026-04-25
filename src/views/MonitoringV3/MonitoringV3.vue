@@ -15,7 +15,7 @@
                 <div class="indicator-wrapper pt-1">
                     <div class="indicator" :class="{
                         danger: item.is_verified == 0,
-                        successs: item.is_verified == 1
+                        success: item.is_verified == 1
                     }"></div>
                 </div>
             </template>
@@ -48,24 +48,25 @@
                 </v-btn> -->
 
                 <!-- Hapus -->
-                <v-btn variant="danger" small class="mt-2" @click="onDelete(item)" v-if="item.is_verified == 0">
+                <v-btn variant="danger" small class="mt-2" @click="onDelete(item)"
+                    v-if="item.is_verified == 0 && canDelete">
                     <v-icon small>mdi-trash-can</v-icon>
                     <span>Hapus</span>
                 </v-btn>
 
                 <!-- Unverifikasi -->
                 <v-btn variant="danger" small class="mt-2" @click="onUnverif(item)"
-                    v-if="item.is_verified != 0 && item.is_populated == 0">
+                    v-if="item.is_verified != 0 && item.is_populated_v3 == 0">
                     <v-icon small>mdi-backspace</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
 
-                <!-- Generate Populate (conditional) -->
-                <v-btn variant="success" small class="mt-2" @click="onGeneratePopulate(item)"
+                <!-- Generate Populate (conditional => nanti dulu) -->
+                <!-- <v-btn variant="success" small class="mt-2" @click="onGeneratePopulate(item)"
                     v-if="stageConfig.features.hasGeneratePopulate && item.is_verified == 1">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Generate Populate Mon {{ stageConfig.populate.targetStage }}</span>
-                </v-btn>
+                </v-btn> -->
             </template>
 
             <!-- EXPORT BUTTONS AND PLANTING YEAR -->
@@ -129,6 +130,11 @@ export default {
         },
         stageConfig() {
             return MONITORING_STAGES_REGISTRY[this.activeStage]
+        },
+        canDelete() {
+            const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
+            const positionNo = String(user.position_no || '');
+            return ['13', '23', '3', '4'].includes(positionNo)
         }
     },
 
@@ -186,13 +192,15 @@ export default {
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.verifFC, {
-                    // [this.stageConfig.key]: item[this.stageConfig.key],
+                    [this.stageConfig.key]: item[this.stageConfig.key],
                     // monitoring_step: this.activeStage,
                     id: item.id,
                     current_year: this.localPlantingYear,
                     program_year: item.program_year,
                     is_verified: 1,
                     user_id: this.user.id,
+                    verified_by: this.user.id,
+                    verified_at: new Date().toISOString(),
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi FC!')
                     this.refreshKey += 1

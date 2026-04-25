@@ -50,6 +50,13 @@ export const MONITORING_BASE_FIELDS = [
         },
     },
     {
+        id: 'users_name',
+        label: 'Nama FC',
+        methods: {
+            list: true, detail: true,
+        }
+    },
+    {
         id: 'farmer_name',
         label: 'Nama Petani',
         methods: { list: true, detail: true },
@@ -185,19 +192,19 @@ export const MONITORING_BASE_FIELDS = [
         methods: {
             list: {
                 view_data: 'is_verified',
-                class: { 0: 'badge bg-danger', 1: 'badge bg-warning', 2: 'badge bg-success' },
+                class: { 0: 'badge bg-danger', 1: 'badge bg-success' },
                 transform: 'monitoring-verification-status',
             },
             detail: {
                 view_data: 'is_verified',
-                class: { 0: 'badge bg-danger', 1: 'badge bg-warning', 2: 'badge bg-success' },
+                class: { 0: 'badge bg-danger', 1: 'badge bg-success' },
                 transform: 'monitoring-verification-status',
             },
         },
     },
     {
-        id: 'verified_by',
-        label: 'Terverifikasi Oleh',
+        id: 'users_name_verified_by',
+        label: 'Diverifikasi Oleh',
         methods: { list: true, detail: true },
     },
     {
@@ -242,6 +249,14 @@ export const MONITORING_BASE_FIELDS = [
         methods: {
             list: { view_data: 'is_populated_v3' },
             detail: { view_data: 'is_populated_v3' }
+        }
+    },
+    {
+        id: 'verified_at',
+        label: 'Waktu Diverifikasi',
+        methods: {
+            list: true,
+            detail: true
         }
     }
 ]

@@ -26,9 +26,10 @@
                         <geko-input v-model="assignPayload.nik" :item="{
                             type: 'select',
                             label: 'Pilih Karyawan',
-                            api: 'getEmployeeList_new',
+                            api: 'monitoring-officer-v3/fc/options',
                             param: {
-                                is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
+                                // is_monitoring: 0 // => jika is_monitoring = 1 maka datanya tidak akan muncul alias dikecualikan
+                                program_year: $store.state.tmpProgramYear
                             },
                             option: {
                                 list_pointer: { label: 'name', code: 'nik', display: ['name', 'nik'] }

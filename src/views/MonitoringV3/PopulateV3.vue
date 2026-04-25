@@ -36,7 +36,7 @@
 
                 <!-- delete populate -->
                 <v-btn class="d-flex flex-row align-items-center mt-2" variant="danger" small
-                    @click="onDeletePopulate(item)" v-if="item.is_monitoring == 0">
+                    @click="onDeletePopulate(item)" v-if="item.is_monitoring == 0 && canDelete">
                     <v-icon small>mdi-backspace</v-icon>
                     <span>Hapus Data Populasi</span>
                 </v-btn>
@@ -114,6 +114,11 @@ export default {
         },
         stageConfig() {
             return POPULATE_STAGE_REGISTRY[this.activePopulateStage]
+        },
+        canDelete() {
+            const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
+            const positionNo = String(user.position_no || '');
+            return ['13', '23', '3', '4'].includes(positionNo)
         }
     },
 

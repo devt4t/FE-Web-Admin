@@ -225,7 +225,7 @@ export default {
                 this.refreshKey += 1;
             } catch (e) {
                 console.error('[DEBUG] assign error', e);
-                this.$_alert.error(null, 'Gagal melakukan assign data FF,')
+                this.$_alert.error(null, 'Gagal melakukan assign data FF')
             } finally {
                 this.isAssignLoading = false;
             }
@@ -251,20 +251,6 @@ export default {
                 const internalRows = internalRes?.data || [];
                 const allFCRows = [...externalRows, ...internalRows];
 
-                const currentEmployeeNo = String(this.user.employee_no || '');
-                const currentNik = String(this.user.nik || '');
-
-                // this.isAssignedAsFC = allFCRows.some(item => {
-                //     const itemEmployeeNo = String(item.employee_no || '');
-                //     const itemNik = String(item.nik || '');
-
-                //     return (
-                //         itemEmployeeNo === currentEmployeeNo ||
-                //         itemNik === currentEmployeeNo ||
-                //         itemEmployeeNo === currentNik ||
-                //         itemNik === currentNik
-                //     );
-                // });
                 const currentIds = [this.user.employee_no, this.user.nik]
                     .map(v => String(v || '').trim()).filter(Boolean);
 
@@ -274,9 +260,9 @@ export default {
                     return rowIds.some(id => currentIds.includes(id));
                 });
 
-
             } catch (e) {
                 console.error("Gagal mengecek assignment FC", e);
+                // this.$_alert.error("Anda belum terdaftar/di-assign sebagai FC di Monitoring V3. Fitur penambahan FF dinonaktifkan.")
                 this.isAssignedAsFC = false;
             } finally {
                 this.hasCheckedAccess = true;
