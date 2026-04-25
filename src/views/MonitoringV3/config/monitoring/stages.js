@@ -4,7 +4,7 @@ export const MONITORING_STAGES_REGISTRY = {
         stageNumber: 2,
         key: 'monitoring2_no',
         api: {
-            list: 'monitorings-v3/list',
+            list: 'monitorings-v3/list/web',
             detail: 'monitorings-v3/detail',
             verifFC: 'monitorings-v3/update/main',
             verifUM: 'monitorings-v3/update/main',
@@ -48,7 +48,7 @@ export const MONITORING_STAGES_REGISTRY = {
         stageNumber: 3,
         key: 'monitoring3_no',
         api: {
-            list: 'monitorings-v3/list',
+            list: 'monitorings-v3/list/web',
             detail: 'monitorings-v3/detail',
             verifFC: 'monitorings-v3/update/main',
             verifUM: 'monitorings-v3/update/main',
@@ -92,7 +92,7 @@ export const MONITORING_STAGES_REGISTRY = {
         stageNumber: 4,
         key: 'monitoring4_no',
         api: {
-            list: 'monitorings-v3/list',
+            list: 'monitorings-v3/list/web',
             detail: 'monitorings-v3/detail',
             verifFC: 'monitorings-v3/update/main',
             verifUM: 'monitorings-v3/update/main',
@@ -136,7 +136,7 @@ export const MONITORING_STAGES_REGISTRY = {
         stageNumber: 5,
         key: 'monitoring5_no',
         api: {
-            list: 'monitorings-v3/list',
+            list: 'monitorings-v3/list/web',
             detail: 'monitorings-v3/detail',
             verifFC: 'monitorings-v3/update/main',
             verifUM: 'monitorings-v3/update/main',

@@ -64,6 +64,11 @@ export default {
         }
     },
     methods: {
+        randomNik() {
+            const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+            return `FC_MONV3_${Date.now()}_${randomNumber}`
+        },
+
         async submitAssignExisting() {
             if (!this.assignPayload.nik) {
                 return this.$_alert.error(null, "Harap pilih Karyawan terlebih dahulu.");
@@ -106,12 +111,17 @@ export default {
             return;
         }
 
+
+        this.user = JSON.parse(localStorage.getItem('User'))
+
+        const generateNIK = this.randomNik();
+
         this.$set(this.config, "setter_ext_payload", {
+            nik: generateNIK,
             user_id: this.$store.state.User.employee_no,
             position_no: '42',
             is_monitoring: 1,
         });
-        this.user = JSON.parse(localStorage.getItem('User'))
     },
 }
 </script>

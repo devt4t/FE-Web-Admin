@@ -88,13 +88,17 @@ export default {
     components: { PopulateDetail, AssignmentForm, StatusBadge },
 
     data() {
+        const currentYear = '2025'
+        const config = buildPopulateCrudConfig('1-to-2')
+        config.getter = `${config.getter}?current_year=${currentYear}`
+
         return {
             activePopulateStage: '1-to-2',
-            config: buildPopulateCrudConfig('1-to-2'),
+            config: config,
             refreshKey: 1,
             formData: null,
             formDataKey: 0,
-            localPlantingYear: '2025',
+            localPlantingYear: currentYear,
         }
     },
 
@@ -229,7 +233,7 @@ export default {
                     program_year: item.program_year,
                     current_year: this.localPlantingYear
                 }
-                // this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = (item[k]));
+                this.stageConfig.deletePayloadKeys.forEach(k => payload[k] = (item[k]));
                 this.$_api.post(this.stageConfig.api.delete, payload)
                     .then(() => {
                         this.$_alert.success('Berhasil menghapus data populasi!')

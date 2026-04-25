@@ -7,7 +7,7 @@
                     type: 'select',
                     label: 'Kota / Kabupaten',
                     api: 'GetKabupaten',
-                    validation: [],
+                    validation: ['required'],
                     param: { province_code: formData.province },
                     option: {
                         getterKey: 'data.result',
@@ -23,7 +23,7 @@
                     type: 'select',
                     label: 'Kecamatan',
                     api: 'GetKecamatan',
-                    validation: [],
+                    validation: ['required'],
                     param: { kabupaten_no: formData.city },
                     option: {
                         getterKey: 'data.result',
@@ -40,7 +40,7 @@
                     type: 'select',
                     label: 'Desa',
                     api: 'GetDesa',
-                    validation: [],
+                    validation: ['required'],
                     param: { kode_kecamatan: formData.kecamatan },
                     option: {
                         getterKey: 'data.result',
@@ -59,7 +59,7 @@
                     type: 'select',
                     label: 'Management Unit',
                     api: 'GetManagementUnit',
-                    validation: [],
+                    validation: ['required'],
                     param: {
                         program_year: formData.program_year,
                     },
@@ -81,7 +81,7 @@
                     type: 'select',
                     label: 'Target Area',
                     api: 'new-utilities/target-areas',
-                    validation: [],
+                    validation: ['required'],
                     param: {
                         program_year: formData.program_year,
                         mu_no: formData.mu_no,
@@ -104,7 +104,7 @@
                     type: 'select',
                     label: 'Working Area / Desa',
                     api: 'GetDesa',
-                    validation: [],
+                    validation: ['required'],
                     param: {
                         program_year: formData.program_year,
                         kode_ta: formData.target_area,
@@ -231,6 +231,7 @@ export default {
             }
         },
 
+
         async checkAssignedFC() {
             try {
                 const programYear = this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear');
@@ -253,22 +254,25 @@ export default {
                 const currentEmployeeNo = String(this.user.employee_no || '');
                 const currentNik = String(this.user.nik || '');
 
+                // this.isAssignedAsFC = allFCRows.some(item => {
+                //     const itemEmployeeNo = String(item.employee_no || '');
+                //     const itemNik = String(item.nik || '');
+
+                //     return (
+                //         itemEmployeeNo === currentEmployeeNo ||
+                //         itemNik === currentEmployeeNo ||
+                //         itemEmployeeNo === currentNik ||
+                //         itemNik === currentNik
+                //     );
+                // });
+                const currentIds = [this.user.employee_no, this.user.nik]
+                    .map(v => String(v || '').trim()).filter(Boolean);
+
                 this.isAssignedAsFC = allFCRows.some(item => {
-                    const itemEmployeeNo = String(item.employee_no || '');
-                    const itemNik = String(item.nik || '');
-
-                    return (
-                        itemEmployeeNo === currentEmployeeNo ||
-                        itemNik === currentEmployeeNo ||
-                        itemEmployeeNo === currentNik ||
-                        itemNik === currentNik
-                    );
+                    const rowIds = [item.nik, item.employee_no]
+                        .map(v => String(v || '').trim()).filter(Boolean);
+                    return rowIds.some(id => currentIds.includes(id));
                 });
-
-                console.log('[DEBUG] user', this.user);
-                console.log('[DEBUG] programYear', programYear);
-                console.log('[DEBUG] externalRes', externalRes);
-                console.log('[DEBUG] internalRes', internalRes);
 
 
             } catch (e) {

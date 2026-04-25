@@ -57,7 +57,7 @@ export default {
                 label: 'Petugas FF Monitoring',
                 api: 'monitoring-officer-v3/ff/options',
                 param: {
-                    program_year: this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear'),
+                    current_year: this.currentYear,
                 },
                 option: {
                     getterKey: 'data',

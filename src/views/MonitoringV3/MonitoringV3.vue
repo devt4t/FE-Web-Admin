@@ -35,7 +35,8 @@
             <!-- ACTION BUTTONS -->
             <template v-slot:list-bottom-action="{ item }">
                 <!-- Verifikasi FC -->
-                <v-btn variant="warning" small class="mt-2" @click="onVerifFC(item)" v-if="item.is_verified == 0">
+                <v-btn variant="warning" small class="mt-2" @click="onVerifFC(item)"
+                    v-if="item.is_verified == 0 && item.monitoring_end !== null && item.monitoring_end !== ''">
                     <v-icon small>mdi-check</v-icon>
                     <span>Verifikasi FC</span>
                 </v-btn>
@@ -104,14 +105,18 @@ export default {
     components: { MonitoringDetail, MonitoringDetailMap, MonitoringExportModal },
 
     data() {
+        const currentYear = '2025'
+        const config = buildMonitoringCrudConfig(2)
+        config.getter = `${config.getter}?current_year=${currentYear}`
+
         return {
             activeStage: 2,
-            config: buildMonitoringCrudConfig(2),
+            config,
             refreshKey: 1,
             exportKey: 0,
             exportSummaryKey: 0,
             user: {},
-            localPlantingYear: '2025',
+            localPlantingYear: currentYear,
         }
     },
 
@@ -187,7 +192,7 @@ export default {
                     current_year: this.localPlantingYear,
                     program_year: item.program_year,
                     is_verified: 1,
-                    verified_by: this.user.name,
+                    user_id: this.user.id,
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi FC!')
                     this.refreshKey += 1

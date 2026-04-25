@@ -4,10 +4,11 @@
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
-            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" @update:dataKey="exportLahanKey = $event"
-                :program_year="$store.state.tmpProgramYear" />
+            <planting-soc-export-lahan-mu v-if="!isExternalFC" :dataKey="exportLahanKey"
+                @update:dataKey="exportLahanKey = $event" :program_year="$store.state.tmpProgramYear" />
             <populate-modal :dataKey="populateKey" :is-v3="isV3Mode" :target-stage="targetMonitoringStage"
-                :target-populate="targetPopulateStage" :current-year="localPlantingYear" />
+                :target-populate="targetPopulateStage" :current-year="localPlantingYear"
+                :is-external-f-c="isExternalFC" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
@@ -34,7 +35,7 @@
             <div class="d-flex flex-column pb-2 pt-2 border-bottom mb-3">
                 <div class="d-flex flex-row justify-content-between align-items-center mb-2">
                     <div class="d-flex flex-row justify-content-start">
-                        <v-btn variant="info" class="mr-2" @click="exportLahanKey = Date.now()">
+                        <v-btn v-if="!isExternalFC" variant="info" class="mr-2" @click="exportLahanKey = Date.now()">
                             <v-icon>mdi-table-arrow-right</v-icon>
                             <span>Export Excel </span>
                         </v-btn>
@@ -50,7 +51,7 @@
                         <span class="mr-2 font-weight-bold"
                             :class="isV3Mode ? 'text-muted' : 'text-success'">Legacy</span>
                         <v-switch v-model="isV3Mode" hide-details class="mt-0 pt-0" color="success"
-                            @change="toggleV3Mode"></v-switch>
+                            :disabled="isExternalFC" @change="toggleV3Mode"></v-switch>
                         <span class="ml-2 font-weight-bold" :class="isV3Mode ? 'text-success' : 'text-muted'">Monitoring
                             V3</span>
                     </div>
@@ -601,6 +602,11 @@ export default {
                 return;
             }
 
+            if (this.isExternalFC && !val) {
+                this.isV3Mode = true;
+                return;
+            }
+
             if (val) {
                 // this.config.filter_api.is_populated_v3 = 0;
                 this.recalculateStage();
@@ -627,17 +633,51 @@ export default {
             this.refreshKey += 1;
         },
 
+        normalizeIdentity(value) {
+            return String(value || '').trim();
+        },
+
+        getComparableIds(source = {}) {
+            return [source.employee_no, source.nik]
+                .map(this.normalizeIdentity)
+                .filter(Boolean);
+        },
+
+        hasMatchingIdentity(rows = [], user = {}) {
+            const currentIds = this.getComparableIds(user);
+
+            if (!currentIds.length) {
+                return false;
+            }
+
+            return rows.some(item => {
+                const rowIds = this.getComparableIds(item);
+                return rowIds.some(id => currentIds.includes(id));
+            });
+        },
+
         async resolveMonitoringV3Access() {
             const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
             const roles = Array.isArray(user.role) ? user.role.map(String) : [String(user.role)];
             const isRole42 = roles.includes('42');
+            const isMonitoringUser = user.is_monitoring
 
-            if (isRole42) {
+            if (isMonitoringUser === 1) {
                 this.canAccessMonitoringV3 = true;
+                this.isExternalFC = true;
+                this.isV3Mode = true;
+                this.recalculateStage();
                 return;
             }
 
-            this.canAccessMonitoringV3 = await this.checkAssignedFC(user)
+            const access = await this.checkAssignedFC(user);
+            this.canAccessMonitoringV3 = access.canAccess;
+            this.isExternalFC = access.isExternalFC;
+
+            if (this.isExternalFC) {
+                this.isV3Mode = true;
+                this.recalculateStage();
+            }
         },
 
         async checkAssignedFC(user) {
@@ -651,22 +691,13 @@ export default {
 
             const externalRows = externalRes?.data || [];
             const internalRows = internalRes?.data || [];
-            const allFCRows = [...externalRows, ...internalRows];
+            const isExternalFC = this.hasMatchingIdentity(externalRows, user);
+            const isInternalFC = this.hasMatchingIdentity(internalRows, user);
 
-            const currentEmployeeNo = String(user.employee_no || '');
-            const currentNik = String(user.nik || '');
-
-            return allFCRows.some(item => {
-                const itemEmployeeNo = String(item.employee_no || '');
-                const itemNik = String(item.nik || '');
-
-                return (
-                    itemEmployeeNo === currentEmployeeNo ||
-                    itemNik === currentEmployeeNo ||
-                    itemEmployeeNo === currentNik ||
-                    itemNik === currentNik
-                );
-            });
+            return {
+                canAccess: isExternalFC || isInternalFC,
+                isExternalFC,
+            };
         }
     },
     data() {
@@ -674,6 +705,7 @@ export default {
             ...config,
             canAccessMonitoringV3: false,
             isCheckingMonitoringV3Access: false,
+            isExternalFC: false,
         }
     },
     mounted() {

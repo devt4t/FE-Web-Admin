@@ -22,6 +22,20 @@
                                 </div>
                             </v-alert>
                         </div>
+                        <div v-if="!isV3 && isExternalFC" class="mb-4">
+                            <v-alert colored-border border="left" color="error" class="bg-danger-lighten-5">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="text-h6 font-weight-bold text-danger mb-0">Akses Ditolak</div>
+                                        <div class="text-caption">
+                                            FC Monitoring V3 tidak dapat menggunakan modul populate Legacy. Silakan aktifkan switch <strong>Monitoring V3</strong> pada halaman sebelumnya.
+                                        </div>
+                                    </div>
+                                </div>
+                            </v-alert>
+                        </div>
+                        
+                        <template v-if="!isExternalFC || isV3">
                         <geko-input v-if="!isV3" v-model="populateModalSwitch" :item="{
                             type: 'select',
                             label: 'Modul Populate Monitoring',
@@ -39,7 +53,10 @@
                             },
                         }" />
 
+                        </template>
                     </v-col>
+                    
+                    <template v-if="!isExternalFC || isV3">
 
 
                     <geko-input v-model="exportBy" :item="{
@@ -412,9 +429,7 @@
                             </form>
                         </ValidationObserver>
                     </div>
-                    <div>
-
-                    </div>
+                    </template>
                 </v-card-text>
             </v-card>
         </template>
@@ -702,17 +717,26 @@ export default {
         currentYear: {
             type: [Number, String],
             default: 2025
+        },
+        isExternalFC: {
+            type: Boolean,
+            default: false
         }
     },
 
     watch: {
         dataKey(t) {
             if (t > 0) {
+                this.isOpen = true;
+
+                if (this.isExternalFC && !this.isV3) {
+                    this.resetPopulateData();
+                    return;
+                }
 
                 this.getFFDataForExport()
                 this.getUMDataForExport()
                 this.getTADataForExport()
-                this.isOpen = true;
             }
 
             // if (!t) {
@@ -746,6 +770,39 @@ export default {
     // },
 
     methods: {
+        resetPopulateData() {
+            this.ff_no = null;
+            this.mu_no = null;
+            this.target_area = null;
+            this.multiple_lahans = null;
+            this.exportBy = 'ff';
+
+            this.configFF.selected = [];
+            this.configFF.allPopulateData = [];
+            this.configFF.totalRecord = 0;
+            this.configFF.totalTrees = 0;
+
+            this.configMU.selected = [];
+            this.configMU.allPopulateData = [];
+            this.configMU.totalRecord = 0;
+            this.configMU.totalTrees = 0;
+
+            this.configTA.selected = [];
+            this.configTA.allPopulateData = [];
+            this.configTA.totalRecord = 0;
+            this.configTA.totalTrees = 0;
+
+            this.config_multiple_lahans.selected = [];
+            this.config_multiple_lahans.allPopulateData = [];
+            this.config_multiple_lahans.totalRecord = 0;
+            this.config_multiple_lahans.totalTrees = 0;
+
+            this.loadingExportByFF = false;
+            this.loadingExportByMU = false;
+            this.loadingExportByTA = false;
+            this.loadingExportBy_multiple_lahans = false;
+        },
+
         GetTAData() {
             this.configTA.allPopulateData = [];
             this.configTA.totalRecord = 0;
