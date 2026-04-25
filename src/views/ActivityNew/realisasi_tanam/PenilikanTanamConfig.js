@@ -64,12 +64,12 @@ export default reactive({
       is_populated_v3: 0,
     },
     permission: {
-      create: "sosialisasi-tanam-create",
-      read: "sosialisasi-tanam-list",
-      update: "sosialisasi-tanam-update",
-      detail: "sosialisasi-tanam-detail",
-      lookup: "sosialisasi-tanam-lookup",
-      delete: "sosialisasi-tanam-delete",
+      create: "realisasi-tanam-create",
+      read: "realisasi-tanam-list",
+      update: "realisasi-tanam-update",
+      detail: "realisasi-tanam-detail",
+      lookup: "realisasi-tanam-lookup",
+      delete: "realisasi-tanam-delete",
     },
     slave: [],
     fields: [
