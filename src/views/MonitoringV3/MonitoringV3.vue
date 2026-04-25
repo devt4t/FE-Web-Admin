@@ -15,7 +15,7 @@
                 <div class="indicator-wrapper pt-1">
                     <div class="indicator" :class="{
                         danger: item.is_verified == 0,
-                        sucesss: item.is_verified == 1
+                        successs: item.is_verified == 1
                     }"></div>
                 </div>
             </template>
