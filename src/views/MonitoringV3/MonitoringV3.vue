@@ -42,10 +42,10 @@
                 </v-btn>
 
                 <!-- Verifikasi UM -->
-                <v-btn variant="success" small class="mt-2" @click="onVerifUM(item)" v-if="item.is_verified == 1">
+                <!-- <v-btn variant="success" small class="mt-2" @click="onVerifUM(item)" v-if="item.is_verified == 1">
                     <v-icon small>mdi-check-all</v-icon>
                     <span>Verifikasi UM</span>
-                </v-btn>
+                </v-btn> -->
 
                 <!-- Hapus -->
                 <v-btn variant="danger" small class="mt-2" @click="onDelete(item)" v-if="item.is_verified == 0">
@@ -200,28 +200,25 @@ export default {
             }
         },
 
-        async onVerifUM(item) {
-            const prompt = await this.$_alert.confirm(
-                'Verifikasi RM?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
-            )
-            if (prompt.isConfirmed) {
-                this.$_api.post(this.stageConfig.api.verifUM, {
-                    // [this.stageConfig.key]: item[this.stageConfig.key],
-                    // monitoring_step: this.activeStage,
-                    id: item.id,
-                    current_year: this.localPlantingYear,
-                    program_year: item.program_year,
-                    is_verified: 2,
-                    // verified_by: this.user.name,
-                }).then(() => {
-                    this.$_alert.success('Berhasil Verifikasi RM!')
-                    this.refreshKey += 1
-                }).catch(err => {
-                    this.$_alert.error('Gagal Verifikasi RM!')
-                    console.error('verif RM error =>', err)
-                })
-            }
-        },
+        // async onVerifUM(item) {
+        //     const prompt = await this.$_alert.confirm(
+        //         'Verifikasi RM?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
+        //     )
+        //     if (prompt.isConfirmed) {
+        //         this.$_api.post(this.stageConfig.api.verifUM, {
+        //             id: item.id,
+        //             current_year: this.localPlantingYear,
+        //             program_year: item.program_year,
+        //             is_verified: 2,
+        //         }).then(() => {
+        //             this.$_alert.success('Berhasil Verifikasi RM!')
+        //             this.refreshKey += 1
+        //         }).catch(err => {
+        //             this.$_alert.error('Gagal Verifikasi RM!')
+        //             console.error('verif RM error =>', err)
+        //         })
+        //     }
+        // },
 
         async onUnverif(item) {
             const prompt = await this.$_alert.confirm(

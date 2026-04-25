@@ -8,28 +8,28 @@ export const FC_BASE_FIELDS = [
             },
         },
     },
-    {
-        id: "nik",
-        label: "ID Karyawan",
-        methods: {
-            list: true,
-            detail: true,
-            create: {
-                type: "text",
-                col_size: 6,
-                validation: ["required"],
-                separator: "DATA EMPLOYEE",
-            },
-            update: {
-                type: "text",
-                col_size: 6,
-                validation: ["required"],
-                separator: "DATA EMPLOYEE",
-                disabled: true,
-            },
-            filter: false,
-        },
-    },
+    // {
+    //     id: "nik",
+    //     label: "ID Karyawan",
+    //     methods: {
+    //         list: true,
+    //         detail: true,
+    //         create: {
+    //             type: "text",
+    //             col_size: 6,
+    //             validation: ["required"],
+    //             separator: "DATA EMPLOYEE",
+    //         },
+    //         update: {
+    //             type: "text",
+    //             col_size: 6,
+    //             validation: ["required"],
+    //             separator: "DATA EMPLOYEE",
+    //             disabled: true,
+    //         },
+    //         filter: false,
+    //     },
+    // },
     {
         id: "name",
         label: "Nama",
