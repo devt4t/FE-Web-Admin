@@ -49,9 +49,11 @@ export default {
             formValue: {
                 assigned_to: null,
             },
-
-            // Definisi property dari geko-input
-            assignedToField: {
+        }
+    },
+    computed: {
+        assignedToField() {
+            return {
                 id: 'assigned_to',
                 type: 'select',
                 label: 'Petugas FF Monitoring',
@@ -69,9 +71,7 @@ export default {
                     }
                 },
             }
-        }
-    },
-    computed: {
+        },
         isEditing() {
             if (!this.data) return false;
 
