@@ -165,7 +165,7 @@
                             },
                             option: {
                                 getterKey: 'data',
-                                list_pointer: { label: 'name', code: 'ff_no', display: ['name', 'ff_no'] }
+                                list_pointer: { label: 'name', code: 'ff_no', display: ['name', 'ff_no', 'users_email'] }
                             },
                         }" />
                     </v-card-text>

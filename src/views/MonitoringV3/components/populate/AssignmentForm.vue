@@ -56,15 +56,16 @@ export default {
                 type: 'select',
                 label: 'Petugas FF Monitoring',
                 api: 'monitoring-officer-v3/ff/options',
+                // BE ff/options masih membaca param program_year; nilainya sengaja currentYear/tahun tanam.
                 param: {
-                    current_year: this.currentYear,
+                    program_year: this.currentYear,
                 },
                 option: {
                     getterKey: 'data',
                     list_pointer: {
                         label: 'name',
                         code: 'ff_no',
-                        display: ['name', 'ff_no']
+                        display: ['name', 'ff_no', 'users_email']
                     }
                 },
             }

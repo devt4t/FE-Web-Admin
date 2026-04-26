@@ -32,7 +32,7 @@
                                 program_year: $store.state.tmpProgramYear
                             },
                             option: {
-                                list_pointer: { label: 'name', code: 'nik', display: ['name', 'nik'] }
+                                list_pointer: { label: 'name', code: 'nik', display: ['name', 'nik', 'users_email'] }
                             }
                         }" />
                     </v-card-text>
