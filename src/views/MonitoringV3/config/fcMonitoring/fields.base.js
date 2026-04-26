@@ -449,8 +449,8 @@ export const FC_BASE_FIELDS = [
         id: "email",
         label: "Email Trees4Trees",
         methods: {
-            list: false,
-            detail: false,
+            list: true,
+            detail: true,
             create: {
                 type: "text",
                 validation: ["required", "email", "regex:^[^@]+@trees4trees\\.org$"],
@@ -465,16 +465,6 @@ export const FC_BASE_FIELDS = [
             filter: false,
         },
     },
-    {
-        id: 'users_email',
-        label: 'Email',
-        methods: {
-            list: true,
-            detail: true
-        }
-    },
-
-
     {
         id: "npwp",
         label: "NPWP",
