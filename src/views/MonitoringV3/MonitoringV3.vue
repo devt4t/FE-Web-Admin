@@ -133,8 +133,8 @@ export default {
         },
         canDelete() {
             const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
-            const positionNo = String(user.position_no || '');
-            return ['13', '23', '3', '4'].includes(positionNo)
+            const role = String(user.role || '');
+            return ['13', '23', '3', '4'].includes(role)
         }
     },
 
