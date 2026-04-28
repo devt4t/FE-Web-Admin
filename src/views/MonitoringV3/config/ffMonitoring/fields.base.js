@@ -29,26 +29,6 @@ export const FF_BASE_FIELDS = [
                     },
                     default_options: [
                         {
-                            code: "2020",
-                            label: "2020",
-                        },
-                        {
-                            code: "2021",
-                            label: "2021",
-                        },
-                        {
-                            code: "2022",
-                            label: "2022",
-                        },
-                        {
-                            code: "2023",
-                            label: "2023",
-                        },
-                        {
-                            code: "2024",
-                            label: "2024",
-                        },
-                        {
                             code: "2025",
                             label: "2025",
                         },
