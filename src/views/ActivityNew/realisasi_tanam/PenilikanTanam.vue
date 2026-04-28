@@ -420,6 +420,13 @@ export default {
         PlantingSocDistributionDateUpdate,
         PopulateModal
     },
+    computed: {
+        isPrivilegedRole() {
+            const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || "{}");
+            const role = String(user.role || "");
+            return ["13", "23", "3", "4"].includes(role);
+        },
+    },
     watch: {
         localPlantingYear() {
             if (this.isV3Mode) {
@@ -658,9 +665,15 @@ export default {
 
         async resolveMonitoringV3Access() {
             const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
-            const roles = Array.isArray(user.role) ? user.role.map(String) : [String(user.role)];
-            const isRole42 = roles.includes('42');
             const isMonitoringUser = user.is_monitoring
+
+            if (this.isPrivilegedRole) {
+                this.canAccessMonitoringV3 = true;
+                this.isExternalFC = false;
+                this.isV3Mode = true;
+                this.recalculateStage();
+                return;
+            }
 
             if (isMonitoringUser === 1) {
                 this.canAccessMonitoringV3 = true;
