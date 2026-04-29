@@ -20,6 +20,11 @@
                 </div>
             </template>
 
+            <!-- KOSONGKAN DETAIL BODY AGAR LOOP BAWAAN HILANG -->
+            <template v-slot:detail-body>
+                <div class="d-none"></div>
+            </template>
+
             <!-- DETAIL SLOT -->
             <template v-slot:detail-slave-raw="{ data }">
                 <template v-if="data">
@@ -55,8 +60,7 @@
                 </v-btn>
 
                 <!-- Unverifikasi -->
-                <v-btn variant="danger" small class="mt-2" @click="onUnverif(item)"
-                    v-if="item.is_verified != 0 && item.is_populated_v3 == 0">
+                <v-btn variant="danger" small class="mt-2" @click="onUnverif(item)" v-if="item.is_verified != 0">
                     <v-icon small>mdi-backspace</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>

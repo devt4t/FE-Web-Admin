@@ -33,13 +33,17 @@ export const MONITORING_BASE_FIELDS = [
         id: 'field_facilitators_name',
         label: 'Nama FF',
         methods: {
-            list: true, detail: true,
+            list: true,
+            detail: {
+                view_data: 'ff_no',
+                label: 'Kode FF'
+            },
             filter: {
                 main: true,
                 validation: ['required'],
                 type: 'select',
                 col_size: 6,
-                getter: 'GetFFAllWeb_new',
+                getter: 'monitoring-officer-v3/ff/options',
                 setter: 'ff_no',
                 param: { page: 1, per_page: 100 },
                 option: {
@@ -53,7 +57,11 @@ export const MONITORING_BASE_FIELDS = [
         id: 'users_name',
         label: 'Nama FC',
         methods: {
-            list: true, detail: true,
+            list: true,
+            detail: {
+                view_data: 'fc_no',
+                label: 'Kode FC'
+            },
         }
     },
     {
@@ -66,25 +74,14 @@ export const MONITORING_BASE_FIELDS = [
         label: 'Total Pohon',
         methods: { list: true, detail: true },
     },
-    // {
-    //     id: 'sampling',
-    //     label: 'Metode Sampling',
-    //     methods: { list: true, detail: true },
-    // },
-    // {
-    //     id: 'assign_to',
-    //     label: 'FF Petugas Monitoring',
-    //     methods: { list: true, detail: true },
-    // },
-    {
-        id: 'managementunits_name',
-        label: 'Management Unit',
-        methods: { list: true, detail: true },
-    },
     {
         id: 'mu_no',
         label: 'Management Unit',
         methods: {
+            list: false,
+            detail: {
+                view_data: 'managementunits_name'
+            },
             filter: {
                 main: true,
                 validation: ['required'],
@@ -101,14 +98,13 @@ export const MONITORING_BASE_FIELDS = [
         },
     },
     {
-        id: 'target_areas_name',
-        label: 'Target Area',
-        methods: { list: true, detail: true },
-    },
-    {
         id: 'target_area',
         label: 'Target Area',
         methods: {
+            list: false,
+            detail: {
+                view_data: 'target_areas_name',
+            },
             filter: {
                 main: true,
                 validation: ['required'],
@@ -128,7 +124,10 @@ export const MONITORING_BASE_FIELDS = [
     {
         id: 'desas_name',
         label: 'Desa',
-        methods: { list: true, detail: true },
+        methods: {
+            list: true,
+            detail: true,
+        },
     },
     {
         id: 'lahan_no',
@@ -140,16 +139,6 @@ export const MONITORING_BASE_FIELDS = [
         label: 'Pola Tanam',
         methods: { list: true, detail: true },
     },
-    // {
-    //     id: 'total_detail_life_kayu',
-    //     label: 'Total Kayu Hidup',
-    //     methods: { list: true, detail: true },
-    // },
-    // {
-    //     id: 'total_detail_life_mpts',
-    //     label: 'Total MPTS Hidup',
-    //     methods: { list: true, detail: true },
-    // },
     {
         id: 'total_detail_life_trees',
         label: 'Total Pohon Hidup',
@@ -161,6 +150,171 @@ export const MONITORING_BASE_FIELDS = [
             detail: false,
         },
     },
+    // field yang ada di mobile
+    {
+        id: 'percentage_of_t4t_live_plants',
+        label: 'Persentase Tanaman Hidup T4T',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'percentage_of_t4t_live_plants' },
+        }
+    },
+    {
+        id: 'is_other_program_plants',
+        label: 'Tanaman Di Luar Program',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'is_other_program_plants' },
+        },
+    },
+    {
+        id: 'watering_period',
+        label: 'Periode Irigasi',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'watering_period' },
+        }
+    },
+    {
+        id: 'irrigation_origin',
+        label: 'Asal dari Irigasi Utama',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'irrigation_origin' },
+        }
+    },
+    {
+        id: 'is_watering',
+        label: 'Tindakan Penyiraman',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'is_watering' },
+        }
+    },
+    // Blok Kondisi Lahan & Lingkungan
+    {
+        id: 'weed_condition',
+        label: 'Kondisi Gulma',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'weed_condition' },
+        }
+    },
+    {
+        id: 'soil_moisture',
+        label: 'Kelembaban Tanah',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'soil_moisture' },
+        }
+    },
+    {
+        id: 'land_use_changes',
+        label: 'Perubahan Fungsi Lahan',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'land_use_changes' },
+        }
+    },
+    // Blok Perawatan Tanaman
+    {
+        id: 'preservation_period',
+        label: 'Periode Perawatan',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'preservation_period' },
+        }
+    },
+    {
+        id: 'fertilizer_type',
+        label: 'Jenis Pupuk',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'fertilizer_type' },
+        }
+    },
+    {
+        id: 'pesticide_type',
+        label: 'Jenis Pestisida',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'pesticide_type' },
+        }
+    },
+    // Blok Kondisi & Pertumbuhan
+    {
+        id: 'total_estimated_tree',
+        label: 'Estimasi Total Pohon',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'total_estimated_tree' },
+        }
+    },
+    {
+        id: 'average_plant_growth',
+        label: 'Rata-rata Pertumbuhan',
+        methods: {
+            list: false,
+            detail: { type: 'slot', view_data: 'average_plant_growth' },
+        }
+    },
+    // Blok Boolean Flags
+    {
+        id: 'is_preservation',
+        label: 'Tindakan Perawatan',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_preservation' } }
+    },
+    {
+        id: 'is_fertilizer',
+        label: 'Pemupukan',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_fertilizer' } }
+    },
+    {
+        id: 'is_pesticide',
+        label: 'Penggunaan Pestisida',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_pesticide' } }
+    },
+    {
+        id: 'is_fauna_exists',
+        label: 'Keberadaan Fauna',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_fauna_exists' } }
+    },
+    {
+        id: 'is_pest_attack',
+        label: 'Serangan Hama',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_pest_attack' } }
+    },
+    {
+        id: 'is_disaster',
+        label: 'Terjadi Bencana',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_disaster' } }
+    },
+    {
+        id: 'is_harvested',
+        label: 'Sudah Dipanen',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_harvested' } }
+    },
+    {
+        id: 'is_issue_or_problems',
+        label: 'Ada Isu / Masalah',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_issue_or_problems' } }
+    },
+    {
+        id: 'is_planted_plants_companion',
+        label: 'Tanaman Pendamping',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_planted_plants_companion' } }
+    },
+    {
+        id: 'is_visited',
+        label: 'Sudah Dikunjungi',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_visited' } }
+    },
+    {
+        id: 'is_barcode_scanned',
+        label: 'Barcode Discan',
+        methods: { list: false, detail: { type: 'slot', view_data: 'is_barcode_scanned' } }
+    },
+
     {
         id: 'tutupan',
         label: 'Tutupan Lahan (%)',
@@ -208,55 +362,28 @@ export const MONITORING_BASE_FIELDS = [
         methods: { list: true, detail: true },
     },
     {
-        id: 'created_at',
-        label: 'Tahun Input Data',
-        methods: {
-            filter: {
-                main: true, type: 'select', col_size: 6,
-                option: {
-                    default_options: [
-                        { name: '2021', code: '2021' }, { name: '2022', code: '2022' },
-                        { name: '2023', code: '2023' }, { name: '2024', code: '2024' },
-                        { name: '2025', code: '2025' }, { name: '2026', code: '2026' },
-                    ],
-                    list_pointer: { code: 'code', label: 'name', display: ['name'] },
-                },
-            },
-        },
-    },
-    {
-        id: 'planting_year',
-        label: 'Tahun Tanam',
-        methods: {
-            // filter: {
-            //     main: true, type: 'select', col_size: 6, validation: ['required'],
-            //     option: {
-            //         default_options: [
-            //             { name: '2021', code: '2021' }, { name: '2022', code: '2022' },
-            //             { name: '2023', code: '2023' }, { name: '2024', code: '2024' },
-            //             { name: '2025', code: '2025' }, { name: '2026', code: '2026' },
-            //         ],
-            //         list_pointer: { code: 'code', label: 'name', display: ['name'] },
-            //     },
-            // },
-            list: { view_data: 'planting_year' },
-            detail: { view_data: 'planting_year' },
-        },
-    },
-    {
-        id: 'is_populated_v3',
-        label: 'Is Populated V3',
-        methods: {
-            list: { view_data: 'is_populated_v3' },
-            detail: { view_data: 'is_populated_v3' }
-        }
-    },
-    {
         id: 'verified_at',
         label: 'Waktu Diverifikasi',
         methods: {
             list: true,
             detail: true
         }
-    }
+    },
+    // {
+    //     id: 'created_at',
+    //     label: 'Tahun Input Data',
+    //     methods: {
+    //         filter: {
+    //             main: true, type: 'select', col_size: 6,
+    //             option: {
+    //                 default_options: [
+    //                     { name: '2021', code: '2021' }, { name: '2022', code: '2022' },
+    //                     { name: '2023', code: '2023' }, { name: '2024', code: '2024' },
+    //                     { name: '2025', code: '2025' }, { name: '2026', code: '2026' },
+    //                 ],
+    //                 list_pointer: { code: 'code', label: 'name', display: ['name'] },
+    //             },
+    //         },
+    //     },
+    // },
 ]

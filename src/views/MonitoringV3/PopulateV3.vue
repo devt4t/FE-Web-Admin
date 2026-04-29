@@ -53,11 +53,19 @@
             <!-- assign to (custom display) -->
             <template v-slot:list-assigned_to="{ item }">
                 {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }}
+                <br />
                 ({{ item.assigned_to ?? '-' }})
             </template>
             <template v-slot:detail-assigned_to="{ item }">
                 {{ item.field_facilitators_name ?? 'Belum Ditentukan!' }}
                 ({{ item.assigned_to ?? '-' }})
+            </template>
+
+            <!-- list FC -->
+            <template v-slot:list-users_employee_no="{ item }">
+                {{ item.users_name ?? '-' }}
+                <br />
+                ({{ item.fc_no ?? '-' }})
             </template>
 
             <!-- assignment form -->
