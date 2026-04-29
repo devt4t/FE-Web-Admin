@@ -33,7 +33,10 @@
                         :title="'Koordinat Monitoring'" />
                     <monitoring-detail :data="normalizeMonitoringDetail(data)"
                         :treeDetailHeaders="config.treeDetailHeaders"
-                        :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders" />
+                        :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders"
+                        :pestDiseaseHeaders="config.pestDiseaseHeaders" :disasterHeaders="config.disasterHeaders"
+                        :complainHeaders="config.complainHeaders" :harvestHeaders="config.harvestHeaders"
+                        :plantCompanionHeaders="config.plantCompanionHeaders" />
                 </template>
             </template>
 
@@ -60,7 +63,8 @@
                 </v-btn>
 
                 <!-- Unverifikasi -->
-                <v-btn variant="danger" small class="mt-2" @click="onUnverif(item)" v-if="item.is_verified != 0">
+                <v-btn variant="danger" small class="mt-2" @click="onUnverif(item)"
+                    v-if="item.is_verified != 0 && canUnVerif">
                     <v-icon small>mdi-backspace</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
@@ -139,6 +143,11 @@ export default {
             const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}');
             const role = String(user.role || '');
             return ['13', '23', '3', '4'].includes(role)
+        },
+        canUnVerif() {
+            const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || '{}')
+            const role = String(user.role || '')
+            return ['13', '4'].includes(role)
         }
     },
 
@@ -156,10 +165,16 @@ export default {
 
     methods: {
         normalizeMonitoringDetail(response = {}) {
+            const poly = response.polymorph || {}
             return {
                 ...(response.data || {}),
                 monitoring_detail: response.detail || [],
                 monitoring_tree_detail: response.tree_detail || [],
+                pest_diseases: poly.pest_diseases || [],
+                disasters: poly.disasters || [],
+                complains: poly.complains || [],
+                harvests: poly.harvests || [],
+                plant_companions: poly.plant_companions || [],
             }
         },
 
@@ -215,38 +230,20 @@ export default {
             }
         },
 
-        // async onVerifUM(item) {
-        //     const prompt = await this.$_alert.confirm(
-        //         'Verifikasi RM?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
-        //     )
-        //     if (prompt.isConfirmed) {
-        //         this.$_api.post(this.stageConfig.api.verifUM, {
-        //             id: item.id,
-        //             current_year: this.localPlantingYear,
-        //             program_year: item.program_year,
-        //             is_verified: 2,
-        //         }).then(() => {
-        //             this.$_alert.success('Berhasil Verifikasi RM!')
-        //             this.refreshKey += 1
-        //         }).catch(err => {
-        //             this.$_alert.error('Gagal Verifikasi RM!')
-        //             console.error('verif RM error =>', err)
-        //         })
-        //     }
-        // },
-
         async onUnverif(item) {
             const prompt = await this.$_alert.confirm(
                 'Unverifikasi?', 'Status akan kembali!', 'Ya!', 'Batal', true
             )
             if (prompt.isConfirmed) {
                 this.$_api.post(this.stageConfig.api.unverif, {
-                    // [this.stageConfig.key]: item[this.stageConfig.key],
+                    [this.stageConfig.key]: item[this.stageConfig.key],
                     // monitoring_step: this.activeStage,
                     id: item.id,
                     current_year: this.localPlantingYear,
                     program_year: item.program_year,
                     is_verified: 0,
+                    verified_by: 'null',
+                    // verified_at: 'null',
                 }).then(() => {
                     this.$_alert.success('Berhasil Unverifikasi!')
                     this.refreshKey += 1

@@ -74,6 +74,11 @@ export function buildCrudConfigMonitoring(baseFields, extraFieldsMap, stageKey, 
         slave: [],
         fields: mappedFields,
         treeDetailHeaders: stageConfig.treeDetailHeaders || null,
-        monitoringTreeDetailHeaders: stageConfig.monitoringTreeDetail || null
+        monitoringTreeDetailHeaders: stageConfig.monitoringTreeDetail || null,
+        pestDiseaseHeaders: stageConfig.pestDiseaseHeaders || null,
+        disasterHeaders: stageConfig.disasterHeaders || null,
+        complainHeaders: stageConfig.complainHeaders || null,
+        harvestHeaders: stageConfig.harvestHeaders || null,
+        plantCompanionHeaders: stageConfig.plantCompanionHeaders || null,
     })
 }

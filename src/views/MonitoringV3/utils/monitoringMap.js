@@ -66,7 +66,37 @@ export const monitoringMap = {
         1: 'Pertumbuhan Sedang',
         2: 'Pertumbuhan Mengalami Gangguan',
         3: 'Sebagian Besar Tanaman Mati'
-    }
+    },
+
+    // D. Data Polymorphics
+    pest_diseases_type: {
+        0: 'Hama',
+        1: 'Penyakit'
+    },
+    disaster_type: {
+        0: 'Banjir',
+        1: 'Erupsi Gunung Berapi',
+        2: 'Erosi',
+        3: 'Gempa Bumi',
+        4: 'Kebakaran',
+        5: 'Cuaca Ekstrim'
+    },
+    complain_type: {
+        0: 'Issue/Permasalahan',
+        1: 'Komplain',
+        2: 'Masukan Usulan'
+    },
+    harvest_intensity: {
+        0: 'Sekali Setahun',
+        1: 'Per Setengah Tahun',
+        2: 'Per 3-4 Tahun'
+    },
+    plant_type: {
+        0: 'Sayuran',
+        1: 'Tanaman Kebun',
+        2: 'Tanaman Rempah',
+        3: 'Palawija'
+    },
 };
 
 // Helper function untuk memformat flag boolean menjadi Ya/Tidak

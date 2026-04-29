@@ -206,6 +206,137 @@
         </v-row>
 
         <v-divider class="my-5"></v-divider>
+
+        <!-- BLOK 6: DATA POLYMORPHIC -->
+        <div v-if="hasAnyPolymorph" class="mb-5">
+            <h5 class="mb-4">
+                <v-icon left color="deep-orange">mdi-clipboard-list-outline</v-icon>
+                Data Lapangan Tambahan
+            </h5>
+
+            <v-row>
+                <!-- KOLOM KIRI: ISU & KENDALA -->
+                <v-col cols="12" md="6">
+                    <v-card outlined class="fill-height border-top-danger"
+                        v-if="data.pest_diseases?.length || data.disasters?.length || data.complains?.length">
+                        <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
+                            <v-icon small left color="error">mdi-alert</v-icon> Kelompok Isu & Kendala
+                        </v-card-title>
+                        <v-card-text class="pt-3">
+
+                            <!-- Tabel Hama & Penyakit -->
+                            <div v-if="data.pest_diseases && data.pest_diseases.length > 0" class="mb-5">
+                                <h6 class="text-danger font-weight-bold mb-2">
+                                    <v-icon small left color="error">mdi-bug</v-icon> Hama & Penyakit
+                                    <v-chip x-small color="error" class="ml-2">{{ data.pest_diseases.length }}</v-chip>
+                                </h6>
+                                <v-data-table :headers="pestDiseaseHeaders" :items="data.pest_diseases"
+                                    :items-per-page="5" dense class="elevation-1 border">
+                                    <template v-slot:item.index="{ index }">
+                                        <span class="font-weight-bold">{{ index + 1 }}</span>
+                                    </template>
+                                    <template v-slot:item.pest_disease_type="{ item }">
+                                        <v-chip x-small :color="item.pest_disease_type === 0 ? 'orange' : 'red'">
+                                            {{ monitoringMap.pest_diseases_type[item.pest_disease_type] || '-' }}
+                                        </v-chip>
+                                    </template>
+                                </v-data-table>
+                            </div>
+
+                            <!-- Tabel Bencana -->
+                            <div v-if="data.disasters && data.disasters.length > 0" class="mb-5">
+                                <h6 class="text-warning font-weight-bold mb-2">
+                                    <v-icon small left color="warning">mdi-weather-lightning</v-icon> Bencana
+                                    <v-chip x-small color="warning" class="ml-2">{{ data.disasters.length }}</v-chip>
+                                </h6>
+                                <v-data-table :headers="disasterHeaders" :items="data.disasters" :items-per-page="5"
+                                    dense class="elevation-1 border">
+                                    <template v-slot:item.index="{ index }">
+                                        <span class="font-weight-bold">{{ index + 1 }}</span>
+                                    </template>
+                                    <template v-slot:item.disaster_type="{ item }">
+                                        <v-chip x-small color="warning">
+                                            {{ monitoringMap.disaster_type[item.disaster_type] || '-' }}
+                                        </v-chip>
+                                    </template>
+                                </v-data-table>
+                            </div>
+
+                            <!-- Tabel Keluhan -->
+                            <div v-if="data.complains && data.complains.length > 0" class="mb-2">
+                                <h6 class="text-info font-weight-bold mb-2">
+                                    <v-icon small left color="info">mdi-comment-alert-outline</v-icon> Keluhan / Isu
+                                    <v-chip x-small color="info" class="ml-2">{{ data.complains.length }}</v-chip>
+                                </h6>
+                                <v-data-table :headers="complainHeaders" :items="data.complains" :items-per-page="5"
+                                    dense class="elevation-1 border">
+                                    <template v-slot:item.index="{ index }">
+                                        <span class="font-weight-bold">{{ index + 1 }}</span>
+                                    </template>
+                                    <template v-slot:item.complain_type="{ item }">
+                                        <v-chip x-small color="info">
+                                            {{ monitoringMap.complain_type[item.complain_type] || '-' }}
+                                        </v-chip>
+                                    </template>
+                                </v-data-table>
+                            </div>
+
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+
+                <!-- KOLOM KANAN: POTENSI LAHAN & TANAMAN -->
+                <v-col cols="12" md="6">
+                    <v-card outlined class="fill-height border-top-success"
+                        v-if="data.harvests?.length || data.plant_companions?.length">
+                        <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
+                            <v-icon small left color="success">mdi-sprout</v-icon> Kelompok Potensi Lahan
+                        </v-card-title>
+                        <v-card-text class="pt-3">
+
+                            <!-- Tabel Panen -->
+                            <div v-if="data.harvests && data.harvests.length > 0" class="mb-5">
+                                <h6 class="text-success font-weight-bold mb-2">
+                                    <v-icon small left color="success">mdi-fruit-cherries</v-icon> Data Panen
+                                    <v-chip x-small color="success" class="ml-2">{{ data.harvests.length }}</v-chip>
+                                </h6>
+                                <v-data-table :headers="harvestHeaders" :items="data.harvests" :items-per-page="5" dense
+                                    class="elevation-1 border">
+                                    <template v-slot:item.index="{ index }">
+                                        <span class="font-weight-bold">{{ index + 1 }}</span>
+                                    </template>
+                                    <template v-slot:item.harvest_intensity="{ item }">
+                                        {{ monitoringMap.harvest_intensity[item.harvest_intensity] || '-' }}
+                                    </template>
+                                </v-data-table>
+                            </div>
+
+                            <!-- Tabel Tanaman Pendamping -->
+                            <div v-if="data.plant_companions && data.plant_companions.length > 0" class="mb-2">
+                                <h6 class="text-primary font-weight-bold mb-2">
+                                    <v-icon small left color="primary">mdi-leaf</v-icon> Tanaman Pendamping
+                                    <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions.length
+                                    }}</v-chip>
+                                </h6>
+                                <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions"
+                                    :items-per-page="5" dense class="elevation-1 border">
+                                    <template v-slot:item.index="{ index }">
+                                        <span class="font-weight-bold">{{ index + 1 }}</span>
+                                    </template>
+                                    <template v-slot:item.plant_type="{ item }">
+                                        <v-chip x-small color="primary">
+                                            {{ monitoringMap.plant_type[item.plant_type] || '-' }}
+                                        </v-chip>
+                                    </template>
+                                </v-data-table>
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+
+        <v-divider class="my-5"></v-divider>
         <!-- DETAIL POHON -->
         <div v-if="treeDetailHeaders && treeDetailHeaders.length" class="mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -345,7 +476,24 @@ export default {
     props: {
         data: { type: Object, required: true },
         treeDetailHeaders: { type: Array, default: () => [] },
-        monitoringTreeDetailHeaders: { type: Array, default: () => [] }
+        monitoringTreeDetailHeaders: { type: Array, default: () => [] },
+        pestDiseaseHeaders: { type: Array, default: () => [] },
+        disasterHeaders: { type: Array, default: () => [] },
+        complainHeaders: { type: Array, default: () => [] },
+        harvestHeaders: { type: Array, default: () => [] },
+        plantCompanionHeaders: { type: Array, default: () => [] },
+    },
+    computed: {
+        hasAnyPolymorph() {
+            if (!this.data) return false;
+            return (
+                (this.data.pest_diseases && this.data.pest_diseases.length > 0) ||
+                (this.data.disasters && this.data.disasters.length > 0) ||
+                (this.data.complains && this.data.complains.length > 0) ||
+                (this.data.harvests && this.data.harvests.length > 0) ||
+                (this.data.plant_companions && this.data.plant_companions.length > 0)
+            );
+        }
     },
     data() {
         return {
