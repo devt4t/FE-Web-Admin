@@ -156,7 +156,7 @@
                             <v-col cols="6">
                                 <div class="text-muted small">Kelembaban Tanah:</div>
                                 <div class="font-weight-bold">{{ monitoringMap.soil_moisture[data.soil_moisture] || '-'
-                                }}</div>
+                                    }}</div>
                             </v-col>
                             <v-col cols="6">
                                 <div class="text-muted small">Sumber Pengairan:</div>
@@ -427,7 +427,7 @@
                                 <h6 class="text-primary font-weight-bold mb-2">
                                     <v-icon small left color="primary">mdi-leaf</v-icon> Tanaman Pendamping
                                     <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions.length
-                                        }}</v-chip>
+                                    }}</v-chip>
                                 </h6>
                                 <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions"
                                     :items-per-page="5" dense class="elevation-1 border">
@@ -485,18 +485,20 @@
         </div>
 
         <!-- FOTO DOKUMENTASI -->
-        <v-row class="mb-4" v-if="data.photo1 || data.photo2">
+        <v-row class="mb-4">
             <v-col cols="12">
                 <v-card outlined class="border-top-primary">
                     <v-card-title class="subtitle-2 font-weight-bold pb-2">
                         <v-icon small left color="primary">mdi-camera-outline</v-icon> Foto Dokumentasi
                     </v-card-title>
                     <v-card-text>
-                        <v-row>
+                        <!-- Jika ada photo1 atau photo2 -->
+                        <v-row v-if="data.photo1 || data.photo2">
                             <v-col cols="12" md="6" v-if="data.photo1">
-                                <div class="text-muted small mb-1">Foto 1</div>
-                                <v-img :src="$store.state.apiUrlImage + data.photo1" max-height="300" contain
-                                    class="rounded border cursor-pointer" @click="openPhoto(data.photo1)">
+                                <div class="text-muted small mb-1">Foto Wawancara Dengan Petani</div>
+                                <v-img :src="$store.state.apiUrlImage + data.photo1" max-height="150" contain
+                                    class="rounded border cursor-pointer elevation-1"
+                                    @click="showLightbox(data.photo1)">
                                     <template v-slot:placeholder>
                                         <v-row class="fill-height ma-0" align="center" justify="center">
                                             <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -505,9 +507,10 @@
                                 </v-img>
                             </v-col>
                             <v-col cols="12" md="6" v-if="data.photo2">
-                                <div class="text-muted small mb-1">Foto 2</div>
-                                <v-img :src="$store.state.apiUrlImage + data.photo2" max-height="300" contain
-                                    class="rounded border cursor-pointer" @click="openPhoto(data.photo2)">
+                                <div class="text-muted small mb-1">Foto Kondisi Lahan</div>
+                                <v-img :src="$store.state.apiUrlImage + data.photo2" max-height="150" contain
+                                    class="rounded border cursor-pointer elevation-1"
+                                    @click="showLightbox(data.photo2)">
                                     <template v-slot:placeholder>
                                         <v-row class="fill-height ma-0" align="center" justify="center">
                                             <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -516,6 +519,84 @@
                                 </v-img>
                             </v-col>
                         </v-row>
+
+                        <!-- Jika kedua foto kosong sama sekali -->
+                        <div v-else class="text-center py-5">
+                            <div class="d-flex flex-column align-center justify-center text-muted">
+                                <v-icon size="64" color="grey lighten-1" class="mb-3">mdi-image-off-outline</v-icon>
+                                <span class="font-weight-bold">Belum Ada Foto Dokumentasi</span>
+                                <span class="small">Foto monitoring akan tampil di sini jika sudah diunggah.</span>
+                            </div>
+                        </div>
+                    </v-card-text>
+
+                    <!-- FOTO AKUMULASI PER JENIS POHON -->
+                    <v-card-title class="subtitle-2 font-weight-bold pb-2 mt-4">
+                        <v-icon small left color="primary">mdi-image-multiple</v-icon> Foto Akumulasi Per Jenis Pohon
+                    </v-card-title>
+
+                    <v-card-text>
+                        <v-row v-if="data.monitoring_tree_detail && data.monitoring_tree_detail.length > 0">
+                            <!-- Looping per jenis pohon -->
+                            <v-col cols="12" v-for="(tree, index) in data.monitoring_tree_detail" :key="index"
+                                class="mb-3">
+
+                                <!-- Tampilkan nama pohon sebagai judul kecil -->
+                                <div class="font-weight-bold text-primary mb-2">
+                                    <v-icon small color="primary">mdi-tree</v-icon> {{ tree.tree_name }}
+                                </div>
+
+                                <!-- Baris untuk foto Hidup & Mati dari pohon tersebut -->
+                                <v-row>
+                                    <!-- FOTO POHON HIDUP -->
+                                    <v-col cols="12" md="6" v-if="tree.photo_life">
+                                        <div class="text-muted small mb-1">Foto Pohon Hidup</div>
+                                        <v-img :src="$store.state.apiUrlImage + tree.photo_life" max-height="150"
+                                            contain class="rounded border cursor-pointer elevation-1"
+                                            @click="showLightbox(tree.photo_life)">
+                                            <template v-slot:placeholder>
+                                                <v-row class="fill-height ma-0" align="center" justify="center">
+                                                    <v-progress-circular indeterminate
+                                                        color="primary"></v-progress-circular>
+                                                </v-row>
+                                            </template>
+                                        </v-img>
+                                    </v-col>
+
+                                    <!-- FOTO POHON MATI -->
+                                    <v-col cols="12" md="6" v-if="tree.photo_dead">
+                                        <div class="text-muted small mb-1">Foto Pohon Mati</div>
+                                        <v-img :src="$store.state.apiUrlImage + tree.photo_dead" max-height="150"
+                                            contain class="rounded border cursor-pointer elevation-1"
+                                            @click="showLightbox(tree.photo_dead)">
+                                            <template v-slot:placeholder>
+                                                <v-row class="fill-height ma-0" align="center" justify="center">
+                                                    <v-progress-circular indeterminate
+                                                        color="primary"></v-progress-circular>
+                                                </v-row>
+                                            </template>
+                                        </v-img>
+                                    </v-col>
+
+                                    <!-- Jika kedua foto kosong untuk pohon ini -->
+                                    <v-col cols="12" v-if="!tree.photo_life && !tree.photo_dead">
+                                        <div
+                                            class="text-muted small font-italic border pa-2 rounded bg-light text-center">
+                                            Belum ada foto akumulasi untuk {{ tree.tree_name }}
+                                        </div>
+                                    </v-col>
+                                </v-row>
+
+                            </v-col>
+                        </v-row>
+
+                        <!-- Jika array monitoring_tree_detail kosong sama sekali -->
+                        <div v-else class="text-center py-5">
+                            <div class="d-flex flex-column align-center justify-center text-muted">
+                                <v-icon size="40" color="grey lighten-1" class="mb-2">mdi-leaf-off</v-icon>
+                                <span class="font-weight-bold">Tidak ada data akumulasi pohon</span>
+                            </div>
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -524,59 +605,76 @@
         <v-divider class="my-5"></v-divider>
 
         <!-- STATISTIK PERTUMBUHAN -->
-        <v-row cols="12" md="7">
-            <h6 class="mb-3 text-warning font-weight-bold">
-                <v-icon left small color="warning">mdi-chart-line</v-icon> Statistik Pertumbuhan
-            </h6>
+        <v-row class="mb-4">
+            <v-col cols="12">
+                <v-card outlined class="border-top-warning">
+                    <v-card-title class="subtitle-2 font-weight-bold pb-2">
+                        <v-icon small left color="warning">mdi-chart-line</v-icon> Statistik Pertumbuhan
+                    </v-card-title>
 
-            <!-- Tambahkan h-100 agar tinggi box sama dengan box dokumentasi di sebelahnya -->
-            <div class="d-flex align-center justify-space-between bg-light border rounded pa-3 h-100">
+                    <v-card-text>
+                        <div class="d-flex flex-wrap align-center justify-space-around bg-light border rounded pa-4">
 
-                <!-- Metrik 1: Persentase -->
-                <div class="text-center" style="flex: 1; border-right: 1px solid #dee2e6;">
-                    <p class="font-weight-bold mb-2">Persentase Pohon Hidup</p>
-                    <!-- Saya turunkan ukurannya sedikit ke 120 agar lebih compact & tidak mendesak -->
-                    <v-progress-circular :rotate="360" :size="120" :width="12" :value="data.life_tree_percentage || 0"
-                        :color="data.life_tree_percentage > 80 ? 'green' : (data.life_tree_percentage > 30 ? 'orange' : 'red')">
-                        <span class="font-weight-bold">{{ Number(data.life_tree_percentage || 0).toFixed(1)
-                        }}%</span>
-                    </v-progress-circular>
-                    <div class="small text-muted mt-2">
-                        {{ data.current_monitoring_total_trees || 0 }} / {{ data.previous_monitoring_total_trees ||
-                            0 }}
-                        Hidup
-                    </div>
-                </div>
+                            <!-- Metrik 1: Persentase Pohon Hidup -->
+                            <div class="text-center d-flex flex-column align-center justify-center mb-4 mb-md-0"
+                                style="flex: 1; min-width: 200px;">
+                                <p class="font-weight-bold mb-3 text-dark">Persentase Pohon Hidup</p>
+                                <v-progress-circular :rotate="360" :size="120" :width="12"
+                                    :value="data.life_tree_percentage || 0"
+                                    :color="(data.life_tree_percentage || 0) > 80 ? 'green' : ((data.life_tree_percentage || 0) > 30 ? 'orange' : 'red')">
+                                    <span class="font-weight-bold headline">{{ Number(data.life_tree_percentage ||
+                                        0).toFixed(1)
+                                    }}%</span>
+                                </v-progress-circular>
+                                <div class="small text-muted mt-3">
+                                    <v-icon small>mdi-tree</v-icon>
+                                    {{ data.current_monitoring_total_trees || 0 }} / {{
+                                        data.previous_monitoring_total_trees ||
+                                        0 }} Pohon Hidup
+                                </div>
+                            </div>
 
-                <!-- Metrik 2 & 3: Rata-rata -->
-                <div class="text-center d-flex flex-column justify-center" style="flex: 1">
-                    <p class="font-weight-bold mb-3">Rata-rata Pertumbuhan</p>
+                            <!-- Garis Pemisah (Hanya tampil di layar besar) -->
+                            <v-divider vertical class="d-none d-md-block mx-4"
+                                style="height: 100px; align-self: center;"></v-divider>
+                            <!-- Garis Pemisah Horizontal (Hanya tampil di mobile) -->
+                            <v-divider class="d-md-none w-100 my-4"></v-divider>
 
-                    <div class="d-flex justify-center align-center">
-                        <!-- Metrik 2: Tinggi -->
-                        <div class="text-center px-4">
-                            <v-icon color="primary" class="mb-1" size="24">mdi-arrow-up-bold</v-icon>
-                            <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_length || 0).toFixed(1) }}
-                            </h5>
-                            <div class="small text-muted">cm (Tinggi)</div>
+                            <!-- Metrik 2 & 3: Rata-rata Pertumbuhan -->
+                            <div class="text-center d-flex flex-column justify-center"
+                                style="flex: 1; min-width: 200px;">
+                                <p class="font-weight-bold mb-4 text-dark">Rata-rata Ukuran Pohon</p>
+
+                                <div class="d-flex justify-center align-center w-100">
+                                    <!-- Tinggi -->
+                                    <div class="text-center px-2 px-md-4" style="flex: 1;">
+                                        <v-icon color="primary" class="mb-2" size="32">mdi-arrow-up-bold</v-icon>
+                                        <h4 class="mb-1 font-weight-bold text-primary">{{
+                                            Number(data.average_tree_length ||
+                                                0).toFixed(1) }}</h4>
+                                        <div class="small text-muted font-weight-bold">cm (Tinggi)</div>
+                                    </div>
+
+                                    <!-- Pemisah Kecil antar metrik -->
+                                    <v-divider vertical style="height: 50px; align-self: center;"></v-divider>
+
+                                    <!-- Diameter/Keliling -->
+                                    <div class="text-center px-2 px-md-4" style="flex: 1;">
+                                        <v-icon color="info" class="mb-2" size="32">mdi-diameter</v-icon>
+                                        <h4 class="mb-1 font-weight-bold text-info">{{ Number(data.average_tree_diameter
+                                            ||
+                                            0).toFixed(1) }}</h4>
+                                        <div class="small text-muted font-weight-bold">cm (Keliling)</div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-
-                        <!-- INI CARA BIKIN GARIS PEMISAH VERTIKAL -->
-                        <v-divider vertical style="height: 40px; align-self: center;"></v-divider>
-
-                        <!-- Metrik 3: Diameter -->
-                        <div class="text-center px-4">
-                            <v-icon color="info" class="mb-1" size="24">mdi-diameter</v-icon>
-                            <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_diameter || 0).toFixed(1)
-                            }}</h5>
-                            <div class="small text-muted">cm (Diameter)</div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
+                    </v-card-text>
+                </v-card>
+            </v-col>
         </v-row>
+
     </div>
 </template>
 
@@ -616,11 +714,6 @@ export default {
     methods: {
         formatVerified,
         formatYesNo,
-        openPhoto(photoPath) {
-            if (photoPath) {
-                window.open(this.$store.state.apiUrlImage + photoPath, '_blank');
-            }
-        },
         showLightbox(imgs) {
             if (imgs) {
                 this.$store.state.lightbox.imgs = this.$_config.baseUrlUpload + '/' + imgs;
