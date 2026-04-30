@@ -49,11 +49,11 @@
                     <span>Verifikasi FC</span>
                 </v-btn>
 
-                <!-- Verifikasi UM -->
-                <!-- <v-btn variant="success" small class="mt-2" @click="onVerifUM(item)" v-if="item.is_verified == 1">
+                <!-- Export Detail -->
+                <v-btn variant="info" small class="mt-2" @click="ExportDetail(item)">
                     <v-icon small>mdi-check-all</v-icon>
-                    <span>Verifikasi UM</span>
-                </v-btn> -->
+                    <span>Export Detail</span>
+                </v-btn>
 
                 <!-- Hapus -->
                 <v-btn variant="danger" small class="mt-2" @click="onDelete(item)"
@@ -104,6 +104,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { buildMonitoringCrudConfig, MONITORING_STAGES_REGISTRY } from './config'
 import MonitoringDetail from './components/monitoring/MonitoringDetail.vue'
 import MonitoringDetailMap from '@/views/Lahan/components/DetailLahanMap'
@@ -203,8 +204,63 @@ export default {
                 this.refreshKey += 1;
             });
         },
+        async ExportDetail(item) {
+            const prompt = await this.$_alert.confirm(
+                'Export Data?', null, 'Ya, Verifikasi!', 'Batal', true
+            )
+            if (prompt.isConfirmed) {
+                const payload = {
+                    id: item.id,
+                    current_year: this.localPlantingYear,
+                    program_year: item.program_year,
+                    token: localStorage.getItem("token")
+                };
+                await axios({
+                    method: "POST",
+                    url: `${this.$_config.baseUrlExport}export/monitoring-v3/details`,
+                    responseType: "arraybuffer",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    data: payload,
+                }).then((res) => {
+                    this.downloadFile(res);
+                    this.$_alert.success("Export success");
+                }).catch(err => {
+                    this.$_alert.error('Gagal Melakukan Export!')
+                    console.error('Export Error =>', err)
+                })
+            }
+        },
+        downloadFile(response) {
+            const blob = new Blob([response.data], {
+                type: response.headers['content-type'],
+            });
 
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
 
+            let fileName = "export.xlsx";
+
+            const contentDisposition = response.headers['content-disposition'];
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="(.+)"/);
+                if (match && match[1]) {
+                    fileName = match[1];
+                }
+            }
+
+            link.href = url;
+            link.download = fileName;
+
+            document.body.appendChild(link);
+            link.click();
+
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        },
         async onVerifFC(item) {
             const prompt = await this.$_alert.confirm(
                 'Verifikasi FC?', 'Harap Cek Data!', 'Ya, Verifikasi!', 'Batal', true
