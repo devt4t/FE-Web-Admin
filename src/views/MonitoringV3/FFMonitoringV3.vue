@@ -198,6 +198,17 @@ export default {
             hasCheckedAccess: false,
         }
     },
+    watch: {
+        '$store.state.tmpProgramYear': {
+            handler(newYear, oldYear) {
+                if (newYear !== oldYear) {
+                    console.log('[DEBUG] Program year changed to:', newYear, 're-checking FC assignment...');
+                    this.checkAssignedFC();
+                }
+            }
+        },
+        deep: true
+    },
     methods: {
         async submitAssignExisting() {
 
