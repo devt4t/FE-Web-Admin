@@ -219,7 +219,7 @@ export default {
                     is_verified: 1,
                     user_id: this.user.id,
                     verified_by: this.user.id,
-                    verified_at: new Date().toISOString(),
+                    verified_at: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }),
                 }).then(() => {
                     this.$_alert.success('Berhasil Verifikasi FC!')
                     this.refreshKey += 1
