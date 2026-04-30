@@ -60,6 +60,18 @@
                             <span class="text-muted small">FF Pelaksana:</span>
                             <span class="font-weight-bold">{{ data.field_facilitators_name || '-' }}</span>
                         </div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <span class="text-muted small">Waktu Monitoring:</span>
+                            <span class="font-weight-bold">{{ data.monitoring_time || '-' }}</span>
+                        </div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <span class="text-muted small">Mulai:</span>
+                            <span class="font-weight-bold small">{{ data.monitoring_start || '-' }}</span>
+                        </div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <span class="text-muted small">Selesai:</span>
+                            <span class="font-weight-bold small">{{ data.monitoring_end || '-' }}</span>
+                        </div>
                         <v-divider class="my-2"></v-divider>
                         <div class="row no-gutters text-center mt-2">
                             <div class="col-6 border-right">
@@ -116,6 +128,14 @@
                             <span class="text-muted small">Luas Tanam:</span>
                             <span class="font-weight-bold">{{ data.planting_area || 0 }} m²</span>
                         </div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <span class="text-muted small">Luas Tanam Baru:</span>
+                            <span class="font-weight-bold">{{ data.planting_area_new || 0 }} m²</span>
+                        </div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <span class="text-muted small">Tutupan Kanopi:</span>
+                            <span class="font-weight-bold">{{ data.tutupan || 0 }}%</span>
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -136,7 +156,7 @@
                             <v-col cols="6">
                                 <div class="text-muted small">Kelembaban Tanah:</div>
                                 <div class="font-weight-bold">{{ monitoringMap.soil_moisture[data.soil_moisture] || '-'
-                                    }}</div>
+                                }}</div>
                             </v-col>
                             <v-col cols="6">
                                 <div class="text-muted small">Sumber Pengairan:</div>
@@ -147,6 +167,57 @@
                                 <div class="text-muted small">Jenis Pupuk:</div>
                                 <div class="font-weight-bold">{{ monitoringMap.fertilizer_type[data.fertilizer_type] ||
                                     '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Penyiraman:</div>
+                                <div class="font-weight-bold">
+                                    <v-icon x-small :color="data.is_watering == 1 ? 'success' : 'grey'">
+                                        {{ data.is_watering == 1 ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                                    </v-icon>
+                                    {{ formatYesNo(data.is_watering) }}
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Periode Penyiraman:</div>
+                                <div class="font-weight-bold">{{ monitoringMap.watering_period[data.watering_period] ||
+                                    '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Pemeliharaan:</div>
+                                <div class="font-weight-bold">
+                                    <v-icon x-small :color="data.is_preservation == 1 ? 'success' : 'grey'">
+                                        {{ data.is_preservation == 1 ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                                    </v-icon>
+                                    {{ formatYesNo(data.is_preservation) }}
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Periode Pemeliharaan:</div>
+                                <div class="font-weight-bold">{{
+                                    monitoringMap.preservation_period[data.preservation_period] || '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Pestisida:</div>
+                                <div class="font-weight-bold">
+                                    <v-icon x-small :color="data.is_pesticide == 1 ? 'success' : 'grey'">
+                                        {{ data.is_pesticide == 1 ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                                    </v-icon>
+                                    {{ formatYesNo(data.is_pesticide) }}
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Jenis Pestisida:</div>
+                                <div class="font-weight-bold">{{ monitoringMap.pesticide_type[data.pesticide_type] ||
+                                    '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Perubahan Lahan:</div>
+                                <div class="font-weight-bold">{{ monitoringMap.land_use_changes[data.land_use_changes]
+                                    || '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Kondisi Lahan:</div>
+                                <div class="font-weight-bold">{{ data.land_condition || '-' }}</div>
                             </v-col>
                             <v-col cols="12">
                                 <div class="text-muted small">Catatan Interview:</div>
@@ -199,15 +270,55 @@
                                 </v-icon>
                                 <div class="small font-weight-bold">{{ formatYesNo(data.is_issue_or_problems) }}</div>
                             </v-col>
+                            <v-col cols="4" class="text-center mt-2">
+                                <div class="text-muted extra-small">Panen</div>
+                                <v-icon small :color="data.is_harvested == 1 ? 'success' : 'grey'">
+                                    {{ data.is_harvested == 1 ? 'mdi-fruit-cherries' : 'mdi-close-circle' }}
+                                </v-icon>
+                                <div class="small font-weight-bold">{{ formatYesNo(data.is_harvested) }}</div>
+                            </v-col>
+                            <v-col cols="4" class="text-center mt-2">
+                                <div class="text-muted extra-small">Tanaman Pendamping</div>
+                                <v-icon small :color="data.is_planted_plants_companion == 1 ? 'success' : 'grey'">
+                                    {{ data.is_planted_plants_companion == 1 ? 'mdi-sprout' : 'mdi-close-circle' }}
+                                </v-icon>
+                                <div class="small font-weight-bold">{{ formatYesNo(data.is_planted_plants_companion) }}
+                                </div>
+                            </v-col>
+                            <v-col cols="4" class="text-center mt-2">
+                                <div class="text-muted extra-small">Fauna</div>
+                                <v-icon small :color="data.is_fauna_exists == 1 ? 'success' : 'grey'">
+                                    {{ data.is_fauna_exists == 1 ? 'mdi-paw' : 'mdi-close-circle' }}
+                                </v-icon>
+                                <div class="small font-weight-bold">{{ formatYesNo(data.is_fauna_exists) }}</div>
+                            </v-col>
+                        </v-row>
+
+                        <v-divider class="my-2"></v-divider>
+
+                        <v-row dense>
+                            <v-col cols="6">
+                                <div class="text-muted small">% Tanaman T4T Hidup:</div>
+                                <div class="font-weight-bold">{{
+                                    monitoringMap.percentage_of_t4t_live_plants[data.percentage_of_t4t_live_plants] ||
+                                    '-' }}</div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="text-muted small">Tanaman Program Lain:</div>
+                                <div class="font-weight-bold">{{ formatYesNo(data.is_other_program_plants) }}</div>
+                            </v-col>
+                            <v-col cols="6" v-if="data.fauna_species">
+                                <div class="text-muted small">Spesies Fauna:</div>
+                                <div class="font-weight-bold">{{ data.fauna_species }}</div>
+                            </v-col>
                         </v-row>
                     </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
-
         <v-divider class="my-5"></v-divider>
 
-        <!-- BLOK 6: DATA POLYMORPHIC -->
+        <!-- DATA POLYMORPHIC -->
         <div v-if="hasAnyPolymorph" class="mb-5">
             <h5 class="mb-4">
                 <v-icon left color="deep-orange">mdi-clipboard-list-outline</v-icon>
@@ -316,7 +427,7 @@
                                 <h6 class="text-primary font-weight-bold mb-2">
                                     <v-icon small left color="primary">mdi-leaf</v-icon> Tanaman Pendamping
                                     <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions.length
-                                    }}</v-chip>
+                                        }}</v-chip>
                                 </h6>
                                 <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions"
                                     :items-per-page="5" dense class="elevation-1 border">
@@ -373,99 +484,99 @@
             <v-divider class="my-5"></v-divider>
         </div>
 
-        <!-- GABUNGAN FOTO & STATISTIK (COMPACT MODE) -->
-        <v-row class="mb-5 px-2">
-
-            <!-- KOLOM KIRI: FOTO DOKUMENTASI -->
-            <v-col cols="12" md="5">
-                <h6 class="mb-3 text-primary font-weight-bold">
-                    <v-icon left small color="primary">mdi-image-multiple</v-icon> Dokumentasi Akumulasi
-                </h6>
-
-                <template v-if="data.accumulated_photos && data.accumulated_photos.length > 0">
-                    <!-- Gunakan flex dengan overflow-x agar bisa di-scroll ke samping kalau foto banyak -->
-                    <div class="d-flex overflow-x-auto py-1">
-                        <v-img v-for="(img, idx) in data.accumulated_photos" :key="idx"
-                            :src="$_config.baseUrlUpload + '/' + img" width="70" height="70"
-                            class="rounded mr-2 shrink-0 cursor-pointer elevation-1" @click="showLightbox(img)">
-                            <template v-slot:placeholder>
-                                <v-row class="fill-height ma-0" align="center" justify="center">
-                                    <v-progress-circular indeterminate size="20"
-                                        color="grey lighten-5"></v-progress-circular>
-                                </v-row>
-                            </template>
-                        </v-img>
-                    </div>
-                </template>
-                <template v-else>
-                    <!-- Empty state yang jauh lebih minimalis -->
-                    <div class="text-muted border rounded pa-2 d-flex align-items-center justify-content-center bg-light"
-                        style="max-width: max-content;">
-                        <v-icon size="20" color="grey" class="mr-2">mdi-image-off-outline</v-icon>
-                        <span class="small">Belum ada foto</span>
-                    </div>
-                </template>
-            </v-col>
-
-            <!-- KOLOM KANAN: STATISTIK PERTUMBUHAN -->
-            <v-col cols="12" md="7">
-                <h6 class="mb-3 text-warning font-weight-bold">
-                    <v-icon left small color="warning">mdi-chart-line</v-icon> Statistik Pertumbuhan
-                </h6>
-
-                <!-- Tambahkan h-100 agar tinggi box sama dengan box dokumentasi di sebelahnya -->
-                <div class="d-flex align-center justify-space-between bg-light border rounded pa-3 h-100">
-
-                    <!-- Metrik 1: Persentase -->
-                    <div class="text-center" style="flex: 1; border-right: 1px solid #dee2e6;">
-                        <p class="font-weight-bold mb-2">Persentase Pohon Hidup</p>
-                        <!-- Saya turunkan ukurannya sedikit ke 120 agar lebih compact & tidak mendesak -->
-                        <v-progress-circular :rotate="360" :size="120" :width="12"
-                            :value="data.life_tree_percentage || 0"
-                            :color="data.life_tree_percentage > 80 ? 'green' : (data.life_tree_percentage > 30 ? 'orange' : 'red')">
-                            <span class="font-weight-bold">{{ Number(data.life_tree_percentage || 0).toFixed(1)
-                                }}%</span>
-                        </v-progress-circular>
-                        <div class="small text-muted mt-2">
-                            {{ data.current_monitoring_total_trees || 0 }} / {{ data.previous_monitoring_total_trees ||
-                                0 }}
-                            Hidup
-                        </div>
-                    </div>
-
-                    <!-- Metrik 2 & 3: Rata-rata -->
-                    <div class="text-center d-flex flex-column justify-center" style="flex: 1">
-                        <p class="font-weight-bold mb-3">Rata-rata Pertumbuhan</p>
-
-                        <div class="d-flex justify-center align-center">
-                            <!-- Metrik 2: Tinggi -->
-                            <div class="text-center px-4">
-                                <v-icon color="primary" class="mb-1" size="24">mdi-arrow-up-bold</v-icon>
-                                <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_length || 0).toFixed(1) }}
-                                </h5>
-                                <div class="small text-muted">cm (Tinggi)</div>
-                            </div>
-
-                            <!-- INI CARA BIKIN GARIS PEMISAH VERTIKAL -->
-                            <v-divider vertical style="height: 40px; align-self: center;"></v-divider>
-
-                            <!-- Metrik 3: Diameter -->
-                            <div class="text-center px-4">
-                                <v-icon color="info" class="mb-1" size="24">mdi-diameter</v-icon>
-                                <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_diameter || 0).toFixed(1)
-                                    }}</h5>
-                                <div class="small text-muted">cm (Diameter)</div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
+        <!-- FOTO DOKUMENTASI -->
+        <v-row class="mb-4" v-if="data.photo1 || data.photo2">
+            <v-col cols="12">
+                <v-card outlined class="border-top-primary">
+                    <v-card-title class="subtitle-2 font-weight-bold pb-2">
+                        <v-icon small left color="primary">mdi-camera-outline</v-icon> Foto Dokumentasi
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="6" v-if="data.photo1">
+                                <div class="text-muted small mb-1">Foto 1</div>
+                                <v-img :src="$store.state.apiUrlImage + data.photo1" max-height="300" contain
+                                    class="rounded border cursor-pointer" @click="openPhoto(data.photo1)">
+                                    <template v-slot:placeholder>
+                                        <v-row class="fill-height ma-0" align="center" justify="center">
+                                            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                                        </v-row>
+                                    </template>
+                                </v-img>
+                            </v-col>
+                            <v-col cols="12" md="6" v-if="data.photo2">
+                                <div class="text-muted small mb-1">Foto 2</div>
+                                <v-img :src="$store.state.apiUrlImage + data.photo2" max-height="300" contain
+                                    class="rounded border cursor-pointer" @click="openPhoto(data.photo2)">
+                                    <template v-slot:placeholder>
+                                        <v-row class="fill-height ma-0" align="center" justify="center">
+                                            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                                        </v-row>
+                                    </template>
+                                </v-img>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
             </v-col>
         </v-row>
 
         <v-divider class="my-5"></v-divider>
 
+        <!-- STATISTIK PERTUMBUHAN -->
+        <v-row cols="12" md="7">
+            <h6 class="mb-3 text-warning font-weight-bold">
+                <v-icon left small color="warning">mdi-chart-line</v-icon> Statistik Pertumbuhan
+            </h6>
+
+            <!-- Tambahkan h-100 agar tinggi box sama dengan box dokumentasi di sebelahnya -->
+            <div class="d-flex align-center justify-space-between bg-light border rounded pa-3 h-100">
+
+                <!-- Metrik 1: Persentase -->
+                <div class="text-center" style="flex: 1; border-right: 1px solid #dee2e6;">
+                    <p class="font-weight-bold mb-2">Persentase Pohon Hidup</p>
+                    <!-- Saya turunkan ukurannya sedikit ke 120 agar lebih compact & tidak mendesak -->
+                    <v-progress-circular :rotate="360" :size="120" :width="12" :value="data.life_tree_percentage || 0"
+                        :color="data.life_tree_percentage > 80 ? 'green' : (data.life_tree_percentage > 30 ? 'orange' : 'red')">
+                        <span class="font-weight-bold">{{ Number(data.life_tree_percentage || 0).toFixed(1)
+                        }}%</span>
+                    </v-progress-circular>
+                    <div class="small text-muted mt-2">
+                        {{ data.current_monitoring_total_trees || 0 }} / {{ data.previous_monitoring_total_trees ||
+                            0 }}
+                        Hidup
+                    </div>
+                </div>
+
+                <!-- Metrik 2 & 3: Rata-rata -->
+                <div class="text-center d-flex flex-column justify-center" style="flex: 1">
+                    <p class="font-weight-bold mb-3">Rata-rata Pertumbuhan</p>
+
+                    <div class="d-flex justify-center align-center">
+                        <!-- Metrik 2: Tinggi -->
+                        <div class="text-center px-4">
+                            <v-icon color="primary" class="mb-1" size="24">mdi-arrow-up-bold</v-icon>
+                            <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_length || 0).toFixed(1) }}
+                            </h5>
+                            <div class="small text-muted">cm (Tinggi)</div>
+                        </div>
+
+                        <!-- INI CARA BIKIN GARIS PEMISAH VERTIKAL -->
+                        <v-divider vertical style="height: 40px; align-self: center;"></v-divider>
+
+                        <!-- Metrik 3: Diameter -->
+                        <div class="text-center px-4">
+                            <v-icon color="info" class="mb-1" size="24">mdi-diameter</v-icon>
+                            <h5 class="mb-0 font-weight-bold">{{ Number(data.average_tree_diameter || 0).toFixed(1)
+                            }}</h5>
+                            <div class="small text-muted">cm (Diameter)</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </v-row>
     </div>
 </template>
 
@@ -505,6 +616,11 @@ export default {
     methods: {
         formatVerified,
         formatYesNo,
+        openPhoto(photoPath) {
+            if (photoPath) {
+                window.open(this.$store.state.apiUrlImage + photoPath, '_blank');
+            }
+        },
         showLightbox(imgs) {
             if (imgs) {
                 this.$store.state.lightbox.imgs = this.$_config.baseUrlUpload + '/' + imgs;
@@ -515,3 +631,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.cursor-pointer {
+    cursor: pointer;
+}
+</style>
