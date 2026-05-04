@@ -97,6 +97,16 @@ export const monitoringMap = {
         2: 'Tanaman Rempah',
         3: 'Palawija'
     },
+    // tree
+    tree_condition: {
+        0: 'Sehat',
+        1: 'Tertekan',
+        2: 'Tidak Sehat',
+    },
+    life_status: {
+        0: 'Mati',
+        1: 'Hidup'
+    }
 };
 
 // Helper function untuk memformat flag boolean menjadi Ya/Tidak

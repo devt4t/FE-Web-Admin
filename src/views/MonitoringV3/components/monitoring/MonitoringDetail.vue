@@ -319,7 +319,7 @@
         <v-divider class="my-5"></v-divider>
 
         <!-- DATA POLYMORPHIC -->
-        <div v-if="hasAnyPolymorph" class="mb-5">
+        <div class="mb-5">
             <h5 class="mb-4">
                 <v-icon left color="deep-orange">mdi-clipboard-list-outline</v-icon>
                 Data Lapangan Tambahan
@@ -328,20 +328,19 @@
             <v-row>
                 <!-- KOLOM KIRI: ISU & KENDALA -->
                 <v-col cols="12" md="6">
-                    <v-card outlined class="fill-height border-top-danger"
-                        v-if="data.pest_diseases?.length || data.disasters?.length || data.complains?.length">
+                    <v-card outlined class="fill-height border-top-danger">
                         <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
                             <v-icon small left color="error">mdi-alert</v-icon> Kelompok Isu & Kendala
                         </v-card-title>
                         <v-card-text class="pt-3">
 
                             <!-- Tabel Hama & Penyakit -->
-                            <div v-if="data.pest_diseases && data.pest_diseases.length > 0" class="mb-5">
+                            <div class="mb-5">
                                 <h6 class="text-danger font-weight-bold mb-2">
                                     <v-icon small left color="error">mdi-bug</v-icon> Hama & Penyakit
-                                    <v-chip x-small color="error" class="ml-2">{{ data.pest_diseases.length }}</v-chip>
+                                    <v-chip x-small color="error" class="ml-2">{{ data.pest_diseases?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="pestDiseaseHeaders" :items="data.pest_diseases"
+                                <v-data-table :headers="pestDiseaseHeaders" :items="data.pest_diseases || []"
                                     :items-per-page="5" dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
@@ -355,12 +354,12 @@
                             </div>
 
                             <!-- Tabel Bencana -->
-                            <div v-if="data.disasters && data.disasters.length > 0" class="mb-5">
+                            <div class="mb-5">
                                 <h6 class="text-warning font-weight-bold mb-2">
                                     <v-icon small left color="warning">mdi-weather-lightning</v-icon> Bencana
-                                    <v-chip x-small color="warning" class="ml-2">{{ data.disasters.length }}</v-chip>
+                                    <v-chip x-small color="warning" class="ml-2">{{ data.disasters?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="disasterHeaders" :items="data.disasters" :items-per-page="5"
+                                <v-data-table :headers="disasterHeaders" :items="data.disasters || []" :items-per-page="5"
                                     dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
@@ -374,12 +373,12 @@
                             </div>
 
                             <!-- Tabel Keluhan -->
-                            <div v-if="data.complains && data.complains.length > 0" class="mb-2">
+                            <div class="mb-2">
                                 <h6 class="text-info font-weight-bold mb-2">
                                     <v-icon small left color="info">mdi-comment-alert-outline</v-icon> Keluhan / Isu
-                                    <v-chip x-small color="info" class="ml-2">{{ data.complains.length }}</v-chip>
+                                    <v-chip x-small color="info" class="ml-2">{{ data.complains?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="complainHeaders" :items="data.complains" :items-per-page="5"
+                                <v-data-table :headers="complainHeaders" :items="data.complains || []" :items-per-page="5"
                                     dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
@@ -398,20 +397,19 @@
 
                 <!-- KOLOM KANAN: POTENSI LAHAN & TANAMAN -->
                 <v-col cols="12" md="6">
-                    <v-card outlined class="fill-height border-top-success"
-                        v-if="data.harvests?.length || data.plant_companions?.length">
+                    <v-card outlined class="fill-height border-top-success">
                         <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
                             <v-icon small left color="success">mdi-sprout</v-icon> Kelompok Potensi Lahan
                         </v-card-title>
                         <v-card-text class="pt-3">
 
                             <!-- Tabel Panen -->
-                            <div v-if="data.harvests && data.harvests.length > 0" class="mb-5">
+                            <div class="mb-5">
                                 <h6 class="text-success font-weight-bold mb-2">
                                     <v-icon small left color="success">mdi-fruit-cherries</v-icon> Data Panen
-                                    <v-chip x-small color="success" class="ml-2">{{ data.harvests.length }}</v-chip>
+                                    <v-chip x-small color="success" class="ml-2">{{ data.harvests?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="harvestHeaders" :items="data.harvests" :items-per-page="5" dense
+                                <v-data-table :headers="harvestHeaders" :items="data.harvests || []" :items-per-page="5" dense
                                     class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
@@ -423,13 +421,12 @@
                             </div>
 
                             <!-- Tabel Tanaman Pendamping -->
-                            <div v-if="data.plant_companions && data.plant_companions.length > 0" class="mb-2">
+                            <div class="mb-2">
                                 <h6 class="text-primary font-weight-bold mb-2">
                                     <v-icon small left color="primary">mdi-leaf</v-icon> Tanaman Pendamping
-                                    <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions.length
-                                    }}</v-chip>
+                                    <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions"
+                                <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions || []"
                                     :items-per-page="5" dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
@@ -448,6 +445,7 @@
         </div>
 
         <v-divider class="my-5"></v-divider>
+
         <!-- DETAIL POHON -->
         <div v-if="treeDetailHeaders && treeDetailHeaders.length" class="mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -457,12 +455,25 @@
                 <v-text-field v-model="searchTreeDetail" append-icon="mdi-magnify" label="Cari Kode Pohon..."
                     single-line hide-details dense outlined style="max-width: 300px;"></v-text-field>
             </div>
-            <v-data-table :headers="treeDetailHeaders" :items="data.monitoring_detail || []" :items-per-page="10"
-                :search="searchTreeDetail" class="elevation-1 border">
+            <v-data-table :headers="treeDetailHeaders" :items="data.monitoring_detail || []">
                 <template v-slot:item.index="{ index }">
                     <span class="font-weight-bold">{{ index + 1 }}</span>
                 </template>
+
+                <template v-slot:item.life_status="{ item }">
+                    <v-chip x-small :color="item.life_status === 1 ? 'success' : 'error'">
+                        {{ monitoringMap.life_status[item.life_status] || '-' }}
+                    </v-chip>
+                </template>
+
+                <template v-slot:item.tree_condition="{ item }">
+                    <v-chip x-small
+                        :color="item.tree_condition === 0 ? 'success' : (item.tree_condition === 1 ? 'warning' : 'error')">
+                        {{ monitoringMap.tree_condition[item.tree_condition] || '-' }}
+                    </v-chip>
+                </template>
             </v-data-table>
+
             <v-divider class="my-5"></v-divider>
         </div>
 

@@ -3,9 +3,9 @@
         <monitoring-export-modal :dataKey="exportKey" :programYear="programYear" :currentYear="localPlantingYear"
             :monitoringStep="activeStage" exportType="detail" endpoint="v2/export/monitoring-v3/excel"
             title="Export Monitoring V3" />
-        <monitoring-export-modal :dataKey="exportSummaryKey" :programYear="programYear" :currentYear="localPlantingYear"
+        <!-- <monitoring-export-modal :dataKey="exportSummaryKey" :programYear="programYear" :currentYear="localPlantingYear"
             :monitoringStep="activeStage" exportType="summary" endpoint="v2/export/monitoring-v3/summary/excel"
-            title="Export Summary Monitoring V3" />
+            title="Export Summary Monitoring V3" /> -->
 
         <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"
             :hideCreate="true">
@@ -50,10 +50,10 @@
                 </v-btn>
 
                 <!-- Export Detail -->
-                <v-btn variant="info" small class="mt-2" @click="ExportDetail(item)">
+                <!-- <v-btn variant="info" small class="mt-2" @click="ExportDetail(item)">
                     <v-icon small>mdi-check-all</v-icon>
                     <span>Export Detail</span>
-                </v-btn>
+                </v-btn> -->
 
                 <!-- Hapus -->
                 <v-btn variant="danger" small class="mt-2" @click="onDelete(item)"
@@ -86,11 +86,11 @@
                             <v-icon small>mdi-table-arrow-right</v-icon>
                             <span>Export Excel</span>
                         </v-btn>
-                        <v-btn variant="success" small class="mr-2" @click="exportSummaryKey += 1"
+                        <!-- <v-btn variant="success" small class="mr-2" @click="exportSummaryKey += 1"
                             v-if="stageConfig.features.hasExportSummary">
                             <v-icon small>mdi-table-arrow-right</v-icon>
                             <span>Export Summary Per FF</span>
-                        </v-btn>
+                        </v-btn> -->
                     </div>
                     <div class="d-flex align-items-center">
                         <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
@@ -205,9 +205,16 @@ export default {
             });
         },
         async ExportDetail(item) {
-            const prompt = await this.$_alert.confirm(
-                'Export Data?', null, 'Ya, Verifikasi!', 'Batal', true
-            )
+            const prompt = await this.$_alert.custom({
+                title: 'Export Data?',
+                text: 'Mulai proses unduh Excel untuk detail monitoring ini?',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#17a2b8',
+                cancelButtonColor: '#868e96',
+                confirmButtonText: 'Ya, Export Data!',
+                cancelButtonText: 'Batal'
+            })
             if (prompt.isConfirmed) {
                 const payload = {
                     id: item.id,
