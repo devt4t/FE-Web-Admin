@@ -243,33 +243,9 @@ export default {
         },
 
 
-        async checkAssignedFC() {
+        checkAssignedFC() {
             try {
-                const programYear = this.$store.state.tmpProgramYear || localStorage.getItem('tmpProgramYear');
-
-                const [externalRes, internalRes] = await Promise.all([
-                    this.$_api.get('monitoring-officer-v3/fc/list', {
-                        is_external: true,
-                        program_year: programYear
-                    }),
-                    this.$_api.get('monitoring-officer-v3/fc/list', {
-                        is_external: false,
-                        program_year: programYear
-                    })
-                ]);
-
-                const externalRows = externalRes?.data || [];
-                const internalRows = internalRes?.data || [];
-                const allFCRows = [...externalRows, ...internalRows];
-
-                const currentIds = [this.user.employee_no, this.user.nik]
-                    .map(v => String(v || '').trim()).filter(Boolean);
-
-                this.isAssignedAsFC = allFCRows.some(item => {
-                    const rowIds = [item.nik, item.employee_no]
-                        .map(v => String(v || '').trim()).filter(Boolean);
-                    return rowIds.some(id => currentIds.includes(id));
-                });
+                this.isAssignedAsFC = this.user.is_monitoring == 1
 
             } catch (e) {
                 console.error("Gagal mengecek assignment FC", e);
@@ -288,7 +264,7 @@ export default {
         }
 
     },
-    async mounted() {
+    mounted() {
         this.user = JSON.parse(localStorage.getItem('User') || '{}');
 
         // Base payload
@@ -302,8 +278,7 @@ export default {
 
         this.$set(this.config, "setter_ext_payload", payload);
 
-        // Lakukan Preemptive Check
-        await this.checkAssignedFC();
+        this.checkAssignedFC();
     },
 }
 </script>

@@ -64,25 +64,6 @@ export function buildCrudConfigFCFF(baseFields, moduleType, permissions) {
             return 'data';
         },
 
-        get fields() {
-            const emailKey = this.dataSource === 'external' ? 'email' : 'users_email';
-
-            return baseFields.map(field => {
-                if (field.id === 'email') {
-                    return {
-                        ...field,
-                        methods: {
-                            ...field.methods,
-                            list: { view_data: emailKey },
-                            detail: { view_data: emailKey },
-                        }
-                    };
-                }
-                return field;
-            });
-        },
-
-
         globalFilter: {
             program_year: { setter: 'program_year' },
         },
