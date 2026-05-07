@@ -41,12 +41,12 @@ export function buildFCMonitoringConfig(baseFields) {
 // Helper untuk FF monitoring
 export function buildFFMonitoringConfig(baseFields) {
     const permissionFF = {
-        create: 'monitoring-create',
-        read: 'monitoring-list',
-        update: 'monitoring-update',
-        detail: 'monitoring-detail',
-        lookup: 'monitoring-lookup',
-        delete: 'monitoring-delete',
+        create: 'ff-monitoring-v3-create',
+        read: 'ff-monitoring-v3-list',
+        update: 'ff-monitoring-v3-update',
+        detail: 'ff-monitoring-v3-detail',
+        lookup: 'ff-monitoring-v3-lookup',
+        delete: 'ff-monitoring-v3-delete',
     }
     return buildCrudConfigFCFF(baseFields, 'ff', permissionFF)
 }
