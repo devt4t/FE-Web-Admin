@@ -103,7 +103,7 @@ export default {
             ? this.$store.state.User.role.map(String)
             : [String(this.$store.state.User.role)];
 
-        const allowedRoles = ['13', '23', '3', '4'];
+        const allowedRoles = ['13', '23', '3', '4', '44'];
         const hasAccess = userRoles.some(role => allowedRoles.includes(role));
 
         if (!hasAccess) {
