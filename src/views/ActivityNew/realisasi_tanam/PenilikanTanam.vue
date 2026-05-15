@@ -424,7 +424,7 @@ export default {
         isPrivilegedRole() {
             const user = this.$store.state.User || JSON.parse(localStorage.getItem('User') || "{}");
             const role = String(user.role || "");
-            return ["13", "23", "3", "4"].includes(role);
+            return ["13", "23", "3", "4", "44"].includes(role);
         },
     },
     watch: {
