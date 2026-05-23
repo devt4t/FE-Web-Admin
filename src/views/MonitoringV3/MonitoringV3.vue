@@ -6,8 +6,8 @@
             :monitoringStep="activeStage" exportType="summary" endpoint="v2/export/monitoring-v3/summary/excel"
             title="Export Summary Monitoring V3" /> -->
 
-        <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"
-            :hideCreate="true">
+        <geko-base-crud :key="'crud-' + activeStage" :config="config" :refreshKey="refreshKey" :hideUpdate="true"
+            :hideDelete="true" :hideCreate="true">
 
             <!-- INDICATOR SLOT -->
             <template v-slot:list-indicator="{ item }">
@@ -30,7 +30,7 @@
                     <monitoring-detail-map :long="normalizeMonitoringDetail(data).longitude"
                         :lat="normalizeMonitoringDetail(data).latitude" :section="`MonitoringV3`"
                         :title="'Koordinat Monitoring'" />
-                    <monitoring-detail :data="normalizeMonitoringDetail(data)"
+                    <monitoring-detail :data="normalizeMonitoringDetail(data)" :stageKey="stageConfig.key"
                         :treeDetailHeaders="config.treeDetailHeaders"
                         :monitoringTreeDetailHeaders="config.monitoringTreeDetailHeaders"
                         :pestDiseaseHeaders="config.pestDiseaseHeaders" :disasterHeaders="config.disasterHeaders"

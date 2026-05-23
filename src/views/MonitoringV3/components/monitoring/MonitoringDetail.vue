@@ -19,7 +19,8 @@
                         </div>
                         <div class="d-flex justify-space-between mb-1">
                             <span class="text-muted small">No. Monitoring:</span>
-                            <span class="font-weight-bold">{{ data.monitoring2_no || data.monitoring_no || '-' }}</span>
+                            <!-- <span class="font-weight-bold">{{ data.monitoring5_no || data.monitoring4_no || data.monitoring3_no || data.monitoring2_no || data.monitoring_no || '-' }}</span> -->
+                            <span class="font-weight-bold">{{ data[stageKey] || data.monitoring_no || '-' }}</span>
                         </div>
                         <div class="d-flex justify-space-between mb-1">
                             <span class="text-muted small">Tahun Program:</span>
@@ -156,7 +157,7 @@
                             <v-col cols="6">
                                 <div class="text-muted small">Kelembaban Tanah:</div>
                                 <div class="font-weight-bold">{{ monitoringMap.soil_moisture[data.soil_moisture] || '-'
-                                    }}</div>
+                                }}</div>
                             </v-col>
                             <v-col cols="6">
                                 <div class="text-muted small">Sumber Pengairan:</div>
@@ -338,7 +339,8 @@
                             <div class="mb-5">
                                 <h6 class="text-danger font-weight-bold mb-2">
                                     <v-icon small left color="error">mdi-bug</v-icon> Hama & Penyakit
-                                    <v-chip x-small color="error" class="ml-2">{{ data.pest_diseases?.length || 0 }}</v-chip>
+                                    <v-chip x-small color="error" class="ml-2">{{ data.pest_diseases?.length || 0
+                                        }}</v-chip>
                                 </h6>
                                 <v-data-table :headers="pestDiseaseHeaders" :items="data.pest_diseases || []"
                                     :items-per-page="5" dense class="elevation-1 border">
@@ -357,10 +359,11 @@
                             <div class="mb-5">
                                 <h6 class="text-warning font-weight-bold mb-2">
                                     <v-icon small left color="warning">mdi-weather-lightning</v-icon> Bencana
-                                    <v-chip x-small color="warning" class="ml-2">{{ data.disasters?.length || 0 }}</v-chip>
+                                    <v-chip x-small color="warning" class="ml-2">{{ data.disasters?.length || 0
+                                        }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="disasterHeaders" :items="data.disasters || []" :items-per-page="5"
-                                    dense class="elevation-1 border">
+                                <v-data-table :headers="disasterHeaders" :items="data.disasters || []"
+                                    :items-per-page="5" dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
                                     </template>
@@ -378,8 +381,8 @@
                                     <v-icon small left color="info">mdi-comment-alert-outline</v-icon> Keluhan / Isu
                                     <v-chip x-small color="info" class="ml-2">{{ data.complains?.length || 0 }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="complainHeaders" :items="data.complains || []" :items-per-page="5"
-                                    dense class="elevation-1 border">
+                                <v-data-table :headers="complainHeaders" :items="data.complains || []"
+                                    :items-per-page="5" dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
                                     </template>
@@ -407,10 +410,11 @@
                             <div class="mb-5">
                                 <h6 class="text-success font-weight-bold mb-2">
                                     <v-icon small left color="success">mdi-fruit-cherries</v-icon> Data Panen
-                                    <v-chip x-small color="success" class="ml-2">{{ data.harvests?.length || 0 }}</v-chip>
+                                    <v-chip x-small color="success" class="ml-2">{{ data.harvests?.length || 0
+                                        }}</v-chip>
                                 </h6>
-                                <v-data-table :headers="harvestHeaders" :items="data.harvests || []" :items-per-page="5" dense
-                                    class="elevation-1 border">
+                                <v-data-table :headers="harvestHeaders" :items="data.harvests || []" :items-per-page="5"
+                                    dense class="elevation-1 border">
                                     <template v-slot:item.index="{ index }">
                                         <span class="font-weight-bold">{{ index + 1 }}</span>
                                     </template>
@@ -424,7 +428,8 @@
                             <div class="mb-2">
                                 <h6 class="text-primary font-weight-bold mb-2">
                                     <v-icon small left color="primary">mdi-leaf</v-icon> Tanaman Pendamping
-                                    <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions?.length || 0 }}</v-chip>
+                                    <v-chip x-small color="primary" class="ml-2">{{ data.plant_companions?.length || 0
+                                        }}</v-chip>
                                 </h6>
                                 <v-data-table :headers="plantCompanionHeaders" :items="data.plant_companions || []"
                                     :items-per-page="5" dense class="elevation-1 border">
@@ -635,7 +640,7 @@
                                     :color="(data.life_tree_percentage || 0) > 80 ? 'green' : ((data.life_tree_percentage || 0) > 30 ? 'orange' : 'red')">
                                     <span class="font-weight-bold headline">{{ Number(data.life_tree_percentage ||
                                         0).toFixed(1)
-                                    }}%</span>
+                                        }}%</span>
                                 </v-progress-circular>
                                 <div class="small text-muted mt-3">
                                     <v-icon small>mdi-tree</v-icon>
@@ -695,6 +700,7 @@ import { monitoringMap, formatYesNo, formatVerified } from '../../utils/monitori
 export default {
     props: {
         data: { type: Object, required: true },
+        stageKey: { type: String, default: 'monitoring_no' },
         treeDetailHeaders: { type: Array, default: () => [] },
         monitoringTreeDetailHeaders: { type: Array, default: () => [] },
         pestDiseaseHeaders: { type: Array, default: () => [] },
