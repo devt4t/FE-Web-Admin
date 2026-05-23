@@ -6,7 +6,7 @@ const SHARED_TREE_DETAIL_HEADERS = [
     { text: 'Umur Pohon', value: 'tree_age' },
     { text: 'Kondisi Sekitar', value: 'tree_condition' },
     { text: 'Tinggi (cm)', value: 'height' },
-    { text: 'Keliling (cm)', value: 'diameter' },
+    { text: 'Diameter (cm)', value: 'diameter' },
     { text: 'Status Hidup', value: 'life_status' },
     { text: 'Pupuk', value: 'pest' },
     { text: 'Deskripsi Pupuk', value: 'pest_description' },

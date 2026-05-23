@@ -6,7 +6,7 @@
             </v-card-title>
 
             <v-card-text class="farmer-assign-wrapper mt-3">
-                <geko-input v-model="exportBy" :item="{
+                <!-- <geko-input v-model="exportBy" :item="{
                     type: 'select-radio',
                     label: 'Export By',
                     validation: ['required'],
@@ -31,7 +31,8 @@
                             },
                         ],
                     },
-                }" />
+                }" /> -->
+                <geko-input v-model="exportBy" :item="exportByInputConfig" />
 
                 <ValidationObserver ref="exportForm" v-slot="{ handleSubmit }">
                     <form @submit.prevent="handleSubmit(submitExport)" autocomplete="off">
@@ -106,10 +107,13 @@
                             </v-col>
 
                             <v-col lg="12">
-                                <v-btn color="success" type="submit" :disabled="loadingExport">
-                                    <v-icon v-if="!loadingExport">mdi-microsoft-excel</v-icon>
+                                <v-btn :color="exportFormat === 'pdf' ? 'error' : 'success'" type="submit" :disabled="loadingExport">
+                                    <template v-if="!loadingExport">
+                                        <v-icon v-if="exportFormat === 'excel'">mdi-microsoft-excel</v-icon>
+                                        <v-icon v-else>mdi-file-pdf-box</v-icon>
+                                    </template>
                                     <v-progress-circular v-else :size="20" indeterminate />
-                                    <span class="ml-1">Export Excel</span>
+                                    <span class="ml-1">Export {{ exportFormat === 'pdf' ? 'PDF' : 'Excel' }}</span>
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -137,20 +141,13 @@ export default {
         currentYear: {
             required: true,
         },
-        monitoringStep: {
-            required: true,
-        },
-        exportType: {
-            required: false,
-            default: 'detail',
-        },
-        endpoint: {
-            required: false,
-            default: 'v2/export/monitoring-v3/excel',
-        },
         title: {
             required: false,
             default: 'Export Monitoring V3',
+        },
+        exportFormat: {
+            required: true,
+            default: 'excel',
         },
     },
 
@@ -174,9 +171,57 @@ export default {
             this.resetFilters()
         },
 
+        // isOpen(val) {
+        //     if (!val) this.resetState()
+        // },
         isOpen(val) {
-            if (!val) this.resetState()
+            if (val) {
+                // Saat modal PDF terbuka, paksa radio kembali ke 'ff' 
+                if (this.exportFormat === 'pdf') {
+                    this.exportBy = 'ff';
+                }
+            } else {
+                // Saat modal ditutup
+                this.resetState();
+            }
         },
+    },
+
+    computed: {
+        exportByInputConfig() {
+            // Default: Pasti ada Field Facilitator
+            let options = [
+                { label: 'Field Facilitator', code: 'ff' }
+            ];
+
+            // Jika Excel, tambahkan Unit Management & Target Area
+            if (this.exportFormat === 'excel') {
+                options.push(
+                    { label: 'Unit Management', code: 'mu' },
+                    { label: 'Target Area', code: 'ta' }
+                );
+            }
+
+            return {
+                type: 'select-radio',
+                label: 'Export By',
+                validation: ['required'],
+                option: {
+                    list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
+                    },
+                    default_options: options, // Menggunakan array dinamis di atas
+                },
+            };
+        },
+
+        dynamicEndpoint() {
+            return this.exportFormat === 'pdf'
+                ? 'export/monitoring-v3/pdf'
+                : 'export/monitoring-v3/excel';
+        }
     },
 
     methods: {
@@ -195,8 +240,8 @@ export default {
             return {
                 program_year: this.programYear,
                 current_year: this.currentYear,
-                monitoring_step: this.monitoringStep,
-                export_type: this.exportType,
+                // monitoring_step: this.monitoringStep,
+                // export_type: this.exportType,
                 exportBy: this.exportBy,
                 ff_no: this.exportBy === 'ff' ? this.ffNo : null,
                 mu_no: this.exportBy === 'mu' ? this.muNo : null,
@@ -208,7 +253,7 @@ export default {
         async submitExport() {
             if (this.loadingExport) return
 
-            if (!this.programYear || !this.currentYear || !this.monitoringStep) {
+            if (!this.programYear || !this.currentYear) {
                 this.$_alert.error({}, 'Filter tahun monitoring belum lengkap')
                 return
             }
@@ -218,7 +263,7 @@ export default {
             try {
                 const response = await axios({
                     method: 'POST',
-                    url: `${this.$_config.baseUrlExport}${this.endpoint}`,
+                    url: `${this.$_config.baseUrlExport}${this.dynamicEndpoint}`,
                     responseType: 'arraybuffer',
                     headers: {
                         'Content-Type': 'application/json',
@@ -231,8 +276,8 @@ export default {
                 this.$_alert.success('Export success')
                 this.isOpen = false
             } catch (err) {
-                console.error(err)
-                this.$_alert.error({}, 'Export failed')
+                this.$_alert.error('Gagal Melakukan Export!')
+                console.error('Export Error =>', err)
             } finally {
                 this.loadingExport = false
             }
@@ -252,17 +297,30 @@ export default {
         downloadFile(response) {
             const blob = new Blob([response.data], {
                 type: response.headers['content-type'],
-            })
-            const url = window.URL.createObjectURL(blob)
-            const link = document.createElement('a')
+            });
 
-            link.href = url
-            link.download = this.getFilename(response)
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
 
-            document.body.appendChild(link)
-            link.click()
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(link)
+            let fileName = this.exportFormat === 'pdf' ? ".pdf" : ".xlsx";
+
+            const contentDisposition = response.headers['content-disposition'];
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="(.+)"/);
+                if (match && match[1]) {
+                    fileName = match[1];
+                }
+            }
+
+            link.href = url;
+            link.download = fileName;
+
+            document.body.appendChild(link);
+            link.click();
+
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
         },
     },
 }

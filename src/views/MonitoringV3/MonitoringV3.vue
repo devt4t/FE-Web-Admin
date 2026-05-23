@@ -1,8 +1,7 @@
 <template>
     <div>
-        <monitoring-export-modal :dataKey="exportKey" :programYear="programYear" :currentYear="localPlantingYear"
-            :monitoringStep="activeStage" exportType="detail" endpoint="v2/export/monitoring-v3/excel"
-            title="Export Monitoring V3" />
+        <monitoring-export-modal :dataKey="exportKey" :exportFormat="exportFormat" :programYear="programYear"
+            :currentYear="localPlantingYear" title="Export Monitoring V3" />
         <!-- <monitoring-export-modal :dataKey="exportSummaryKey" :programYear="programYear" :currentYear="localPlantingYear"
             :monitoringStep="activeStage" exportType="summary" endpoint="v2/export/monitoring-v3/summary/excel"
             title="Export Summary Monitoring V3" /> -->
@@ -82,9 +81,14 @@
                 <div class="d-flex w-100 justify-content-between align-items-center mb-2">
                     <!-- Export Buttons -->
                     <div class="d-flex align-items-center">
-                        <v-btn variant="info" small class="mr-2" @click="exportKey += 1">
+                        <v-btn variant="info" small class="mr-2" @click="exportFormat = 'excel'; exportKey += 1">
                             <v-icon small>mdi-table-arrow-right</v-icon>
                             <span>Export Excel</span>
+                        </v-btn>
+
+                        <v-btn variant="danger" small class="mr-2" @click="exportFormat = 'pdf'; exportKey += 1">
+                            <v-icon small>mdi-file-pdf-box</v-icon>
+                            <span>Export PDF</span>
                         </v-btn>
                         <!-- <v-btn variant="success" small class="mr-2" @click="exportSummaryKey += 1"
                             v-if="stageConfig.features.hasExportSummary">
@@ -124,6 +128,7 @@ export default {
             config,
             refreshKey: 1,
             exportKey: 0,
+            exportFormat: 'excel',
             exportSummaryKey: 0,
             user: {},
             localPlantingYear: currentYear,
