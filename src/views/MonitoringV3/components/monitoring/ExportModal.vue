@@ -43,10 +43,11 @@
                                     placeholder: 'Pilih Field Facilitator',
                                     type: 'select',
                                     validation: ['required'],
-                                    api: 'GetFFAllWeb_new',
+                                    api: 'monitoring-officer-v3/ff/list',
                                     param: {
-                                        program_year: programYear,
-                                        limit: 20,
+                                        program_year: currentYear,
+                                        is_external: 'all',
+                                        limit: 100,
                                     },
                                     option: {
                                         multiple: true,
@@ -107,7 +108,8 @@
                             </v-col>
 
                             <v-col lg="12">
-                                <v-btn :color="exportFormat === 'pdf' ? 'error' : 'success'" type="submit" :disabled="loadingExport">
+                                <v-btn :color="exportFormat === 'pdf' ? 'error' : 'success'" type="submit"
+                                    :disabled="loadingExport">
                                     <template v-if="!loadingExport">
                                         <v-icon v-if="exportFormat === 'excel'">mdi-microsoft-excel</v-icon>
                                         <v-icon v-else>mdi-file-pdf-box</v-icon>
@@ -176,7 +178,6 @@ export default {
         // },
         isOpen(val) {
             if (val) {
-                // Saat modal PDF terbuka, paksa radio kembali ke 'ff' 
                 if (this.exportFormat === 'pdf') {
                     this.exportBy = 'ff';
                 }
@@ -189,12 +190,10 @@ export default {
 
     computed: {
         exportByInputConfig() {
-            // Default: Pasti ada Field Facilitator
             let options = [
                 { label: 'Field Facilitator', code: 'ff' }
             ];
 
-            // Jika Excel, tambahkan Unit Management & Target Area
             if (this.exportFormat === 'excel') {
                 options.push(
                     { label: 'Unit Management', code: 'mu' },
@@ -212,7 +211,7 @@ export default {
                         code: 'code',
                         display: ['label'],
                     },
-                    default_options: options, // Menggunakan array dinamis di atas
+                    default_options: options,
                 },
             };
         },
