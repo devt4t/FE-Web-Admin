@@ -17,7 +17,8 @@ const SHARED_MONITORING_TREE_DETAIL_HEADERS = [
     { text: 'Kode Pohon', value: 'tree_code' },
     { text: 'Nama Pohon', value: 'tree_name' },
     { text: 'Kategori Pohon', value: 'tree_category' },
-    { text: 'Jumlah Hidup', value: 'life' },
+    { text: 'Jumlah Hidup Awal', value: 'life' },
+    { text: 'Jumlah Hidup Sekarang', value: 'life_after' },
 ]
 
 const SHARED_PEST_DISEASE_HEADERS = [
