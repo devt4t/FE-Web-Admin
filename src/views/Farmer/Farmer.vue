@@ -1,12 +1,8 @@
 <template>
-  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`" @onExportExcel="onExportExcel($event)">
-    
-    <template v-slot:list-before-create>
-      <export-modal-farmer :dataKey="exportKey" format="excel"></export-modal-farmer>
-    </template>
-
+  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`"
+    @onExportExcel="onExportExcel($event)">
     <template v-slot:list-action-detail="{ item }">
-      <button class="geko-list-action-view" @click="
+      <button class="geko-list-action-view mr-1" @click="
         $router.push({
           name: $route.name,
           query: {
@@ -20,6 +16,14 @@
         <v-icon small>mdi-information-outline</v-icon>
       </button>
     </template>
+
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn variant="danger" small class="mr-2 mt-2" @click="onExportPDFSingle(item)" title="Export MOU">
+        <v-icon small color="danger">mdi-file-pdf-box</v-icon>
+        <span>Export MOU</span>
+      </v-btn>
+    </template>
+
     <template v-slot:list-join_year="{ item }">
       <div class="d-flex flex-row mt-1" style="justify-content: center; align-items: center">
         <span class="mb-0" :class="{
@@ -143,7 +147,7 @@
           '-',
         ].includes(item.legal_land_categories),
       }">{{ item.legal_land_categories }}</span>
-    </template>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    </template>
 
     <template v-slot:detail-row-detail_program_year="{ item, response }">
       <div class="geko-base-detail-item">
@@ -308,6 +312,7 @@
 
 <script>
 import moment from "moment";
+import axios from "axios";
 import "./farmer.scss";
 import FarmerAssignModal from "./FarmerAssignModal.vue";
 import FarmerDetail from "./FarmerDetail.vue";
@@ -323,7 +328,55 @@ export default {
   methods: {
     onExportExcel(data) {
       this.exportKey++;
-      
+
+    },
+    async onExportPDFSingle(item) {
+      const prompt = await this.$_alert.custom({
+        title: 'Export Data?',
+        text: 'Mulai proses Export Data MOU petani ini?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#868e96',
+        confirmButtonText: 'Ya, Export Data!',
+        cancelButtonText: 'Batal'
+      })
+      if (prompt.isConfirmed) {
+        const axiosConfig = {
+          method: "POST",
+          url: `${this.$_config.baseUrlExport}export/farmer-mou/pdf`,
+          responseType: "arraybuffer",
+          data: {
+            filters: {
+              id: item.id,
+              farmer_no: item.farmer_no,
+              program_year: this.$store.state.tmpProgramYear,
+              token: localStorage.getItem("token")
+            }
+          },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        };
+
+        try {
+          const exported = await axios(axiosConfig).catch(() => false);
+          if (!exported) throw new Error("Export failed");
+
+          const url = URL.createObjectURL(new Blob([exported.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", `Report-MOU-${item.name.replace(/ /g, "")}-${item.farmer_no}-${moment().format("DMMYYYYHHmmss")}.pdf`);
+          document.body.appendChild(link);
+          link.click();
+
+          this.$_alert.success("Successfully Exported PDF");
+        } catch (err) {
+          this.$_alert.error("Export PDF Failed");
+          console.error(err);
+        }
+      }
     },
     getMaskedValue(item) {
       if (!Array.isArray(item.log_farmers) || item.log_farmers.length === 0) {
@@ -381,6 +434,7 @@ export default {
   data() {
     return {
       exportKey: 0,
+      exportKeyPdf: 0,
       farmerAssignModal: 0,
       componentKey: 1,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
