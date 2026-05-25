@@ -11,12 +11,7 @@
                 <v-col lg="12" class="form-separator">
                   <div class="d-flex flex-row align-items-center">
                     <p class="mb-0">Pemetaan FC FF</p>
-                    <v-btn
-                      variant="success"
-                      class="add-button ml-2"
-                      @click="addFcFf()"
-                      small
-                    >
+                    <v-btn variant="success" class="add-button ml-2" @click="addFcFf()" small>
                       <v-icon small>mdi-plus</v-icon>
                     </v-btn>
                   </div>
@@ -24,85 +19,74 @@
                 <v-col lg="12" v-for="(fcff, i) in fc_ff" :key="'fcff-' + i">
                   <v-row class="mx-3 bg-grey">
                     <v-col lg="6">
-                      <geko-input
-                        v-model="fcff.program_year"
-                        :item="{
-                          label: 'Tahun Program',
-                          type: 'select',
-                          validation: ['required'],
-                          option: {
-                            default_label: fcff.program_year,
-                            multiple: true,
-                            default_options: [
-                              {
-                                label: '2020',
-                                code: '2020',
-                              },
-                              {
-                                label: '2021',
-                                code: '2021',
-                              },
-                              {
-                                label: '2022',
-                                code: '2022',
-                              },
-                              {
-                                label: '2023',
-                                code: '2023',
-                              },
-                              {
-                                label: '2024',
-                                code: '2024',
-                              },
-                              {
-                                label: '2025',
-                                code: '2025',
-                              },
-                            ],
-                            list_pointer: {
-                              label: 'label',
-                              code: 'code',
-                              display: ['label'],
+                      <geko-input v-model="fcff.program_year" :item="{
+                        label: 'Tahun Program',
+                        type: 'select',
+                        validation: ['required'],
+                        option: {
+                          default_label: fcff.program_year,
+                          multiple: true,
+                          default_options: [
+                            {
+                              label: '2020',
+                              code: '2020',
                             },
+                            {
+                              label: '2021',
+                              code: '2021',
+                            },
+                            {
+                              label: '2022',
+                              code: '2022',
+                            },
+                            {
+                              label: '2023',
+                              code: '2023',
+                            },
+                            {
+                              label: '2024',
+                              code: '2024',
+                            },
+                            {
+                              label: '2025',
+                              code: '2025',
+                            },
+                            {
+                              label: '2026',
+                              code: '2026',
+                            },
+                          ],
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
 
                     <v-col lg="5">
-                      <geko-input
-                        v-model="fcff.key1"
-                        :item="{
-                          type: 'select',
-                          label: 'Field Coordinator',
-                          validation: ['required'],
-                          api: 'getEmployeeList_new',
-                          default_label: fcff.employees_name,
-                          option: {
-                            list_pointer: {
-                              code: 'nik',
-                              label: 'name',
-                              display: ['name'],
-                            },
+                      <geko-input v-model="fcff.key1" :item="{
+                        type: 'select',
+                        label: 'Field Coordinator',
+                        validation: ['required'],
+                        api: 'getEmployeeList_new',
+                        default_label: fcff.employees_name,
+                        option: {
+                          list_pointer: {
+                            code: 'nik',
+                            label: 'name',
+                            display: ['name'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
-                    <v-col
-                      lg="1"
-                      class="mt-0 pt-0 d-flex flex-column"
-                      style="
+                    <v-col lg="1" class="mt-0 pt-0 d-flex flex-column" style="
                         justify-content: center;
                         position: relative;
                         transform: translateY(15%);
-                      "
-                    >
-                      <v-btn
-                        small
-                        variant="danger"
-                        class="btn-icon"
-                        @click="removeFcFf(i)"
-                      >
+                      ">
+                      <v-btn small variant="danger" class="btn-icon" @click="removeFcFf(i)">
                         <v-icon small>mdi-delete-empty</v-icon>
                       </v-btn>
                     </v-col>
@@ -111,170 +95,141 @@
                 <v-col lg="12">
                   <p class="text-danger" v-if="error_fc_ff">
                     {{ error_fc_ff }}
-                  </p></v-col
-                >
+                  </p>
+                </v-col>
 
                 <v-col lg="12" class="form-separator">
                   <div class="d-flex flex-row align-items-center">
                     <p class="mb-0">Pemetaan Area Kerja</p>
-                    <v-btn
-                      variant="success"
-                      class="add-button ml-2"
-                      @click="addWorkingArea()"
-                      small
-                    >
+                    <v-btn variant="success" class="add-button ml-2" @click="addWorkingArea()" small>
                       <v-icon small>mdi-plus</v-icon>
                     </v-btn>
                   </div>
                 </v-col>
-                <v-col
-                  lg="12"
-                  v-for="(area, i) in working_areas"
-                  :key="'area-' + i"
-                >
+                <v-col lg="12" v-for="(area, i) in working_areas" :key="'area-' + i">
                   <v-row class="mx-3 bg-grey">
                     <v-col lg="6">
-                      <geko-input
-                        v-model="area.program_year"
-                        :item="{
-                          label: 'Tahun Program',
-                          type: 'select',
-                          validation: ['required'],
-                          option: {
-                            default_label: area.program_year,
-                            multiple: true,
-                            default_options: [
-                              {
-                                label: '2020',
-                                code: '2020',
-                              },
-                              {
-                                label: '2021',
-                                code: '2021',
-                              },
-                              {
-                                label: '2022',
-                                code: '2022',
-                              },
-                              {
-                                label: '2023',
-                                code: '2023',
-                              },
-                              {
-                                label: '2024',
-                                code: '2024',
-                              },
-                              {
-                                label: '2025',
-                                code: '2025',
-                              },
-                            ],
-                            list_pointer: {
-                              label: 'label',
-                              code: 'code',
-                              display: ['label'],
+                      <geko-input v-model="area.program_year" :item="{
+                        label: 'Tahun Program',
+                        type: 'select',
+                        validation: ['required'],
+                        option: {
+                          default_label: area.program_year,
+                          multiple: true,
+                          default_options: [
+                            {
+                              label: '2020',
+                              code: '2020',
                             },
+                            {
+                              label: '2021',
+                              code: '2021',
+                            },
+                            {
+                              label: '2022',
+                              code: '2022',
+                            },
+                            {
+                              label: '2023',
+                              code: '2023',
+                            },
+                            {
+                              label: '2024',
+                              code: '2024',
+                            },
+                            {
+                              label: '2025',
+                              code: '2025',
+                            },
+                            {
+                              label: '2026',
+                              code: '2026',
+                            },
+                          ],
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
 
                     <v-col lg="6">
-                      <geko-input
-                        v-model="area.mu_no"
-                        :item="{
-                          type: 'select',
-                          label: 'Management Unit',
-                          api: 'GetManagementUnit',
-                          validation: ['required'],
-                          // param: {
-                          //   program_year: area.program_year,
-                          // },
-                          option: {
-                            getterKey: 'data.result',
-                            default_label: area.managementunits_name,
-                            list_pointer: {
-                              label: 'name',
-                              code: 'mu_no',
-                              display: ['name'],
-                            },
+                      <geko-input v-model="area.mu_no" :item="{
+                        type: 'select',
+                        label: 'Management Unit',
+                        api: 'GetManagementUnit',
+                        validation: ['required'],
+                        // param: {
+                        //   program_year: area.program_year,
+                        // },
+                        option: {
+                          getterKey: 'data.result',
+                          default_label: area.managementunits_name,
+                          list_pointer: {
+                            label: 'name',
+                            code: 'mu_no',
+                            display: ['name'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
                     <v-col lg="6">
-                      <geko-input
-                        v-model="area.area_code"
-                        :item="{
-                          type: 'select',
-                          label: 'Target Area',
-                          api: 'GetTargetArea',
-                          validation: ['required'],
-                          param: {
-                            mu_no: area.mu_no,
+                      <geko-input v-model="area.area_code" :item="{
+                        type: 'select',
+                        label: 'Target Area',
+                        api: 'GetTargetArea',
+                        validation: ['required'],
+                        param: {
+                          mu_no: area.mu_no,
+                        },
+                        option: {
+                          default_label: area.target_areas_name,
+                          getterKey: 'data.result',
+                          list_pointer: {
+                            label: 'name',
+                            code: 'area_code',
+                            display: ['name'],
                           },
-                          option: {
-                            default_label: area.target_areas_name,
-                            getterKey: 'data.result',
-                            list_pointer: {
-                              label: 'name',
-                              code: 'area_code',
-                              display: ['name'],
-                            },
-                          },
-                        }"
-                        :disabled="!area.mu_no"
-                      />
+                        },
+                      }" :disabled="!area.mu_no" />
                     </v-col>
                     <v-col lg="6">
-                      <geko-input
-                        v-model="area.kode_desa"
-                        :item="{
-                          type: 'select',
-                          label: 'Working Area / Desa',
-                          api: 'GetDesaByKecamatanTA_new',
-                          validation: ['required'],
-                          param: {
-                            ta_no: area.area_code,
-                            program_year:
-                              Array.isArray(area.program_year) &&
+                      <geko-input v-model="area.kode_desa" :item="{
+                        type: 'select',
+                        label: 'Working Area / Desa',
+                        api: 'GetDesaByKecamatanTA_new',
+                        validation: ['required'],
+                        param: {
+                          ta_no: area.area_code,
+                          program_year:
+                            Array.isArray(area.program_year) &&
                               area.program_year.length > 0
-                                ? area.program_year.join(',')
-                                : '',
+                              ? area.program_year.join(',')
+                              : '',
+                        },
+                        option: {
+                          // getterKey: 'data.result',
+                          default_label: area.desas_name,
+                          list_pointer: {
+                            label: 'name',
+                            code: 'kode_desa',
+                            display: ['name'],
                           },
-                          option: {
-                            // getterKey: 'data.result',
-                            default_label: area.desas_name,
-                            list_pointer: {
-                              label: 'name',
-                              code: 'kode_desa',
-                              display: ['name'],
-                            },
-                          },
-                        }"
-                        :disabled="
-                          !area.area_code ||
-                          !Array.isArray(area.program_year) ||
-                          (Array.isArray(area.program_year) &&
-                            area.program_year.length == 0)
-                        "
-                      />
+                        },
+                      }" :disabled="!area.area_code ||
+                        !Array.isArray(area.program_year) ||
+                        (Array.isArray(area.program_year) &&
+                          area.program_year.length == 0)
+                        " />
                     </v-col>
-                    <v-col
-                      lg="1"
-                      class="mt-0 pt-0 d-flex flex-column"
-                      style="
+                    <v-col lg="1" class="mt-0 pt-0 d-flex flex-column" style="
                         justify-content: center;
                         position: relative;
                         transform: translateY(15%);
-                      "
-                    >
-                      <v-btn
-                        small
-                        variant="danger"
-                        class="btn-icon"
-                        @click="removeWorkingArea(i)"
-                      >
+                      ">
+                      <v-btn small variant="danger" class="btn-icon" @click="removeWorkingArea(i)">
                         <v-icon small>mdi-delete-empty</v-icon>
                       </v-btn>
                     </v-col>
@@ -283,17 +238,13 @@
                 <v-col lg="12">
                   <p class="text-danger" v-if="error_working_area">
                     {{ error_working_area }}
-                  </p></v-col
-                >
+                  </p>
+                </v-col>
               </v-row>
 
               <v-row>
                 <v-col lg="12" class="d-flex flex-row justify-content-center">
-                  <v-btn
-                    variant="warning"
-                    class="d-flex flex-row align-items-center"
-                    type="submit"
-                  >
+                  <v-btn variant="warning" class="d-flex flex-row align-items-center" type="submit">
                     <v-icon>mdi-pencil-outline</v-icon>
                     <span>Perbarui Data FF</span>
                   </v-btn>
@@ -314,7 +265,7 @@ export default {
   props: {
     data: {
       required: true,
-      default: () => {},
+      default: () => { },
     },
     dataKey: {
       required: true,

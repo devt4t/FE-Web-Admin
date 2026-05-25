@@ -1,12 +1,7 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideUpdate="!['13', '4', '19', '20'].includes($store.state.User.role)"
-    :refreshKey="refreshKey"
-    :hideDelete="!['13', '4'].includes($store.state.User.role)"
-    @create-success="onCreateSuccess($event)"
-    :hideCreate="['19'].includes($store.state.User.role)"
-  >
+  <geko-base-crud :config="config" :hideUpdate="!['13', '4', '19', '20'].includes($store.state.User.role)"
+    :refreshKey="refreshKey" :hideDelete="!['13', '4'].includes($store.state.User.role)"
+    @create-success="onCreateSuccess($event)" :hideCreate="['19'].includes($store.state.User.role)">
     <!-- LIST -->
     <template v-slot:list-name="{ item }">
       <div class="d-flex flex-row">
@@ -19,23 +14,15 @@
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            danger: item.active == 0,
-            success: item.active == 1,
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          danger: item.active == 0,
+          success: item.active == 1,
+        }"></div>
       </div>
     </template>
     <template v-slot:list-bottom-action="{ item }">
-      <v-btn
-        variant="info"
-        small
-        class="d-flex flex-row align-items-center mt-2"
-        @click="onAssignProgramYear(item)"
-        v-if="$_sys.isAllowed('field-facilitator-update')"
-      >
+      <v-btn variant="info" small class="d-flex flex-row align-items-center mt-2" @click="onAssignProgramYear(item)"
+        v-if="$_sys.isAllowed('field-facilitator-update')">
         <v-icon small class="mr-1">mdi-account-switch</v-icon>
         <span>Assign</span>
       </v-btn>
@@ -57,87 +44,59 @@
     </template>
 
     <template v-slot:list-main_pivots_program_year="{ item }">
-      <div
-        class="d-flex flex-row list-program-year justify-content-center"
-        style="width: 150px; flex-wrap: wrap"
-        v-if="item.main_pivots_program_year"
-      >
-        <span
-          class="badge bg-custom mr-1 mb-1"
-          :class="{
-            [`y${item}`]: true,
-          }"
-          v-for="(item, i) in item.main_pivots_program_year
-            .replace(/ /g, '')
-            .split(',')
-            .map((v) => parseInt(v))
-            .sort(function (a, b) {
-              return a - b;
-            })"
-          >{{ item }}</span
-        >
+      <div class="d-flex flex-row list-program-year justify-content-center" style="width: 150px; flex-wrap: wrap"
+        v-if="item.main_pivots_program_year">
+        <span class="badge bg-custom mr-1 mb-1" :class="{
+          [`y${item}`]: true,
+        }" v-for="(item, i) in item.main_pivots_program_year
+          .replace(/ /g, '')
+          .split(',')
+          .map((v) => parseInt(v))
+          .sort(function (a, b) {
+            return a - b;
+          })">{{ item }}</span>
       </div>
     </template>
     <template v-slot:list-email="{ item }">
-      <div
-        v-if="
-          typeof item.ff_users_data === 'object' &&
-          item.ff_users_data !== null &&
-          item.ff_users_data.email
-        "
-      >
+      <div v-if="
+        typeof item.ff_users_data === 'object' &&
+        item.ff_users_data !== null &&
+        item.ff_users_data.email
+      ">
         <span>{{ item.ff_users_data.email }}</span>
       </div>
       <div v-else>-</div>
     </template>
 
     <template v-slot:list-after-filter>
-      <ff-assign-modal
-        @success="refreshKey = refreshKey + 1"
-        :data="ffData"
-        :dataKey="ffDataKey"
-      ></ff-assign-modal>
-      <ff-email-modal
-        @success="refreshKey = refreshKey + 1"
-        :data="emailData"
-        :dataKey="emailDataKey"
-      ></ff-email-modal>
+      <ff-assign-modal @success="refreshKey = refreshKey + 1" :data="ffData" :dataKey="ffDataKey"></ff-assign-modal>
+      <ff-email-modal @success="refreshKey = refreshKey + 1" :data="emailData" :dataKey="emailDataKey"></ff-email-modal>
     </template>
     <!-- END LIST -->
 
     <!-- DETAIL -->
 
     <template v-slot:detail-main_pivots_program_year="{ item }">
-      <div
-        class="d-flex flex-row list-program-year"
-        v-if="item.main_pivots_program_year"
-      >
-        <span
-          class="badge bg-custom mr-1 mb-1"
-          :class="{
-            [`y${item}`]: true,
-          }"
-          v-for="(item, i) in item.main_pivots_program_year
-            .replace(/ /g, '')
-            .split(',')
-            .map((v) => parseInt(v))
-            .sort(function (a, b) {
-              return a - b;
-            })"
-          >{{ item }}</span
-        >
+      <div class="d-flex flex-row list-program-year" v-if="item.main_pivots_program_year">
+        <span class="badge bg-custom mr-1 mb-1" :class="{
+          [`y${item}`]: true,
+        }" v-for="(item, i) in item.main_pivots_program_year
+          .replace(/ /g, '')
+          .split(',')
+          .map((v) => parseInt(v))
+          .sort(function (a, b) {
+            return a - b;
+          })">{{ item }}</span>
       </div>
       <div v-else>-</div>
     </template>
 
     <template v-slot:detail-email="{ item }">
-      <div
-        v-if="
-          typeof item.ff_users_data === 'object' &&
-          item.ff_users_data !== null &&
-          item.ff_users_data.email
-        "
-      >
+      <div v-if="
+        typeof item.ff_users_data === 'object' &&
+        item.ff_users_data !== null &&
+        item.ff_users_data.email
+      ">
         <span>{{ item.ff_users_data.email }}</span>
       </div>
       <div v-else>-</div>
@@ -146,77 +105,65 @@
     <!-- CREATE -->
     <template v-slot:create-city="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.city"
-          :item="{
-            type: 'select',
-            label: 'Kota / Kabupaten',
-            api: 'GetKabupaten',
-            validation: ['required'],
-            param: {
-              province_code: formData.province,
+        <geko-input v-model="formData.city" :item="{
+          type: 'select',
+          label: 'Kota / Kabupaten',
+          api: 'GetKabupaten',
+          validation: ['required'],
+          param: {
+            province_code: formData.province,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kabupaten_no',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kabupaten_no',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.province"
-        />
+          },
+        }" :disabled="!formData.province" />
       </v-col>
     </template>
     <template v-slot:create-kecamatan="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.kecamatan"
-          :item="{
-            type: 'select',
-            label: 'Kecamatan',
-            api: 'GetKecamatan',
-            validation: ['required'],
-            param: {
-              kabupaten_no: formData.city,
+        <geko-input v-model="formData.kecamatan" :item="{
+          type: 'select',
+          label: 'Kecamatan',
+          api: 'GetKecamatan',
+          validation: ['required'],
+          param: {
+            kabupaten_no: formData.city,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_kecamatan',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_kecamatan',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.city"
-        />
+          },
+        }" :disabled="!formData.city" />
       </v-col>
     </template>
     <template v-slot:create-village="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.village"
-          :item="{
-            type: 'select',
-            label: 'Desa',
-            api: 'GetDesa',
-            validation: ['required'],
-            param: {
-              kode_kecamatan: formData.kecamatan,
+        <geko-input v-model="formData.village" :item="{
+          type: 'select',
+          label: 'Desa',
+          api: 'GetDesa',
+          validation: ['required'],
+          param: {
+            kode_kecamatan: formData.kecamatan,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_desa',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_desa',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.kecamatan"
-        />
+          },
+        }" :disabled="!formData.kecamatan" />
       </v-col>
     </template>
 
@@ -225,107 +172,92 @@
         <h4>AREA KERJA</h4>
       </v-col>
       <v-col lg="6">
-        <geko-input
-          v-model="formData.mu_no"
-          :item="{
-            type: 'select',
-            label: 'Management Unit',
-            api: 'GetManagementUnit',
-            validation: ['required'],
-            param: {
-              program_year: formData.program_year,
+        <geko-input v-model="formData.mu_no" :item="{
+          type: 'select',
+          label: 'Management Unit',
+          api: 'GetManagementUnit',
+          validation: ['required'],
+          param: {
+            program_year: formData.program_year,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'mu_no',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'mu_no',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.program_year"
-        />
+          },
+        }" :disabled="!formData.program_year" />
       </v-col>
     </template>
 
     <template v-slot:create-target_area="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.target_area"
-          :item="{
-            type: 'select',
-            label: 'Target Area',
-            api: 'new-utilities/target-areas',
-            validation: ['required'],
-            param: {
-              program_year: formData.program_year,
-              mu_no: formData.mu_no,
+        <geko-input v-model="formData.target_area" :item="{
+          type: 'select',
+          label: 'Target Area',
+          api: 'new-utilities/target-areas',
+          validation: ['required'],
+          param: {
+            program_year: formData.program_year,
+            mu_no: formData.mu_no,
+          },
+          option: {
+            getterKey: 'data',
+            list_pointer: {
+              label: 'name',
+              code: 'area_code',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data',
-              list_pointer: {
-                label: 'name',
-                code: 'area_code',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.mu_no"
-        />
+          },
+        }" :disabled="!formData.mu_no" />
       </v-col>
     </template>
 
     <template v-slot:create-working_area="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.working_area"
-          :item="{
-            type: 'select',
-            label: 'Working Area / Desa',
-            api: 'GetDesa',
-            validation: ['required'],
-            param: {
-              program_year: formData.program_year,
-              kode_ta: formData.target_area,
+        <geko-input v-model="formData.working_area" :item="{
+          type: 'select',
+          label: 'Working Area / Desa',
+          api: 'GetDesa',
+          validation: ['required'],
+          param: {
+            program_year: formData.program_year,
+            kode_ta: formData.target_area,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_desa',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_desa',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.target_area"
-        />
+          },
+        }" :disabled="!formData.target_area" />
       </v-col>
     </template>
 
     <template v-slot:create-fc_no="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.fc_no"
-          :item="{
-            type: 'select',
-            label: 'PIC T4T (Field Coordinator)',
-            api: 'getEmployeeList_new',
-            validation: ['required'],
-            param: {
-              program_year: formData.program_year,
-                  position_no: 19,
+        <geko-input v-model="formData.fc_no" :item="{
+          type: 'select',
+          label: 'PIC T4T (Field Coordinator)',
+          api: 'getEmployeeList_new',
+          validation: ['required'],
+          param: {
+            program_year: formData.program_year,
+            position_no: 19,
+          },
+          option: {
+            // getterKey: 'data.result.data',
+            list_pointer: {
+              label: 'name',
+              code: 'nik',
+              display: ['name'],
             },
-            option: {
-              // getterKey: 'data.result.data',
-              list_pointer: {
-                label: 'name',
-                code: 'nik',
-                display: ['name'],
-              },
-            },
-          }"
-        />
+          },
+        }" />
       </v-col>
     </template>
 
@@ -334,82 +266,70 @@
     <!-- UPDATE -->
     <template v-slot:update-city="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.city"
-          :item="{
-            type: 'select',
-            label: 'Kota / Kabupaten',
-            api: 'GetKabupaten',
-            validation: [],
-            default_label: formData.kabupatens_name_domicile,
-            param: {
-              province_code: formData.province,
+        <geko-input v-model="formData.city" :item="{
+          type: 'select',
+          label: 'Kota / Kabupaten',
+          api: 'GetKabupaten',
+          validation: [],
+          default_label: formData.kabupatens_name_domicile,
+          param: {
+            province_code: formData.province,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kabupaten_no',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kabupaten_no',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.province"
-        />
+          },
+        }" :disabled="!formData.province" />
       </v-col>
     </template>
 
     <template v-slot:update-kecamatan="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.kecamatan"
-          :item="{
-            type: 'select',
-            label: 'Kecamatan',
-            api: 'GetKecamatan',
-            validation: [],
-            default_label: formData.kecamatans_name_domicile,
-            param: {
-              kabupaten_no: formData.city,
+        <geko-input v-model="formData.kecamatan" :item="{
+          type: 'select',
+          label: 'Kecamatan',
+          api: 'GetKecamatan',
+          validation: [],
+          default_label: formData.kecamatans_name_domicile,
+          param: {
+            kabupaten_no: formData.city,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_kecamatan',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_kecamatan',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.city"
-        />
+          },
+        }" :disabled="!formData.city" />
       </v-col>
     </template>
 
     <template v-slot:update-village="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.village"
-          :item="{
-            type: 'select',
-            label: 'Desa',
-            api: 'GetDesa',
-            validation: [],
-            default_label: formData.desas_name_domicile,
-            param: {
-              kode_kecamatan: formData.kecamatan,
+        <geko-input v-model="formData.village" :item="{
+          type: 'select',
+          label: 'Desa',
+          api: 'GetDesa',
+          validation: [],
+          default_label: formData.desas_name_domicile,
+          param: {
+            kode_kecamatan: formData.kecamatan,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_desa',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_desa',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.kecamatan"
-        />
+          },
+        }" :disabled="!formData.kecamatan" />
       </v-col>
     </template>
 
@@ -418,83 +338,72 @@
         <h4>AREA KERJA</h4>
       </v-col>
       <v-col lg="6">
-        <geko-input
-          v-model="formData.mu_no"
-          :item="{
-            type: 'select',
-            label: 'Management Unit',
-            api: 'GetManagementUnit',
-            validation: ['required'],
-            default_label: formData.managementunits_name,
-            param: {
-              program_year: formData.program_year,
+        <geko-input v-model="formData.mu_no" :item="{
+          type: 'select',
+          label: 'Management Unit',
+          api: 'GetManagementUnit',
+          validation: ['required'],
+          default_label: formData.managementunits_name,
+          param: {
+            program_year: formData.program_year,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'mu_no',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'mu_no',
-                display: ['name'],
-              },
-            },
-          }"
-        />
+          },
+        }" />
       </v-col>
     </template>
 
     <template v-slot:update-target_area="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.target_area"
-          :item="{
-            type: 'select',
-            label: 'Target Area',
-            api: 'GetTargetArea',
-            validation: ['required'],
-            default_label: formData.target_areas_name,
-            param: {
-              program_year: formData.program_year,
-              mu_no: formData.mu_no,
+        <geko-input v-model="formData.target_area" :item="{
+          type: 'select',
+          label: 'Target Area',
+          api: 'GetTargetArea',
+          validation: ['required'],
+          default_label: formData.target_areas_name,
+          param: {
+            program_year: formData.program_year,
+            mu_no: formData.mu_no,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'area_code',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'area_code',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.mu_no"
-        />
+          },
+        }" :disabled="!formData.mu_no" />
       </v-col>
     </template>
 
     <template v-slot:update-working_area="{ formData, setFormData, item }">
       <v-col lg="6">
-        <geko-input
-          v-model="formData.working_area"
-          :item="{
-            type: 'select',
-            label: 'Working Area / Desa',
-            api: 'GetDesa',
-            validation: ['required'],
-            default_label: formData.desas_name,
-            param: {
-              program_year: formData.program_year,
-              kode_ta: formData.target_area,
+        <geko-input v-model="formData.working_area" :item="{
+          type: 'select',
+          label: 'Working Area / Desa',
+          api: 'GetDesa',
+          validation: ['required'],
+          default_label: formData.desas_name,
+          param: {
+            program_year: formData.program_year,
+            kode_ta: formData.target_area,
+          },
+          option: {
+            getterKey: 'data.result',
+            list_pointer: {
+              label: 'name',
+              code: 'kode_desa',
+              display: ['name'],
             },
-            option: {
-              getterKey: 'data.result',
-              list_pointer: {
-                label: 'name',
-                code: 'kode_desa',
-                display: ['name'],
-              },
-            },
-          }"
-          :disabled="!formData.target_area"
-        />
+          },
+        }" :disabled="!formData.target_area" />
       </v-col>
     </template>
 
@@ -698,6 +607,10 @@ export default {
                     {
                       code: "2025",
                       label: "2025",
+                    },
+                    {
+                      code: "2026",
+                      label: "2026",
                     },
                   ],
                 },
