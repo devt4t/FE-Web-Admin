@@ -18,7 +18,8 @@
     </template>
 
     <template v-slot:list-bottom-action="{ item }">
-      <v-btn variant="danger" small class="mr-2 mt-2" @click="onExportPDFSingle(item)" title="Export MOU">
+      <v-btn variant="danger" small class="mr-2 mt-2" :loading="exportingId === item.id"
+        :disabled="exportingId === item.id" @click="onExportPDFSingle(item)" title="Export MOU">
         <v-icon small color="danger">mdi-file-pdf-box</v-icon>
         <span>Export MOU</span>
       </v-btn>
@@ -331,51 +332,85 @@ export default {
 
     },
     async onExportPDFSingle(item) {
-      const prompt = await this.$_alert.custom({
-        title: 'Export Data?',
-        text: 'Mulai proses Export Data MOU petani ini?',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#868e96',
-        confirmButtonText: 'Ya, Export Data!',
-        cancelButtonText: 'Batal'
-      })
-      if (prompt.isConfirmed) {
-        const axiosConfig = {
-          method: "POST",
-          url: `${this.$_config.baseUrlExport}export/farmer-mou/pdf`,
-          responseType: "arraybuffer",
-          data: {
-            filters: {
-              id: item.id,
-              farmer_no: item.farmer_no,
-              program_year: this.$store.state.tmpProgramYear,
-              token: localStorage.getItem("token")
+      const prompt =
+        await this.$_alert.custom({
+          title: 'Export Data?',
+          text: 'Mulai proses Export Data MOU petani ini?',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonColor: '#17a2b8',
+          cancelButtonColor: '#868e96',
+          confirmButtonText: 'Ya, Export Data!',
+          cancelButtonText: 'Batal'
+        });
+
+      if (!prompt.isConfirmed) {
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      try {
+        this.exportingId = item.id;
+
+        const response =
+          await axios({
+            method: 'POST',
+            url: `${this.$_config.baseUrlExport}export/farmer-mou/pdf`,
+            responseType: 'arraybuffer',
+            data: {
+              filters: {
+                id: item.id,
+                farmer_no: item.farmer_no,
+                program_year: this.$store.state.tmpProgramYear,
+                token: token,
+              },
+            },
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+        const safeName =
+          item.name
+            .replace(/[^a-z0-9]/gi, '_')
+            .toLowerCase();
+
+        const fileName =
+          `Report-MOU-${safeName}-${item.farmer_no}-${moment().format('DDMMYYYYHHmmss')}.pdf`;
+
+        const blob =
+          new Blob(
+            [response.data],
+            {
+              type: 'application/pdf',
             }
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        };
+          );
 
-        try {
-          const exported = await axios(axiosConfig).catch(() => false);
-          if (!exported) throw new Error("Export failed");
+        const url = URL.createObjectURL(blob);
 
-          const url = URL.createObjectURL(new Blob([exported.data]));
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", `Report-MOU-${item.name.replace(/ /g, "")}-${item.farmer_no}-${moment().format("DMMYYYYHHmmss")}.pdf`);
-          document.body.appendChild(link);
-          link.click();
+        const link = document.createElement('a');
+        link.href = url;
+        link.download =
+          fileName;
 
-          this.$_alert.success("Successfully Exported PDF");
-        } catch (err) {
-          this.$_alert.error("Export PDF Failed");
-          console.error(err);
-        }
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+
+        this.$_alert.success('Berhasil Export PDF');
+
+      } catch (err) {
+        console.error(err);
+        this.$_alert.error('Export PDF Failed');
+
+      } finally {
+        this.exportingId = null;
       }
     },
     getMaskedValue(item) {
@@ -433,6 +468,7 @@ export default {
   },
   data() {
     return {
+      exportingId: null,
       exportKey: 0,
       exportKeyPdf: 0,
       farmerAssignModal: 0,
