@@ -11,6 +11,7 @@ import {
   Pati,
 } from "./scpecialEmails/nurseryTeam";
 import TaskForceEmail from "./scpecialEmails/taskForceTeam";
+import config from "../config";
 
 Vue.use(Vuex);
 
@@ -38,10 +39,7 @@ export default new Vuex.Store({
     packageVersion: version || "0",
     packageVersionDateTime: version_date_time || "0",
     theme: "light",
-    programYear: {
-      model: "2025",
-      options: ["2020", "2021", "2022", "2023", "2024", "2025"],
-    },
+    programYear: config.programYear,
     taskForceTeam: {
       emails: TaskForceEmail,
     },
