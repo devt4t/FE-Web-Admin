@@ -23,39 +23,15 @@
                         label: 'Tahun Program',
                         type: 'select',
                         validation: ['required'],
+
                         option: {
                           default_label: taDesa.program_year,
                           multiple: true,
-                          default_options: [
-                            {
-                              label: '2020',
-                              code: '2020',
-                            },
-                            {
-                              label: '2021',
-                              code: '2021',
-                            },
-                            {
-                              label: '2022',
-                              code: '2022',
-                            },
-                            {
-                              label: '2023',
-                              code: '2023',
-                            },
-                            {
-                              label: '2024',
-                              code: '2024',
-                            },
-                            {
-                              label: '2025',
-                              code: '2025',
-                            },
-                            {
-                              label: '2026',
-                              code: '2026',
-                            },
-                          ],
+                          // agar tidak hardcode agar langsung ikut dari state management dan config.js
+                          default_options: $store.state.programYear.options.map(year => ({
+                            code: year,
+                            label: year,
+                          })),
                           list_pointer: {
                             label: 'label',
                             code: 'code',

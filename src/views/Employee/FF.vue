@@ -488,6 +488,14 @@ export default {
       active: "1",
       user_id: this.$store.state.User.employee_no,
     });
+    // agar tidak harcode, jadi akan langsung ikut dari state management dan config.js
+    const programYearField = this.config.fields.find(field => field.id === 'program_year');
+    if (programYearField) {
+      programYearField.methods.create.option.default_options = this.$store.state.programYear.options.map((year) => ({
+        code: year,
+        label: year,
+      }));
+    }
   },
 
   data() {
@@ -497,6 +505,7 @@ export default {
       emailData: null,
       emailDataKey: 0,
       refreshKey: 0,
+
       config: {
         title: "Field Facilitator",
         class: "ff-module",
@@ -583,36 +592,40 @@ export default {
                     label: "label",
                     display: ["label"],
                   },
-                  default_options: [
-                    {
-                      code: "2020",
-                      label: "2020",
-                    },
-                    {
-                      code: "2021",
-                      label: "2021",
-                    },
-                    {
-                      code: "2022",
-                      label: "2022",
-                    },
-                    {
-                      code: "2023",
-                      label: "2023",
-                    },
-                    {
-                      code: "2024",
-                      label: "2024",
-                    },
-                    {
-                      code: "2025",
-                      label: "2025",
-                    },
-                    {
-                      code: "2026",
-                      label: "2026",
-                    },
-                  ],
+                  // agar tidak hardcode
+                  default_options: [],
+
+                  // ini hardcode nya
+                  // default_options: [
+                  //   {
+                  //     code: "2020",
+                  //     label: "2020",
+                  //   },
+                  //   {
+                  //     code: "2021",
+                  //     label: "2021",
+                  //   },
+                  //   {
+                  //     code: "2022",
+                  //     label: "2022",
+                  //   },
+                  //   {
+                  //     code: "2023",
+                  //     label: "2023",
+                  //   },
+                  //   {
+                  //     code: "2024",
+                  //     label: "2024",
+                  //   },
+                  //   {
+                  //     code: "2025",
+                  //     label: "2025",
+                  //   },
+                  //   {
+                  //     code: "2026",
+                  //     label: "2026",
+                  //   },
+                  // ],
                 },
               },
               filter: false,
