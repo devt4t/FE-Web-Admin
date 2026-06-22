@@ -7,8 +7,8 @@ export default {
   loading: false,
   pivot_program_year_list: [
     {
-        label: '2025',
-        code: '2025',
+      label: '2025',
+      code: '2025',
     },
   ],
   pivot_program_year_item: '',
@@ -235,6 +235,20 @@ export default {
           label: "Pola Tanam",
           key: "main_lahan.opsi_pola_tanam",
         },
+        {
+          label: "Batas Lahan",
+          key: "main_lahan.land_border",
+        },
+        {
+          label: "Batas Lapangan",
+          key: "main_lahan.field_border",
+          type: "custom_mapping_border"
+        },
+        {
+          label: "Status Sinyal",
+          key: "main_lahan.signal_status",
+          type: "custom_mapping_signal"
+        }
       ],
     },
   ],

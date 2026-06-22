@@ -295,6 +295,15 @@
       </div>
     </template>
 
+    <template v-slot:list-field_border="{ item }">
+      <span>{{ getFieldBorder(item.field_border) }}</span>
+    </template>
+
+    <template v-slot:list-signal_status="{ item }">
+      <span class="badge" :class="getSignalBadgeClass(item.signal_status)">{{ getSignalStatusLabel(item.signal_status)
+        }}</span>
+    </template>
+
     <template v-slot:list-before-create>
       <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
       <lahan-export-social-impact-modal :dataKey="exportSocialImpactModal" :format="exportFormat" />
@@ -418,6 +427,32 @@ export default {
     LahanExportSocialImpactModal,
   },
   methods: {
+    getSignalBadgeClass(val) {
+      const map = {
+        1: 'badge bg-success', // Hijau (Kuat)
+        2: 'badge bg-info',    // Biru (Normal)
+        3: 'badge bg-warning', // Kuning (Lemah)
+        4: 'badge bg-danger'   // Merah (Tidak ada)
+      };
+      return map[val] || '';
+    },
+    getSignalStatusLabel(val) {
+      const map = {
+        1: 'Kuat',
+        2: 'Normal',
+        3: 'Lemah',
+        4: 'Tidak ada'
+      };
+      return map[val] || '-';
+    },
+    getFieldBorder(val) {
+      const map = {
+        1: 'Ada, jelas (terlihat)',
+        2: 'Ada, tidak jelas',
+        3: 'Tidak ada/tidak jelas'
+      };
+      return map[val] || '-';
+    },
     getProject(item) {
       try {
         return item.land_project.project_planting_purposes_code;

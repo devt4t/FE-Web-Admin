@@ -53,8 +53,8 @@
                     <span>Unverifikasi GIS</span>
                   </v-btn>
 
-                  <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
-                    @click="unverificationData('um_unverification')">
+                  <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger"
+                    class="mr-1 mb-1" @click="unverificationData('um_unverification')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi
                       {{ data.main_lahan.approve == 2 ? "UM" : "FC" }}</span>
@@ -142,8 +142,8 @@
                   <span>Unverifikasi Kelengkapan Data</span>
                 </v-btn>
 
-                <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
-                  @click="unverificationData('um_unverification')">
+                <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger"
+                  class="mr-1 mb-1" @click="unverificationData('um_unverification')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi UM</span>
                 </v-btn>
@@ -466,11 +466,16 @@
                   </span>
                   <p class="mb-0 value" v-if="v.type !== 'qrcode' && v.key !== 'project'">
                     <span v-if="v.prepend">{{ v.prepend }}</span>
-                    <span :class="{
-                      [v.class || '']: true,
-                    }">{{
-                      getValue(v.key) | parse(v.transform || "no-empty")
-                    }}</span>
+                    <span v-if="v.type === 'custom_mapping_border'" :class="{ [v.class || '']: true }">
+                      {{ getFieldBorder(getValue(v.key)) }}
+                    </span>
+                    <span v-else-if="v.type === 'custom_mapping_signal'" :class="getSignalBadgeClass(getValue(v.key))">
+                      {{ getSignalStatusLabel(getValue(v.key)) }}
+                    </span>
+                    <span v-else :class="{ [v.class || '']: true }">
+                      {{ getValue(v.key) | parse(v.transform || "no-empty") }}
+                    </span>
+
                     <span v-if="v.append">{{ v.append }}</span>
                   </p>
                 </div>
@@ -737,17 +742,17 @@
               </div>
               <div class="trees-filter" v-if="pivot_program_year_list.length > 0">
                 <geko-input v-model="pivot_program_year_item" :item="{
-                    type: 'select-radio',
-                    label: 'Tahun Tanam',
-                    validation: ['required'],
-                    option: {
-                        list_pointer: {
-                            label: 'label',
-                            code: 'code',
-                            display: ['label']
-                        },
-                        default_options: pivot_program_year_list
-                    }
+                  type: 'select-radio',
+                  label: 'Tahun Tanam',
+                  validation: ['required'],
+                  option: {
+                    list_pointer: {
+                      label: 'label',
+                      code: 'code',
+                      display: ['label']
+                    },
+                    default_options: pivot_program_year_list
+                  }
                 }" :disabled="true" />
               </div>
             </div>
@@ -987,6 +992,35 @@ export default {
     SeedAdjustment
   },
   methods: {
+    getSignalBadgeClass(val) {
+      const map = {
+        1: 'badge bg-success',
+        2: 'badge bg-info',
+        3: 'badge bg-warning',
+        4: 'badge bg-danger'
+      };
+      return map[val] || '';
+    },
+    getFieldBorder(val) {
+      if (val === null || val === undefined || val === '') return '-';
+      const map = {
+        1: 'Ada, jelas (terlihat)',
+        2: 'Ada, tidak jelas',
+        3: 'Tidak ada/tidak jelas'
+      };
+      return map[val] || '-';
+    },
+    getSignalStatusLabel(val) {
+      if (val === null || val === undefined || val === '') return '-';
+      const map = {
+        1: 'Kuat',
+        2: 'Normal',
+        3: 'Lemah',
+        4: 'Tidak ada'
+      };
+      return map[val] || '-';
+    },
+
     test() {
       // const captureElement = document.querySelector(".map-wrapper");
       var mapCanvas = document.querySelector(".mapboxgl-canvas");
@@ -1308,18 +1342,18 @@ export default {
 
       console.log("result", result);
       //set list program year from pivots
-      if(result.lahan_pivot_years.length > 0){
+      if (result.lahan_pivot_years.length > 0) {
         this.pivot_program_year_list = [];
-        for(const i of result.lahan_pivot_years){
-          if(i.program_year.length == 4){
+        for (const i of result.lahan_pivot_years) {
+          if (i.program_year.length == 4) {
             let tempA = {
               label: i.program_year,
               code: i.program_year,
             }
             this.pivot_program_year_list.push(tempA);
-          } else{
+          } else {
             let py_array = i.split(", ")
-            for(const j of py_array){
+            for (const j of py_array) {
               let tempB = {
                 label: j,
                 code: j,

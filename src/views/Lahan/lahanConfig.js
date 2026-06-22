@@ -314,6 +314,45 @@ export default {
     },
 
     {
+      id: 'land_border',
+      label: 'Batas Lahan',
+      methods: {
+        list: {
+          view_data: 'land_border'
+        },
+        detail: {
+          view_data: 'land_border'
+        }
+      }
+    },
+    // ini ada tandanya, 1: ada jelas(terlihat), 2: ada tidak jelas, 3: tidak ada/tidak jelas
+    {
+      id: 'field_border',
+      label: 'Batas Lapangan',
+      methods: {
+        list: {
+          type: 'row-slot'
+        },
+        detail: {
+          type: 'row-slot'
+        }
+      }
+    },
+    // ada tandanya, 1: kuat, 2: normal, 3: lemah, 4: tidak ada
+    {
+      id: 'signal_status',
+      label: 'Status Sinyal',
+      methods: {
+        list: {
+          type: 'row-slot'
+        },
+        detail: {
+          type: 'row-slot'
+        }
+      }
+    },
+
+    {
       id: "status",
       label: "Status",
       methods: {
