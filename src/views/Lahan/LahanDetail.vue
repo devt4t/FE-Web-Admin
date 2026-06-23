@@ -1304,7 +1304,7 @@ export default {
           for (const coord of Array.isArray(this.data.lahan_polygon)
             ? this.data.lahan_polygon
             : []) {
-            const marker = new mapboxgl.Marker()
+            const marker = new mapboxgl.Marker({ color: '#E6DE00', scale: 0.6 })
               .setLngLat([coord.longitude, coord.latitude])
               .addTo(this.map);
 
@@ -1617,7 +1617,7 @@ export default {
 
           if (Array.isArray(this.data.lahan_polygon)) {
             for (const coord of this.data.lahan_polygon) {
-              const marker = new mapboxgl.Marker()
+              const marker = new mapboxgl.Marker({ color: '#E6DE00', scale: 0.6 })
                 .setLngLat([
                   parseFloat(coord.longitude),
                   parseFloat(coord.latitude),
@@ -1625,6 +1625,39 @@ export default {
                 .addTo(this.map);
 
               this.markers.push(marker);
+            }
+            if (this.data.lahan_polygon.length >= 3) {
+              let sortedPolygon = [...this.data.lahan_polygon].sort((a, b) => a.order - b.order);
+
+              let coordinateRings = sortedPolygon.map(coord => [
+                parseFloat(coord.longitude),
+                parseFloat(coord.latitude)
+              ]);
+
+              let firstPoint = coordinateRings[0];
+              let lastPoint = coordinateRings[coordinateRings.length - 1];
+
+              if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+                coordinateRings.push([...firstPoint]);
+              }
+
+              let geoJsonCoordinate = {
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    geometry: {
+                      type: "Polygon",
+                      coordinates: [coordinateRings]
+                    }
+                  }
+                ]
+              };
+              this.addMapLayer(geoJsonCoordinate, "map-coordinate", "#008702", "#02e006");
+              this.$set(this.legends, 5, {
+                ...this.legends[5],
+                show: true,
+              });
             }
             if (
               [undefined, null, "", "-"].includes(
@@ -1638,12 +1671,6 @@ export default {
                 parseFloat(this.data.main_lahan.longitude),
                 parseFloat(this.data.main_lahan.latitude),
               ]);
-            }
-            if (this.data.lahan_polygon.length > 0) {
-              this.$set(this.legends, 2, {
-                ...this.legends[2],
-                show: true,
-              });
             }
           }
 
