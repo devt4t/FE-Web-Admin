@@ -180,7 +180,7 @@
                           <!-- POLYGON AREA -->
                           <td>
                             <geko-input :disabled="item.fc_complete_data != 1" v-model="item.gis_polygon_area" :item="{
-                              label: 'Luas Polygon ',
+                              label: 'Luas Polygon',
                               validation:
                                 item.fc_complete_data != 1
                                   ? []
@@ -193,7 +193,7 @@
                           <!-- JENIS TANAH -->
                           <td>
                             <geko-input :disabled="item.fc_complete_data != 1" v-model="item.soil_type" :item="{
-                              label: 'Luas Polygon ',
+                              label: 'Jenis Tanah',
                               type: 'select',
                               validation:
                                 item.fc_complete_data != 1
@@ -927,7 +927,7 @@ export default {
         .then(async (res) => {
           let rawData = res.data.data;
           this.questions = res.data.questions;
-          
+
           if (rawData.length === 0) {
             this.$_alert.error("Gagal", "Tidak ada lahan di KML ini yang cocok dengan Projek yang dipilih");
             this.loading = false;
@@ -944,7 +944,7 @@ export default {
 
             if (this.data.length === 0) {
               this.$_alert.error(
-                "Informasi", 
+                "Informasi",
                 "Semua lahan di KML ini sudah pernah diverifikasi GIS atau belum lengkap verifikasi FC, sehingga tidak ada data baru yang perlu diupdate."
               );
               this.loading = false;
