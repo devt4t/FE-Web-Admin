@@ -103,7 +103,7 @@
                       <v-icon v-if="!loadingCarbonExport">mdi-file-pdf-box</v-icon>
 
                       <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
-                      </v-progress-circular> 
+                      </v-progress-circular>
                       <span v-if="loadingCarbonExport">
                         &nbsp; {{ muLoadingProgress }}%
                       </span>
@@ -115,7 +115,7 @@
                     <v-btn variant="success" type="submit" v-if="format == 'excel'">
                       <v-icon v-if="!loadingCarbonExport">mdi-microsoft-excel</v-icon>
                       <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
-                      </v-progress-circular> 
+                      </v-progress-circular>
                       <span v-if="loadingCarbonExport">
                         &nbsp; {{ muLoadingProgress }}%
                       </span>
@@ -128,107 +128,149 @@
           </div>
           <div :class="exportBy === 'fc' ? 'd-block' : 'd-none'">
             <ValidationObserver ref="secondForm" v-slot="{ handleSubmit }">
-                <form @submit.prevent="handleSubmit(onSubmitByFC)" autocomplete="off">
-                    <v-row>
-                        <v-col lg="12">
-                            <geko-input v-if="fcList.length > 0" v-model="employee_no_fc" :item="{
-                                label: 'Field Coordinator',
-                                placeholder: 'Pilih Field Coordinator',
-                                type: 'select',
-                                validation: ['required'],
-                                api: 'getEmployeeList_new',
-                                param: {
-                                    page: 1,
-                                    per_page: 10,
-                                    position_no: 19,
-                                },
-                                option: {
-                                    multiple: true,
-                                    getterKey: 'data.result',
-                                    default_options: fcList,
-                                    list_pointer: {
-                                        label: 'name',
-                                        code: 'nik',
-                                        display: ['name'],
-                                    },
-                                },
-                            }" @option:selected="test2($event)" :disabled="fcList.length == 0" />
-                            <v-progress-circular v-if="fcList.length == 0" indeterminate
-                                color="primary"></v-progress-circular>
-                        </v-col>
+              <form @submit.prevent="handleSubmit(onSubmitByFC)" autocomplete="off">
+                <v-row>
+                  <v-col lg="12">
+                    <geko-input v-if="fcList.length > 0" v-model="employee_no_fc" :item="{
+                      label: 'Field Coordinator',
+                      placeholder: 'Pilih Field Coordinator',
+                      type: 'select',
+                      validation: ['required'],
+                      api: 'getEmployeeList_new',
+                      param: {
+                        page: 1,
+                        per_page: 10,
+                        position_no: 19,
+                      },
+                      option: {
+                        multiple: true,
+                        getterKey: 'data.result',
+                        default_options: fcList,
+                        list_pointer: {
+                          label: 'name',
+                          code: 'nik',
+                          display: ['name'],
+                        },
+                      },
+                    }" @option:selected="test2($event)" :disabled="fcList.length == 0" />
+                    <v-progress-circular v-if="fcList.length == 0" indeterminate color="primary"></v-progress-circular>
+                  </v-col>
 
-                        <v-col lg="12">
-                            <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                                <v-icon v-if="!loadingExportByFC">mdi-file-pdf-box</v-icon>
+                  <v-col lg="12">
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                      <v-icon v-if="!loadingExportByFC">mdi-file-pdf-box</v-icon>
 
-                                <v-progress-circular v-else :size="20" color="danger"
-                                    indeterminate></v-progress-circular>
-                                <span class="ml-1"> Export PDF</span>
-                            </v-btn>
-                        </v-col>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export PDF</span>
+                    </v-btn>
+                  </v-col>
 
-                        <v-col lg="12">
-                            <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                                <v-icon v-if="!loadingExportByFC">mdi-microsoft-excel</v-icon>
-                                <v-progress-circular v-else :size="20" color="danger"
-                                    indeterminate></v-progress-circular>
-                                <span class="ml-1"> Export Excel</span>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </form>
+                  <v-col lg="12">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                      <v-icon v-if="!loadingExportByFC">mdi-microsoft-excel</v-icon>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export Excel</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </form>
             </ValidationObserver>
           </div>
           <div :class="exportBy === 'um' ? 'd-block' : 'd-none'">
             <ValidationObserver ref="thirdForm" v-slot="{ handleSubmit }">
-                <form @submit.prevent="handleSubmit(onSubmitByUM)" autocomplete="off">
-                    <v-row>
-                        <v-col lg="12">
-                            <geko-input v-if="umList.length > 0" v-model="employee_no_um" :item="{
-                                label: 'Unit Manager',
-                                placeholder: 'Pilih Unit Manager',
-                                type: 'select',
-                                validation: ['required'],
-                                api: 'GetManagementUnitAdmin',
-                                param: {
-                                    page: 1,
-                                    per_page: 10,
-                                },
-                                option: {
-                                    multiple: true,
-                                    getterKey: 'data.result',
-                                    default_options: umList,
-                                    list_pointer: {
-                                        label: 'name',
-                                        code: 'nik',
-                                        display: ['name'],
-                                    },
-                                },
-                            }" @option:selected="test2($event)" :disabled="umList.length == 0" />
-                            <v-progress-circular v-if="umList.length == 0" indeterminate
-                                color="primary"></v-progress-circular>
-                        </v-col>
+              <form @submit.prevent="handleSubmit(onSubmitByUM)" autocomplete="off">
+                <v-row>
+                  <v-col lg="12">
+                    <geko-input v-if="umList.length > 0" v-model="employee_no_um" :item="{
+                      label: 'Unit Manager',
+                      placeholder: 'Pilih Unit Manager',
+                      type: 'select',
+                      validation: ['required'],
+                      api: 'GetManagementUnitAdmin',
+                      param: {
+                        page: 1,
+                        per_page: 10,
+                      },
+                      option: {
+                        multiple: true,
+                        getterKey: 'data.result',
+                        default_options: umList,
+                        list_pointer: {
+                          label: 'name',
+                          code: 'nik',
+                          display: ['name'],
+                        },
+                      },
+                    }" @option:selected="test2($event)" :disabled="umList.length == 0" />
+                    <v-progress-circular v-if="umList.length == 0" indeterminate color="primary"></v-progress-circular>
+                  </v-col>
 
-                        <v-col lg="12">
-                            <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                                <v-icon v-if="!loadingExportByUM">mdi-file-pdf-box</v-icon>
+                  <v-col lg="12">
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                      <v-icon v-if="!loadingExportByUM">mdi-file-pdf-box</v-icon>
 
-                                <v-progress-circular v-else :size="20" color="danger"
-                                    indeterminate></v-progress-circular>
-                                <span class="ml-1"> Export PDF</span>
-                            </v-btn>
-                        </v-col>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export PDF</span>
+                    </v-btn>
+                  </v-col>
 
-                        <v-col lg="12">
-                            <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                                <v-icon v-if="!loadingExportByUM">mdi-microsoft-excel</v-icon>
-                                <v-progress-circular v-else :size="20" color="danger"
-                                    indeterminate></v-progress-circular>
-                                <span class="ml-1"> Export Excel</span>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </form>
+                  <v-col lg="12">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                      <v-icon v-if="!loadingExportByUM">mdi-microsoft-excel</v-icon>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export Excel</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </form>
+            </ValidationObserver>
+          </div>
+
+          <div :class="exportBy === 'project' ? 'd-block' : 'd-none'">
+            <ValidationObserver ref="projectForm" v-slot="{ handleSubmit }">
+              <form @submit.prevent="handleSubmit(onSubmitByProject)" autocomplete="off">
+                <v-row>
+                  <v-col>
+                    <geko-input v-model="projectNo" :item="{
+                      label: 'Projek',
+                      placeholder: 'Pilih Projek',
+                      type: 'select',
+                      validation: ['required'],
+                      api: 'GetProjectAllAdmin',
+                      param: {
+                        page: 1,
+                        per_page: 10,
+                      },
+                      option: {
+                        multiple: true,
+                        getterKey: 'data',
+                        list_pointer: {
+                          label: 'project_name',
+                          code: 'project_no',
+                          display: ['project_name', 'project_no'],
+                        }
+                      }
+                    }" />
+                  </v-col>
+
+                  <v-col lg="12">
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'" :disabled="loadingExportByProject">
+                      <v-icon v-if="!loadingExportByProject">mdi-file-pdf-box</v-icon>
+
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export PDF</span>
+                    </v-btn>
+                  </v-col>
+
+                  <v-col lg="12">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'" :disabled="loadingExportByProject">
+                      <v-icon v-if="!loadingExportByProject">mdi-microsoft-excel</v-icon>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export Excel</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </form>
             </ValidationObserver>
           </div>
 
@@ -257,12 +299,15 @@ export default {
       currentFfName: "",
       exportBy: 'ff',
       muLoadingProgress: 0,
-      exportByOptions:[],
+      exportByOptions: [],
       ffList: [],
       muList: [],
       fcList: [],
       umList: [],
       exportData: [],
+      projectNo: null,
+      projectList: [],
+      loadingExportByProject: false,
     };
   },
   props: {
@@ -312,6 +357,10 @@ export default {
             {
               label: 'Unit Manager',
               code: 'um',
+            },
+            {
+              label: 'Projek',
+              code: 'project',
             },
           ];
         }
@@ -373,16 +422,16 @@ export default {
     async getFCDataForExport() {
       if (this.fcList.length > 0) return;
       const result = await this.$_api.get("getEmployeeList_new", {
-          limit: 2147,
-          offset: 0,
-          position_no: 19,
-          program_year: this.$store.state.tmpProgramYear,
+        limit: 2147,
+        offset: 0,
+        position_no: 19,
+        program_year: this.$store.state.tmpProgramYear,
       });
 
       if (!Array.isArray(result.data)) return;
 
       for (const item of result.data) {
-          item.name = `${item.name}`;
+        item.name = `${item.name}`;
       }
 
       this.fcList = result.data;
@@ -390,16 +439,16 @@ export default {
     async getUMDataForExport() {
       if (this.umList.length > 0) return;
       const result = await this.$_api.get("getEmployeeList_new", {
-          limit: 2147,
-          offset: 0,
-          position_no: 20,
-          program_year: this.$store.state.tmpProgramYear,
+        limit: 2147,
+        offset: 0,
+        position_no: 20,
+        program_year: this.$store.state.tmpProgramYear,
       });
 
       if (!Array.isArray(result.data)) return;
 
       for (const item of result.data) {
-          item.name = `${item.name}`;
+        item.name = `${item.name}`;
       }
 
       this.umList = result.data;
@@ -730,7 +779,7 @@ export default {
         let offset = 0;
         while (true) {
           const result = await this.getExportDataByMU(_mu, offset);
-          console.log({result})
+          console.log({ result })
           if (!result) {
             this.loadingCarbonExport = false;
             break;
@@ -840,6 +889,7 @@ export default {
       this.loading = false;
       this.isOpen = false;
     },
+
     async onSubmitByUM() {
       if (this.loadingExportByUM) return;
 
@@ -850,108 +900,108 @@ export default {
 
       this.loadingExportByUM = true;
       for (const [index, _um] of this.employee_no_um.entries()) {
-          if (!_um) continue;
+        if (!_um) continue;
 
-          let umName = this.umList.find((item) => item.nik == _um)
-              ? this.umList.find((item) => item.nik == _um).name
-              : "";
+        let umName = this.umList.find((item) => item.nik == _um)
+          ? this.umList.find((item) => item.nik == _um).name
+          : "";
 
-          let offset = 0;
-          while (true) {
-              const result = await this.getExportDataByEmployee(_um, offset);
-              if (!result) {
-                  this.loadingExportByUM = false;
-                  break;
-              }
+        let offset = 0;
+        while (true) {
+          const result = await this.getExportDataByEmployee(_um, offset);
+          if (!result) {
+            this.loadingExportByUM = false;
+            break;
+          }
 
-              if (offset == 0 && result.data.length == 0) {
-                  this.loadingExportByUM = false;
-                  this.$_alert.error(
-                      {},
-                      "Tidak ada data",
-                      `Tidak ada data di Target Area ${umName} ${this.$store.state.tmpProgramYear}`
-                  );
-                  return;
-              } else {
-                  console.log(result, offset)
-                  this.exportData = [...this.exportData, ...result.data]
-                  if (result.data.length < 100) break;
-                  offset += 100;
-              }
-
-
-
+          if (offset == 0 && result.data.length == 0) {
+            this.loadingExportByUM = false;
+            this.$_alert.error(
+              {},
+              "Tidak ada data",
+              `Tidak ada data di Target Area ${umName} ${this.$store.state.tmpProgramYear}`
+            );
+            return;
+          } else {
+            console.log(result, offset)
+            this.exportData = [...this.exportData, ...result.data]
+            if (result.data.length < 100) break;
+            offset += 100;
           }
 
 
-          const trees = await this.$_api
-              .get("GetTreesAll")
-              .then((res) => {
-                  return res.data.result.data;
-              })
-              .catch((err) => {
-                  console.log("err", err);
-                  return false;
-              });
 
-          if (!trees) {
-              this.loading = false;
-              continue;
-          }
+        }
 
-          const configFilename = {
-              pdf: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
-                  "DMMYYYYHHmmss"
-              )}.pdf`,
-              excel: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
-                  "DMMYYYYHHmmss"
-              )}.xlsx`,
-          };
-          const axiosConfig = {
-              method: "POST",
-              url: configUrl[this.format],
-              responseType: "arraybuffer",
-              data: {
-                  data: this.exportData,
-                  trees: trees,
-                  exportBy: this.exportBy,
-                  name: umName,
-                  program_year: this.$store.state.tmpProgramYear,
-              },
-              headers: {
-                  "content-type": "application/json",
-                  Authorization: `Bearer ${this.$store.state.token}`,
-              },
-          };
-          const exported = await axios(axiosConfig)
-              .then((res) => {
-                  return res;
-              })
-              .catch((err) => {
-                  return false;
-              });
 
-          if (!exported) {
-              this.loadingExportByUM = false;
-              continue;
-          }
+        const trees = await this.$_api
+          .get("GetTreesAll")
+          .then((res) => {
+            return res.data.result.data;
+          })
+          .catch((err) => {
+            console.log("err", err);
+            return false;
+          });
 
-          const url = URL.createObjectURL(new Blob([exported.data]));
-          const link = document.createElement("a");
-          link.href = url;
+        if (!trees) {
+          this.loading = false;
+          continue;
+        }
 
-          const filename = configFilename[this.format];
-          link.setAttribute("download", filename);
-          document.body.appendChild(link);
-          link.click();
+        const configFilename = {
+          pdf: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.pdf`,
+          excel: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.xlsx`,
+        };
+        const axiosConfig = {
+          method: "POST",
+          url: configUrl[this.format],
+          responseType: "arraybuffer",
+          data: {
+            data: this.exportData,
+            trees: trees,
+            exportBy: this.exportBy,
+            name: umName,
+            program_year: this.$store.state.tmpProgramYear,
+          },
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${this.$store.state.token}`,
+          },
+        };
+        const exported = await axios(axiosConfig)
+          .then((res) => {
+            return res;
+          })
+          .catch((err) => {
+            return false;
+          });
 
-          // reset after complete download, then filled by next UM
-          this.exportData = [];
+        if (!exported) {
+          this.loadingExportByUM = false;
+          continue;
+        }
 
-          // stop the loading when the last download completed
-          if (index === this.employee_no_um.length - 1) {
-              this.loadingExportByUM = false;
-          }
+        const url = URL.createObjectURL(new Blob([exported.data]));
+        const link = document.createElement("a");
+        link.href = url;
+
+        const filename = configFilename[this.format];
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+
+        // reset after complete download, then filled by next UM
+        this.exportData = [];
+
+        // stop the loading when the last download completed
+        if (index === this.employee_no_um.length - 1) {
+          this.loadingExportByUM = false;
+        }
       }
 
       this.$_alert.success("Successfully");
@@ -959,122 +1009,172 @@ export default {
       this.isOpen = false;
     },
     async onSubmitByFC() {
-        if (this.loadingExportByFC) return;
+      if (this.loadingExportByFC) return;
 
-        const configUrl = {
-          pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-          excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
-        };
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+      };
 
-        this.loadingExportByFC = true;
-        for (const [index, _fc] of this.employee_no_fc.entries()) {
-            if (!_fc) continue;
-            
-            let fcName = this.fcList.find((item) => item.nik == _fc)
-                ? this.fcList.find((item) => item.nik == _fc).name
-                : "";
+      this.loadingExportByFC = true;
 
-            let offset = 0;
-            while (true) {
-                const result = await this.getExportDataByEmployee(_fc, offset);
-                if (!result) {
-                    this.loadingExportByFC = false;
-                    break;
-                }
+      for (const [index, _fc] of this.employee_no_fc.entries()) {
+        if (!_fc) continue;
 
-                if (offset == 0 && result.data.length == 0) {
-                    this.loadingExportByFC = false;
-                    this.$_alert.error(
-                        {},
-                        "Tidak ada data",
-                        `Tidak ada data dari FC ${fcName} ${this.$store.state.tmpProgramYear}`
-                    );
-                    return;
-                } else {
-                    console.log(result, offset)
-                    this.exportData = [...this.exportData, ...result.data]
-                    if (result.data.length < 100) break;
-                    offset += 100;
-                }
+        let fcName = this.fcList.find((item) => item.nik == _fc)
+          ? this.fcList.find((item) => item.nik == _fc).name
+          : "";
 
+        let offset = 0;
+        while (true) {
+          const result = await this.getExportDataByEmployee(_fc, offset);
+          if (!result) {
+            this.loadingExportByFC = false;
+            break;
+          }
 
-
-            }
-
-
-            const trees = await this.$_api
-                .get("GetTreesAll")
-                .then((res) => {
-                    return res.data.result.data;
-                })
-                .catch((err) => {
-                    console.log("err", err);
-                    return false;
-                });
-
-            if (!trees) {
-                this.loading = false;
-                continue;
-            }
-
-            const configFilename = {
-                pdf: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
-                    "DMMYYYYHHmmss"
-                )}.pdf`,
-                excel: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
-                    "DMMYYYYHHmmss"
-                )}.xlsx`,
-            };
-            const axiosConfig = {
-                method: "POST",
-                url: configUrl[this.format],
-                responseType: "arraybuffer",
-                data: {
-                    data: this.exportData,
-                    trees: trees,
-                    exportBy: this.exportBy,
-                    name: fcName,
-                    program_year: this.$store.state.tmpProgramYear,
-                },
-                headers: {
-                    "content-type": "application/json",
-                    Authorization: `Bearer ${this.$store.state.token}`,
-                },
-            };
-            const exported = await axios(axiosConfig)
-                .then((res) => {
-                    return res;
-                })
-                .catch((err) => {
-                    return false;
-                });
-
-            if (!exported) {
-                this.loadingExportByFC = false;
-                continue;
-            }
-
-            const url = URL.createObjectURL(new Blob([exported.data]));
-            const link = document.createElement("a");
-            link.href = url;
-
-            const filename = configFilename[this.format];
-            link.setAttribute("download", filename);
-            document.body.appendChild(link);
-            link.click();
-
-            // reset after complete download, then filled by next UM
-            this.exportData = [];
-
-            // stop the loading when the last download completed
-            if (index === this.employee_no_fc.length - 1) {
-                this.loadingExportByFC = false;
-            }
+          if (offset == 0 && result.data.length == 0) {
+            this.loadingExportByFC = false;
+            this.$_alert.error(
+              {},
+              "Tidak ada data",
+              `Tidak ada data dari FC ${fcName} ${this.$store.state.tmpProgramYear}`
+            );
+            return;
+          } else {
+            console.log(result, offset)
+            this.exportData = [...this.exportData, ...result.data]
+            if (result.data.length < 100) break;
+            offset += 100;
+          }
         }
 
-        this.$_alert.success("Successfully");
-        this.loading = false;
+        const trees = await this.$_api
+          .get("GetTreesAll")
+          .then((res) => {
+            return res.data.result.data;
+          })
+          .catch((err) => {
+            console.log("err", err);
+            return false;
+          });
+
+        if (!trees) {
+          this.loading = false;
+          continue;
+        }
+
+        const configFilename = {
+          pdf: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.pdf`,
+          excel: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.xlsx`,
+        };
+        const axiosConfig = {
+          method: "POST",
+          url: configUrl[this.format],
+          responseType: "arraybuffer",
+          data: {
+            data: this.exportData,
+            trees: trees,
+            exportBy: this.exportBy,
+            name: fcName,
+            program_year: this.$store.state.tmpProgramYear,
+          },
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${this.$store.state.token}`,
+          },
+        };
+        const exported = await axios(axiosConfig)
+          .then((res) => {
+            return res;
+          })
+          .catch((err) => {
+            return false;
+          });
+
+        if (!exported) {
+          this.loadingExportByFC = false;
+          continue;
+        }
+
+        const url = URL.createObjectURL(new Blob([exported.data]));
+        const link = document.createElement("a");
+        link.href = url;
+
+        const filename = configFilename[this.format];
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+
+        // reset after complete download, then filled by next UM
+        this.exportData = [];
+
+        // stop the loading when the last download completed
+        if (index === this.employee_no_fc.length - 1) {
+          this.loadingExportByFC = false;
+        }
+      }
+
+      this.$_alert.success("Successfully");
+      this.loading = false;
+      this.isOpen = false;
+    },
+
+    async onSubmitByProject(item) {
+      if (this.loadingExportByProject) return;
+
+      this.loadingExportByProject = true;
+
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios({
+          method: 'POST',
+          url: `${this.$_config.baseUrlExport}export/land-by-project/excel`,
+          responseType: 'arraybuffer',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            project_no: this.projectNo,           // array dari multi-select
+            program_year: this.$store.state.tmpProgramYear,
+            token: token,
+          },
+        });
+        // Download file
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const contentDisposition = response.headers['content-disposition'];
+        let fileName = "export-lahan-project.xlsx";
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="(.+)"/);
+          if (match && match[1]) fileName = match[1];
+        }
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        this.$_alert.success("Export success");
         this.isOpen = false;
+      } catch (err) {
+        console.error("Export Error =>", err);
+        if (err.response && err.response.status === 404) {
+          const decoder = new TextDecoder("utf-8");
+          const errorMsg = JSON.parse(decoder.decode(err.response.data));
+          this.$_alert.error({}, errorMsg.message || "Tidak ada data");
+        } else {
+          this.$_alert.error("Gagal Melakukan Export!");
+        }
+      } finally {
+        this.loadingExportByProject = false;
+      }
     },
 
     test(data) {

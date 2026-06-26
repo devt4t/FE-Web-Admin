@@ -317,9 +317,7 @@ export default {
       id: 'land_border',
       label: 'Batas Lahan',
       methods: {
-        list: {
-          view_data: 'land_border'
-        },
+        list: false,
         detail: {
           view_data: 'land_border'
         }
@@ -330,9 +328,7 @@ export default {
       id: 'field_border',
       label: 'Batas Lapangan',
       methods: {
-        list: {
-          type: 'row-slot'
-        },
+        list: false,
         detail: {
           type: 'row-slot'
         }
@@ -343,9 +339,7 @@ export default {
       id: 'signal_status',
       label: 'Status Sinyal',
       methods: {
-        list: {
-          type: 'row-slot'
-        },
+        list: false,
         detail: {
           type: 'row-slot'
         }
