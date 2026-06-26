@@ -238,8 +238,8 @@
                       validation: ['required'],
                       api: 'GetProjectAllAdmin',
                       param: {
-                        page: 1,
-                        per_page: 10,
+                        limit: 10,
+                        offset: 0,
                       },
                       option: {
                         multiple: true,
@@ -389,6 +389,7 @@ export default {
     },
 
     async getFFDataForExport() {
+
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
         program_year: this.$store.state.tmpProgramYear,
