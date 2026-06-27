@@ -442,7 +442,7 @@
             <h4>{{ item.name }}</h4>
 
             <div class="lahan-side-item-wrapper">
-              <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
+              <div class="lahan-side-item mb-2" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
                 v-if="isFieldVisible(v)">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
