@@ -238,28 +238,28 @@ export default {
         {
           label: "Batas Lahan",
           key: "main_lahan.land_border",
-          project_condition: {
-            project_no: ['PJ00021'],
-            program_year: ['2026']
-          }
+          // project_condition: {
+          //   project_no: ['PJ00021'],
+          //   program_year: ['2026']
+          // }
         },
         {
           label: "Batas Lapangan",
           key: "main_lahan.field_border",
           type: "custom_mapping_border",
-          project_condition: {
-            project_no: ['PJ00021'],
-            program_year: ['2026']
-          }
+          // project_condition: {
+          //   project_no: ['PJ00021'],
+          //   program_year: ['2026']
+          // }
         },
         {
           label: "Status Sinyal",
           key: "main_lahan.signal_status",
           type: "custom_mapping_signal",
-          project_condition: {
-            project_no: ['PJ00021'],
-            program_year: ['2026']
-          }
+          // project_condition: {
+          //   project_no: ['PJ00021'],
+          //   program_year: ['2026']
+          // }
         }
       ],
     },

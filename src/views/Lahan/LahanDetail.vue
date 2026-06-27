@@ -293,7 +293,7 @@
 
             <div class="lahan-side-item-wrapper">
               <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
-                v-if="isFieldVisible(v)">
+                v-if="!v.project || (v.project && v.project === getProject())">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
@@ -443,7 +443,7 @@
 
             <div class="lahan-side-item-wrapper">
               <div class="lahan-side-item mb-2" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
-                v-if="isFieldVisible(v)">
+                v-if="!v.project || (v.project && v.project === getProject())">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
@@ -1076,23 +1076,23 @@ export default {
       }
       return `Foto Lahan ${item}`;
     },
-    isFieldVisible(field) {
-      // existing project filter
-      if (field.project && field.project !== this.getProject()) {
-        return false;
-      }
-      // new condition
-      if (field.project_condition) {
-        const lp = this.data.lahan_project;
-        if (!Array.isArray(lp) || lp.length === 0) return false;
-        const match = lp.some(p =>
-          field.project_condition.project_no.includes(p.project_no)
-          && field.project_condition.program_year.some(y => String(p.program_year).includes(y))
-        );
-        return match
-      }
-      return true;
-    },
+    // isFieldVisible(field) {
+    //   // existing project filter
+    //   if (field.project && field.project !== this.getProject()) {
+    //     return false;
+    //   }
+    //   // new condition
+    //   if (field.project_condition) {
+    //     const lp = this.data.lahan_project;
+    //     if (!Array.isArray(lp) || lp.length === 0) return false;
+    //     const match = lp.some(p =>
+    //       field.project_condition.project_no.includes(p.project_no)
+    //       && field.project_condition.program_year.some(y => String(p.program_year).includes(y))
+    //     );
+    //     return match
+    //   }
+    //   return true;
+    // },
     getSignalBadgeClass(val) {
       const map = {
         1: 'badge bg-success',
