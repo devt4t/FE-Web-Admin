@@ -238,16 +238,28 @@ export default {
         {
           label: "Batas Lahan",
           key: "main_lahan.land_border",
+          project_condition: {
+            project_no: ['PJ00021'],
+            program_year: ['2026']
+          }
         },
         {
           label: "Batas Lapangan",
           key: "main_lahan.field_border",
-          type: "custom_mapping_border"
+          type: "custom_mapping_border",
+          project_condition: {
+            project_no: ['PJ00021'],
+            program_year: ['2026']
+          }
         },
         {
           label: "Status Sinyal",
           key: "main_lahan.signal_status",
-          type: "custom_mapping_signal"
+          type: "custom_mapping_signal",
+          project_condition: {
+            project_no: ['PJ00021'],
+            program_year: ['2026']
+          }
         }
       ],
     },
@@ -282,7 +294,7 @@ export default {
     ["Potensi", "potency"],
     ["Jenis Tanah", "soil_type"],
     ["Foto Tanah", "soil_photo", "photo"],
-    ["SPPT", "sppt", "photo"],
+    ["Foto SPPT", "sppt", "photo"],
     ["Tutupan Lahan", "tutupan_lahan", "", "", "%"],
     ["Tutupan Pohon", "tutupan_pohon_percentage", "", "", "%"],
     ["Foto Tutupan Pohon", "tutupan_pohon_photo", "photo"],

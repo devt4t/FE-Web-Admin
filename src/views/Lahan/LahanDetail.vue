@@ -293,7 +293,7 @@
 
             <div class="lahan-side-item-wrapper">
               <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
-                v-if="!v.project || (v.project && v.project === getProject())">
+                v-if="isFieldVisible(v)">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
@@ -312,6 +312,7 @@
                             project.project_planting_purposes_code !=
                             'carbon',
                         }">{{ project.project_planting_purposes_name }}</span>
+                        <span class="badge bg-primary ml-1" v-if="isSpecificProject(project)">Additional Req</span>
                       </div>
                     </div>
                   </span>
@@ -442,7 +443,7 @@
 
             <div class="lahan-side-item-wrapper">
               <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
-                v-if="!v.project || (v.project && v.project === getProject())">
+                v-if="isFieldVisible(v)">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
@@ -582,7 +583,7 @@
 
         <div class="ml-3 mt-2">
           <div class="row lahan-stat-row">
-            <div class="col lahan-stat-col">
+            <div class="col lahan-stat-col" v-if="getProject() === 'carbon'">
               <p class="mb-0 label">
                 Tutupan Lahan
                 <v-tooltip top>
@@ -607,7 +608,7 @@
                 </span>
               </p>
             </div>
-            <div class="col lahan-stat-col">
+            <div class="col lahan-stat-col" v-if="getProject() === 'carbon'">
               <p class="mb-0 label">
                 Luas Area Enhancement
                 <v-tooltip top>
@@ -647,7 +648,7 @@
                   m&sup2;</span>
               </p>
             </div>
-            <div class="col lahan-stat-col info">
+            <div class="col lahan-stat-col info" v-if="getProject() === 'carbon'">
               <p class="mb-0 label">Luas Area ARR</p>
               <p class="mb-0 value" v-if="data.main_lahan">
                 <span> {{ data.main_lahan.gis_arr_area || 0 | parse("ts") }} m&sup2;</span>
@@ -696,27 +697,7 @@
             </div>
           </div>
 
-          <div class="lahan-photo-list d-flex flex-row" v-if="data.main_lahan">
-            <div v-if="
-              data.main_lahan.photo1 !== '-' ||
-              data.main_lahan.photo2 !== '-' ||
-              data.main_lahan.photo3 !== '-' ||
-              data.main_lahan.photo4 !== '-'
-            " class="lahan-photo-item" v-for="(item, i) in [1, 2, 3, 4]" :key="'lahan-photo' + i" @click="
-              showLightbox(
-                $_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]
-              )
-              " v-bind:style="{
-                backgroundImage:
-                  'url(' +
-                  $_config.baseUrlUpload +
-                  '/' +
-                  data.main_lahan[`photo${item}`] +
-                  ')',
-              }">
-              <h6>Foto Lahan {{ item }}</h6>
-            </div>
-          </div>
+
 
           <div class="trees">
             <div class="d-flex flex-row align-items-center justify-content-between">
@@ -815,7 +796,7 @@
             <h4 class="mb-4 text-success">Data Lahan Lainnya</h4>
 
             <div class="other-data-list">
-              <div class="other-data-item" v-for="(item, i) in mainData" :key="'key-' + i">
+              <div class="other-data-item" v-for="(item, i) in textData" :key="'key-' + i">
                 <p class="mb-0 label">{{ item[0] }}</p>
                 <div class="value" v-if="data.main_lahan">
                   <span v-if="
@@ -874,11 +855,14 @@
                       )
                     ">{{ item[4] }}</span></span>
 
-                  <span v-else>-</span>
+                  <span v-else>
+                    {{ data.main_lahan[item[1]] | parse(item[3] || 'no-empty') }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="questions mt-5 pt-5" v-if="getProject() === 'carbon'">
             <h4 class="mb-4 text-success">
               Kelayakan dan Kesesuaian Lahan Project
@@ -947,7 +931,86 @@
         </div>
       </v-card>
     </v-col>
+
+    <v-col cols="12">
+      <v-card class="mb-5 pa-5">
+        <div class="d-flex align-items-center mb-5">
+          <v-icon color="success" large class="mr-3">mdi-image-multiple</v-icon>
+          <h3 class="mb-0 text-success">Foto & Dokumentasi</h3>
+        </div>
+
+        <v-divider class="mb-6"></v-divider>
+
+        <v-row v-if="data.main_lahan">
+          <!-- 1. Foto Lahan (1/2/3/4 atau Utara/Timur/Selatan/Barat) -->
+          <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item, i) in [1, 2, 3, 4]" :key="'lahan-photo-' + i">
+            <v-card outlined class="h-100 d-flex flex-col" hover
+              style="border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
+
+              <!-- Header Foto -->
+              <div class="pa-3 bg-light" style="border-bottom: 1px solid #e0e0e0;">
+                <p class="mb-0 font-weight-bold text-truncate" :title="getLahanPhotoLabel(item, i)"
+                  style="font-size: 14px; color: #424242;">{{ getLahanPhotoLabel(item, i) }}</p>
+              </div>
+
+              <!-- Konten Foto -->
+              <div class="pa-3 flex-grow-1 d-flex justify-content-center align-items-center" style="min-height: 180px;">
+                <div v-if="data.main_lahan && ![null, undefined, '', '-'].includes(data.main_lahan[`photo${item}`])"
+                  style="width: 100%;">
+                  <img
+                    style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"
+                    :src="$_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`])"
+                    @mouseover="$event.target.style.opacity = '0.8'" @mouseleave="$event.target.style.opacity = '1'" />
+                </div>
+
+                <!-- Empty State -->
+                <div v-else class="text-center text-muted d-flex flex-col justify-content-center align-items-center"
+                  style="width: 100%; height: 180px; border: 2px dashed #cbd5e1; border-radius: 8px; background-color: #f8fafc;">
+                  <v-icon color="grey lighten-1"
+                    style="font-size: 36px; margin-bottom: 8px;">mdi-image-off-outline</v-icon>
+                  <span style="font-size: 13px;">Belum ada foto</span>
+                </div>
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item, i) in photoData" :key="'photo-' + i">
+            <v-card outlined class="h-100 d-flex flex-col" hover
+              style="border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
+
+              <!-- Header Foto -->
+              <div class="pa-3 bg-light" style="border-bottom: 1px solid #e0e0e0;">
+                <p class="mb-0 font-weight-bold text-truncate" :title="item[0]"
+                  style="font-size: 14px; color: #424242;">{{
+                    item[0] }}</p>
+              </div>
+
+              <!-- Konten Foto -->
+              <div class="pa-3 flex-grow-1 d-flex justify-content-center align-items-center" style="min-height: 180px;">
+                <div v-if="data.main_lahan && ![null, undefined, '', '-'].includes(data.main_lahan[item[1]])"
+                  style="width: 100%;">
+                  <img
+                    style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"
+                    :src="$_config.baseUrlUpload + '/' + data.main_lahan[item[1]]"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + data.main_lahan[item[1]])"
+                    @mouseover="$event.target.style.opacity = '0.8'" @mouseleave="$event.target.style.opacity = '1'" />
+                </div>
+
+                <!-- Empty State -->
+                <div v-else class="text-center text-muted d-flex flex-col justify-content-center align-items-center"
+                  style="width: 100%; height: 180px; border: 2px dashed #cbd5e1; border-radius: 8px; background-color: #f8fafc;">
+                  <v-icon color="grey lighten-1"
+                    style="font-size: 36px; margin-bottom: 8px;">mdi-image-off-outline</v-icon>
+                  <span style="font-size: 13px;">Belum ada foto</span>
+                </div>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
+    </v-col>
   </v-row>
+
 </template>
 
 <script>
@@ -992,6 +1055,44 @@ export default {
     SeedAdjustment
   },
   methods: {
+    isSpecificProject(item) {
+      try {
+        const projectNo = ['PJ00021'];
+        const programYear = ['2026'];
+        return projectNo.includes(item.project_no)
+          && programYear.some(year => String(item.program_year).includes(year));
+      } catch (err) {
+        return false;
+      }
+    },
+    getLahanPhotoLabel(item, index) {
+      // Cek apakah lahan ini masuk ke project spesifik
+      const lp = this.data.lahan_project;
+      const isSpecific = Array.isArray(lp) && lp.some(p => this.isSpecificProject(p));
+
+      if (isSpecific) {
+        const labels = ['Utara', 'Timur', 'Selatan', 'Barat'];
+        return `Foto Lahan ${labels[index]}`;
+      }
+      return `Foto Lahan ${item}`;
+    },
+    isFieldVisible(field) {
+      // existing project filter
+      if (field.project && field.project !== this.getProject()) {
+        return false;
+      }
+      // new condition
+      if (field.project_condition) {
+        const lp = this.data.lahan_project;
+        if (!Array.isArray(lp) || lp.length === 0) return false;
+        const match = lp.some(p =>
+          field.project_condition.project_no.includes(p.project_no)
+          && field.project_condition.program_year.some(y => String(p.program_year).includes(y))
+        );
+        return match
+      }
+      return true;
+    },
     getSignalBadgeClass(val) {
       const map = {
         1: 'badge bg-success',
@@ -1773,6 +1874,12 @@ export default {
       }
 
       return label;
+    },
+    textData() {
+      return this.mainData.filter(item => item[2] !== 'photo');
+    },
+    photoData() {
+      return this.mainData.filter(item => item[2] === 'photo');
     },
   },
 

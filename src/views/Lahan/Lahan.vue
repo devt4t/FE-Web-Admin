@@ -301,7 +301,7 @@
 
     <template v-slot:list-signal_status="{ item }">
       <span class="badge" :class="getSignalBadgeClass(item.signal_status)">{{ getSignalStatusLabel(item.signal_status)
-        }}</span>
+      }}</span>
     </template>
 
     <template v-slot:list-before-create>
@@ -322,6 +322,7 @@
             <span v-else-if="item.land_project && item.land_project.project_planting_purposes_code === 'non-carbon'">Non
               Carbon</span>
           </span>
+          <span class="badge bg-primary ml-1" v-if="isSpecificProject(item)">Additional Req</span>
         </div>
       </div>
     </template>
@@ -427,6 +428,15 @@ export default {
     LahanExportSocialImpactModal,
   },
   methods: {
+    isSpecificProject(item) {
+      try {
+        return item.land_project
+          && this.specificProjectCondition.project_no.includes(item.land_project.project_no)
+          && this.specificProjectCondition.program_year.some(year => String(item.land_project.program_year).includes(year));
+      } catch (err) {
+        return false;
+      }
+    },
     getSignalBadgeClass(val) {
       const map = {
         1: 'badge bg-success', // Hijau (Kuat)
@@ -561,6 +571,10 @@ export default {
         return moment(date, dateFormat).format(format);
       },
       config: config,
+      specificProjectCondition: {
+        project_no: ['PJ00021'],
+        program_year: ['2026']
+      },
     };
   },
 };
