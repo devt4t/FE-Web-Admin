@@ -24,7 +24,7 @@
 
           <div :class="exportBy === 'ff' ? 'd-block' : 'd-none'">
             <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
-              <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+              <form @submit.prevent="handleSubmit(onSubmitByFF)" autocomplete="off">
                 <v-row>
                   <v-col lg="12">
                     <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
@@ -45,7 +45,7 @@
                           display: ['name', 'ff_no'],
                         },
                       },
-                    }" @option:selected="test($event)" :disabled="ffList.length == 0" />
+                    }" @option:selected="test($event)" :disabled="loading" />
                     <v-progress-circular v-if="ffList.length == 0" indeterminate color="primary"></v-progress-circular>
                   </v-col>
 
@@ -59,7 +59,7 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'" :disabled="loading">
                       <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
                       <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                       <span class="ml-1"> Export Excel</span>
@@ -99,12 +99,12 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                      <v-icon v-if="!loadingCarbonExport">mdi-file-pdf-box</v-icon>
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'" :disabled="loading">
+                      <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
 
                       <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
                       </v-progress-circular>
-                      <span v-if="loadingCarbonExport">
+                      <span v-if="loading">
                         &nbsp; {{ muLoadingProgress }}%
                       </span>
                       <span class="ml-1"> Export PDF</span>
@@ -112,11 +112,11 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                      <v-icon v-if="!loadingCarbonExport">mdi-microsoft-excel</v-icon>
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'" :disabled="loading">
+                      <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
                       <v-progress-circular v-else :size="20" color="danger" :value="muLoadingProgress" :rotate="-90">
                       </v-progress-circular>
-                      <span v-if="loadingCarbonExport">
+                      <span v-if="loading">
                         &nbsp; {{ muLoadingProgress }}%
                       </span>
                       <span class="ml-1"> Export Excel</span>
@@ -157,8 +157,8 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                      <v-icon v-if="!loadingExportByFC">mdi-file-pdf-box</v-icon>
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'" :disabled="loading">
+                      <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
 
                       <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                       <span class="ml-1"> Export PDF</span>
@@ -166,8 +166,8 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                      <v-icon v-if="!loadingExportByFC">mdi-microsoft-excel</v-icon>
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'" :disabled="loading">
+                      <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
                       <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                       <span class="ml-1"> Export Excel</span>
                     </v-btn>
@@ -206,8 +206,8 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                      <v-icon v-if="!loadingExportByUM">mdi-file-pdf-box</v-icon>
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'" :disable="loading">
+                      <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
 
                       <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                       <span class="ml-1"> Export PDF</span>
@@ -215,8 +215,8 @@
                   </v-col>
 
                   <v-col lg="12">
-                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                      <v-icon v-if="!loadingExportByUM">mdi-microsoft-excel</v-icon>
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'" :disabled="loading">
+                      <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
                       <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                       <span class="ml-1"> Export Excel</span>
                     </v-btn>
@@ -328,6 +328,7 @@ export default {
         this.getUMDataForExport()
         this.getFCDataForExport()
         this.getMUDataForExport()
+        this.getProjectDataForExport()
 
         if (this.format === 'pdf') {
           this.exportByOptions = [
@@ -364,32 +365,16 @@ export default {
             },
           ];
         }
-
         this.isOpen = true;
-
       }
-
       if (!t) {
         this.ff_code = null;
       }
     },
   },
 
-  // mounted() {
-  //   this.getFFDataForExport()
-  //   this.getUMDataForExport()
-  // },
-
   methods: {
-    test(data) {
-      console.log("data", data);
-    },
-    test2(data) {
-      console.log("data", data);
-    },
-
     async getFFDataForExport() {
-
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
         program_year: this.$store.state.tmpProgramYear,
@@ -454,106 +439,129 @@ export default {
 
       this.umList = result.data;
     },
-    // export data
+    async getProjectDataForExport() {
+      if (this.projectList && this.projectList.length > 0) return;
 
-    getExportData(ffCode) {
-      return new Promise(async (resolve, reject) => {
-        this.$_api
-          .get("getExportDataLahanFarmer_new", {
-            program_year: this.$store.state.tmpProgramYear,
-            ff_no: ffCode,
-            limit: 100000,
-            offset: 0,
-          })
-          .then((res) => {
-            return resolve(res);
-          })
-          .catch(() => {
-            return reject(false);
-          });
+      const result = await this.$_api.get("GetProjectAllAdmin", {
+        limit: 1000,
+        offset: 0,
       });
-    },
-    getExportDataByMU(muNo, offset) {
-      return new Promise(async (resolve, reject) => {
-        this.$_api
-          .get("getExportDataLahanFarmer_new", {
-            program_year: this.$store.state.tmpProgramYear,
-            mu_no: muNo,
-            limit: 500,
-            offset
-          })
-          .then((res) => {
-            return resolve(res);
-          })
-          .catch(() => {
-            return reject(false);
-          });
-      });
-    },
-    getExportDataCarbon(muNo, offset) {
-      return new Promise(async (resolve, reject) => {
-        this.$_api
-          .get("lahan/export/list/carbon", {
-            program_year: this.$store.state.tmpProgramYear,
-            mu_no: muNo,
-            limit: 100,
-            offset,
-          })
-          .then((res) => {
-            return resolve(res);
-          })
-          .catch(() => {
-            return reject(false);
-          });
-      });
-    },
-    getExportDataByEmployee(employee_no, offset) {
-      return new Promise(async (resolve, reject) => {
-        this.$_api
-          .get("getExportDataLahanFarmerByEmployee_new", {
-            program_year: this.$store.state.tmpProgramYear,
-            employee_no: employee_no,
-            limit: 100,
-            offset,
-          })
-          .then((res) => {
-            return resolve(res);
-          })
-          .catch(() => {
-            return reject(false);
-          });
-      });
+
+      if (result.data && Array.isArray(result.data.data)) {
+        this.projectList = result.data.data;
+      } else if (Array.isArray(result.data)) {
+        this.projectList = result.data;
+      }
     },
 
-    async onSubmit() {
-      if (this.loading) return;
+    async exportGeneric(exportType, filterKey, selectedData) {
+      moment.locale('id');
 
-      this.loading = true;
-      for (const _ff of this.ff_code) {
-        if (!_ff) continue;
+      if (!selectedData || selectedData.length === 0) {
+        this.$_alert.error({}, "Pilih data terlebih dahulu!");
+        return;
+      }
 
-        const result = await this.getExportData(_ff);
+      this.loading = true; // Aktifkan loading indicator
+      try {
+        const token = localStorage.getItem("token");
 
-        if (!result) {
-          this.loading = false;
-          continue;
-        }
+        // --- KUNCI UTAMA: KITA LOOPING SETIAP ID YANG DIPILIH ---
+        for (const selectedId of selectedData) {
 
-        if (
-          !Array.isArray(result.data) ||
-          (Array.isArray(result.data) && result.data.length == 0)
-        ) {
-          if (this.ff_code.length == 1) {
-            this.loading = false;
-            this.$_alert.error(
-              {},
-              "Tidak ada data",
-              `FF ${this._ff} tidak memiliki petani/lahan di tahun ${this.$store.state.tmpProgramYear}`
-            );
-            return;
+          // 1. Cari Nama Spesifik untuk 1 ID ini
+          let selectedName = "";
+          let dataListToSearch = [];
+
+          if (exportType === 'ff') dataListToSearch = this.ffList;
+          else if (exportType === 'mu') dataListToSearch = this.muList;
+          else if (exportType === 'fc') dataListToSearch = this.fcList;
+          else if (exportType === 'um') dataListToSearch = this.umList;
+
+          // Ingat: fc dan um propertinya 'nik', selain itu 'ff_no' atau 'mu_no'
+          let itemKey = (exportType === 'fc' || exportType === 'um') ? 'nik' : `${exportType}_no`;
+
+          const matchedItem = dataListToSearch.find(item => item[itemKey] == selectedId);
+          if (matchedItem && matchedItem.name) {
+            selectedName = matchedItem.name.replace(/ /g, "");
+            if (selectedName.length > 50) selectedName = selectedName.substring(0, 50);
           }
-          continue;
+
+          // 2. Siapkan Payload HANYA UNTUK 1 ID INI (dibungkus array)
+          const payload = {
+            exportType: exportType,
+            filters: {
+              program_year: this.$store.state.tmpProgramYear,
+              token: token,
+            }
+          };
+          payload.filters[filterKey] = [selectedId];
+
+          // 3. Tembak API
+          const response = await axios({
+            method: 'POST',
+            url: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+            responseType: "arraybuffer",
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            data: payload
+          });
+
+          // 4. Download File
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+
+          const timestamp = moment().format("YYYYMMDD_HHmmss");
+          let fileName = `Export_Lahan_${exportType.toUpperCase()}`;
+          if (selectedName !== "") fileName += `_${selectedName}`;
+          fileName += `_${this.$store.state.tmpProgramYear || 'ALL'}_${timestamp}.xlsx`;
+
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+
+        } // Akhir dari perulangan for...of
+
+        this.$_alert.success("Data berhasil di-export!");
+        this.isOpen = false;
+      } catch (err) {
+        console.error("Export Error =>", err);
+        if (err.response && err.response.data) {
+          try {
+            const decoder = new TextDecoder("utf-8");
+            const errorMsg = JSON.parse(decoder.decode(err.response.data));
+            this.$_alert.error({}, errorMsg.message || "Tidak ada data");
+          } catch (e) {
+            this.$_alert.error("Gagal Melakukan Export!");
+          }
+        } else {
+          this.$_alert.error("Gagal Melakukan Export!");
         }
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async onSubmitCarbonData() {
+      if (this.loadingCarbonExport) return;
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/land-carbon/excel`,
+      };
+
+
+      this.loadingCarbonExport = true;
+      for (const [index, _mu] of this.mu_no.entries()) {
+        if (!_mu) continue;
+
+        let muName = this.muList.find((item) => item.mu_no == _mu)
+          ? this.muList.find((item) => item.mu_no == _mu).name
+          : "";
 
         const trees = await this.$_api
           .get("GetTreesAll")
@@ -569,87 +577,6 @@ export default {
           this.loading = false;
           continue;
         }
-
-        const configUrl = {
-          pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-          excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
-        };
-
-        let ffName = this.ffList.find((item) => item.ff_no == _ff)
-          ? this.ffList.find((item) => item.ff_no == _ff).name
-          : "";
-
-        if (ffName) {
-          ffName = ffName.replace(/ /g, "");
-        }
-
-        const configFilename = {
-          pdf: `Report-${ffName}-${_ff}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.pdf`,
-          excel: `Report-${ffName}-${_ff}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.xlsx`,
-        };
-        const axiosConfig = {
-          method: "POST",
-          url: configUrl[this.format],
-          responseType: "arraybuffer",
-          data: {
-            data: result.data,
-            trees: trees,
-            exportBy: this.exportBy,
-            name: ffName,
-            program_year: this.$store.state.tmpProgramYear,
-          },
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${this.$store.state.token}`,
-          },
-        };
-        const exported = await axios(axiosConfig)
-          .then((res) => {
-            return res;
-          })
-          .catch((err) => {
-            return false;
-          });
-
-        if (!exported) {
-          this.loading = false;
-          continue;
-        }
-
-        const url = URL.createObjectURL(new Blob([exported.data]));
-        const link = document.createElement("a");
-        link.href = url;
-
-        const filename = configFilename[this.format];
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-      }
-
-      this.$_alert.success("Successfully");
-      this.loading = false;
-      this.isOpen = false;
-    },
-    async onSubmitCarbonData() {
-      if (this.loadingCarbonExport) return;
-
-      const configUrl = {
-        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-        excel: `${this.$_config.baseUrlExport}export/land-carbon/excel`,
-      };
-
-
-      this.loadingCarbonExport = true;
-      for (const [index, _mu] of this.mu_no.entries()) {
-        if (!_mu) continue;
-
-        let muName = this.muList.find((item) => item.mu_no == _mu)
-          ? this.muList.find((item) => item.mu_no == _mu).name
-          : "";
 
         let offset = 0;
         while (true) {
@@ -677,28 +604,7 @@ export default {
             if (result.result.length < 100) break;
             offset += 100;
           }
-
-
-
         }
-
-
-        const trees = await this.$_api
-          .get("GetTreesAll")
-          .then((res) => {
-            return res.data.result.data;
-          })
-          .catch((err) => {
-            console.log("err", err);
-            return false;
-          });
-
-        if (!trees) {
-          this.loading = false;
-          continue;
-        }
-
-
 
         if (muName) {
           muName = muName.replace(/ /g, "");
@@ -746,6 +652,10 @@ export default {
         link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
+        // bersihkan elemen <a> dari DOM
+        link.remove();
+        // hapus blob dari memory browser
+        window.URL.revokeObjectURL();
 
         // reset after complete download, then filled by next UM
         this.exportData = [];
@@ -760,369 +670,21 @@ export default {
       this.loading = false;
       this.isOpen = false;
     },
-    async onSubmitByMU() {
-      if (this.loadingCarbonExport) return;
 
-      const configUrl = {
-        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
-      };
-
-
-      this.loadingCarbonExport = true;
-      for (const [index, _mu] of this.mu_no.entries()) {
-        if (!_mu) continue;
-
-        let muName = this.muList.find((item) => item.mu_no == _mu)
-          ? this.muList.find((item) => item.mu_no == _mu).name
-          : "";
-
-        let offset = 0;
-        while (true) {
-          const result = await this.getExportDataByMU(_mu, offset);
-          console.log({ result })
-          if (!result) {
-            this.loadingCarbonExport = false;
-            break;
-          }
-
-          if (
-            !Array.isArray(result.data) ||
-            (Array.isArray(result.data) && result.data.length == 0 && this.exportData.length == 0)
-          ) {
-            this.loadingCarbonExport = false;
-            this.$_alert.error(
-              {},
-              "Tidak ada data",
-              `Tidak ada data di Unit Management ${muName} ${this.$store.state.tmpProgramYear}`
-            );
-            return;
-          } else {
-            console.log(result, offset)
-            this.muLoadingProgress = result.total ? Math.min(100, Math.round((this.exportData.length / result.total) * 100)) : 100;
-            this.exportData = [...this.exportData, ...result.data]
-            if (result.data.length < 500) break;
-            offset += 500;
-          }
-
-
-
-        }
-
-
-        const trees = await this.$_api
-          .get("GetTreesAll")
-          .then((res) => {
-            return res.data.result.data;
-          })
-          .catch((err) => {
-            console.log("err", err);
-            return false;
-          });
-
-        if (!trees) {
-          this.loading = false;
-          continue;
-        }
-
-
-
-        if (muName) {
-          muName = muName.replace(/ /g, "");
-        }
-
-        const configFilename = {
-          pdf: `Report-${muName}-${_mu}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.pdf`,
-          excel: `Report-${muName}-${_mu}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.xlsx`,
-        };
-        const axiosConfig = {
-          method: "POST",
-          url: configUrl[this.format],
-          responseType: "arraybuffer",
-          data: {
-            data: this.exportData,
-            trees: trees,
-            exportBy: this.exportBy,
-            name: muName,
-            program_year: this.$store.state.tmpProgramYear,
-          },
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${this.$store.state.token}`,
-          },
-        };
-        const exported = await axios(axiosConfig)
-          .then((res) => {
-            return res;
-          })
-          .catch((err) => {
-            return false;
-          });
-
-        if (!exported) {
-          this.loadingCarbonExport = false;
-          continue;
-        }
-
-        const url = URL.createObjectURL(new Blob([exported.data]));
-        const link = document.createElement("a");
-        link.href = url;
-
-        const filename = configFilename[this.format];
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-
-        // reset after complete download, then filled by next UM
-        this.exportData = [];
-
-        // stop the loading when the last download completed
-        if (index === this.mu_no.length - 1) {
-          this.loadingCarbonExport = false;
-        }
-      }
-
-      this.$_alert.success("Successfully");
-      this.loading = false;
-      this.isOpen = false;
+    async onSubmitByFF() {
+      await this.exportGeneric("ff", "ff_no", this.ff_code);
     },
 
     async onSubmitByUM() {
-      if (this.loadingExportByUM) return;
-
-      const configUrl = {
-        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
-      };
-
-      this.loadingExportByUM = true;
-      for (const [index, _um] of this.employee_no_um.entries()) {
-        if (!_um) continue;
-
-        let umName = this.umList.find((item) => item.nik == _um)
-          ? this.umList.find((item) => item.nik == _um).name
-          : "";
-
-        let offset = 0;
-        while (true) {
-          const result = await this.getExportDataByEmployee(_um, offset);
-          if (!result) {
-            this.loadingExportByUM = false;
-            break;
-          }
-
-          if (offset == 0 && result.data.length == 0) {
-            this.loadingExportByUM = false;
-            this.$_alert.error(
-              {},
-              "Tidak ada data",
-              `Tidak ada data di Target Area ${umName} ${this.$store.state.tmpProgramYear}`
-            );
-            return;
-          } else {
-            console.log(result, offset)
-            this.exportData = [...this.exportData, ...result.data]
-            if (result.data.length < 100) break;
-            offset += 100;
-          }
-
-
-
-        }
-
-
-        const trees = await this.$_api
-          .get("GetTreesAll")
-          .then((res) => {
-            return res.data.result.data;
-          })
-          .catch((err) => {
-            console.log("err", err);
-            return false;
-          });
-
-        if (!trees) {
-          this.loading = false;
-          continue;
-        }
-
-        const configFilename = {
-          pdf: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.pdf`,
-          excel: `Report-${umName.replace(/ /g, "")}-${_um}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.xlsx`,
-        };
-        const axiosConfig = {
-          method: "POST",
-          url: configUrl[this.format],
-          responseType: "arraybuffer",
-          data: {
-            data: this.exportData,
-            trees: trees,
-            exportBy: this.exportBy,
-            name: umName,
-            program_year: this.$store.state.tmpProgramYear,
-          },
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${this.$store.state.token}`,
-          },
-        };
-        const exported = await axios(axiosConfig)
-          .then((res) => {
-            return res;
-          })
-          .catch((err) => {
-            return false;
-          });
-
-        if (!exported) {
-          this.loadingExportByUM = false;
-          continue;
-        }
-
-        const url = URL.createObjectURL(new Blob([exported.data]));
-        const link = document.createElement("a");
-        link.href = url;
-
-        const filename = configFilename[this.format];
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-
-        // reset after complete download, then filled by next UM
-        this.exportData = [];
-
-        // stop the loading when the last download completed
-        if (index === this.employee_no_um.length - 1) {
-          this.loadingExportByUM = false;
-        }
-      }
-
-      this.$_alert.success("Successfully");
-      this.loading = false;
-      this.isOpen = false;
+      await this.exportGeneric("um", "um_no", this.employee_no_um);
     },
+
     async onSubmitByFC() {
-      if (this.loadingExportByFC) return;
+      await this.exportGeneric("fc", "fc_no", this.employee_no_fc);
+    },
 
-      const configUrl = {
-        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
-      };
-
-      this.loadingExportByFC = true;
-
-      for (const [index, _fc] of this.employee_no_fc.entries()) {
-        if (!_fc) continue;
-
-        let fcName = this.fcList.find((item) => item.nik == _fc)
-          ? this.fcList.find((item) => item.nik == _fc).name
-          : "";
-
-        let offset = 0;
-        while (true) {
-          const result = await this.getExportDataByEmployee(_fc, offset);
-          if (!result) {
-            this.loadingExportByFC = false;
-            break;
-          }
-
-          if (offset == 0 && result.data.length == 0) {
-            this.loadingExportByFC = false;
-            this.$_alert.error(
-              {},
-              "Tidak ada data",
-              `Tidak ada data dari FC ${fcName} ${this.$store.state.tmpProgramYear}`
-            );
-            return;
-          } else {
-            console.log(result, offset)
-            this.exportData = [...this.exportData, ...result.data]
-            if (result.data.length < 100) break;
-            offset += 100;
-          }
-        }
-
-        const trees = await this.$_api
-          .get("GetTreesAll")
-          .then((res) => {
-            return res.data.result.data;
-          })
-          .catch((err) => {
-            console.log("err", err);
-            return false;
-          });
-
-        if (!trees) {
-          this.loading = false;
-          continue;
-        }
-
-        const configFilename = {
-          pdf: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.pdf`,
-          excel: `Report-${fcName.replace(/ /g, "")}-${_fc}-${moment().format(
-            "DMMYYYYHHmmss"
-          )}.xlsx`,
-        };
-        const axiosConfig = {
-          method: "POST",
-          url: configUrl[this.format],
-          responseType: "arraybuffer",
-          data: {
-            data: this.exportData,
-            trees: trees,
-            exportBy: this.exportBy,
-            name: fcName,
-            program_year: this.$store.state.tmpProgramYear,
-          },
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${this.$store.state.token}`,
-          },
-        };
-        const exported = await axios(axiosConfig)
-          .then((res) => {
-            return res;
-          })
-          .catch((err) => {
-            return false;
-          });
-
-        if (!exported) {
-          this.loadingExportByFC = false;
-          continue;
-        }
-
-        const url = URL.createObjectURL(new Blob([exported.data]));
-        const link = document.createElement("a");
-        link.href = url;
-
-        const filename = configFilename[this.format];
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-
-        // reset after complete download, then filled by next UM
-        this.exportData = [];
-
-        // stop the loading when the last download completed
-        if (index === this.employee_no_fc.length - 1) {
-          this.loadingExportByFC = false;
-        }
-      }
-
-      this.$_alert.success("Successfully");
-      this.loading = false;
-      this.isOpen = false;
+    async onSubmitByMU() {
+      await this.exportGeneric("mu", "mu_no", this.mu_no);
     },
 
     async onSubmitByProject(item) {
@@ -1130,59 +692,81 @@ export default {
 
       this.loadingExportByProject = true;
 
+      let selectedNames = "";
+      if (this.projectNo && this.projectNo.length > 0) {
+        const items = this.projectList.filter(p => this.projectNo.includes(p.project_no));
+        selectedNames = items.map(p => {
+          let cleanName = p.project_name ? p.project_name.replace(/ /g, "") : "Unknown";
+          return `${cleanName}_${p.project_no}`;
+        }).join('_');
+        if (selectedNames.length > 50) {
+          selectedNames = selectedNames.substring(0, 50) + "_dan_lainnya";
+        }
+      }
+
       const token = localStorage.getItem('token');
       try {
-        const response = await axios({
-          method: 'POST',
-          url: `${this.$_config.baseUrlExport}export/land-by-project/excel`,
-          responseType: 'arraybuffer',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          data: {
-            project_no: this.projectNo,           // array dari multi-select
-            program_year: this.$store.state.tmpProgramYear,
-            token: token,
-          },
-        });
-        // Download file
-        const blob = new Blob([response.data], { type: response.headers['content-type'] });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        const contentDisposition = response.headers['content-disposition'];
-        let fileName = "export-lahan-project.xlsx";
-        if (contentDisposition) {
-          const match = contentDisposition.match(/filename="(.+)"/);
-          if (match && match[1]) fileName = match[1];
+        for (const projId of this.projectNo) {
+
+          // 1. Cari Nama Projek
+          let selectedName = "";
+          const matchedItem = this.projectList.find(p => p.project_no == projId);
+          if (matchedItem) {
+            let cleanName = matchedItem.project_name ? matchedItem.project_name.replace(/ /g, "") : "Unknown";
+            selectedName = `${cleanName}_${matchedItem.project_no}`;
+            if (selectedName.length > 50) selectedName = selectedName.substring(0, 50);
+          }
+          // 2. Tembak API
+          const response = await axios({
+            method: 'POST',
+            url: `${this.$_config.baseUrlExport}export/land-by-project/excel`,
+            responseType: 'arraybuffer',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            data: {
+              project_no: [projId], // KIRM CUMA 1 ID (tapi di dalam array)
+              program_year: this.$store.state.tmpProgramYear,
+              token: token,
+            },
+          });
+
+          // 3. Download File
+          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+
+          const timestamp = moment().format("YYYYMMDD_HHmmss");
+          let fileName = `Export_Lahan_Project`;
+          if (selectedName !== "") fileName += `_${selectedName}`;
+          fileName += `_${this.$store.state.tmpProgramYear || "ALL"}_${timestamp}.xlsx`;
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(link);
+
         }
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
         this.$_alert.success("Export success");
         this.isOpen = false;
       } catch (err) {
         console.error("Export Error =>", err);
-        if (err.response && err.response.status === 404) {
-          const decoder = new TextDecoder("utf-8");
-          const errorMsg = JSON.parse(decoder.decode(err.response.data));
-          this.$_alert.error({}, errorMsg.message || "Tidak ada data");
+        if (err.response && err.response.data) {
+          try {
+            const decoder = new TextDecoder("utf-8");
+            const errorMsg = JSON.parse(decoder.decode(err.response.data));
+            this.$_alert.error({}, errorMsg.message || "Tidak ada data");
+          } catch (e) {
+            this.$_alert.error("Gagal Melakukan Export!");
+          }
         } else {
           this.$_alert.error("Gagal Melakukan Export!");
         }
       } finally {
         this.loadingExportByProject = false;
       }
-    },
-
-    test(data) {
-      console.log("data", data);
-    },
-    test2(data) {
-      console.log("data", data);
     },
   },
 
