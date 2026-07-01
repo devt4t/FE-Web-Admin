@@ -215,6 +215,20 @@
       </div>
     </template>
 
+    <template v-slot:list-is_updated="{ item }">
+      <div class="d-flex justify-content-center align-items-center">
+        <span v-if="item.is_updated == 1" class="badge bg-info">Telah Re-Edit</span>
+        <span v-else class="badge bg-light text-dark"> - </span>
+      </div>
+    </template>
+
+    <template v-slot:detail-is_updated="{ item }">
+      <div class="d-flex align-items-center">
+        <span v-if="item.is_updated == 1" class="badge bg-info">Telah Re-Edit</span>
+        <span v-else class="badge bg-light text-dark"> - </span>
+      </div>
+    </template>
+
     <template v-slot:list-bottom-action="{ item }">
       <v-btn small @click="onExport(item)" variant="primary" class="mt-1" v-if="item.status == 'submit_review'">
         <v-icon small v-if="!exportIds.includes(item.id)">mdi-microsoft-word</v-icon>
@@ -676,6 +690,21 @@ export default {
                 },
               },
             },
+          },
+
+          {
+            id: "is_updated",
+            label: "Status Re-Edit",
+            methods: {
+              list: {
+                type: "row-slot",
+                view_data: 'is_updated',
+              },
+              detail: {
+                type: "row-slot",
+                view_data: 'is_updated',
+              },
+            }
           },
         ],
       },
