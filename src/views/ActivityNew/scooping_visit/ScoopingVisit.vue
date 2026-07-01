@@ -216,7 +216,7 @@
     </template>
 
     <template v-slot:list-is_updated="{ item }">
-      <div class="d-flex justify-content-center align-items-center">
+      <div class="d-flex min-w-150px" style="justify-content: center; align-items: center;">
         <span v-if="item.is_updated == 1" class="badge bg-info">Telah Re-Edit</span>
         <span v-else class="badge bg-light text-dark"> - </span>
       </div>
