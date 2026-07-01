@@ -41,7 +41,7 @@
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
         <v-row>
           <v-col>
-            <geko-input :disabled="true" v-model="formData.program_year" :item="{
+            <geko-input v-model="formData.program_year" :item="{
               label: 'Tahun Program',
               validation: ['required'],
               col_size: 6,
@@ -56,27 +56,31 @@
                 default_options: [
                   {
                     label: '2020',
-                    code: 2020,
+                    code: '2020',
                   },
                   {
                     label: '2021',
-                    code: 2021,
+                    code: '2021',
                   },
                   {
                     label: '2022',
-                    code: 2022,
+                    code: '2022',
                   },
                   {
                     label: '2023',
-                    code: 2023,
+                    code: '2023',
                   },
                   {
                     label: '2024',
-                    code: 2024,
+                    code: '2024',
                   },
                   {
                     label: '2025',
-                    code: 2025,
+                    code: '2025',
+                  },
+                  {
+                    label: '2026',
+                    code: '2026',
                   }
                 ],
               },
@@ -374,7 +378,7 @@
                   <v-avatar color="secondary" size="30" class="my-1 cursor-pointer" @click="() => {
                     // show bigger image | Lightbox
                   }
-                    ">
+                  ">
                     <img :src="`${$store.state.apiUrlImage}Uploads/fphoto_${item.nik}.jpg`"
                       :alt="`Foto petani ${item.nama}`" />
                   </v-avatar>
@@ -678,7 +682,7 @@ export default {
       }).then(res => {
         this.$set(this, 'allFFByDesa', res.data);
         // this.allFFByDesa = res.data;
-        console.log(this.allFFByDesa); 
+        console.log(this.allFFByDesa);
       })
     },
     countTotalPeseerta() {
@@ -702,7 +706,7 @@ export default {
           if (this.farmerBySelectedFF[ff_no].selectedFarmers.length) {
             console.log('farmerBySelectedFF ', this.farmerBySelectedFF[ff_no].selectedFarmers);
             ff_selected_farmer.push(ff_no)
-            
+
             for (let selectedFarmerKey in this.farmerBySelectedFF[ff_no].selectedFarmers) {
               this.formData.farmers.push({
                 farmer_no: this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey].kode
@@ -722,7 +726,7 @@ export default {
           }).catch(err => {
             console.log(err);
             this.formData.farmers = [];
-            this.$_alert.error(err?.data?.data?.result ?? "Terjadi kesalahan saat menambahkan data pelatihan petani"); 
+            this.$_alert.error(err?.data?.data?.result ?? "Terjadi kesalahan saat menambahkan data pelatihan petani");
           });
       }
     },
@@ -805,14 +809,14 @@ export default {
       this.farmerBySelectedFF = new Object()
       this.formData.ff_additional = []
     },
-    handleNextButtonPage2(){
+    handleNextButtonPage2() {
       let emptyForm = 0;
       for (const key in this.formData.peserta_tambahan) {
         if (this.formData.peserta_tambahan[key].name == '' || this.formData.peserta_tambahan[key].address == '' || this.formData.peserta_tambahan[key].phone == '' || this.formData.peserta_tambahan[key].gender == '') {
           emptyForm++;
         }
       }
-      
+
       if (!emptyForm) this.form++;
     }
   },

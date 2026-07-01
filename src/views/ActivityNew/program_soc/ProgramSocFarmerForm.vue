@@ -7,50 +7,44 @@
             <div>
               <v-row>
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.name"
-                    :item="{
-                      label: 'Nama Petani',
-                      validation: ['required'],
-                      type: 'text',
-                      setter: 'name',
-                    }"
-                  />
+                  <geko-input v-model="formData.name" :item="{
+                    label: 'Nama Petani',
+                    validation: ['required'],
+                    type: 'text',
+                    setter: 'name',
+                  }" />
                 </v-col>
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.status_program"
-                    :item="{
-                      label: 'Berminat?',
-                      validation: ['required'],
-                      type: 'select-radio',
-                      setter: 'status_program',
-                      option: {
-                        list_pointer: {
-                          label: 'label',
-                          code: 'code',
-                          display: ['label'],
-                        },
-                        default_options: [
-                          {
-                            label: 'Ya',
-                            code: 'Ya',
-                          },
-                          {
-                            label: 'Tidak',
-                            code: 'Tidak',
-                          },
-                          {
-                            label: 'Ragu - Ragu',
-                            code: 'Ragu - Ragu',
-                          },
-                        ],
+                  <geko-input v-model="formData.status_program" :item="{
+                    label: 'Berminat?',
+                    validation: ['required'],
+                    type: 'select-radio',
+                    setter: 'status_program',
+                    option: {
+                      list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
                       },
-                    }"
-                  />
+                      default_options: [
+                        {
+                          label: 'Ya',
+                          code: 'Ya',
+                        },
+                        {
+                          label: 'Tidak',
+                          code: 'Tidak',
+                        },
+                        {
+                          label: 'Ragu - Ragu',
+                          code: 'Ragu - Ragu',
+                        },
+                      ],
+                    },
+                  }" />
                 </v-col>
 
-                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                <v-col v-if="formData.status_program == 'Ya'" lg="6">
                   <geko-input v-model="formData.entry_data_status" :item="{
                     label: 'Status Pengisi Data',
                     validation: ['required'],
@@ -80,7 +74,7 @@
                   }" />
                 </v-col>
 
-                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                <v-col v-if="formData.status_program == 'Ya'" lg="6">
                   <geko-input v-if="formData.entry_data_status == 3" v-model="formData.enty_data_status_others" :item="{
                     label: 'Keterangan Status pengisi data lain',
                     validation: ['required'],
@@ -89,67 +83,77 @@
                   }" />
                 </v-col>
 
-                <v-col lg="6" v-if="formData.status_program =='Ya'">
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
                   <geko-input v-model="formData.is_program" :item="{
                     label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
                     validation: ['required'],
                     type: 'select-radio',
                     option: {
-                    list_pointer: {
-                      label: 'label',
-                      code: 'code',
-                      display: ['label'],
-                    },
-                    default_options: [
-                      {
-                        label: 'Ya, Pernah',
-                        code: 1,
+                      list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
                       },
-                      {
-                        label: 'Tidak Pernah',
-                        code: 0,
-                      },
-                    ],
-                  }}" />
+                      default_options: [
+                        {
+                          label: 'Ya, Pernah',
+                          code: 1,
+                        },
+                        {
+                          label: 'Tidak Pernah',
+                          code: 0,
+                        },
+                      ],
+                    }
+                  }" />
                 </v-col>
 
-                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                <v-col v-if="formData.status_program == 'Ya'" lg="6">
                   <geko-input v-if="formData.is_program" v-model="formData.is_program_year" :item="{
                     label: 'Pernah Ikut Program Tahun',
                     validation: ['required'],
                     type: 'select',
                     option: {
-                    list_pointer: {
-                      label: 'label',
-                      code: 'code',
-                      display: ['label'],
-                    },
-                    default_options: [
-                      {
-                        label: '2020',
-                        code: '2020',
+                      list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
                       },
-                      {
-                        label: '2021',
-                        code: '2021',
-                      },
-                      {
-                        label: '2022',
-                        code: '2022',
-                      },
-                      {
-                        label: '2023',
-                        code: '2023',
-                      },
-                      {
-                        label: '2024',
-                        code: '2024',
-                      },
-                    ],
-                  }}" />
+                      default_options: [
+                        {
+                          label: '2020',
+                          code: '2020',
+                        },
+                        {
+                          label: '2021',
+                          code: '2021',
+                        },
+                        {
+                          label: '2022',
+                          code: '2022',
+                        },
+                        {
+                          label: '2023',
+                          code: '2023',
+                        },
+                        {
+                          label: '2024',
+                          code: '2024',
+                        },
+                        {
+                          label: '2025',
+                          code: '2025',
+                        },
+                        {
+                          label: '2026',
+                          code: '2026',
+                        },
+                      ],
+                    }
+                  }" />
                 </v-col>
 
-                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                <v-col v-if="formData.status_program == 'Ya'" lg="6">
                   <geko-input v-model="formData.lahan_for_program" :item="{
                     label: 'Jumlah lahan yang ingin diikutkan program',
                     type: 'number',
@@ -157,160 +161,131 @@
                 </v-col>
 
 
-                <v-col v-if="formData.status_program =='Ya'" lg="6">
+                <v-col v-if="formData.status_program == 'Ya'" lg="6">
                   <geko-input v-model="formData.lahan_for_program_luas" :item="{
                     label: 'Luas dari lahan yang ingin diikutkan program',
                     type: 'number',
                   }" />
                 </v-col>
 
-                <v-col
-                  lg="6"
-                  v-if="formData.status_program =='Ya'"
-                >
-                  <geko-input
-                    v-model="formData.pattern"
-                    :item="{
-                      label: 'Pola Tanam Sebelumnya',
-                      type: 'select',
-                      setter: 'pattern',
-                      default_label: formData.planting_pattern_name || '',
-                      option: {
-                        default_options: defaultData.planting_pattern,
-                        list_pointer: {
-                          label: 'text',
-                          code: 'value',
-                          display: ['text'],
-                        },
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
+                  <geko-input v-model="formData.pattern" :item="{
+                    label: 'Pola Tanam Sebelumnya',
+                    type: 'select',
+                    setter: 'pattern',
+                    default_label: formData.planting_pattern_name || '',
+                    option: {
+                      default_options: defaultData.planting_pattern,
+                      list_pointer: {
+                        label: 'text',
+                        code: 'value',
+                        display: ['text'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
 
-                <v-col
-                  lg="6"
-                  v-if="formData.status_program =='Ya'"
-                >
-                  <geko-input
-                    v-model="formData.pattern_new"
-                    :item="{
-                      label: 'Pola Tanam Yang Diminati',
-                      validation: ['required'],
-                      type: 'select',
-                      setter: 'pattern_new',
-                      default_label: formData.planting_pattern_name || '',
-                      option: {
-                        default_options: [
-                          {
-                            value: 'Agroforestry',
-                            text: 'Agroforestry',
-                          },
-                          {
-                            value: 'Konservasi',
-                            text: 'Konservasi',
-                          },
-                        ],
-                        list_pointer: {
-                          label: 'text',
-                          code: 'value',
-                          display: ['text'],
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
+                  <geko-input v-model="formData.pattern_new" :item="{
+                    label: 'Pola Tanam Yang Diminati',
+                    validation: ['required'],
+                    type: 'select',
+                    setter: 'pattern_new',
+                    default_label: formData.planting_pattern_name || '',
+                    option: {
+                      default_options: [
+                        {
+                          value: 'Agroforestry',
+                          text: 'Agroforestry',
                         },
+                        {
+                          value: 'Konservasi',
+                          text: 'Konservasi',
+                        },
+                      ],
+                      list_pointer: {
+                        label: 'text',
+                        code: 'value',
+                        display: ['text'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
 
-                
 
-                <v-col
-                  lg="6"
-                  v-if="['Ya', 'Ragu - Ragu'].includes(formData.status_program)"
-                >
-                  <geko-input
-                    v-model="formData.training"
-                    :item="{
-                      label: 'Materi Pelatihan (max 2)',
-                      validation: ['required'],
-                      type: 'select',
-                      setter: 'training',
-                      api: 'GetTrainingMaterials',
-                      default_label: formData.training_materials_material_name,
-                      option: {
-                        getterKey: 'data.result',
-                        multiple: true,
-                        list_pointer: {
-                          label: 'material_name',
-                          code: 'material_no',
-                          display: ['material_name'],
-                        },
+
+                <v-col lg="6" v-if="['Ya', 'Ragu - Ragu'].includes(formData.status_program)">
+                  <geko-input v-model="formData.training" :item="{
+                    label: 'Materi Pelatihan (max 2)',
+                    validation: ['required'],
+                    type: 'select',
+                    setter: 'training',
+                    api: 'GetTrainingMaterials',
+                    default_label: formData.training_materials_material_name,
+                    option: {
+                      getterKey: 'data.result',
+                      multiple: true,
+                      list_pointer: {
+                        label: 'material_name',
+                        code: 'material_no',
+                        display: ['material_name'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
                 <v-col lg="6" v-if="formData.status_program == 'Ya'">
-                  <geko-input
-                    v-model="formData.trees"
-                    :item="{
-                      label: 'Pohon Yang Diminati (maks 3)',
-                      validation: ['required'],
-                      type: 'select',
-                      setter: 'training',
-                      api: 'GetTreesAll',
-                      option: {
-                        multiple: true,
-                        getterKey: 'data.result.data',
-                        list_pointer: {
-                          label: 'tree_name',
-                          code: 'tree_code',
-                          display: ['tree_name'],
-                        },
+                  <geko-input v-model="formData.trees" :item="{
+                    label: 'Pohon Yang Diminati (maks 3)',
+                    validation: ['required'],
+                    type: 'select',
+                    setter: 'training',
+                    api: 'GetTreesAll',
+                    option: {
+                      multiple: true,
+                      getterKey: 'data.result.data',
+                      list_pointer: {
+                        label: 'tree_name',
+                        code: 'tree_code',
+                        display: ['tree_name'],
                       },
-                    }"
-                    @selected="onSelectTree(formData.trees)"
-                  />
+                    },
+                  }" @selected="onSelectTree(formData.trees)" />
                 </v-col>
 
                 <v-col md="6">
-                  <geko-input
-                    v-model="formData.photo"
-                    :item="{
-                      label: 'Foto Minat',
-                      validation: ['required'],
-                      type: 'upload',
-                      api: 'sosialisasi_program/upload.php',
-                      directory: 'photos',
-                      upload_type: 'image/*',
-                      setter: 'photo',
-                      view_data: 'farmer_photo',
-                      option: {
-                        label_hint:
-                          'Klik gambar untuk memilih berkas yang akan diunggah',
-                        max_size: 5,
-                        multiple: false,
-                      },
-                    }"
-                  />
+                  <geko-input v-model="formData.photo" :item="{
+                    label: 'Foto Minat',
+                    validation: ['required'],
+                    type: 'upload',
+                    api: 'sosialisasi_program/upload.php',
+                    directory: 'photos',
+                    upload_type: 'image/*',
+                    setter: 'photo',
+                    view_data: 'farmer_photo',
+                    option: {
+                      label_hint:
+                        'Klik gambar untuk memilih berkas yang akan diunggah',
+                      max_size: 5,
+                      multiple: false,
+                    },
+                  }" />
                 </v-col>
 
-                <v-col
-                  lg="6" v-if="formData.status_program == 'Ya'">
-                  <geko-input
-                    v-model="formData.owned_land_legalization_status"
-                    :item="{
-                      validation: ['required'],
-                      label: 'Status legalitas lahan yang dimiliki',
-                      type: 'select-radio',
-                      option: {
-                        default_options:
-                          defaultData.owned_land_legalization_status,
-                        list_pointer: {
-                          code: 'code',
-                          name: 'name',
-                          display: ['name'],
-                        },
+                <v-col lg="6" v-if="formData.status_program == 'Ya'">
+                  <geko-input v-model="formData.owned_land_legalization_status" :item="{
+                    validation: ['required'],
+                    label: 'Status legalitas lahan yang dimiliki',
+                    type: 'select-radio',
+                    option: {
+                      default_options:
+                        defaultData.owned_land_legalization_status,
+                      list_pointer: {
+                        code: 'code',
+                        name: 'name',
+                        display: ['name'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
               </v-row>
             </div>
@@ -318,23 +293,14 @@
 
           <v-col lg="12">
             <div class="d-flex flex-row" style="justify-content: flex-end">
-              <v-btn
-                :variant="
-                  $route.query.view === 'create' ? 'success' : 'warning'
-                "
-                type="submit"
-                :disabled="loading"
-              >
+              <v-btn :variant="$route.query.view === 'create' ? 'success' : 'warning'
+                " type="submit" :disabled="loading">
                 <v-icon v-if="$route.query.view === 'create'">mdi-plus</v-icon>
-                <v-icon v-if="$route.query.view === 'update'"
-                  >mdi-pencil-minus</v-icon
-                >
-                <span
-                  >{{
-                    $route.query.view == "create" ? "Tambah" : "Perbarui"
-                  }}
-                  Petani</span
-                >
+                <v-icon v-if="$route.query.view === 'update'">mdi-pencil-minus</v-icon>
+                <span>{{
+                  $route.query.view == "create" ? "Tambah" : "Perbarui"
+                }}
+                  Petani</span>
               </v-btn>
             </div>
           </v-col>
@@ -415,8 +381,7 @@ export default {
         .then(() => {
           this.loading = false;
           this.$_alert.success(
-            `Data sosialisasi program berhasil ${
-              this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
+            `Data sosialisasi program berhasil ${this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
             }`
           );
           this.$router.go(-1);

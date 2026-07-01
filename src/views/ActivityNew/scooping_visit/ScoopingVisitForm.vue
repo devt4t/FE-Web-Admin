@@ -56,7 +56,7 @@
                   display: ['name'],
                 },
               },
-            }" @selected="onChangeProvince($event)" />
+            }" @selected="onChangeProvince($event)" :disabled="formData.is_updated == 1" />
           </v-col>
 
           <v-col md="6">
@@ -79,7 +79,8 @@
                   display: ['name'],
                 },
               },
-            }" @selected="formData.city_code = $event.kabupaten_no" :disabled="!formData.province_id" />
+            }" @selected="formData.city_code = $event.kabupaten_no"
+              :disabled="!formData.province_id || formData.is_updated == 1" />
           </v-col>
 
           <v-col md="6">
@@ -102,7 +103,8 @@
                   display: ['name'],
                 },
               },
-            }" @selected="formData.district_code = $event.kode_kecamatan" :disabled="!formData.city_id" />
+            }" @selected="formData.district_code = $event.kode_kecamatan"
+              :disabled="!formData.city_id || formData.is_updated == 1" />
           </v-col>
 
           <v-col md="6">
@@ -125,10 +127,11 @@
                   display: ['name'],
                 },
               },
-            }" @selected="formData.village_code = $event.kode_desa" :disabled="!formData.district_id" />
+            }" @selected="formData.village_code = $event.kode_desa"
+              :disabled="!formData.district_id || formData.is_updated == 1" />
           </v-col>
 
-          <v-col md="6" >
+          <v-col md="6">
             <geko-input v-model="formData.project_id" :item="{
               label: 'Project',
               validation: [],
@@ -153,8 +156,8 @@
             }" />
           </v-col>
 
-          
-          
+
+
           <v-col md="6">
             <geko-input v-model="formData.date" :item="{
               label: 'Tanggal Scooping',
@@ -166,41 +169,41 @@
           </v-col>
 
           <v-col md="6" style="padding-left: 1.5em">
-              <geko-input v-model="formData.potential_status" :item="{
-                view_data: 'potential_status',
-                type: 'select-radio',
-                label:
-                  'Status Potensial',
-                validation: ['required'],
-                option: {
-                  list_pointer: {
-                    label: 'label',
-                    code: 'code',
-                    display: ['label'],
-                  },
-                  default_options: [
-                    {
-                      label: 'Potensial Carbon',
-                      code: 2,
-                    },
-                    {
-                      label: 'Potensial Non Carbon',
-                      code: 3,
-                    },
-                    {
-                      label: 'Potensial Carbon & Non Carbon',
-                      code: 4,
-                    }
-                  ],
+            <geko-input v-model="formData.potential_status" :item="{
+              view_data: 'potential_status',
+              type: 'select-radio',
+              label:
+                'Status Potensial',
+              validation: ['required'],
+              option: {
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-              }" />
-            </v-col>
+                default_options: [
+                  {
+                    label: 'Potensial Carbon',
+                    code: 2,
+                  },
+                  {
+                    label: 'Potensial Non Carbon',
+                    code: 3,
+                  },
+                  {
+                    label: 'Potensial Carbon & Non Carbon',
+                    code: 4,
+                  }
+                ],
+              },
+            }" />
+          </v-col>
 
           <v-col md="12" class="form-separator">
             <h4>Data General Desa</h4>
           </v-col>
 
-          
+
 
           <v-col md="6">
             <geko-input v-model="formData.village_area" :item="{
@@ -208,7 +211,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'number',
-            }" />
+            }" :disabled="formData.is_updated == 1" />
           </v-col>
 
           <v-col md="6">
@@ -362,7 +365,7 @@
               type: 'number',
               setter: 'total_dusun',
               view_data: 'total_dusun',
-            }" />
+            }" :disabled="(val, data) => data && data.is_updated == 1" />
           </v-col>
 
           <v-col md="6">

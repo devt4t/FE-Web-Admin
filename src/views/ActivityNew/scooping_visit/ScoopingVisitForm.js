@@ -25,7 +25,7 @@ export default {
         other_ngo_input: "",
         other_ngo_data: [],
         ff_candidates: [],
-        
+
       },
     };
   },
@@ -48,19 +48,19 @@ export default {
       });
     },
     'formData.project_id'(v) {
-      
+
       if (!this.ready) return;
       for (const project_id of this.existingProjectIds) {
 
         //deleted
         if (!v.includes(project_id) && !this.deletedProjectIds.includes(project_id)) {
           this.deletedProjectIds.push(project_id);
-          
+
         }
       }
 
-      
-      
+
+
     }
 
   },
@@ -92,6 +92,7 @@ export default {
         limit: 200,
       })
       const keys = [
+        ["is_updated", "is_updated"],
         ["province", "province_id"],
         ["province", "province_code"],
         ["provinces_name", "province_name"],
@@ -185,8 +186,8 @@ export default {
       //     project_name: "AZ Preliminary Project - PJ00008",
       //   });
       // }
-      let _projects = []      
-     
+      let _projects = []
+
 
       for (const project of projectList.data) {
         _projects.push({
@@ -194,11 +195,11 @@ export default {
           project_name: project.project_name
         })
       }
-      
+
       this.projects = _projects
 
-      
-      
+
+
       this.$set(this.formData, "project_id", existingProject);
       this.$set(this.formData, "village_persons", figures.data);
       this.$set(this.formData, "ff_candidates", resFf.data);
@@ -256,7 +257,7 @@ export default {
         ff_candidate: this.formData.ff_candidate,
         potential_status: this.formData.potential_status
       };
-      
+
 
       const keyJoins = [
         "land_type",
@@ -287,7 +288,7 @@ export default {
         payload.data_no = this.formData.data_no;
       }
 
-      
+
       this.$_api
         .post(endpoint, payload)
         .then(async (res) => {
@@ -319,12 +320,12 @@ export default {
               }
             }
           }
-          
+
           this.submitProject(res);
           this.submitOtherNgo(res);
           this.submitFfCandidate(res);
           this.submitFigure(res);
-          
+
         })
         .catch((err) => {
           console.log("err", err);
@@ -345,7 +346,7 @@ export default {
     },
 
     deleteProject(projectId) {
-      return new Promise(async(resolve) => {
+      return new Promise(async (resolve) => {
         const projectPayload = {
           scooping_id: this.$route.query.id,
           project_id: parseInt(projectId),
@@ -357,9 +358,9 @@ export default {
 
           return resolve()
         })
-        .then(() => {
-          return resolve()
-        })
+          .then(() => {
+            return resolve()
+          })
 
       })
     },
@@ -370,9 +371,9 @@ export default {
           typeof _project === "object" ? _project.id : _project;
 
         const isCreate = !this.existingProjectIds.includes(_projectId);
-        
 
-        if (!isCreate){
+
+        if (!isCreate) {
           continue;
         };
 
@@ -395,8 +396,7 @@ export default {
 
       if (this.formData.village_persons.length == 0) {
         this.$_alert.success(
-          `Data scooping visit berhasil ${
-            this.isCreate ? "ditambahkan" : "diperbarui"
+          `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"
           }`
         );
         this.$router.replace({
@@ -424,8 +424,7 @@ export default {
           .then(() => {
             if (i == this.formData.village_persons.length) {
               this.$_alert.success(
-                `Data scooping visit berhasil ${
-                  this.isCreate ? "ditambahkan" : "diperbarui"
+                `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"
                 }`
               );
               this.$router.replace({

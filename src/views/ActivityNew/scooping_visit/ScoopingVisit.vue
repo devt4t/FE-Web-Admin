@@ -1,6 +1,7 @@
 <template>
   <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey"
-    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')" :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')" :refreshKey="refreshKey">
+    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')" :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')"
+    :refreshKey="refreshKey">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
@@ -95,12 +96,50 @@
       <scooping-visit-detail />
     </template>
     <template v-slot:list-after-filter>
-      <scooping-project-program-year-modal
-      :data="scooping_data"
-      :dataKey="scooping_data_key"
-      @success="refreshKey = refreshKey + 1"
-      ></scooping-project-program-year-modal>
+      <scooping-project-program-year-modal :data="scooping_data" :dataKey="scooping_data_key"
+        @success="refreshKey = refreshKey + 1"></scooping-project-program-year-modal>
+
+      <div class="d-flex align-items-center justify-content-end">
+        <v-btn color="success" @click="assignExistingModal = true">
+          <v-icon small>mdi-lock-open-variant-outline</v-icon>
+          <span class="ms-2">Re-Edit Data</span>
+        </v-btn>
+      </div>
+      <v-dialog v-model="assignExistingModal" max-width="700">
+        <v-card>
+          <v-card-title>Bulk Buka Akses Edit Data Desa</v-card-title>
+          <v-card-text class="pt-4">
+            <geko-input v-model="assignExisting" :item="{
+              type: 'select',
+              label: 'Pilih Desa',
+              api: 'GetNewScoopingAll',
+              param: {
+                // program_year: $store.state.tmpProgramYear,
+                is_verify: 2,
+                // scooping_type: 'new',
+                // is_updated: 0 atau null, // akan ada di tabel scooping_visits untuk menandakan is_updated 0/1
+                limit: 10,
+                offset: 0,
+              },
+              option: {
+                multiple: true,
+                list_pointer: {
+                  label: 'desas_name',
+                  code: 'id',
+                  display: ['data_no', 'desas_name'],
+                }
+              }
+            }" />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="error" @click="assignExistingModal = false">Batal</v-btn>
+            <v-btn color="success" @click="submitAssignExisting">Assign Data</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </template>
+
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
@@ -208,9 +247,12 @@ export default {
   watch: {},
   data() {
     return {
+      assignExistingModal: false,
+      assignExisting: [],
+      loadingAssignExisting: false,
       refreshKey: 0,
       scooping_data: null,
-      scooping_data_key: null,
+      scooping_data_key: 0,
       componentKey: 1,
       updateIds: [],
       exportIds: [],
@@ -440,7 +482,7 @@ export default {
                 },
               },
             },
-          }, 
+          },
           {
             id: "village_area",
             label: "Luas Desa",
@@ -641,6 +683,30 @@ export default {
   },
 
   methods: {
+    async submitAssignExisting() {
+      if (!this.assignExisting) {
+        return this.$_alert.error(null, 'Harap pilih data dulu');
+      }
+
+      this.loadingAssignExisting = true;
+
+      try {
+        const payload = {
+          program_year: this.$store.state.tmpProgramYear,
+          scooping_ids: this.assignExisting,
+        }
+        await this.$_api.post('BulkCloneScoopingVisit', payload);
+
+        this.$_alert.success(null, 'Berhasil assign data');
+        this.assignExistingModal = false;
+        this.refreshKey += 1;
+      } catch (err) {
+        console.error('[DEBUG] assign error', err);
+        this.$_alert.error(null, 'Gagal assign data');
+      } finally {
+        this.loadingAssignExisting = false;
+      }
+    },
     onAssignProject(item) {
       this.scooping_data = item;
       this.scooping_data_key = item.id;

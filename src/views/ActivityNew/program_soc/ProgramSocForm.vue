@@ -48,6 +48,10 @@
                     name: '2025',
                     value: '2025',
                   },
+                  {
+                    name: '2026',
+                    value: '2026',
+                  },
                 ],
 
                 list_pointer: {
@@ -117,7 +121,7 @@
                 list_pointer: {
                   code: 'kode_desa',
                   label: 'name',
-                  display: ['name','kecamatans_name'],
+                  display: ['name', 'kecamatans_name'],
                 },
               },
             }" @selected="onChangeVillage($event)" />
@@ -249,7 +253,7 @@
                           },
                         }" />
                       </v-col>
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-model="item.entry_data_status" :item="{
                           label: 'Status Pengisi Data',
                           validation: ['required'],
@@ -279,7 +283,7 @@
                         }" />
                       </v-col>
 
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-if="item.entry_data_status == 3" v-model="item.enty_data_status_others" :item="{
                           label: 'Keterangan Status pengisi data lain',
                           validation: ['required'],
@@ -288,67 +292,69 @@
                         }" />
                       </v-col>
 
-                      <v-col lg="6" v-if="item.status_program =='Ya'">
+                      <v-col lg="6" v-if="item.status_program == 'Ya'">
                         <geko-input v-model="item.is_program" :item="{
                           label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
                           validation: ['required'],
                           type: 'select-radio',
                           option: {
-                          list_pointer: {
-                            label: 'label',
-                            code: 'code',
-                            display: ['label'],
-                          },
-                          default_options: [
-                            {
-                              label: 'Ya, Pernah',
-                              code: 1,
+                            list_pointer: {
+                              label: 'label',
+                              code: 'code',
+                              display: ['label'],
                             },
-                            {
-                              label: 'Tidak Pernah',
-                              code: 0,
-                            },
-                          ],
-                        }}" />
+                            default_options: [
+                              {
+                                label: 'Ya, Pernah',
+                                code: 1,
+                              },
+                              {
+                                label: 'Tidak Pernah',
+                                code: 0,
+                              },
+                            ],
+                          }
+                        }" />
                       </v-col>
 
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-if="item.is_program" v-model="item.is_program_year" :item="{
                           label: 'Pernah Ikut Program Tahun',
                           validation: ['required'],
                           type: 'select',
                           option: {
-                          list_pointer: {
-                            label: 'label',
-                            code: 'code',
-                            display: ['label'],
-                          },
-                          default_options: [
-                            {
-                              label: '2020',
-                              code: '2020',
+                            list_pointer: {
+                              label: 'label',
+                              code: 'code',
+                              display: ['label'],
                             },
-                            {
-                              label: '2021',
-                              code: '2021',
-                            },
-                            {
-                              label: '2022',
-                              code: '2022',
-                            },
-                            {
-                              label: '2023',
-                              code: '2023',
-                            },
-                            {
-                              label: '2024',
-                              code: '2024',
-                            },
-                          ],
-                        }}" />
+                            default_options: [
+                              {
+                                label: '2020',
+                                code: '2020',
+                              },
+                              {
+                                label: '2021',
+                                code: '2021',
+                              },
+                              {
+                                label: '2022',
+                                code: '2022',
+                              },
+                              {
+                                label: '2023',
+                                code: '2023',
+                              },
+                              {
+                                label: '2024',
+                                code: '2024',
+                              },
+                            ],
+                          }
+                        }" />
                       </v-col>
 
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-model="item.lahan_for_program" :item="{
                           label: 'Jumlah lahan yang ingin diikutkan program',
                           type: 'number',
@@ -356,7 +362,7 @@
                       </v-col>
 
 
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-model="item.lahan_for_program_luas" :item="{
                           label: 'Luas dari lahan yang ingin diikutkan program',
                           type: 'number',
@@ -377,37 +383,31 @@
                           },
                         }" />
                       </v-col>
-                      <v-col
-                        lg="6"
-                        v-if="item.status_program =='Ya'"
-                      >
-                        <geko-input
-                          v-model="item.pattern_new"
-                          :item="{
-                            label: 'Pola Tanam Yang Diminati',
-                            validation: ['required'],
-                            type: 'select',
-                            setter: 'pattern_new',
-                            default_label: item.planting_pattern_name || '',
-                            option: {
-                              default_options: [
-                                {
-                                  value: 'Agroforestry',
-                                  text: 'Agroforestry',
-                                },
-                                {
-                                  value: 'Konservasi',
-                                  text: 'Konservasi',
-                                },
-                              ],
-                              list_pointer: {
-                                label: 'text',
-                                code: 'value',
-                                display: ['text'],
+                      <v-col lg="6" v-if="item.status_program == 'Ya'">
+                        <geko-input v-model="item.pattern_new" :item="{
+                          label: 'Pola Tanam Yang Diminati',
+                          validation: ['required'],
+                          type: 'select',
+                          setter: 'pattern_new',
+                          default_label: item.planting_pattern_name || '',
+                          option: {
+                            default_options: [
+                              {
+                                value: 'Agroforestry',
+                                text: 'Agroforestry',
                               },
+                              {
+                                value: 'Konservasi',
+                                text: 'Konservasi',
+                              },
+                            ],
+                            list_pointer: {
+                              label: 'text',
+                              code: 'value',
+                              display: ['text'],
                             },
-                          }"
-                        />
+                          },
+                        }" />
                       </v-col>
                       <v-col lg="6" v-if="
                         ['Ya', 'Ragu - Ragu'].includes(item.status_program)
@@ -468,30 +468,24 @@
                         }" />
                       </v-col>
 
-                      <v-col
-                        v-if="item.status_program =='Ya'"
-                        lg="6"
-                      >
-                        <geko-input
-                          v-model="item.owned_land_legalization_status"
-                          :item="{
-                            label: 'Status legalitas lahan yang dimiliki',
-                            validation: ['required'],
-                            type: 'select-radio',
-                            option: {
-                              default_options:
-                                defaultData.owned_land_legalization_status,
-                              list_pointer: {
-                                code: 'code',
-                                name: 'name',
-                                display: ['name'],
-                              },
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
+                        <geko-input v-model="item.owned_land_legalization_status" :item="{
+                          label: 'Status legalitas lahan yang dimiliki',
+                          validation: ['required'],
+                          type: 'select-radio',
+                          option: {
+                            default_options:
+                              defaultData.owned_land_legalization_status,
+                            list_pointer: {
+                              code: 'code',
+                              name: 'name',
+                              display: ['name'],
                             },
-                          }"
-                        />
+                          },
+                        }" />
                       </v-col>
 
-                      <v-col v-if="item.status_program =='Ya'" lg="6">
+                      <v-col v-if="item.status_program == 'Ya'" lg="6">
                         <geko-input v-model="item.suggestion" :item="{
                           label: 'Saran Untuk Program Trees4Trees',
                           // validation: ['required'],
@@ -602,8 +596,8 @@ export default {
         farmer.form_no = resultMain;
         await this.$_api.post("AddFormMinatFarmers_new", farmer);
       }
-      
-      console.log('formData', this.resultMain, )
+
+      console.log('formData', this.resultMain,)
       this.loading = false;
       this.$_alert.success("Data sosialisasi program berhasil ditambahkan");
       this.$router.replace({

@@ -309,6 +309,10 @@ export default {
         this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
       }
 
+      if (!this.$store.state.tmpProgramYear) {
+        this.$store.commit("set", ["tmpProgramYear", this.$_config.programYear.model, true]);
+      }
+
       if (!this.$store.state.token && !localStorage.getItem("token")) {
         //not authorized
         this.$router.push("/");

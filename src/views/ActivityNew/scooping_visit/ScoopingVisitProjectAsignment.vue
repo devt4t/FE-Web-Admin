@@ -11,98 +11,83 @@
                 <v-col lg="12" class="form-separator">
                   <div class="d-flex flex-row align-items-center">
                     <p class="mb-0">Pemetaan Project - Program Year</p>
-                    <v-btn
-                      variant="success"
-                      class="add-button ml-2"
-                      @click="addProjectProgramYear()"
-                      small
-                    >
+                    <v-btn variant="success" class="add-button ml-2" @click="addProjectProgramYear()" small>
                       <v-icon small>mdi-plus</v-icon>
                     </v-btn>
                   </div>
                 </v-col>
-                <v-col lg="12" v-for="(ProjectPY, i) in project_programYear" :key="'ProjectPY-' + i" v-if="loading === false">
+                <v-col lg="12" v-for="(ProjectPY, i) in project_programYear" :key="'ProjectPY-' + i"
+                  v-if="loading === false">
                   <v-row class="mx-3 bg-grey">
                     <v-col lg="6">
-                      <geko-input
-                        v-model="ProjectPY.program_year"
-                        :item="{
-                          label: 'Tahun Program',
-                          type: 'select',
-                          validation: ['required'],
-                          option: {
-                            default_label: ProjectPY.program_year,
-                            multiple: false,
-                            default_options: [
-                              {
-                                label: '2020',
-                                code: '2020',
-                              },
-                              {
-                                label: '2021',
-                                code: '2021',
-                              },
-                              {
-                                label: '2022',
-                                code: '2022',
-                              },
-                              {
-                                label: '2023',
-                                code: '2023',
-                              },
-                              {
-                                label: '2024',
-                                code: '2024',
-                              },
-                              {
-                                label: '2025',
-                                code: '2025',
-                              },
-                            ],
-                            list_pointer: {
-                              label: 'label',
-                              code: 'code',
-                              display: ['label'],
+                      <geko-input v-model="ProjectPY.program_year" :item="{
+                        label: 'Tahun Program',
+                        type: 'select',
+                        validation: ['required'],
+                        option: {
+                          default_label: ProjectPY.program_year,
+                          multiple: false,
+                          default_options: [
+                            {
+                              label: '2020',
+                              code: '2020',
                             },
+                            {
+                              label: '2021',
+                              code: '2021',
+                            },
+                            {
+                              label: '2022',
+                              code: '2022',
+                            },
+                            {
+                              label: '2023',
+                              code: '2023',
+                            },
+                            {
+                              label: '2024',
+                              code: '2024',
+                            },
+                            {
+                              label: '2025',
+                              code: '2025',
+                            },
+                            {
+                              label: '2026',
+                              code: '2026',
+                            },
+                          ],
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
 
                     <v-col lg="5">
-                      <geko-input
-                        v-model="ProjectPY.id_project"
-                        :item="{
-                          type: 'select',
-                          label: 'Project',
-                          validation: ['required'],
-                          api: 'GetProjectAllAdmin',
-                          default_label: ProjectPY.project_name,
-                          option: {
-                            list_pointer: {
-                              code: 'id',
-                              label: 'project_name',
-                              display: ['project_name'],
-                            },
+                      <geko-input v-model="ProjectPY.id_project" :item="{
+                        type: 'select',
+                        label: 'Project',
+                        validation: ['required'],
+                        api: 'GetProjectAllAdmin',
+                        default_label: ProjectPY.project_name,
+                        option: {
+                          list_pointer: {
+                            code: 'id',
+                            label: 'project_name',
+                            display: ['project_name'],
                           },
-                        }"
-                      />
+                        },
+                      }" />
                     </v-col>
-                    <v-col
-                      lg="1"
-                      class="mt-0 pt-0 d-flex flex-column"
-                      style="
+                    <v-col lg="1" class="mt-0 pt-0 d-flex flex-column" style="
                         justify-content: center;
                         position: relative;
                         transform: translateY(15%);
-                      "
-                    >
-                      <v-btn
-                        small
-                        variant="danger"
-                        class="btn-icon"
-                        @click="removeProjectProgramYear(i)"
-                      >
+                      ">
+                      <v-btn small variant="danger" class="btn-icon" @click="removeProjectProgramYear(i)">
                         <v-icon small>mdi-delete-empty</v-icon>
                       </v-btn>
                     </v-col>
@@ -111,18 +96,14 @@
                 <v-col lg="12">
                   <p class="text-danger" v-if="error_project_programYear">
                     {{ error_project_programYear }}
-                  </p></v-col
-                >
-                
+                  </p>
+                </v-col>
+
               </v-row>
 
               <v-row>
                 <v-col lg="12" class="d-flex flex-row justify-content-center">
-                  <v-btn
-                    variant="warning"
-                    class="d-flex flex-row align-items-center"
-                    type="submit"
-                  >
+                  <v-btn variant="warning" class="d-flex flex-row align-items-center" type="submit">
                     <v-icon>mdi-pencil-outline</v-icon>
                     <span>Perbarui Data Project Scooping</span>
                   </v-btn>
@@ -143,7 +124,7 @@ export default {
   props: {
     data: {
       required: true,
-      default: () => {},
+      default: () => { },
     },
     dataKey: {
       required: true,
@@ -213,7 +194,7 @@ export default {
       let payloadProjectPY = JSON.parse(JSON.stringify(this.project_programYear));
       // console.log("payloadProjectPY", payloadProjectPY);
       this.$_api
-        .post("scooping-visit/update/project-assignment", {project_py: payloadProjectPY})
+        .post("scooping-visit/update/project-assignment", { project_py: payloadProjectPY })
         .then(() => {
           this.$_alert.success("Berhasil Melakukan Penyesuaian Project Pada Data Scooping");
           this.isOpen = false;

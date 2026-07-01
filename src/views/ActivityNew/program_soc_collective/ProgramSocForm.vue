@@ -48,6 +48,10 @@
                     name: '2025',
                     value: '2025',
                   },
+                  {
+                    name: '2026',
+                    value: '2026',
+                  },
                 ],
 
                 list_pointer: {
@@ -59,7 +63,7 @@
             }" />
           </v-col>
 
-          <v-col lg="6" >
+          <v-col lg="6">
             <geko-input v-model="formData.program_type" :item="{
               label: 'Project',
               type: 'select-radio',
@@ -121,9 +125,9 @@
                 },
               },
             }" />
-              </v-col>
+          </v-col>
 
-            <v-col lg="6">
+          <v-col lg="6">
             <geko-input v-model="formData.contact_type" :item="{
               label: 'Kontak',
               validation: ['required'],
@@ -167,37 +171,38 @@
               validation: ['required'],
               type: 'number',
             }" />
-          </v-col> 
+          </v-col>
 
           <v-col lg="6">
             <geko-input v-model="formData.people_status" :item="{
               label: 'Merupakan Perwakilan Dari',
               type: 'select-radio',
               option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
-              },
-              default_options: [
-                {
-                  label: 'Warga Desa',
-                  code: 1,
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-                {
-                  label: 'Warga Dusun',
-                  code: 2,
-                },
-                {
-                  label: 'Kelompok Dalam Area',
-                  code: 3,
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    label: 'Warga Desa',
+                    code: 1,
+                  },
+                  {
+                    label: 'Warga Dusun',
+                    code: 2,
+                  },
+                  {
+                    label: 'Kelompok Dalam Area',
+                    code: 3,
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
           <v-col v-if="formData.people_status == 3" lg="6">
-            <geko-input  v-model="formData.group_name" :item="{
+            <geko-input v-model="formData.group_name" :item="{
               label: 'Nama Kelompok',
               validation: ['required'],
               type: 'text',
@@ -209,30 +214,31 @@
               label: 'Jabatan / Posisi',
               type: 'select-radio',
               option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
-              },
-              default_options: [
-                {
-                  label: 'Aparat Desa',
-                  code: 1,
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-                {
-                  label: 'Tokoh Desa',
-                  code: 2,
-                },
-                {
-                  label: 'Lainnya',
-                  code: 3,
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    label: 'Aparat Desa',
+                    code: 1,
+                  },
+                  {
+                    label: 'Tokoh Desa',
+                    code: 2,
+                  },
+                  {
+                    label: 'Lainnya',
+                    code: 3,
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
           <v-col lg="6">
-            <geko-input  v-model="formData.position_name" :item="{
+            <geko-input v-model="formData.position_name" :item="{
               label: 'Nama Jabatan / Posisi ',
               validation: ['required'],
               type: 'text',
@@ -244,22 +250,23 @@
               label: 'Pernah Ada Kegiatan Organisasi Di Area Setempat?',
               type: 'select-radio',
               option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
-              },
-              default_options: [
-                {
-                  label: 'Ya, Pernah',
-                  code: 1,
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-                {
-                  label: 'Tidak Pernah',
-                  code: 0,
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    label: 'Ya, Pernah',
+                    code: 1,
+                  },
+                  {
+                    label: 'Tidak Pernah',
+                    code: 0,
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
           <v-col lg="6">
@@ -268,34 +275,35 @@
               validation: ['required'],
               type: 'select',
               option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
-              },
-              default_options: [
-                {
-                  label: '2020',
-                  code: '2020',
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-                {
-                  label: '2021',
-                  code: '2021',
-                },
-                {
-                  label: '2022',
-                  code: '2022',
-                },
-                {
-                  label: '2023',
-                  code: '2023',
-                },
-                {
-                  label: '2024',
-                  code: '2024',
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    label: '2020',
+                    code: '2020',
+                  },
+                  {
+                    label: '2021',
+                    code: '2021',
+                  },
+                  {
+                    label: '2022',
+                    code: '2022',
+                  },
+                  {
+                    label: '2023',
+                    code: '2023',
+                  },
+                  {
+                    label: '2024',
+                    code: '2024',
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
           <v-col md="12" class="form-separator">
@@ -419,7 +427,7 @@
           <v-col md="12" class="form-separator">
             <h4>Hasil Sosialisasi Program</h4>
           </v-col>
-          
+
           <v-col lg="6">
             <geko-input v-model="formData.total_minat" :item="{
               label: 'Jumlah Peserta Yg Berminat',
@@ -437,83 +445,83 @@
           </v-col>
 
           <div v-if="formData.total_minat > 0">
-          <v-col md="12" class="form-separator">
-            <h4>Calon Peserta Dalam Area Yang Memiliki Lahan (Pemilik)</h4>
-          </v-col>
+            <v-col md="12" class="form-separator">
+              <h4>Calon Peserta Dalam Area Yang Memiliki Lahan (Pemilik)</h4>
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_pemilik_people" :item="{
-              label: 'Jumlah Peserta',
-              validation: ['required'],
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_pemilik_people" :item="{
+                label: 'Jumlah Peserta',
+                validation: ['required'],
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_pemilik_lahan" :item="{
-              label: 'Jumlah Lahan',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_pemilik_lahan" :item="{
+                label: 'Jumlah Lahan',
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_pemilik_luas_lahan" :item="{
-              label: 'Total Luas Lahan (M²)',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_pemilik_luas_lahan" :item="{
+                label: 'Total Luas Lahan (M²)',
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col md="12" class="form-separator">
-            <h4>Calon Peserta Dalam Area Perwakilan Yg Merupakan Pengelola / Penggarap Lahan</h4>
-          </v-col>
+            <v-col md="12" class="form-separator">
+              <h4>Calon Peserta Dalam Area Perwakilan Yg Merupakan Pengelola / Penggarap Lahan</h4>
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_penggarap_people" :item="{
-              label: 'Jumlah Peserta',
-              validation: ['required'],
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_penggarap_people" :item="{
+                label: 'Jumlah Peserta',
+                validation: ['required'],
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_penggarap_lahan" :item="{
-              label: 'Jumlah Lahan',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_penggarap_lahan" :item="{
+                label: 'Jumlah Lahan',
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_penggarap_luas_lahan" :item="{
-              label: 'Total Luas Lahan (M²)',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_penggarap_luas_lahan" :item="{
+                label: 'Total Luas Lahan (M²)',
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col md="12" class="form-separator">
-            <h4>Calon Peserta Dalam Area Perwakilan Yg Memiliki Status Lainnya Terhadap Lahan</h4>
-          </v-col>
+            <v-col md="12" class="form-separator">
+              <h4>Calon Peserta Dalam Area Perwakilan Yg Memiliki Status Lainnya Terhadap Lahan</h4>
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_lain_people" :item="{
-              label: 'Jumlah Peserta',
-              validation: ['required'],
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_lain_people" :item="{
+                label: 'Jumlah Peserta',
+                validation: ['required'],
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_lain_lahan" :item="{
-              label: 'Jumlah Lahan',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_lain_lahan" :item="{
+                label: 'Jumlah Lahan',
+                type: 'number',
+              }" />
+            </v-col>
 
-          <v-col lg="6">
-            <geko-input v-model="formData.peserta_lain_luas_lahan" :item="{
-              label: 'Total Luas Lahan (M²)',
-              type: 'number',
-            }" />
-          </v-col>
+            <v-col lg="6">
+              <geko-input v-model="formData.peserta_lain_luas_lahan" :item="{
+                label: 'Total Luas Lahan (M²)',
+                type: 'number',
+              }" />
+            </v-col>
           </div>
 
           <v-col md="12" class="form-separator">
@@ -525,39 +533,41 @@
               label: 'Status Legalitas Lahan',
               type: 'select',
               option: {
-              multiple: true,
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
-              },
-              default_options: [
-                {
-                  label: 'Sertifikat Lahan atau letter C atas nama Sendiri',
-                  code: '1',
+                multiple: true,
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
                 },
-                {
-                  label: 'Akte Jual beli atau Letter C masih atas nama Orang Lain',
-                  code: '2',
-                },
-                {
-                  label: 'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
-                  code: '3',
-                },
-                {
-                  label: 'Lainnya',
-                  code: '4',
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    label: 'Sertifikat Lahan atau letter C atas nama Sendiri',
+                    code: '1',
+                  },
+                  {
+                    label: 'Akte Jual beli atau Letter C masih atas nama Orang Lain',
+                    code: '2',
+                  },
+                  {
+                    label: 'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
+                    code: '3',
+                  },
+                  {
+                    label: 'Lainnya',
+                    code: '4',
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
           <v-col lg="6">
-            <geko-input v-if="formData.lahan_legal_status.includes(4)" v-model="formData.lahan_legal_status_others" :item="{
-              label: 'Status Legalitas Lahan (Lainnya)',
-              validation: ['required'],
-              type: 'text',
-            }" />
+            <geko-input v-if="formData.lahan_legal_status.includes(4)" v-model="formData.lahan_legal_status_others"
+              :item="{
+                label: 'Status Legalitas Lahan (Lainnya)',
+                validation: ['required'],
+                type: 'text',
+              }" />
           </v-col>
 
           <v-col lg="6">
@@ -565,14 +575,15 @@
               label: 'Pola Tanam Sebelumnya',
               type: 'select',
               option: {
-              multiple: true,
-              list_pointer: {
-                label: 'text',
-                code: 'value',
-                display: ['text'],
-              },
-              default_options: defaultData.planting_pattern,
-            }}" />
+                multiple: true,
+                list_pointer: {
+                  label: 'text',
+                  code: 'value',
+                  display: ['text'],
+                },
+                default_options: defaultData.planting_pattern,
+              }
+            }" />
           </v-col>
 
           <v-col lg="6">
@@ -581,26 +592,27 @@
               type: 'select',
               validation: ['required'],
               option: {
-              multiple: true,
-              list_pointer: {
+                multiple: true,
+                list_pointer: {
                   label: 'text',
-                code: 'value',
-                display: ['text'],
-              },
-              default_options: [
-                {
-                  value: 'Agroforestry',
-                  text: 'Agroforestry',
+                  code: 'value',
+                  display: ['text'],
                 },
-                {
-                  value: 'Konservasi',
-                  text: 'Konservasi',
-                },
-              ],
-            }}" />
+                default_options: [
+                  {
+                    value: 'Agroforestry',
+                    text: 'Agroforestry',
+                  },
+                  {
+                    value: 'Konservasi',
+                    text: 'Konservasi',
+                  },
+                ],
+              }
+            }" />
           </v-col>
 
-           
+
 
           <v-col md="12" class="form-separator">
             <h4>Materi Pelatihan</h4>
@@ -744,7 +756,8 @@
 
           <v-col lg="12">
             <div class="d-flex flex-row" style="justify-content: flex-end">
-              <v-btn variant="success" type="submit" :disabled="loading || (formData.total_minat == 0 && formData.total_ragu == 0)">
+              <v-btn variant="success" type="submit"
+                :disabled="loading || (formData.total_minat == 0 && formData.total_ragu == 0)">
                 <v-icon>mdi-plus</v-icon>
                 <span v-if="isCreate">Tambah Data</span>
                 <span v-else>Perbaharui Data</span>
@@ -805,8 +818,7 @@ export default {
 
           this.loading = false;
           this.$_alert.success(
-            `Data sosialisasi program berhasil ${
-              this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
+            `Data sosialisasi program berhasil ${this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
             }`
           );
           this.$router.replace({
@@ -834,7 +846,7 @@ export default {
       //   await this.$_api.post("AddFormMinatFarmers_new", farmer);
       // }
 
-      
+
     },
     async initData() {
       const detailData = await this.$_api.get("GetFormMinatCollectiveDetailAll_new", {
@@ -885,8 +897,8 @@ export default {
         }
       );
 
-      
-      
+
+
       const keys = [
         ["documentation1"],
         ["documentation2"],
@@ -907,12 +919,12 @@ export default {
         ["name_entry_data"],
         ["gender"],
         ["age"],
-        ["people_status","people_status"],
+        ["people_status", "people_status"],
         ["group_name"],
         ["entry_data_position", "entry_data_position"],
         ["position_others"],
         ["position_name"],
-        ["is_program","is_program"],
+        ["is_program", "is_program"],
         ["is_program_year"],
         ["province"],
         ["city"],
@@ -928,18 +940,18 @@ export default {
         ["peserta_lain_luas_lahan"],
         ["pattern"],
         ["pattern_new"],
-        ["training1","training1"],
+        ["training1", "training1"],
         ["training2"],
         ["suggestion"],
-    ];
+      ];
       // console.log("thi", detailData);
 
       for (const keyArr of keys) {
         if (keyArr[0] !== "trees"
-         && keyArr[0] !== "training"
-         && keyArr[0] !== "pattern"
-         && keyArr[0] !== "lahan_legal_status"
-         && keyArr[0] !== "pattern_new") {
+          && keyArr[0] !== "training"
+          && keyArr[0] !== "pattern"
+          && keyArr[0] !== "lahan_legal_status"
+          && keyArr[0] !== "pattern_new") {
           this.$set(
             this.formData,
             keyArr[0],
@@ -1085,18 +1097,18 @@ export default {
       }
     },
     selectedTree(tree, i) {
-    console.log("selectedTree", tree, i);
-    if (tree && tree.tree_code) {
-      this.$set(this.trees[i], "tree_code", tree.tree_code);
-      this.$set(this.trees[i], "tree_name", tree.tree_name);
-      this.$set(this.trees[i], "tree_category", tree.tree_category);
-    } else {
-      this.$set(this.trees[i], "tree_code", null);
-      this.$set(this.trees[i], "tree_name", null);
-      this.$set(this.trees[i], "tree_category", null);
-    }
-  }, 
-  }, 
+      console.log("selectedTree", tree, i);
+      if (tree && tree.tree_code) {
+        this.$set(this.trees[i], "tree_code", tree.tree_code);
+        this.$set(this.trees[i], "tree_name", tree.tree_name);
+        this.$set(this.trees[i], "tree_category", tree.tree_category);
+      } else {
+        this.$set(this.trees[i], "tree_code", null);
+        this.$set(this.trees[i], "tree_name", null);
+        this.$set(this.trees[i], "tree_category", null);
+      }
+    },
+  },
 
   computed: {
     defaultData() {
