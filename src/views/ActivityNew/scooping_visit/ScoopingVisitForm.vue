@@ -365,7 +365,7 @@
               type: 'number',
               setter: 'total_dusun',
               view_data: 'total_dusun',
-            }" :disabled="(val, data) => data && data.is_updated == 1" />
+            }" :disabled="formData.is_updated == 1" />
           </v-col>
 
           <v-col md="6">
