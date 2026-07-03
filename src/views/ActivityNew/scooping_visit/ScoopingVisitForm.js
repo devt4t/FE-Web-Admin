@@ -217,7 +217,7 @@ export default {
       this.loading = true;
 
       let payload = {
-        program_year: this.$store.state.programYear.model,
+        program_year: this.$store.state.tmpProgramYear,
         province: this.formData.province_code,
         city: this.formData.city_code,
         district: this.formData.district_code,
