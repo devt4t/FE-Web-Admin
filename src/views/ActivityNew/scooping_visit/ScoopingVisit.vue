@@ -117,7 +117,7 @@
                 // program_year: $store.state.tmpProgramYear,
                 is_verify: 2,
                 // scooping_type: 'new',
-                // is_updated: 0 atau null, // akan ada di tabel scooping_visits untuk menandakan is_updated 0/1
+                is_updated: 0,
                 limit: 10,
                 offset: 0,
               },
