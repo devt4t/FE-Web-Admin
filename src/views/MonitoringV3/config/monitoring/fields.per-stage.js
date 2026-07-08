@@ -21,4 +21,10 @@ export const MONITORING_EXTRA_FIELDS = {
             // Tambah kolom khusus Mon5 di sini nanti (misal: DetailPerSeeds)
         ]
     },
+    6: {
+        inheritsFrom: 5,
+        additions: [
+            // Tambah kolom khusus Mon6 di sini nanti (misal: DetailPerSeeds, etc.)
+        ]
+    },
 }

@@ -75,8 +75,8 @@
                     <assignment-form :data="formData" :dataKey="formDataKey" :stage="activePopulateStage"
                         :currentYear="localPlantingYear" @success="refreshKey += 1" />
                     <div class="d-flex align-items-center">
-                        <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
-                            label="Pilih Tahun Tanam" dense outlined hide-details style="max-width: 200px;"
+                        <v-select v-model="localPlantingYear" :items="['2025', '2026']" label="Pilih Tahun Tanam" dense
+                            outlined hide-details style="max-width: 200px;"
                             @change="recalculateStage(programYear)"></v-select>
                     </div>
                 </div>
@@ -138,7 +138,7 @@ export default {
 
     mounted() {
         this.user = JSON.parse(localStorage.getItem('User'))
-        this.recalculateStage(this.programYear);
+        // this.recalculateStage(this.programYear);
     },
 
     methods: {
@@ -148,8 +148,8 @@ export default {
 
             let step = currentYear - pYear;
 
-            if (step > 4) {
-                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
+            if (step > 5) {
+                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
                 return;
             }
             if (step < 1) {
@@ -163,10 +163,11 @@ export default {
             if (this.config.detail) {
                 this.config.detail = `${this.config.detail}?current_year=${currentYear}&program_year=${this.programYear}`;
             }
+            this.formData = null;
             this.$nextTick(() => {
                 this.refreshKey += 1;
             });
-            this.formData = null;
+
         },
 
         // helper: untuk cek apakah belum di assign

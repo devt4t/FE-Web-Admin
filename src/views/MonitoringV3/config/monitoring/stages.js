@@ -81,7 +81,7 @@ const SHARED_API = {
 }
 
 function buildStage(stageNumber) {
-    const isLastStage = stageNumber === 5
+    const isLastStage = stageNumber === 6
     const key = `monitoring${stageNumber}_no`
 
     return {
@@ -108,4 +108,5 @@ export const MONITORING_STAGES_REGISTRY = {
     3: buildStage(3),
     4: buildStage(4),
     5: buildStage(5),
+    6: buildStage(6),
 }

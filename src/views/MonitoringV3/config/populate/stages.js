@@ -68,4 +68,21 @@ export const POPULATE_STAGE_REGISTRY = {
         },
         deletePayloadKeys: ['id', 'is_monitoring', 'monitoring5_no'],
     },
+    '5-to-6': {
+        label: 'Populate 5 To Monitoring 6',
+        stageNumber: 5,
+        targetMonitoring: 6,
+        api: {
+            list: 'populate-monitorings-v3/list',
+            detail: 'populate-monitorings-v3/detail',
+            assignment: 'populate-monitorings-v3/update',
+            resetAssignment: 'populate-monitorings-v3/update',
+            generateMonitoring: 'monitorings-v3/generate',
+            delete: 'populate-monitorings-v3/delete',
+        },
+        features: {
+            hasExport: false,
+        },
+        deletePayloadKeys: ['id', 'is_monitoring', 'monitoring6_no'],
+    },
 }

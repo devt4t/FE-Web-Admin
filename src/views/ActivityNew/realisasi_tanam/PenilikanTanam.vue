@@ -61,7 +61,7 @@
                 <v-expand-transition>
                     <div v-if="isV3Mode" class="d-flex flex-row align-items-center bg-success-lighten-5 p-3 rounded">
                         <div class="mr-4">
-                            <v-select v-model="localPlantingYear" :items="['2021', '2022', '2023', '2024', '2025']"
+                            <v-select v-model="localPlantingYear" :items="['2025', '2026']"
                                 label="Tahun Tanam (Current Year)" dense outlined hide-details
                                 style="max-width: 150px; background: white;" @change="recalculateStage"></v-select>
                         </div>
@@ -626,9 +626,9 @@ export default {
 
             let step = (currentYear - pYear) + 1;
 
-            if (step > 5) {
-                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 5.');
-                this.targetMonitoringStage = 5;
+            if (step > 6) {
+                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
+                this.targetMonitoringStage = 6;
             } else if (step <= 1) {
                 this.$_alert.error('Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).');
                 this.targetMonitoringStage = 2; // Default limit fallback is 2
