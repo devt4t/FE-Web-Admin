@@ -166,8 +166,8 @@
                     (input.show_if &&
                       formData[input.show_if] == input.show_if_equals)
                   " :class="{
-                      'm-0 p-0': input.type === 'group',
-                    }" :md="input.size">
+                    'm-0 p-0': input.type === 'group',
+                  }" :md="input.size">
                     <div v-if="input.type === 'group'">
                       <h5>{{ input.name }}</h5>
                     </div>
@@ -230,7 +230,7 @@
                     <td>
                       <div class="problem-matrix-wrapper">
                         <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
-                          impact(j,i)
+                          impact(j, i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.impact_to_people == j + 1,
@@ -255,7 +255,7 @@
                     <td>
                       <div class="problem-matrix-wrapper">
                         <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
-                          intervalProblem(j,i)
+                          intervalProblem(j, i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.interval_problem == j + 1,
@@ -280,7 +280,7 @@
                     <td>
                       <div class="problem-matrix-wrapper">
                         <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
-                          priority(j,i)
+                          priority(j, i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.priority == j + 1,
@@ -305,7 +305,7 @@
                     <td>
                       <div class="problem-matrix-wrapper">
                         <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
-                          potential(j,i)
+                          potential(j, i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.potential == j + 1,
@@ -338,7 +338,7 @@
                     <td>
                       <div class="problem-matrix-wrapper">
                         <button type="button" v-for="(child, j) in formFieldData.existingProblems" @click="
-                          ranking(j,i)
+                          ranking(j, i)
                           " :class="{
                             'problem-matrix-btn': true,
                             active: item.ranking == j + 1,
@@ -444,7 +444,7 @@ export default {
       this.formFieldData[field].splice(i, 1);
     },
 
-    impact(j,i) {
+    impact(j, i) {
       this.$set(
         this.formFieldData.existingProblems,
         i,
@@ -454,7 +454,7 @@ export default {
         }
       );
     },
-    intervalProblem(j,i) {
+    intervalProblem(j, i) {
       this.$set(
         this.formFieldData.existingProblems,
         i,
@@ -464,7 +464,7 @@ export default {
         }
       );
     },
-    priority(j,i) {
+    priority(j, i) {
       this.$set(
         this.formFieldData.existingProblems,
         i,
@@ -474,7 +474,7 @@ export default {
         }
       );
     },
-    potential(j,i) {
+    potential(j, i) {
       this.$set(
         this.formFieldData.existingProblems,
         i,
@@ -484,7 +484,7 @@ export default {
         }
       );
     },
-    ranking(j,i) {
+    ranking(j, i) {
       this.$set(
         this.formFieldData.existingProblems,
         i,
@@ -1124,20 +1124,20 @@ export default {
               show_if: "collection_type",
               show_if_equals: "Sampling",
             },
-            {
-              name: "Sumber (Tanaman & Yang Lainnya)",
-              validation: ["required"],
-              size: 6,
-              type: "select",
-              setter: "source_income",
-              getterKey: "data.result.data",
-              api: "GetTreesAll",
-              multiple: "true",
-              show_if: "collection_type",
-              show_if_equals: "Sampling",
-              label: "tree_name",
-              code: "tree_name",
-            },
+            // {
+            //   name: "Sumber (Tanaman & Yang Lainnya)",
+            //   validation: ["required"],
+            //   size: 6,
+            //   type: "select",
+            //   setter: "source_income",
+            //   getterKey: "data.result.data",
+            //   api: "GetTreesAll",
+            //   multiple: "true",
+            //   show_if: "collection_type",
+            //   show_if_equals: "Sampling",
+            //   label: "tree_name",
+            //   code: "tree_name",
+            // },
           ],
         },
 
