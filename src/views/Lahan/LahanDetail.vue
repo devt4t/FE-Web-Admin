@@ -704,11 +704,11 @@
               <h4 class="mb-0 pb-0">Pohon</h4>
               <div v-if="data.main_lahan &&
                 $_sys.isAllowed('lahan-seed-adjustment-create')">
-                <v-btn variant="warning" @click="seedAdjustmentModal += 1">
+                <!-- <v-btn variant="warning" @click="seedAdjustmentModal += 1">
 
                   <v-icon>mdi-pencil-minus</v-icon>
                   <span>Sesuaikan Bibit</span>
-                </v-btn>
+                </v-btn> -->
               </div>
               <!-- <div v-for="(tree,i) in trees[0].data" :key="`lahan-detail-tree-${i}`"
                 class="d-flex flex-row align-items-center">

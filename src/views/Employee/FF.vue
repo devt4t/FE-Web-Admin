@@ -474,7 +474,7 @@ export default {
       console.log("data", data);
       this.$_alert.success(
         "Success",
-        `<div><p>Data FF berhasil ditambahkan. Berikut akses akun FF :</p><p>Kode FF: <strong>${data.data.result.ff_no}</strong></p><p>Email: <strong>${data.data.result.email}</strong></p><p>Password: <strong>123456</strong></p></div>`,
+        `<div><p>Data FF berhasil ditambahkan. <br/> Berikut akses akun FF :</p><p>Kode FF: <strong>${data.data.result.ff_no}</strong></p><p>Email: <strong>${data.data.result.email}</strong></p><p>Password: <strong>123456</strong></p></div>`,
         "center",
         true,
         120000,

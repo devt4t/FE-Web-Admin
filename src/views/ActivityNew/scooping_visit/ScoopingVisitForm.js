@@ -128,7 +128,7 @@ export default {
         ["photo_road_access", "photo_road_access", "array"],
         ["photo_meeting", "photo_meeting", "array"],
         ["photo_dry_land", "photo_dry_land", "array"],
-        ["village_profile", "village_profile"],
+        ["village_profile", "village_profile", "array"],
         ["status", "status"],
         ["complete_data", "complete_data"],
         ["projects_project_no", "project_code"],
@@ -271,6 +271,7 @@ export default {
         "photo_road_access",
         "photo_meeting",
         "photo_dry_land",
+        "village_profile"
       ];
 
       for (const _key of keyJoins) {

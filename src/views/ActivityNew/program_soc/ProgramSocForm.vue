@@ -349,6 +349,14 @@
                                 label: '2024',
                                 code: '2024',
                               },
+                              {
+                                label: '2025',
+                                code: '2025',
+                              },
+                              {
+                                label: '2026',
+                                code: '2026',
+                              },
                             ],
                           }
                         }" />
@@ -436,7 +444,10 @@
                           validation: ['required'],
                           type: 'select',
                           setter: 'training',
-                          api: 'GetTreesAll',
+                          api: 'GetTreesLocation',
+                          param: {
+                            mu_no: formData.mu_no,
+                          },
                           option: {
                             multiple: true,
                             getterKey: 'data.result.data',

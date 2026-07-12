@@ -1,79 +1,31 @@
 <template>
   <div>
-    <v-breadcrumbs
-      :dark="$store.state.theme == 'dark'"
-      class="breadcrumbsmain"
-      :items="itemsbr"
-      divider=">"
-      large
-      data-aos="fade-right"
-    ></v-breadcrumbs>
+    <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="itemsbr" divider=">" large
+      data-aos="fade-right"></v-breadcrumbs>
 
-    <v-data-table
-      :headers="headers"
-      :items="dataobject"
-      :search="search"
-      :loading="tableLoading"
-      :footer-props="{
-        itemsPerPageText: 'Jumlah Data Per Halaman',
-      }"
-      class="rounded-xl elevation-6 mx-3 pa-1"
-      data-aos="fade-up"
-      data-aos-delay="200"
-      @update:page="($p) => (page = $p)"
-      @update:items-per-page="($p) => (itemsPerPage = $p)"
-    >
+    <v-data-table :headers="headers" :items="dataobject" :search="search" :loading="tableLoading" :footer-props="{
+      itemsPerPageText: 'Jumlah Data Per Halaman',
+    }" class="rounded-xl elevation-6 mx-3 pa-1" data-aos="fade-up" data-aos-delay="200"
+      @update:page="($p) => (page = $p)" @update:items-per-page="($p) => (itemsPerPage = $p)">
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
           <!-- Program Year -->
-          <v-select
-            color="success"
-            item-color="success"
-            v-model="localConfig.programYear"
-            :items="['Semua', ...$store.state.programYear.options]"
-            :disabled="tableLoading"
-            outlined
-            dense
-            hide-details
+          <v-select color="success" item-color="success" v-model="localConfig.programYear"
+            :items="['Semua', ...$store.state.programYear.options]" :disabled="tableLoading" outlined dense hide-details
             :menu-props="{
               bottom: true,
               offsetY: true,
               rounded: 'xl',
               transition: 'slide-y-transition',
-            }"
-            rounded
-            label="Tahun program"
-            class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-            style="max-width: 200px"
-          ></v-select>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Pencarian"
-            placeholder="Pencarian..."
-            hide-details
-            dense
-            rounded
-            outlined
-            color="green"
-            style="max-width: 350px"
-          ></v-text-field>
+            }" rounded label="Tahun program" class="mx-auto mr-lg-2 mb-2 mb-lg-0" style="max-width: 200px"></v-select>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Pencarian" placeholder="Pencarian..."
+            hide-details dense rounded outlined color="green" style="max-width: 350px"></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn
-            dark
-            rounded
-            class="mb-2"
-            @click="showAddModal()"
-            color="green"
-            v-if="$_sys.isAllowed('target-area-create')"
-          >
+          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green"
+            v-if="$_sys.isAllowed('target-area-create')">
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
-          <v-dialog
-            v-model="dialog"
-            max-width="500px"
-            content-class="rounded-xl"
-          >
+          <v-dialog v-model="dialog" max-width="500px" content-class="rounded-xl">
             <v-card class="white">
               <v-card-title class="px-3">
                 <v-spacer></v-spacer>
@@ -85,24 +37,12 @@
                   <v-row>
                     <v-col cols="12">
                       <!-- combobox -->
-                      <v-combobox
-                        dense
-                        multiple
-                        color="success"
-                        hide-details
-                        small-chips
-                        hide-selected
-                        item-color="success"
-                        :items="$store.state.programYear.options"
-                        label="Tahun Program"
+                      <v-combobox dense multiple color="success" hide-details small-chips hide-selected
+                        item-color="success" :items="$store.state.programYear.options" label="Tahun Program"
                         :menu-props="{
                           rounded: 'xl',
                           transition: 'slide-y-transition',
-                        }"
-                        outlined
-                        rounded
-                        v-model="defaultItem.program_year"
-                      >
+                        }" outlined rounded v-model="defaultItem.program_year">
                         <template v-slot:no-data>
                           <v-list-item>
                             <v-list-item-content>
@@ -113,16 +53,8 @@
                             </v-list-item-content>
                           </v-list-item>
                         </template>
-                        <template
-                          v-slot:selection="{ attrs, item, parent, selected }"
-                        >
-                          <v-chip
-                            v-bind="attrs"
-                            :input-value="selected"
-                            label
-                            small
-                            class="rounded-pill"
-                          >
+                        <template v-slot:selection="{ attrs, item, parent, selected }">
+                          <v-chip v-bind="attrs" :input-value="selected" label small class="rounded-pill">
                             <span class="pr-2">
                               {{ item }}
                             </span>
@@ -134,70 +66,28 @@
                       </v-combobox>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-autocomplete
-                        dense
-                        hide-details
-                        outlined
-                        rounded
-                        v-model="defaultItem.mu_no"
-                        :items="optionsMUModal"
-                        item-value="mu_no"
-                        item-text="name"
-                        label="Pilih Management Unit"
-                        color="green"
-                        item-color="green"
-                        clearable
-                        :menu-props="{
+                      <v-autocomplete dense hide-details outlined rounded v-model="defaultItem.mu_no"
+                        :items="optionsMUModal" item-value="mu_no" item-text="name" label="Pilih Management Unit"
+                        color="green" item-color="green" clearable :menu-props="{
                           rounded: 'xl',
                           transition: 'slide-y-transition',
-                        }"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-autocomplete>
+                        }" :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
-                      <v-autocomplete
-                        dense
-                        hide-details
-                        outlined
-                        rounded
-                        v-model="defaultItem.kabupaten_no"
-                        :items="itemsKab"
-                        item-value="kabupaten_no"
-                        item-text="namaKabupaten"
-                        label="Pilih Kabupaten"
-                        color="green"
-                        item-color="green"
-                        clearable
-                        :menu-props="{
+                      <v-autocomplete dense hide-details outlined rounded v-model="defaultItem.kabupaten_no"
+                        :items="itemsKab" item-value="kabupaten_no" item-text="namaKabupaten" label="Pilih Kabupaten"
+                        color="green" item-color="green" clearable :menu-props="{
                           rounded: 'xl',
                           transition: 'slide-y-transition',
-                        }"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-autocomplete>
+                        }" :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field
-                        dense
-                        rounded
-                        outlined
-                        hide-details
-                        color="green"
-                        v-model="defaultItem.namaTa"
-                        label="Nama Target Area"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-text-field>
+                      <v-text-field dense rounded outlined hide-details color="green" v-model="defaultItem.namaTa"
+                        label="Nama Target Area" :rules="[(v) => !!v || 'Field is required']"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field
-                        dense
-                        rounded
-                        outlined
-                        hide-details
-                        color="green"
-                        v-model="defaultItem.luas"
-                        label="Luas Area"
-                        type="number"
-                      >
+                      <v-text-field dense rounded outlined hide-details color="green" v-model="defaultItem.luas"
+                        label="Luas Area" type="number">
                         <template v-slot:append>
                           <div class="mt-1 ml-1">m<sup>2</sup></div>
                         </template>
@@ -212,13 +102,7 @@
                   Keluar
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
-                  color="green white--text"
-                  rounded
-                  @click="save"
-                  class=""
-                  :disabled="saveDisabled"
-                >
+                <v-btn color="green white--text" rounded @click="save" class="" :disabled="saveDisabled">
                   <v-icon class="mr-1">mdi-content-save</v-icon>
                   Simpan
                 </v-btn>
@@ -227,17 +111,11 @@
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="headline"
-                >Apa Anda Yakin Menghapus Data Ini?</v-card-title
-              >
+              <v-card-title class="headline">Apa Anda Yakin Menghapus Data Ini?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Keluar</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
+                <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
@@ -248,29 +126,82 @@
         {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon
-          class="mr-2"
-          @click="editItem(item)"
-          color="warning"
-          v-if="$_sys.isAllowed('target-area-update')"
-        >
-          mdi-pencil
-        </v-icon>
-        <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
+        <div class="d-flex flex-row justify-content-center space-x-2">
+          <v-icon title="Update" class="mr-2" @click="editItem(item)" color="warning"
+            v-if="$_sys.isAllowed('target-area-update')">
+            mdi-pencil
+          </v-icon>
+
+          <v-btn variant="info" small class="d-flex flex-row align-items-center" @click="onAssignFC(item)"
+            v-if="$_sys.isAllowed('field-facilitator-update')">
+            <v-icon small class="mr-1">mdi-clipboard-text</v-icon>
+            <span>Assign FC</span>
+          </v-btn>
+        </div>
       </template>
     </v-data-table>
-    <v-snackbar
-      v-model="snackbar"
-      :color="colorsnackbar"
-      :timeout="timeoutsnackbar"
-    >
+    <v-snackbar v-model="snackbar" :color="colorsnackbar" :timeout="timeoutsnackbar">
       {{ textsnackbar }}
     </v-snackbar>
+
+    <!-- Modal Assign FC -->
+    <v-dialog v-model="assignFCModal" max-width="700px" content-class="rounded-xl">
+      <v-card>
+        <v-card-title class="headline mb-2">Assign FC ke Target Area: {{ selectedTA ? selectedTA.namaTa : ''
+        }}</v-card-title>
+        <v-card-text>
+          <v-row class="align-center mb-4">
+            <v-col cols="9">
+              <v-autocomplete v-model="selectedFC" :items="fcList" item-value="nik" item-text="name"
+                label="Pilih Field Coordinator" dense outlined rounded hide-details color="green" item-color="green"
+                multiple chips small-chips></v-autocomplete>
+            </v-col>
+            <v-col cols="3">
+              <v-btn color="green white--text" rounded @click="submitAssignFC" :loading="loadingAssign"
+                :disabled="!selectedFC || selectedFC.length === 0">
+                <v-icon small class="mr-1">mdi-plus</v-icon> Assign
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-divider class="mb-4"></v-divider>
+          <div class="subtitle-1 font-weight-bold mb-2">Daftar FC Assigned:</div>
+          <v-simple-table v-if="assignedFCs.length > 0">
+            <thead>
+              <tr>
+                <th class="text-left">No</th>
+                <th class="text-left">Nama FC</th>
+                <th class="text-left">Tahun Program</th>
+                <th class="text-left">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(fc, i) in assignedFCs" :key="fc.id">
+                <td>{{ i + 1 }}</td>
+                <td>{{ fc.fc_name }}</td>
+                <td>{{ fc.program_year }}</td>
+                <td>
+                  <v-btn icon color="error" @click="removeAssignedFC(fc.id)">
+                    <v-icon small>mdi-delete</v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </v-simple-table>
+          <div v-else class="text-center grey--text my-4">Belum ada FC yang di-assign.</div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey darken-1" text rounded @click="assignFCModal = false">Tutup</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   name: "TargetArea",
@@ -331,6 +262,12 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    assignFCModal: false,
+    selectedTA: null,
+    selectedFC: [],
+    assignedFCs: [],
+    fcList: [],
+    loadingAssign: false,
     localConfig: {
       programYear: "",
     },
@@ -376,12 +313,94 @@ export default {
     },
   },
   methods: {
+    async onAssignFC(item) {
+      this.selectedTA = item;
+      this.assignFCModal = true;
+      this.selectedFC = '';
+      await this.getAssignedFCs(item.area_code);
+      await this.getFCList();
+    },
+    async getFCList() {
+      try {
+        const response = await this.$_api.get("GetEmployeeAll");
+        this.fcList = response.data.result.data;
+        // .filter(emp => emp.position_no == 19)
+        // .sort((a, b) => a.name.localeCompare(b.name));
+      } catch (err) {
+        console.error("Gagal mengambil data FC", err);
+      }
+    },
+    async getAssignedFCs(area_code) {
+      try {
+        const response = await this.$_api.get(
+          `GetFCByTargetArea`, {
+          program_year: this.localConfig.programYear,
+          area_code: area_code,
+        }
+        );
+        this.assignedFCs = response.data || [];
+      } catch (err) {
+        console.error("Gagal mengambil data Assigned FC", err);
+      }
+    },
+    async submitAssignFC() {
+      if (!this.selectedFC || this.selectedFC.length === 0) return;
+      this.loadingAssign = true;
+      try {
+        // Ensure we send an array of strings, even if v-autocomplete returns objects
+        const selectedNiks = this.selectedFC.map(item => typeof item === 'object' ? item.nik : item);
+
+        const datapost = {
+          fc_nik: selectedNiks,
+          area_code: this.selectedTA.area_code,
+          program_year: this.localConfig.programYear,
+        };
+        await this.$_api.post("AssignFCToTargetArea", datapost);
+        this.snackbar = true;
+        this.colorsnackbar = "green";
+        this.textsnackbar = "FC berhasil di-assign ke Target Area";
+        await this.getAssignedFCs(this.selectedTA.area_code);
+        this.selectedFC = [];
+      } catch (err) {
+        this.snackbar = true;
+        this.colorsnackbar = "red";
+        this.textsnackbar = err.response?.data?.message || "Gagal assign FC";
+      } finally {
+        this.loadingAssign = false;
+      }
+    },
+    async removeAssignedFC(pivotId) {
+      const confirm = await Swal.fire({
+        title: 'Hapus Assignment?',
+        text: 'Apakah Anda yakin ingin menghapus FC ini dari Target Area?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      try {
+        await this.$_api.post("RemoveFCFromTargetArea", { id: pivotId });
+        this.snackbar = true;
+        this.colorsnackbar = "green";
+        this.textsnackbar = "Assignment FC dihapus";
+        await this.getAssignedFCs(this.selectedTA.area_code);
+      } catch (err) {
+        this.snackbar = true;
+        this.colorsnackbar = "red";
+        this.textsnackbar = "Gagal menghapus assignment";
+      }
+    },
     async initialize() {
       try {
         this.tableLoading = true;
         const response = await axios.get(
           this.BaseUrlGet +
-            `GetTargetAreaAdmin?program_year=${this.localConfig.programYear}`,
+          `GetTargetAreaAdmin?program_year=${this.localConfig.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,

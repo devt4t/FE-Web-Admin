@@ -486,11 +486,13 @@
               view_data: 'village_profile',
               api: 'scooping_visits/upload.php',
               directory: 'photos',
-              upload_type: 'image/*',
+              upload_type: 'image/*, application/pdf',
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
                 max_size: 5,
+                max: 3,
+                multiple: true,
               },
             }" />
           </v-col>

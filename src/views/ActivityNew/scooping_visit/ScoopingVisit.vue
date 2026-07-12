@@ -118,8 +118,7 @@
                 is_verify: 2,
                 // scooping_type: 'new',
                 is_updated: 0,
-                limit: 10,
-                offset: 0,
+                mode: 'reedit',
               },
               option: {
                 multiple: true,
