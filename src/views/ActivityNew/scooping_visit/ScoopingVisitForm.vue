@@ -477,7 +477,7 @@
             }" />
           </v-col>
 
-          <v-col md="12">
+          <!-- <v-col md="12">
             <geko-input v-model="formData.village_profile" :item="{
               label: 'Profile Desa',
               validation: ['required'],
@@ -493,6 +493,52 @@
                 max_size: 5,
                 max: 3,
                 multiple: true,
+              },
+            }" />
+          </v-col> -->
+
+          <v-col md="12" class="mb-0 pb-0">
+            <label class="mb-2 d-block font-weight-bold">Tipe File Profile Desa</label>
+            <v-radio-group v-model="profile_desa_file_type" row class="mt-0" @change="resetProfileDesaData">
+              <v-radio label="Gambar (JPG/PNG)" value="image"></v-radio>
+              <v-radio label="Dokumen (PDF)" value="pdf"></v-radio>
+            </v-radio-group>
+          </v-col>
+
+          <!-- Render spesifik untuk Gambar -->
+          <v-col md="12" v-if="profile_desa_file_type === 'image'">
+            <geko-input v-model="formData.village_profile" :item="{
+              label: 'Profile Desa (Gambar)',
+              validation: ['required'],
+              type: 'upload',
+              setter: 'village_profile',
+              view_data: 'village_profile',
+              api: 'scooping_visits/upload.php',
+              directory: 'photos',
+              upload_type: 'image/*',
+              option: {
+                label_hint: 'Klik kotak ini untuk mengunggah file GAMBAR (Maks 3 file)',
+                max_size: 5,
+                max: 3,
+                multiple: true,
+              },
+            }" />
+          </v-col>
+
+          <!-- Render spesifik untuk PDF -->
+          <v-col md="12" v-if="profile_desa_file_type === 'pdf'">
+            <geko-input v-model="formData.village_profile" :item="{
+              label: 'Profile Desa (Dokumen PDF)',
+              validation: ['required'],
+              type: 'upload',
+              setter: 'village_profile',
+              view_data: 'village_profile',
+              api: 'scooping_visits/upload.php',
+              directory: 'photos',
+              upload_type: 'application/pdf',
+              option: {
+                label_hint: 'Klik kotak ini untuk mengunggah file PDF',
+                max_size: 3,
               },
             }" />
           </v-col>

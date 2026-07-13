@@ -25,8 +25,8 @@ export default {
         other_ngo_input: "",
         other_ngo_data: [],
         ff_candidates: [],
-
       },
+      profile_desa_file_type: 'image',
     };
   },
 
@@ -65,6 +65,9 @@ export default {
 
   },
   methods: {
+    resetProfileDesaData() {
+      this.$set(this.formData, "village_profile", []);
+    },
     onChangeProvince(data) {
       this.$set(this.formData, "province_code", data.province_code);
     },
@@ -91,6 +94,14 @@ export default {
       const projectList = await this.$_api.get('GetProjectAllAdmin', {
         limit: 200,
       })
+      let profile_desa_data = resData.data.village_profile || "";
+
+      if (profile_desa_data.toLowerCase().includes('.pdf')) {
+        this.profile_desa_file_type = 'pdf';
+      } else {
+        this.profile_desa_file_type = 'image';
+      }
+
       const keys = [
         ["is_updated", "is_updated"],
         ["province", "province_id"],
@@ -330,7 +341,11 @@ export default {
         })
         .catch((err) => {
           console.log("err", err);
-          this.$_alert.error(err);
+          if (err instanceof Error) {
+            this.$_alert.error(err.message || "Terjadi kesalahan pada sistem");
+          } else {
+            this.$_alert.error(err);
+          }
           this.loading = false;
         });
     },
@@ -393,51 +408,47 @@ export default {
 
 
     submitFigure(res = {}) {
-      var i = 0;
-
       if (this.formData.village_persons.length == 0) {
         this.$_alert.success(
-          `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"
-          }`
+          `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"}`
         );
         this.$router.replace({
-          path: $route.path,
+          path: this.$route.path,
           query: {
             view: "list",
           },
         });
         this.loading = false;
+        return;
       }
 
-      for (const figure of this.formData.village_persons) {
-        i += 1;
-
+      const promises = this.formData.village_persons.map(figure => {
         figure.data_no = res.kode_scooping;
         const isCreate = !figure.id;
         figure.current_id = figure.id;
-        this.$_api
-          .post(
-            isCreate
-              ? "AddScoopingVisitFigures_new"
-              : "UpdateScoopingVisitFigures_new",
-            figure
-          )
-          .then(() => {
-            if (i == this.formData.village_persons.length) {
-              this.$_alert.success(
-                `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"
-                }`
-              );
-              this.$router.replace({
-                path: this.$route.path,
-                query: {
-                  view: "list",
-                },
-              });
-              this.loading = false;
-            }
+        return this.$_api.post(
+          isCreate ? "AddScoopingVisitFigures_new" : "UpdateScoopingVisitFigures_new",
+          figure
+        );
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          this.$_alert.success(
+            `Data scooping visit berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"}`
+          );
+          this.$router.replace({
+            path: this.$route.path,
+            query: {
+              view: "list",
+            },
           });
-      }
+          this.loading = false;
+        })
+        .catch(err => {
+          console.error("Gagal submit figur:", err);
+          this.loading = false;
+        });
     },
 
     submitFfCandidate(res = {}) {
@@ -472,6 +483,7 @@ export default {
       this.formData.ff_candidates.push({
         name: "",
         phone: "",
+        whatsapp: "",
       });
     },
 
@@ -538,7 +550,7 @@ export default {
         name: "",
         position: "",
         phone: "",
-        wa: "",
+        whatsapp: "",
       });
     },
   },
