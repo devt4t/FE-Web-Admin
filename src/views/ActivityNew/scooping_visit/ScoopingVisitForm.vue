@@ -526,21 +526,25 @@
           </v-col>
 
           <!-- Render spesifik untuk PDF -->
-          <v-col md="12" v-if="profile_desa_file_type === 'pdf'">
-            <geko-input v-model="formData.village_profile" :item="{
-              label: 'Profile Desa (Dokumen PDF)',
-              validation: ['required'],
-              type: 'upload',
-              setter: 'village_profile',
-              view_data: 'village_profile',
-              api: 'scooping_visits/upload.php',
-              directory: 'photos',
-              upload_type: 'application/pdf',
-              option: {
-                label_hint: 'Klik kotak ini untuk mengunggah file PDF',
-                max_size: 3,
-              },
-            }" />
+          <v-col md="3" v-if="profile_desa_file_type === 'pdf'">
+            <label class="mb-2 d-block font-weight-bold">Profile Desa (Dokumen PDF)</label>
+
+            <v-file-input v-if="!formData.village_profile || formData.village_profile.length === 0" v-model="tmpPdfFile"
+              accept="application/pdf" placeholder="Pilih file PDF..." prepend-icon="mdi-file-pdf-box" outlined dense
+              show-size :loading="isUploadingPdf" @change="uploadPdfManual"
+              hint="Hanya bisa mengunggah 1 file PDF. Max 5 MB" persistent-hint></v-file-input>
+
+            <!-- Indikator Preview File PDF -->
+            <div class="mt-4" v-if="formData.village_profile && formData.village_profile.length > 0">
+              <label class="d-block mb-2 text-sm text-success font-weight-bold">
+                <v-icon color="success" small>mdi-check-circle</v-icon> PDF Berhasil Terunggah:
+              </label>
+
+              <v-chip close color="error" text-color="white" class="mr-2 mb-2" @click:close="removePdfManual(0)">
+                <v-icon left>mdi-file-document</v-icon>
+                Dokumen PDF Tersimpan
+              </v-chip>
+            </div>
           </v-col>
 
           <v-col lg="12">

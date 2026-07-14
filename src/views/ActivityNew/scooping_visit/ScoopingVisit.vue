@@ -125,7 +125,7 @@
                 list_pointer: {
                   label: 'desas_name',
                   code: 'id',
-                  display: ['data_no', 'desas_name'],
+                  display: ['data_no', 'desas_name', 'kecamatans_name'],
                 }
               }
             }" />

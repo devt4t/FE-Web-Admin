@@ -407,7 +407,7 @@
 
         <v-col lg="12">
           <div class="d-flex flex-row" style="justify-content: flex-end">
-            <v-btn type="submit" variant="success" @click="onSubmit" :disabled="loading">
+            <v-btn type="submit" variant="success" :disabled="loading">
               <v-icon>mdi-plus</v-icon>
               <span>Tambah Data PRA</span>
             </v-btn>
@@ -496,15 +496,15 @@ export default {
     },
 
     async submitMasterDetail(endPoint, data) {
-      return new Promise(async (resolve, reject) => {
+      return new Promise((resolve) => {
         this.$_api
           .post(endPoint, data)
           .then((res) => {
-            return resolve();
+            return resolve(true);
           })
           .catch((err) => {
             console.log(`add ${endPoint} error `, err);
-            return reject();
+            return resolve(false);
           });
       });
     },
@@ -637,9 +637,9 @@ export default {
       }
       for (const item of this.formFieldData.farmerIncomes) {
         item.pra_no = praCode;
-        item.source_income = item.source_income
-          ? item.source_income.join(",")
-          : null;
+        if (Array.isArray(item.source_income)) {
+          item.source_income = item.source_income.join(",");
+        }
         await this.submitMasterDetail("addPraFarmerIncome_new", item);
       }
 

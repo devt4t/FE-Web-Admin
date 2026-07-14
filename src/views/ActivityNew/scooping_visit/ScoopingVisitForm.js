@@ -27,6 +27,8 @@ export default {
         ff_candidates: [],
       },
       profile_desa_file_type: 'image',
+      tmpPdfFile: null,
+      isUploadingPdf: false,
     };
   },
 
@@ -65,6 +67,38 @@ export default {
 
   },
   methods: {
+    async uploadPdfManual(file) {
+      if (!file) return;
+      this.isUploadingPdf = true;
+
+      try {
+        let param = {
+          nama: Date.now().toString(),
+          dir: 'documents',
+          fileToUpload: file,
+        };
+
+        const response = await this.$_api.upload("scooping_visits/upload.php", param);
+
+        const fileUrl = `scooping_visits/${response}`;
+
+        if (!Array.isArray(this.formData.village_profile)) {
+          this.$set(this.formData, "village_profile", []);
+        }
+        this.$set(this.formData, "village_profile", [fileUrl]);
+
+        this.$_alert.success("PDF berhasil diunggah!");
+        this.tmpPdfFile = null;
+      } catch (err) {
+        console.error('terjadi error upload PDF: ', err);
+        this.$_alert.error("Gagal upload PDF");
+      } finally {
+        this.isUploadingPdf = false;
+      }
+    },
+    removePdfManual(index) {
+      this.formData.village_profile.splice(index, 1);
+    },
     resetProfileDesaData() {
       this.$set(this.formData, "village_profile", []);
     },
