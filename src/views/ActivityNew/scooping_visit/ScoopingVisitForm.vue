@@ -518,7 +518,7 @@
               upload_type: 'image/*',
               option: {
                 label_hint: 'Klik kotak ini untuk mengunggah file GAMBAR (Maks 3 file)',
-                max_size: 5,
+                max_size: 3,
                 max: 3,
                 multiple: true,
               },
@@ -532,7 +532,7 @@
             <v-file-input v-if="!formData.village_profile || formData.village_profile.length === 0" v-model="tmpPdfFile"
               accept="application/pdf" placeholder="Pilih file PDF..." prepend-icon="mdi-file-pdf-box" outlined dense
               show-size :loading="isUploadingPdf" @change="uploadPdfManual"
-              hint="Hanya bisa mengunggah 1 file PDF. Max 5MB" persistent-hint></v-file-input>
+              hint="Hanya bisa mengunggah 1 file PDF. Max 3MB" persistent-hint></v-file-input>
 
             <!-- Indikator Preview File PDF -->
             <div class="mt-4" v-if="formData.village_profile && formData.village_profile.length > 0">
