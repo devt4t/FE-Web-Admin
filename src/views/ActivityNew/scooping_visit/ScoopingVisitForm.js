@@ -69,6 +69,16 @@ export default {
   methods: {
     async uploadPdfManual(file) {
       if (!file) return;
+
+      // max size 5 MB
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        this.$_alert.error("Gagal! Ukuran file melebihi batas maksimal 5MB");
+        this.tmpPdfFile = null;
+        return;
+      }
+
+
       this.isUploadingPdf = true;
 
       try {
