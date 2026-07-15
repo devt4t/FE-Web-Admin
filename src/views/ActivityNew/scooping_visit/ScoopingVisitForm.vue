@@ -518,7 +518,7 @@
               upload_type: 'image/*',
               option: {
                 label_hint: 'Klik kotak ini untuk mengunggah file GAMBAR (Maks 3 file)',
-                max_size: 3,
+                max_size: 5,
                 max: 3,
                 multiple: true,
               },
