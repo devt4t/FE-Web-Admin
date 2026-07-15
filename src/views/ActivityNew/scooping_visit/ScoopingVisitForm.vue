@@ -211,7 +211,7 @@
               validation: ['required'],
               col_size: 6,
               type: 'number',
-            }" :disabled="formData.is_updated == 1" />
+            }" />
           </v-col>
 
           <v-col md="6">
@@ -365,7 +365,7 @@
               type: 'number',
               setter: 'total_dusun',
               view_data: 'total_dusun',
-            }" :disabled="formData.is_updated == 1" />
+            }" />
           </v-col>
 
           <v-col md="6">
