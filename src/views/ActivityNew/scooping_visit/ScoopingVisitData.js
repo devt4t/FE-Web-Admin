@@ -135,24 +135,20 @@ export default {
   ],
   land_type: [
     {
-      text: "Andosol",
-      value: "Andosol",
-    },
-    {
-      text: "Kambisol",
-      value: "Kambisol",
-    },
-    {
-      text: "Arenosol",
-      value: "Arenosol",
-    },
-    {
-      text: "Alvisol",
-      value: "Alvisol",
+      text: "Alfisol",
+      value: "Alfisol",
     },
     {
       text: "Aluvial",
       value: "Aluvial",
+    },
+    {
+      text: "Andosol",
+      value: "Andosol",
+    },
+    {
+      text: "Arenosol",
+      value: "Arenosol",
     },
     {
       text: "Entisol",
@@ -173,6 +169,14 @@ export default {
     {
       text: "Inseptisol",
       value: "Inseptisol",
+    },
+    {
+      text: "Kambisol",
+      value: "Kambisol",
+    },
+    {
+      text: "Latosol",
+      value: "Latosol",
     },
     {
       text: "Litosol",
@@ -205,6 +209,22 @@ export default {
     {
       text: "Regosol",
       value: "Regosol",
+    },
+    {
+      text: "Renzina",
+      value: "Renzina",
+    },
+    {
+      text: "Spodosol",
+      value: "Spodosol",
+    },
+    {
+      text: "Ultisol",
+      value: "Ultisol",
+    },
+    {
+      text: "Umbisol",
+      value: "Umbisol",
     },
   ],
 
