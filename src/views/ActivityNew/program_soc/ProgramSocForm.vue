@@ -66,7 +66,7 @@
             <h4>Lokasi Desa</h4>
           </v-col>
           <v-col lg="6">
-            <geko-input v-model="formData.mu_no" :item="{
+            <geko-input v-model="formData.mu_no" :disabled="!formData.program_year" :item="{
               label: 'Management Unit',
               validation: ['required'],
               col_size: 6,
@@ -155,38 +155,40 @@
 
           <v-col md="6">
             <geko-input v-model="formData.photo_documentation1" :item="{
-              label: 'Foto Dokumentasi 1',
+              label: 'Foto Dokumentasi 1 (Kegiatan)',
               validation: ['required'],
               type: 'upload',
               api: 'sosialisasi_program/upload.php',
               directory: 'photos/documentations',
               upload_type: 'image/*',
               setter: 'photo_documentation1',
-              view_data: 'photo_documentation1' + i,
+              view_data: 'photo_documentation1',
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
                 max_size: 5,
-                multiple: false,
+                max: 3,
+                multiple: true,
               },
             }" />
           </v-col>
 
           <v-col md="6">
             <geko-input v-model="formData.photo_documentation2" :item="{
-              label: 'Foto Dokumentasi 2',
+              label: 'Foto Dokumentasi 2 (Absensi)',
               validation: ['required'],
               type: 'upload',
               api: 'sosialisasi_program/upload.php',
               directory: 'photos/documentations',
               upload_type: 'image/*',
               setter: 'photo_documentation2',
-              view_data: 'photo_documentation2' + i,
+              view_data: 'photo_documentation2',
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
                 max_size: 5,
-                multiple: false,
+                max: 3,
+                multiple: true,
               },
             }" />
           </v-col>
@@ -572,6 +574,7 @@ export default {
           delete tmpValue.trees;
           _participants.push(tmpValue);
         }
+
       }
       //api call
       const payload = {
@@ -583,6 +586,19 @@ export default {
         photo_documentation1: this.formData.photo_documentation1,
         photo_documentation2: this.formData.photo_documentation2,
       };
+
+      // Validasi maksimal 3 file
+      const photoKeys = ["photo_documentation1", "photo_documentation2"];
+      for (const _key of photoKeys) {
+        if (Array.isArray(this.formData[_key])) {
+          if (this.formData[_key].length > 3) {
+            this.$_alert.error({}, "", "File Dokumentasi yang diunggah tidak boleh lebih dari 3 file!");
+            this.loading = false;
+            return;
+          }
+          payload[_key] = this.formData[_key].join(",");
+        }
+      }
 
       //insert main program soc
       const resultMain = await this.$_api
