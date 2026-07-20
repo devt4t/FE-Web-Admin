@@ -35,25 +35,30 @@
                   <v-btn v-if="
                     $_sys.isAllowed('lahan-fc-unverification-create') &&
                     [0, 1, null].includes(data.main_lahan.fc_complete_data) &&
-                    data.main_lahan.updated_gis === 'belum'
+                    data.main_lahan.updated_gis === 'belum' &&
+                    data.main_lahan.approve == 0
                   " variant="danger" class="mr-1 mb-1" @click="unverificationData('fc_complete_data')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi Kelengkapan Data</span>
                   </v-btn>
 
-                  <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
-                    @click="unverificationData('um_seed')">
+                  <v-btn
+                    v-if="$_sys.isAllowed('lahan-um-unverification-create') && data.main_lahan.seed_is_modified == 1"
+                    variant="danger" class="mr-1 mb-1" @click="unverificationData('um_seed')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi Perubahan Bibit</span>
                   </v-btn>
 
-                  <v-btn v-if="$_sys.isAllowed('lahan-gis-unverification-create')" variant="danger" class="mr-1 mb-1"
-                    @click="unverificationData('gis')">
+                  <v-btn v-if="
+                    $_sys.isAllowed('lahan-gis-unverification-create') &&
+                    data.main_lahan.approve == 0
+                  " variant="danger" class="mr-1 mb-1" @click="unverificationData('gis')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi GIS</span>
                   </v-btn>
 
-                  <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger"
+                  <v-btn v-if="
+                    $_sys.isAllowed('lahan-um-unverification-create') && data.main_lahan.approve >= 1" variant="danger"
                     class="mr-1 mb-1" @click="unverificationData('um_unverification')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi
@@ -64,7 +69,8 @@
                 <v-btn v-if="
                   !openGisEdit &&
                   $_sys.isAllowed('lahan-gis-verification-create') &&
-                  data.main_lahan.fc_complete_data == 1
+                  data.main_lahan.fc_complete_data == 1 &&
+                  data.main_lahan.updated_gis.toLowerCase() === 'belum'
                 " variant="success" class="mr-1 mb-1" @click="
                   openGisEdit = true;
                 verifRole = 'gis';
@@ -76,8 +82,10 @@
                   data.main_lahan &&
                   ((data.main_lahan.fc_complete_data == null &&
                     data.main_lahan.updated_gis.toLowerCase() === 'belum') ||
-                    data.main_lahan.updated_gis.toLowerCase() === 'sudah')
-                " variant="success" class="mr-1 mb-2" @click="toggleVerificationFc">Verifikasi FC</v-btn>
+                    data.main_lahan.updated_gis.toLowerCase() === 'sudah' &&
+                    data.main_lahan.approve == 0)
+                " variant="success" class="mr-1 mb-2" @click="toggleVerificationFc">Unverifikasi Kelengkapan
+                  Data</v-btn>
                 <v-btn v-if="
                   !openFcAssestment &&
                   data.main_lahan &&
@@ -136,14 +144,25 @@
                 <!-- UNVERIFIKASI -->
                 <v-btn v-if="
                   $_sys.isAllowed('lahan-fc-unverification-create') &&
-                  [0, 1, null].includes(data.main_lahan.fc_complete_data)
+                  [0, 1].includes(data.main_lahan.fc_complete_data) &&
+                  data.main_lahan.approve == 0
                 " variant="danger" class="mr-1 mb-1" @click="unverificationData('fc_complete_data')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi Kelengkapan Data</span>
                 </v-btn>
 
-                <v-btn v-if="false && $_sys.isAllowed('lahan-um-unverification-create')" variant="danger"
-                  class="mr-1 mb-1" @click="unverificationData('um_unverification')">
+                <v-btn v-if="
+                  $_sys.isAllowed('lahan-fc-unverification-create') &&
+                  data.main_lahan.approve == 1" variant="danger" class="mr-1 mb-1"
+                  @click="unverificationData('fc_unverification')">
+                  <v-icon>mdi-undo-variant</v-icon>
+                  <span>Unverifikasi FC</span>
+                </v-btn>
+
+                <v-btn v-if="
+                  $_sys.isAllowed('lahan-um-unverification-create') &&
+                  data.main_lahan.approve == 2" variant="danger" class="mr-1 mb-1"
+                  @click="unverificationData('um_unverification')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi UM</span>
                 </v-btn>
@@ -1223,6 +1242,11 @@ export default {
         return;
       }
 
+      if (type == "fc_unverification") {
+        this.handleFcUnverification();
+
+        return;
+      }
       if (type == "um_unverification") {
         this.handleUmUnverification();
 
@@ -1302,6 +1326,49 @@ export default {
 
       this.$_api.post("UpdateLahanApproval_new", payload).then((res) => {
         this.$_alert.success("Lahan berhasil diunverifikasi");
+        this.componentKey += 1;
+        this.getData();
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
+      });
+    },
+
+    async handleFcUnverification() {
+      this.loading = true;
+
+      const prompt = await this.$_alert.confirm(
+        "Unverifikasi Data?",
+        "",
+        "Unverifikasi",
+        "Batal",
+        true
+      );
+
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+        return;
+      }
+
+
+      const payload = {
+        current_id: this.$route.query.id,
+        lahan_no: this.data.main_lahan.lahan_no,
+        moduls: "unverification",
+        approval_status: this.data.main_lahan.approve,
+        // approval_status: 2,
+        fc_email: this.data.main_lahan.users_email,
+      };
+      console.log("payload", payload);
+
+      this.$_api.post("UpdateLahanApproval_new", payload).then(() => {
+        this.$_alert.success("Lahan berhasil diunverifikasi");
+        this.componentKey += 1;
+        this.getData();
+        this.loading = false;
+      }).catch((err) => {
+        console.error(err);
+        this.$_alert.error({}, "Error", "Gagal melakukan unverifikasi. Cek console log.");
         this.loading = false;
       });
     },
@@ -1335,6 +1402,13 @@ export default {
 
       this.$_api.post("UpdateLahanApproval_new", payload).then(() => {
         this.$_alert.success("Lahan berhasil diunverifikasi");
+        this.componentKey += 1;
+        this.getData();
+        this.loading = false;
+      }).catch(() => {
+        console.error(err);
+        this.$_alert.error({}, "Error", "Gagal melakukan unverifikasi. Cek console log.");
+        this.loading = false;
       });
     },
 
