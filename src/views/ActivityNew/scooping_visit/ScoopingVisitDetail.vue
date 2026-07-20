@@ -208,6 +208,36 @@
 
               <div class="value" v-else-if="f.type == 'html'" v-html="data[f.key]"></div>
 
+              <!-- For village profile (PDF & Image) -->
+              <div class="value w-100 d-flex flex-row flex-wrap" v-else-if="f.type === 'document'">
+
+                <div v-for="(fileStr, j) in (typeof data[f.key] === 'string' ? data[f.key].split(',') : [])"
+                  :key="'doc-' + j" class="mr-3 mb-3">
+
+                  <!-- PDF -->
+                  <div v-if="fileStr.toLowerCase().endsWith('.pdf')" style="width: 100%; min-width: 300px;">
+                    <!-- <iframe :src="$store.state.apiUrlImage + fileStr" width="100%" height="300px"
+                      style="border: 1px solid #ddd; border-radius: 8px;">
+                    </iframe> -->
+
+                    <a :href="$store.state.apiUrlImage + fileStr" target="_blank" style="text-decoration: none;">
+                      <v-btn color="primary" small>
+                        <v-icon left small>mdi-file-pdf-box</v-icon> Lihat PDF
+                      </v-btn>
+                    </a>
+                  </div>
+
+                  <!-- IMAGE -->
+                  <div v-else class="doc-photo-wrapper">
+                    <div class="doc-photo hover-pointer"
+                      v-bind:style="{ backgroundImage: 'url(' + $store.state.apiUrlImage + fileStr + ')' }"
+                      @click="showLightbox($store.state.apiUrlImage + fileStr)">
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
               <p class="mb-0 value" v-else>
                 {{ data[f.key] }} {{ f.append ? f.append : "" }}
               </p>
@@ -656,7 +686,7 @@ export default {
         {
           label: "Profil Desa",
           key: "village_profile",
-          type: "image",
+          type: "document",
         },
         {
           label: "NGO lain di desa dengan program Jasa Lingkungan",
