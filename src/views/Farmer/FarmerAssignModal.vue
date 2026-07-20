@@ -11,11 +11,7 @@
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <v-row>
                 <v-col lg="12">
-                  <v-btn
-                    variant="success"
-                    @click="addRow"
-                    v-if="$_sys.isAllowed('farmer-update')"
-                  >
+                  <v-btn variant="success" @click="addRow" v-if="$_sys.isAllowed('farmer-update')">
                     <v-icon>mdi-plus</v-icon>
                     <span>Tambah Tahun Program</span>
                   </v-btn>
@@ -23,92 +19,85 @@
                 <v-col lg="12" v-for="(f, i) in farmers">
                   <v-row>
                     <v-col lg="6">
-                      <geko-input
-                        v-model="f.key1"
-                        :item="{
-                          label: 'Nama FF',
-                          type: 'select',
-                          param: {
-                            program_year: $_config.programYear.model,
+                      <geko-input v-model="f.key1" :item="{
+                        label: 'Nama FF',
+                        type: 'select',
+                        param: {
+                          program_year: $_config.programYear.model,
+                        },
+                        api: 'GetFFAllWeb_new',
+                        validation: ['required'],
+                        setter: 'key1',
+                        option: {
+                          default_label: f.field_facilitators_name,
+                          list_pointer: {
+                            code: 'ff_no',
+                            label: 'name',
+                            display: ['name', 'ff_no'],
                           },
-                          api: 'GetFFAllWeb_new',
-                          validation: ['required'],
-                          setter: 'key1',
-                          option: {
-                            default_label: f.field_facilitators_name,
-                            list_pointer: {
-                              code: 'ff_no',
-                              label: 'name',
-                              display: ['name', 'ff_no'],
-                            },
-                          },
-                        }"
-                        :disabled="false"
-                      />
+                        },
+                      }" :disabled="false" />
                     </v-col>
-                    <v-col
-                      lg="5"
-                      v-if="!$_sys.isAllowed('farmer-unassign-it-create')"
-                    >
-                      <geko-input
-                        v-model="f.program_year"
-                        :item="{
-                          label: 'Tahun Program',
-                          type: 'select',
-                          validation: ['required'],
-                          option: {
-                            default_label: f.program_year,
-                            default_options: $_config.programYear.options.map(
-                              (x) => {
-                                return {
-                                  label: x,
-                                  code: x,
-                                };
-                              }
-                            ),
-                            list_pointer: {
-                              label: 'label',
-                              code: 'code',
-                              display: ['label'],
-                            },
+                    <v-col lg="5" v-if="!$_sys.isAllowed('farmer-unassign-it-create')">
+                      <geko-input v-model="f.program_year" :item="{
+                        label: 'Tahun Program',
+                        type: 'select',
+                        validation: ['required'],
+                        option: {
+                          default_label: f.program_year,
+                          default_options: $_config.programYear.options.map(
+                            (x) => {
+                              return {
+                                label: x,
+                                code: x,
+                              };
+                            }
+                          ),
+                          list_pointer: {
+                            label: 'label',
+                            code: 'code',
+                            display: ['label'],
                           },
-                        }"
-                        :disabled="f.id ? true : false"
-                      />
+                        },
+                      }" :disabled="f.id ? true : false" />
                     </v-col>
 
                     <v-col lg="5" v-else>
-                      <geko-input
-                        v-model="f.program_year"
-                        :item="{
-                          label: 'Tahun Program',
-                          type: 'text',
-                          validation: ['required'],
-                        }"
-                      />
+                      <geko-input v-model="f.program_year" :item="{
+                        label: 'Tahun Program',
+                        type: 'select',
+                        setter: 'program_year',
+                        option: {
+                          default_options: $_config.programYear.options.map(
+                            (x) => {
+                              return {
+                                label: x,
+                                code: x,
+                              };
+                            }
+                          ),
+                          list_pointer: {
+                            code: 'code',
+                            label: 'label',
+                            display: ['label'],
+                          },
+                        },
+                        validation: ['required'],
+                      }" />
                     </v-col>
-                    <v-col
-                      lg="1"
-                      style="
+                    <v-col lg="1" style="
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
                         transform: translateY(10%);
-                      "
-                    >
-                      <v-btn
-                        v-if="
-                          $_sys.isAllowed('farmer-unassign-it-create') ||
-                          (!$_sys.isAllowed('farmer-unassign-it-create') &&
-                            !f.id)
-                        "
-                        variant="danger"
-                        :disabled="
-                          loading ||
-                          (f.program_year == '2024' && farmers.length == 1)
-                        "
-                        @click="onDelete(f, i)"
-                      >
+                      ">
+                      <v-btn v-if="
+                        $_sys.isAllowed('farmer-unassign-it-create') ||
+                        (!$_sys.isAllowed('farmer-unassign-it-create') &&
+                          !f.id)
+                      " variant="danger" :disabled="loading ||
+                        (f.program_year == '2024' && farmers.length == 1)
+                        " @click="onDelete(f, i)">
                         <v-icon>mdi-delete-empty</v-icon>
                       </v-btn>
                     </v-col>
@@ -116,12 +105,7 @@
                 </v-col>
 
                 <v-col lg="12" class="d-flex flex-row justify-content-center">
-                  <v-btn
-                    variant="warning"
-                    type="submit"
-                    class="mt-3"
-                    :disabled="loading"
-                  >
+                  <v-btn variant="warning" type="submit" class="mt-3" :disabled="loading">
                     <v-icon>mdi-pencil-outline</v-icon>
                     <span>Perbarui Data Petani</span>
                   </v-btn>
@@ -141,7 +125,7 @@ export default {
   props: {
     data: {
       required: true,
-      default: () => {},
+      default: () => { },
     },
     dataKey: {
       required: true,
@@ -262,10 +246,9 @@ export default {
           "Berhasil",
           `Data tahun program petani berhasil diperbarui ${successList.join(
             ", "
-          )}. ${
-            failedList.length > 0
-              ? `Data gagal diperbarui : ${failedList.length}`
-              : ""
+          )}. ${failedList.length > 0
+            ? `Data gagal diperbarui : ${failedList.length}`
+            : ""
           }`,
           "center",
           true
