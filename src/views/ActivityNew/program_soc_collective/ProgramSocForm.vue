@@ -420,6 +420,7 @@
                   label: 'name',
                   display: ['name'],
                 },
+                multiple: true,
               },
             }" />
           </v-col>
@@ -805,7 +806,7 @@ export default {
       this.formData.city = typeof this.formData.city === 'object' ? this.formData.city[0].kabupaten_no : this.formData.city;
       this.formData.training1 = typeof this.formData.training1 === 'object' ? this.formData.training1[0]?.material_no : this.formData.training1;
       this.formData.training2 = typeof this.formData.training2 === 'object' ? this.formData.training2[0]?.material_no : this.formData.training2;
-      this.formData.village = typeof this.formData.village === 'object' ? this.formData.village[0].kode_desa : this.formData.village;
+      this.formData.village = Array.isArray(this.formData.village) ? this.formData.village.map(v => v.kode_desa || v) : this.formData.village;
       this.formData.target_area = typeof this.formData.target_area === 'object' ? this.formData.target_area[0].area_code : this.formData.target_area;
       this.formData.mu_no = typeof this.formData.mu_no === 'object' ? this.formData.mu_no[0].mu_no : this.formData.mu_no;
       this.formData.province = typeof this.formData.province === 'object' ? this.formData.province[0].province_code : this.formData.province;
@@ -951,7 +952,8 @@ export default {
           && keyArr[0] !== "training"
           && keyArr[0] !== "pattern"
           && keyArr[0] !== "lahan_legal_status"
-          && keyArr[0] !== "pattern_new") {
+          && keyArr[0] !== "pattern_new"
+          && keyArr[0] !== "village") {
           this.$set(
             this.formData,
             keyArr[0],
@@ -981,7 +983,9 @@ export default {
         } else if (keyArr[0] == "pattern_new") {
           if (this.data[keyArr[0]] != null) this.$set(this.formData, "pattern_new", this.data[keyArr[0]].split(','));
         } else if (keyArr[0] == "lahan_legal_status") {
-          this.$set(this.formData, "lahan_legal_status", this.data[keyArr[0]].split(','));
+          if (this.data[keyArr[0]] != null) this.$set(this.formData, "lahan_legal_status", this.data[keyArr[0]].split(','));
+        } else if (keyArr[0] == "village") {
+          if (this.data[keyArr[0]] != null) this.$set(this.formData, "village", this.data[keyArr[0]].split(','));
         } else {
           let _tree = [];
           if (this.data.tree1 && this.data.tree1 !== "-") {
