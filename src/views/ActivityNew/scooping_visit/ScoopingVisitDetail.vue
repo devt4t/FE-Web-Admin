@@ -442,8 +442,8 @@ export default {
     },
 
     onSuccessVerification() {
-      this.$set(this.data, "is_verify", 1);
-      this.$set(this.data, "status", "ready_to_submit");
+      this.$set(this.data, "is_verify", 2);
+      this.$set(this.data, "status", "submit_review");
       this.getData();
     },
   },
