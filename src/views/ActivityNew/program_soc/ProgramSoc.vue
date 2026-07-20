@@ -72,16 +72,29 @@
     </template>
 
     <template v-slot:detail-photo_documentation="{ item }">
-      <div class="d-flex flex-row image-list">
-        <div class="image-item" v-if="item.photo_documentation"
-            @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation}`, 0)"
-            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation}` + ')' }">
-        </div>
-        <div @click="showLightbox(`${$_config.baseUrlUpload}/${item.photo_documentation2}`, 0)"
-            class="image-item" v-if="item.photo_documentation2"
-            v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${item.photo_documentation2}` + ')' }">
-        </div>
-    </div>
+      <div class="d-flex flex-row image-list" style="flex-wrap: wrap; gap: 8px;">
+        <!-- Foto Dokumentasi 1 -->
+        <template v-if="item.photo_documentation1 || item.photo_documentation">
+          <div 
+            v-for="(photo, index) in (item.photo_documentation1 || item.photo_documentation).split(',').filter(p => p.trim() !== '')" 
+            :key="'doc1-' + index"
+            class="image-item" 
+            @click="showLightbox(`${$_config.baseUrlUpload}/${photo.trim()}`, 0)"
+            :style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${photo.trim()}` + ')' }">
+          </div>
+        </template>
+
+        <!-- Foto Dokumentasi 2 -->
+        <template v-if="item.photo_documentation2">
+          <div 
+            v-for="(photo, index) in item.photo_documentation2.split(',').filter(p => p.trim() !== '')" 
+            :key="'doc2-' + index"
+            class="image-item" 
+            @click="showLightbox(`${$_config.baseUrlUpload}/${photo.trim()}`, 0)"
+            :style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${photo.trim()}` + ')' }">
+          </div>
+        </template>
+      </div>
     </template>
     <template v-slot:list-after-filter>
       <program-soc-from-main-update :data="sosprog_data" :dataKey="sosprog_data_key" @success="refreshKey = refreshKey + 1"/>
