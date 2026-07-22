@@ -338,9 +338,13 @@
                     label: 'Tanaman',
                     validation: ['required'],
                     type: 'select',
-                    api: 'GetTreesAll',
+                    api: 'GetTreesAll_new',
+                    param: {
+                      tree_category: getTreeCategory(item.plant_type),
+                      limit: 100
+                    },
                     option: {
-                      getterKey: 'data.result.data',
+                      getterKey: 'result',
                       multiple: true,
                       list_pointer: {
                         code: 'tree_name',
@@ -989,16 +993,14 @@ export default {
           potential: 0,
         },
       ],
-      landUse: [
-        {
-          rra_no: null,
-        },
-      ],
-      existingPlant: [
-        {
-          rra_no: null,
-        },
-      ],
+      landUse: defaultData.land_use_pattern.map((item) => ({
+        rra_no: null,
+        pattern: item.code,
+      })),
+      existingPlant: defaultData.plant_type.map((item) => ({
+        rra_no: null,
+        plant_type: item.code,
+      })),
       innovativeFarmer: [],
       formData: {
         landscape_villages: [],
@@ -1030,6 +1032,16 @@ export default {
     };
   },
   methods: {
+    getTreeCategory(typeCode) {
+      if (!typeCode) return '';
+      const map = {
+        'KAYU': 'Pohon_Kayu',
+        'MPTS': 'Pohon_buah',
+        'CROPS': 'Tanaman_Bawah_Empon',
+        'MANGROVE': 'Mangrove'
+      };
+      return map[typeCode] || typeCode;
+    },
     async onSubmit(addPra = false) {
       try {
         if (this.isLoading) return;
@@ -1160,7 +1172,7 @@ export default {
         }
 
         let dusunPayload = [];
-        for (const [i,item] of this.dusuns.entries()) {
+        for (const [i, item] of this.dusuns.entries()) {
           item.rra_no = rraNumber;
           item.dusun_access_photo = item.hasOwnProperty(`dusun_access_photo_${i}`) ? item[`dusun_access_photo_${i}`] : null;
           if (item.potential == 0) {
