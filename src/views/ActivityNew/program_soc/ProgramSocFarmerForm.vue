@@ -119,36 +119,19 @@
                         code: 'code',
                         display: ['label'],
                       },
-                      default_options: [
-                        {
-                          label: '2020',
-                          code: '2020',
-                        },
-                        {
-                          label: '2021',
-                          code: '2021',
-                        },
-                        {
-                          label: '2022',
-                          code: '2022',
-                        },
-                        {
-                          label: '2023',
-                          code: '2023',
-                        },
-                        {
-                          label: '2024',
-                          code: '2024',
-                        },
-                        {
-                          label: '2025',
-                          code: '2025',
-                        },
-                        {
-                          label: '2026',
-                          code: '2026',
-                        },
-                      ],
+                      default_options: $_config.programYear.options.map(
+                        (x) => {
+                          return {
+                            label: x,
+                            code: x,
+                          };
+                        }
+                      ),
+                      list_pointer: {
+                        label: 'label',
+                        code: 'code',
+                        display: ['label'],
+                      },
                     }
                   }" />
                 </v-col>

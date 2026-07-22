@@ -10,18 +10,18 @@
 
           <v-col lg="6">
             <geko-input v-model="formData.code" :item="{
-                label: 'Code',
-                validation: ['required'],
-                type: 'text',
-              }" />
+              label: 'Code',
+              validation: ['required'],
+              type: 'text',
+            }" />
           </v-col>
 
           <v-col lg="6">
             <geko-input v-model="formData.name" :item="{
-                label: 'Nama',
-                validation: ['required'],
-                type: 'text',
-              }" />
+              label: 'Nama',
+              validation: ['required'],
+              type: 'text',
+            }" />
           </v-col>
 
           <v-col md="12" class="form-separator">
@@ -86,37 +86,18 @@
               type: 'select',
               setter: 'program_year',
               option: {
-                default_options: [
-                  {
-                    name: '2020',
-                    value: '2020',
-                  },
-                  {
-                    name: '2021',
-                    value: '2021',
-                  },
-                  {
-                    name: '2022',
-                    value: '2022',
-                  },
-                  {
-                    name: '2023',
-                    value: '2023',
-                  },
-                  {
-                    name: '2024',
-                    value: '2024',
-                  },
-                  {
-                    name: '2025',
-                    value: '2025',
-                  },
-                ],
-
+                default_options: $_config.programYear.options.map(
+                  (x) => {
+                    return {
+                      code: x,
+                      label: x,
+                    };
+                  }
+                ),
                 list_pointer: {
-                  code: 'value',
-                  label: 'name',
-                  display: ['name'],
+                  code: 'code',
+                  label: 'label',
+                  display: ['label'],
                 },
               },
             }" />
@@ -124,14 +105,15 @@
 
           <v-col lg="6">
             <geko-input v-model="formData.nursery_days_off_amount" :item="{
-                label: 'Jumlah Hari Libur',
-                validation: ['required'],
-                type: 'number',
-              }" />
+              label: 'Jumlah Hari Libur',
+              validation: ['required'],
+              type: 'number',
+            }" />
           </v-col>
 
           <v-col lg="6" v-if="Number(formData.nursery_days_off_amount) > 0">
-            <geko-input :disabled="Number(formData.nursery_days_off_amount) <= 0" v-model="formData.nursery_days_off_interval" :item="{
+            <geko-input :disabled="Number(formData.nursery_days_off_amount) <= 0"
+              v-model="formData.nursery_days_off_interval" :item="{
                 label: 'Interval Hari Libur',
                 validation: ['required'],
                 type: 'number',
@@ -144,10 +126,10 @@
 
           <v-col lg="6">
             <geko-input v-model="formData.seed_limitation" :item="{
-                label: 'Limitasi Bibit',
-                validation: ['required'],
-                type: 'number',
-              }" />
+              label: 'Limitasi Bibit',
+              validation: ['required'],
+              type: 'number',
+            }" />
           </v-col>
 
           <v-col lg="12">
@@ -196,8 +178,8 @@ export default {
       this.formData.created_by = user.email;
       this.formData.id = this.data?.id;
 
-      this.formData.mu_no = typeof this.formData.mu_no === "string" 
-        ? this.formData.mu_no 
+      this.formData.mu_no = typeof this.formData.mu_no === "string"
+        ? this.formData.mu_no
         : this.formData.mu_no?.[0]?.mu_no || null;
 
       console.log("Form submitted with data:", this.formData);
@@ -209,8 +191,7 @@ export default {
 
           this.loading = false;
           this.$_alert.success(
-            `Data limitasi berhasil ${
-              this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
+            `Data limitasi berhasil ${this.$route.query.view === "create" ? "ditambahkan" : "diperbarui"
             }`
           );
           this.$router.replace({
@@ -231,13 +212,13 @@ export default {
         return;
       }
 
-      
+
     },
     async initData() {
       const detailData = await this.$_api.get("sostam/calendar/daily-distribution-limit/detail", {
         id: this.$route.query.id,
       });
-      
+
       this.data = detailData.data;
 
       const resMUs = await this.$_api.get(
@@ -257,20 +238,20 @@ export default {
         ['seed_limitation'],
         ['nursery_days_off_amount'],
         ['nursery_days_off_interval'],
-    ];
+      ];
       // console.log("thi", detailData);
 
       for (const keyArr of keys) {
         if (keyArr[0] === 'form_date') {
           console.log('this.data[keyArr[0]]', this.data[keyArr[0]], this.data[keyArr[0] + '_end']);
-            this.$set(this.formData, keyArr[0], [this.data.start_distribution_time, this.data.end_distribution_time]);
-            continue;
+          this.$set(this.formData, keyArr[0], [this.data.start_distribution_time, this.data.end_distribution_time]);
+          continue;
         }
 
         if (keyArr[0] === 'nursery_locations_id') {
           console.log('this.data[keyArr[0]]', this.data[keyArr[0]], this.data[keyArr[0] + '_end']);
-            this.$set(this.formData, keyArr[0], this.data.nursery_locations_id);
-            continue;
+          this.$set(this.formData, keyArr[0], this.data.nursery_locations_id);
+          continue;
         }
 
         this.$set(
@@ -308,7 +289,7 @@ export default {
   },
 
   watch: {
-    
+
   },
 
   data() {

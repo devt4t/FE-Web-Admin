@@ -28,41 +28,18 @@
                                         type: 'select',
                                         setter: 'program_year',
                                         option: {
-                                            default_options: [
-                                                {
-                                                    name: '2020',
-                                                    value: '2020',
-                                                },
-                                                {
-                                                    name: '2021',
-                                                    value: '2021',
-                                                },
-                                                {
-                                                    name: '2022',
-                                                    value: '2022',
-                                                },
-                                                {
-                                                    name: '2023',
-                                                    value: '2023',
-                                                },
-                                                {
-                                                    name: '2024',
-                                                    value: '2024',
-                                                },
-                                                {
-                                                    name: '2025',
-                                                    value: '2025',
-                                                },
-                                                {
-                                                    name: '2026',
-                                                    value: '2026',
-                                                },
-                                            ],
-
+                                            default_options: $_config.programYear.options.map(
+                                                (x) => {
+                                                    return {
+                                                        label: x,
+                                                        code: x,
+                                                    };
+                                                }
+                                            ),
                                             list_pointer: {
-                                                code: 'value',
-                                                label: 'name',
-                                                display: ['name'],
+                                                label: 'label',
+                                                code: 'code',
+                                                display: ['label'],
                                             },
                                         },
                                     }" />
