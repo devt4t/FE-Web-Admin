@@ -55,7 +55,7 @@ export default reactive({
       },
     },
     {
-      id: "mou_no",
+      id: "lahan_umums_mou_no",
       label: "MoU No",
       methods: {
         list: true,
@@ -66,7 +66,7 @@ export default reactive({
       },
     },
     {
-      id: "managementunits_name",
+      id: "mu_name",
       label: "Management Unit",
       methods: {
         list: true,

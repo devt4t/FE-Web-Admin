@@ -64,7 +64,7 @@ export default [
         },
     },
     {
-        id: "monitoring_date",
+        id: "planting_date",
         label: "Tanggal Monitoring",
         methods: {
             list: {

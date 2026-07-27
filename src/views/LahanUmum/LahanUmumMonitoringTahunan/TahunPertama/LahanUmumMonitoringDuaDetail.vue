@@ -5,7 +5,7 @@
             <v-col>
                 <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800"
                     class="geko-base-detail-card mb-5">
-                    <v-data-table :headers="tableHeaders" :items="data.list_detail"
+                    <v-data-table :headers="tableHeaders" :items="data ? data.list_detail : []"
                         class="rounded-xl elevation- pa-1 px-5">
                         <template v-slot:item.index="{ index }">
                             {{ index + 1 }}
@@ -35,12 +35,11 @@ export default {
     props: {
         data: {
             required: true,
-            default: [],
+            default: () => ({}),
         },
     },
     data() {
         return {
-            monitoring: {},
             tableHeaders: [
                 { key: "index", text: "No", value: "index", sortable: false },
                 { key: "tree_name", text: "Nama Pohon", value: "tree_name", sortable: false },
@@ -48,13 +47,5 @@ export default {
             ],
         };
     },
-    async mounted() {
-        const result = await this.$_api.get("general-land/first-monitriong/detail", {
-            monitoring_no: this.$route.query.monitoring_no,
-        });
-        this.monitoring = result;
-        console.log('get data')
-
-    }
 }
 </script>

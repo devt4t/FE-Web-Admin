@@ -1,10 +1,7 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true">
-        <template v-slot:create-form>
-            <lahan-umum-monitoring-create :user="user"></lahan-umum-monitoring-create>
-        </template>
         <template v-slot:detail-slave-raw="{ data }">
-            <lahan-umum-monitoring-detail :data="data"></lahan-umum-monitoring-detail>
+            <lahan-umum-monitoring-tahunan-detail :data="data"></lahan-umum-monitoring-tahunan-detail>
         </template>
         <template v-slot:list-indicator="{ item }">
             <div class="indicator-wrapper pt-1">
@@ -36,7 +33,7 @@ import LahanUmumMonitoringTahunanDetail from "./LahanUmumMonitoringDuaDetail.vue
 export default {
     components: {
         LottieAnimation,
-        LahanUmumMonitoringTahunanDetail,
+        'lahan-umum-monitoring-tahunan-detail': LahanUmumMonitoringTahunanDetail,
     },
     name: "crud-general-land-monitoring",
     watch: {},
