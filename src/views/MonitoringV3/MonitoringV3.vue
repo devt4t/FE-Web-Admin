@@ -49,10 +49,10 @@
                 </v-btn>
 
                 <!-- Export Detail -->
-                <!-- <v-btn variant="info" small class="mt-2" @click="ExportDetail(item)">
-                    <v-icon small>mdi-check-all</v-icon>
+                <v-btn variant="success" small class="mt-2" @click="ExportDetail(item)">
+                    <v-icon small>mdi-file-excel</v-icon>
                     <span>Export Detail</span>
-                </v-btn> -->
+                </v-btn>
 
                 <!-- Hapus -->
                 <v-btn variant="danger" small class="mt-2" @click="onDelete(item)"
