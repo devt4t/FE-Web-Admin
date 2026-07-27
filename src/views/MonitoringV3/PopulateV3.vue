@@ -136,6 +136,10 @@ export default {
         }
     },
 
+    created() {
+        this.recalculateStage(this.programYear);
+    },
+
     mounted() {
         this.user = JSON.parse(localStorage.getItem('User'))
         // this.recalculateStage(this.programYear);
@@ -149,11 +153,31 @@ export default {
             let step = currentYear - pYear;
 
             if (step > 5) {
-                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
+                // this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
+                this.$_alert.suppress = true;
+                this.$_alert.custom({
+                    title: "Informasi",
+                    icon: "info",
+                    text: "Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.",
+                    showCloseButton: true,
+                    showCancel: true,
+                    cancelButtonColor: "#2e7d32",
+                    cancelButtonText: "Tutup",
+                });
                 return;
             }
             if (step < 1) {
-                this.$_alert.error('Tahun Program tidak valid (melebihi atau sama Tahun Tanam).');
+                // this.$_alert.error('Tahun Program tidak valid (melebihi atau sama Tahun Tanam).');
+                this.$_alert.suppress = true;
+                this.$_alert.custom({
+                    title: "Informasi",
+                    icon: "info",
+                    text: "Tahun Program tidak valid (melebihi atau sama dengan Tahun Tanam).",
+                    showCloseButton: true,
+                    showCancel: true,
+                    cancelButtonColor: "#2e7d32",
+                    cancelButtonText: "Tutup",
+                });
                 return;
             }
 

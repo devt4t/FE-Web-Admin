@@ -14,7 +14,7 @@ env.interceptors.request.use(
     }
 
     if (token) {
-      config.headers["Authorization"] =  `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -61,9 +61,15 @@ env.interceptors.response.use(
           errorMessage = "Request gagal";
         }
       }
-      _alert.error(errorMessage);
+      if (!_alert.suppress) {
+        _alert.error(errorMessage);
+      }
+      _alert.suppress = false;
     } else if (error.response.status === 500) {
-      _alert.error({}, "Error", "Terjadi kesalahan system");
+      if (!_alert.suppress) {
+        _alert.error({}, "Error", "Terjadi kesalahan system");
+      }
+      _alert.suppress = false;
     } else if (error.response.status === 404) {
       // _alert.error(
       //   {},
@@ -106,8 +112,8 @@ const _service = {
 
   upload(endPoint, file) {
 
-    
-    
+
+
     const data = this.generateFormData(file);
 
     return axios
@@ -126,9 +132,11 @@ const _service = {
 
   getNursery(endPoint, params = {}) {
     return axios
-      .get(`${_config.baseUrlNursery}/${endPoint}`, { params, headers: {
-        'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYmFja2VuZC50NHQtYXBpLm9yZ1wvYXBpXC9sb2dpbiIsImlhdCI6MTcyOTA2MjE1NCwiZXhwIjoxNzYwMTY2MTU0LCJuYmYiOjE3MjkwNjIxNTQsImp0aSI6Ijl1NTdZTGlvSk9udnhOMEYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.aWrD_gO2M5A-66XTpMb5itDwQx-tEBsW2oeUx7h-32k`
-      } })
+      .get(`${_config.baseUrlNursery}/${endPoint}`, {
+        params, headers: {
+          'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYmFja2VuZC50NHQtYXBpLm9yZ1wvYXBpXC9sb2dpbiIsImlhdCI6MTcyOTA2MjE1NCwiZXhwIjoxNzYwMTY2MTU0LCJuYmYiOjE3MjkwNjIxNTQsImp0aSI6Ijl1NTdZTGlvSk9udnhOMEYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.aWrD_gO2M5A-66XTpMb5itDwQx-tEBsW2oeUx7h-32k`
+        }
+      })
       .then((response) => {
         return response.data;
       })

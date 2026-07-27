@@ -1,7 +1,14 @@
 import Swal from "sweetalert2";
 
 const _alert = {
+  suppress: false,
+
   error(err, title = null, text = null) {
+    if (this.suppress) {
+      this.suppress = false;
+      return;
+    }
+
     let _text = "";
     try {
       _text = text ? text : err.data ? err.data.data.result : err.data.result;
@@ -57,11 +64,11 @@ const _alert = {
     });
   },
   confirmWithDeny(
-    title = null, 
-    text = null, 
-    agree = null, 
-    disagree = null, 
-    agreeColor = null, 
+    title = null,
+    text = null,
+    agree = null,
+    disagree = null,
+    agreeColor = null,
     denyColor = null
   ) {
     return Swal.fire({

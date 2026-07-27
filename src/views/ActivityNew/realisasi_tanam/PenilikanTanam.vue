@@ -627,10 +627,30 @@ export default {
             let step = (currentYear - pYear) + 1;
 
             if (step > 6) {
-                this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
+                // this.$_alert.error('Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.');
+                this.$_alert.suppress = true;
+                this.$_alert.custom({
+                    title: "Informasi",
+                    icon: "info",
+                    text: "Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.",
+                    showCloseButton: true,
+                    showCancel: true,
+                    cancelButtonColor: "#2e7d32",
+                    cancelButtonText: "Tutup",
+                });
                 this.targetMonitoringStage = 6;
             } else if (step <= 1) {
-                this.$_alert.error('Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).');
+                // this.$_alert.error('Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).');
+                this.$_alert.suppress = true;
+                this.$_alert.custom({
+                    title: "Informasi",
+                    icon: "info",
+                    text: "Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).",
+                    showCloseButton: true,
+                    showCancel: true,
+                    cancelButtonColor: "#2e7d32",
+                    cancelButtonText: "Tutup",
+                });
                 this.targetMonitoringStage = 2; // Default limit fallback is 2
             } else {
                 this.targetMonitoringStage = step;
