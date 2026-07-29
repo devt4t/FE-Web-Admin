@@ -1,309 +1,215 @@
 <template>
-    <v-dialog v-model="showModal"
-            content-class="rounded-xl mx-1"
-            max-width="800px"
-            scrollable
-            persistent
-        >
-            <v-card>
-                <v-card-title class="mb-1 headermodalstyle rounded-xl">
-                    <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-truck</v-icon></v-btn> Truck Form</span>
-                    <v-icon color="red lighten-1" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
-                </v-card-title>
-                <v-card-text>
-                    <!-- Loading -->
-                    <v-overlay absolute :value="loading.show">
-                        <div class="d-flex flex-column"></div>
-                        <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="white"
-                        >
-                        </v-progress-circular>
-                        <p class="mt-2 mb-0">{{ loading.text }}</p>
-                    </v-overlay>
-                    <!-- START: FORM -->
-                    <v-row class="mt-0">
-                        <!-- Program Year -->
-                        <v-col cols="12" sm="12" md="6" lg="4">
-                            <v-autocomplete
-                                color="success"
-                                hide-details
-                                item-color="success"
-                                item-text="name"
-                                item-value="nik"
-                                dense
-                                v-model="inputs.program_year.model"
-                                :items="$store.state.programYear.options"
-                                :disabled="true"
-                                :label="'Program Year'"
-                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                outlined
-                                rounded
-                                :rules="[(v) => !!v || 'Field is required']"
-                            ></v-autocomplete>
-                        </v-col>
-                        <!-- Nursery-->
-                        <v-col cols="12" sm="12" md="6" lg="4">
-                            <v-autocomplete
-                                color="success"
-                                hide-details
-                                item-color="success"
-                                dense
-                                v-model="inputs.nursery.model"
-                                :items="inputs.nursery.items"
-                                :label="inputs.nursery.label"
-                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                outlined
-                                rounded
-                                :rules="[(v) => !!v || 'Field is required']"
-                            ></v-autocomplete>
-                        </v-col>
-                    </v-row>
-                    <div class="pb-2 d-flex align-center mt-4">
-                        <p class="mb-0"><v-icon class="mr-2">mdi-car-pickup</v-icon>Vehicle</p>
-                        <v-divider class="mx-2"></v-divider>
-                    </div>
-                    <v-row>
-                        <!-- Licence Plate -->
-                        <v-col cols="12" sm="12" md="12" lg="12" v-if="!id">
-                            <v-alert :value="inputs.plat_no.exist" type="error" class="rounded-xl" dense dismissible transition="scale-transition">
-                                The Plat Number has already been taken.
-                            </v-alert>
-                            <v-alert v-if="inputs.plat_no.model && inputs.plat_no.exist == false && checkPlate.loading == false && checkPlate.checked == true" type="success" class="rounded-xl" dense dismissible data-aos="zoom-in" data-aos-duration="100">
-                                The Plat Number is available.
-                            </v-alert>
-                            <v-row class="ma-0">
-                                <v-text-field
-                                    dense
-                                    :color="`success`"
-                                    placeholder="H 9999 XX"
-                                    hide-details
-                                    :label="inputs.plat_no.label"
-                                    :loading="checkPlate.loading"
-                                    outlined
-                                    rounded
-                                    :rules="[(v) => !!v || 'Field is required']"
-                                    v-model="inputs.plat_no.model"
-                                    style="max-width: fit-content;"
-                                ></v-text-field>
-                                <v-btn small rounded class="ml-2 mt-2" color="info" @click="checkPlateExisting(inputs.plat_no.model)" :disabled="!inputs.plat_no.model" :loading="checkPlate.loading">Check</v-btn>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="12" lg="12" v-else>
-                            <v-row class="justify-center mt-0">
-                                <v-chip v-if="id" color="grey darken-3 white--text" class="rounded-lg" data-aos="fade-down">{{ id }}</v-chip>
-                            </v-row>
-                        </v-col>
-                        <!-- Type -->
-                        <v-col cols="12" sm="12" md="6" lg="6">
-                            <v-autocomplete
-                                color="success"
-                                hide-details
-                                item-color="success"
-                                item-text="type"
-                                item-value="name"
-                                return-object
-                                dense
-                                :items="inputs.type.items"
-                                :label="inputs.type.label"
-                                v-model="inputs.type.model"
-                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                outlined
-                                rounded
-                                :rules="[(v) => !!v || 'Field is required']"
-                                @change="selectedVehicleType"
-                            >
-                                <template v-slot:item="data">
-                                    <v-list-item-content>
-                                    <v-list-item-title v-html="data.item.type"></v-list-item-title>
-                                    <v-list-item-subtitle>{{ data.item.capacity.min }} - {{ data.item.capacity.max }} <small>Seeds</small></v-list-item-subtitle>
-                                    </v-list-item-content>
-                                </template>
-                            </v-autocomplete>
-                        </v-col>
-                        <!-- Capacity -->
-                        <v-col cols="12" sm="12" md="12" lg="4">
-                            <v-text-field
-                                dense
-                                :color="`success`"
-                                hide-details
-                                :label="inputs.capacity.label"
-                                outlined
-                                rounded
-                                v-model="inputs.capacity.model"
-                                disabled
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <div class="pb-2 d-flex align-center mt-4">
-                        <p class="mb-0"><v-icon class="mr-2">mdi-chart-timeline</v-icon>Active Dates</p>
-                        <v-divider class="mx-2"></v-divider>
-                    </div>
-                    <v-row>
-                        <!-- Status -->
-                        <v-col cols="12" sm="12">
-                            <v-autocomplete
-                                color="success"
-                                hide-details
-                                item-color="success"
-                                dense
-                                :items="inputs.status.items"
-                                :label="inputs.status.label"
-                                v-model="inputs.status.model"
-                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                outlined
-                                rounded
-                                :rules="[(v) => !!v || 'Field is required']"
-                                style="max-width: fit-content;"
-                                :disabled="id ? true : false"
-                            ></v-autocomplete>
-                        </v-col>
-                        <!-- Period -->
-                        <v-col cols="12" v-if="inputs.status.model == 'contract' && inputs.active_date.period.length > 0" class="text-center">
-                            <v-btn v-for="(period, pIndex) in inputs.active_date.period" :key="pIndex" readonly rounded color="green white--text" class="mb-2 mr-0 mr-md-2" data-aos="zoom-in" :data-aos-delay="pIndex * 200">
-                                <v-icon class="mr-1">mdi-calendar</v-icon><strong class="d-lg-inline d-none">{{ period.name }}:</strong> {{ dateFormat(period.date_range.from, 'DD MMM Y') }} - {{ dateFormat(period.date_range.to, 'DD MMM Y') }}
-                            </v-btn>
-                        </v-col>
-                        <v-col cols="12" v-if="inputs.status.model == 'contract'">
-                            <v-select
-                                color="success"
-                                multiple
-                                hide-details
-                                item-color="success"
-                                item-text="name"
-                                return-object
-                                dense
-                                v-model="inputs.active_date.period"
-                                :items="inputs.status.dateRange"
-                                label="Distribution Period"
-                                :menu-props="{rounded: 'xl',offsetY: true, transition: 'slide-y-transition'}"
-                                outlined
-                                rounded
-                            >
-                                <template v-slot:selection="data">
-                                    <v-chip
-                                        v-bind="data.attrs"
-                                        :input-value="data.selected"
-                                        color="success"
-                                        small
-                                        close
-                                        data-aos="zoom-in" :data-aos-delay="data.index * 200"
-                                        @click="() => {}"
-                                        @click:close="spliceDatePeriod(data.item.name)"
-                                    >
-                                        {{ data.item.name }}
-                                    </v-chip>
-                                </template>
-                                <template v-slot:item="data">
-                                    <v-list-item-content>
-                                    <v-list-item-title><v-icon>mdi-timeline-clock</v-icon> {{ data.item.name }}</v-list-item-title>
-                                    <v-list-item-subtitle><strong>{{ dateFormat(data.item.date_range.from, 'DD MMMM Y') }} - {{ dateFormat(data.item.date_range.to, 'DD MMMM Y') }}</strong></v-list-item-subtitle>
-                                    </v-list-item-content>
-                                </template>
-                            </v-select>
-                        </v-col>
-                        <!-- Select Dates -->
-                        <v-col cols="12" md="6" lg="4" class="text-center" v-if="inputs.status.model == 'ritase'">
-                            <v-menu v-model="inputs.active_date.datepicker.show" offset-y top transition="slide-x-transition" rounded="xl" :close-on-content-click="false">
-                                <template v-slot:activator="{ on, attrs }">
-                                    <v-btn 
-                                        rounded class=""
-                                        color="green white--text"
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        block
-                                    >
-                                        Select Date
-                                    </v-btn>
-                                </template>
-                                <v-card>
-                                    <v-overlay :value="inputs.active_date.loading">
-                                        <div class="d-flex flex-column align-center justify-center">
-                                        <v-progress-circular
-                                            indeterminate
-                                            color="white"
-                                            size="64"
-                                        ></v-progress-circular>
-                                        <p class="mt-2 mb-0">Updating dates...</p>
-                                        </div>
-                                    </v-overlay>
-                                    <v-date-picker
-                                        v-model="inputs.active_date.model"
-                                        multiple
-                                        min="2022-11-24"
-                                        max="2023-01-31"
-                                        color="green"
-                                        class="rounded-xl"
-                                        :key="inputs.active_date.datepicker.key"
-                                    ></v-date-picker>
-                                </v-card>
-                            </v-menu>
-                        </v-col>
-                        <v-col cols="12" v-if="inputs.status.model == 'ritase' && inputs.active_date.model.length > 0">
-                            <p class="mb-0" data-aos="fade-up"><v-icon>mdi-calendar</v-icon> Dates :</p>
-                            <v-chip v-for="(item, index) in inputs.active_date.model" :key="index" data-aos="zoom-in" data-aos-delay="200" small color="info" class="mr-1 mt-1">{{ dateFormat(item, 'D MMM Y') }}</v-chip>
-                        </v-col>
-                    </v-row>
-                    <v-row class="ml-0">
-                            <v-switch
-                                v-model="inputs.is_active.model"
-                                :label="`Status ${inputs.is_active.model ? 'Active' : 'Nonactive'}`"
-                                color="green"
-                            ></v-switch>
-                    </v-row>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="red" outlined rounded class="pr-3 pl-1" small @click="showModal = false"><v-icon class="mr-1">mdi-close-circle</v-icon> Close</v-btn>
+    <v-dialog v-model="showModal" content-class="rounded-xl mx-1" max-width="800px" scrollable persistent>
+        <v-card>
+            <v-card-title class="mb-1 headermodalstyle rounded-xl">
+                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon
+                            color="grey darken-3">mdi-truck</v-icon></v-btn> Truck Form</span>
+                <v-icon color="red lighten-1" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
+            </v-card-title>
+            <v-card-text>
+                <!-- Loading -->
+                <v-overlay absolute :value="loading.show">
+                    <div class="d-flex flex-column"></div>
+                    <v-progress-circular :size="80" :width="10" indeterminate color="white">
+                    </v-progress-circular>
+                    <p class="mt-2 mb-0">{{ loading.text }}</p>
+                </v-overlay>
+                <!-- START: FORM -->
+                <v-row class="mt-0">
+                    <!-- Program Year -->
+                    <v-col cols="12" sm="12" md="6" lg="4">
+                        <v-autocomplete color="success" hide-details item-color="success" item-text="name"
+                            item-value="nik" dense v-model="inputs.program_year.model"
+                            :items="$store.state.programYear.options" :disabled="true" :label="'Program Year'"
+                            :menu-props="{ rounded: 'xl', transition: 'slide-y-transition' }" outlined rounded
+                            :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
+                    </v-col>
+                    <!-- Nursery-->
+                    <v-col cols="12" sm="12" md="6" lg="4">
+                        <v-autocomplete color="success" hide-details item-color="success" dense
+                            v-model="inputs.nursery.model" :items="inputs.nursery.items" :label="inputs.nursery.label"
+                            :menu-props="{ rounded: 'xl', transition: 'slide-y-transition' }" outlined rounded
+                            :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
+                    </v-col>
+                </v-row>
+                <div class="pb-2 d-flex align-center mt-4">
+                    <p class="mb-0"><v-icon class="mr-2">mdi-car-pickup</v-icon>Vehicle</p>
                     <v-divider class="mx-2"></v-divider>
-                    <v-dialog
-                        v-model="dialog"
-                        persistent
-                        max-width="400"
-                        content-class="rounded-xl"
-                    >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" color="green white--text" rounded class="px-3" small :disabled="!checkPlate.checked || inputs.plat_no.exist || !inputs.plat_no.model || !inputs.nursery.model || !inputs.type.model || !inputs.status.model"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
-                        </template>
-                        <v-card>
-                            <v-card-title class="text-h5">
-                                <v-spacer></v-spacer>
-                                Are u sure?
-                                <v-spacer></v-spacer>
-                            </v-card-title>
-                            <v-card-text class="text-center">
-                                Are u sure wanna save this data?
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn
-                                    color="red"
-                                    text
-                                    rounded
-                                    @click="dialog = false"
-                                >
-                                    <v-icon class="mr-1">mdi-undo</v-icon>
-                                    Back
+                </div>
+                <v-row>
+                    <!-- Licence Plate -->
+                    <v-col cols="12" sm="12" md="12" lg="12" v-if="!id">
+                        <v-alert :value="inputs.plat_no.exist" type="error" class="rounded-xl" dense dismissible
+                            transition="scale-transition">
+                            The Plat Number has already been taken.
+                        </v-alert>
+                        <v-alert
+                            v-if="inputs.plat_no.model && inputs.plat_no.exist == false && checkPlate.loading == false && checkPlate.checked == true"
+                            type="success" class="rounded-xl" dense dismissible data-aos="zoom-in"
+                            data-aos-duration="100">
+                            The Plat Number is available.
+                        </v-alert>
+                        <v-row class="ma-0">
+                            <v-text-field dense :color="`success`" placeholder="H 9999 XX" hide-details
+                                :label="inputs.plat_no.label" :loading="checkPlate.loading" outlined rounded
+                                :rules="[(v) => !!v || 'Field is required']" v-model="inputs.plat_no.model"
+                                style="max-width: fit-content;"></v-text-field>
+                            <v-btn small rounded class="ml-2 mt-2" color="info"
+                                @click="checkPlateExisting(inputs.plat_no.model)" :disabled="!inputs.plat_no.model"
+                                :loading="checkPlate.loading">Check</v-btn>
+                        </v-row>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12" lg="12" v-else>
+                        <v-row class="justify-center mt-0">
+                            <v-chip v-if="id" color="grey darken-3 white--text" class="rounded-lg"
+                                data-aos="fade-down">{{ id }}</v-chip>
+                        </v-row>
+                    </v-col>
+                    <!-- Type -->
+                    <v-col cols="12" sm="12" md="6" lg="6">
+                        <v-autocomplete color="success" hide-details item-color="success" item-text="type"
+                            item-value="name" return-object dense :items="inputs.type.items" :label="inputs.type.label"
+                            v-model="inputs.type.model"
+                            :menu-props="{ rounded: 'xl', transition: 'slide-y-transition' }" outlined rounded
+                            :rules="[(v) => !!v || 'Field is required']" @change="selectedVehicleType">
+                            <template v-slot:item="data">
+                                <v-list-item-content>
+                                    <v-list-item-title v-html="data.item.type"></v-list-item-title>
+                                    <v-list-item-subtitle>{{ data.item.capacity.min }} - {{ data.item.capacity.max }}
+                                        <small>Seeds</small></v-list-item-subtitle>
+                                </v-list-item-content>
+                            </template>
+                        </v-autocomplete>
+                    </v-col>
+                    <!-- Capacity -->
+                    <v-col cols="12" sm="12" md="12" lg="4">
+                        <v-text-field dense :color="`success`" hide-details :label="inputs.capacity.label" outlined
+                            rounded v-model="inputs.capacity.model" disabled></v-text-field>
+                    </v-col>
+                </v-row>
+                <div class="pb-2 d-flex align-center mt-4">
+                    <p class="mb-0"><v-icon class="mr-2">mdi-chart-timeline</v-icon>Active Dates</p>
+                    <v-divider class="mx-2"></v-divider>
+                </div>
+                <v-row>
+                    <!-- Status -->
+                    <v-col cols="12" sm="12">
+                        <v-autocomplete color="success" hide-details item-color="success" dense
+                            :items="inputs.status.items" :label="inputs.status.label" v-model="inputs.status.model"
+                            :menu-props="{ rounded: 'xl', transition: 'slide-y-transition' }" outlined rounded
+                            :rules="[(v) => !!v || 'Field is required']" style="max-width: fit-content;"
+                            :disabled="id ? true : false"></v-autocomplete>
+                    </v-col>
+                    <!-- Period -->
+                    <v-col cols="12" v-if="inputs.status.model == 'contract' && inputs.active_date.period.length > 0"
+                        class="text-center">
+                        <v-btn v-for="(period, pIndex) in inputs.active_date.period" :key="pIndex" readonly rounded
+                            color="green white--text" class="mb-2 mr-0 mr-md-2" data-aos="zoom-in"
+                            :data-aos-delay="pIndex * 200">
+                            <v-icon class="mr-1">mdi-calendar</v-icon><strong class="d-lg-inline d-none">{{ period.name
+                                }}:</strong> {{
+                                    dateFormat(period.date_range.from, 'DD MMM Y') }} - {{ dateFormat(period.date_range.to, 'DD
+                            MMM Y') }}
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="12" v-if="inputs.status.model == 'contract'">
+                        <v-select color="success" multiple hide-details item-color="success" item-text="name"
+                            return-object dense v-model="inputs.active_date.period" :items="inputs.status.dateRange"
+                            label="Distribution Period"
+                            :menu-props="{ rounded: 'xl', offsetY: true, transition: 'slide-y-transition' }" outlined
+                            rounded>
+                            <template v-slot:selection="data">
+                                <v-chip v-bind="data.attrs" :input-value="data.selected" color="success" small close
+                                    data-aos="zoom-in" :data-aos-delay="data.index * 200" @click="() => { }"
+                                    @click:close="spliceDatePeriod(data.item.name)">
+                                    {{ data.item.name }}
+                                </v-chip>
+                            </template>
+                            <template v-slot:item="data">
+                                <v-list-item-content>
+                                    <v-list-item-title><v-icon>mdi-timeline-clock</v-icon> {{ data.item.name
+                                        }}</v-list-item-title>
+                                    <v-list-item-subtitle><strong>{{ dateFormat(data.item.date_range.from, 'DD MMMM Y')
+                                            }} - {{ dateFormat(data.item.date_range.to, 'DD MMMM Y')
+                                            }}</strong></v-list-item-subtitle>
+                                </v-list-item-content>
+                            </template>
+                        </v-select>
+                    </v-col>
+                    <!-- Select Dates -->
+                    <v-col cols="12" md="6" lg="4" class="text-center" v-if="inputs.status.model == 'ritase'">
+                        <v-menu v-model="inputs.active_date.datepicker.show" offset-y top
+                            transition="slide-x-transition" rounded="xl" :close-on-content-click="false">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn rounded class="" color="green white--text" v-bind="attrs" v-on="on" block>
+                                    Select Date
                                 </v-btn>
-                                <v-divider class="mx-2"></v-divider>
-                                <v-btn
-                                    color="green white--text pr-3"
-                                    rounded
-                                    @click="save(id)"
-                                >
-                                    <v-icon class="mr-1">mdi-check-circle</v-icon>
-                                    Ok, Save
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
-                </v-card-actions>
-            </v-card>
+                            </template>
+                            <v-card>
+                                <v-overlay :value="inputs.active_date.loading">
+                                    <div class="d-flex flex-column align-center justify-center">
+                                        <v-progress-circular indeterminate color="white"
+                                            size="64"></v-progress-circular>
+                                        <p class="mt-2 mb-0">Updating dates...</p>
+                                    </div>
+                                </v-overlay>
+                                <v-date-picker v-model="inputs.active_date.model" multiple min="2022-11-24"
+                                    max="2023-01-31" color="green" class="rounded-xl"
+                                    :key="inputs.active_date.datepicker.key"></v-date-picker>
+                            </v-card>
+                        </v-menu>
+                    </v-col>
+                    <v-col cols="12" v-if="inputs.status.model == 'ritase' && inputs.active_date.model.length > 0">
+                        <p class="mb-0" data-aos="fade-up"><v-icon>mdi-calendar</v-icon> Dates :</p>
+                        <v-chip v-for="(item, index) in inputs.active_date.model" :key="index" data-aos="zoom-in"
+                            data-aos-delay="200" small color="info" class="mr-1 mt-1">{{ dateFormat(item, 'D MMM Y')
+                            }}</v-chip>
+                    </v-col>
+                </v-row>
+                <v-row class="ml-0">
+                    <v-switch v-model="inputs.is_active.model"
+                        :label="`Status ${inputs.is_active.model ? 'Active' : 'Nonactive'}`" color="green"></v-switch>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="red" outlined rounded class="pr-3 pl-1" small @click="showModal = false"><v-icon
+                        class="mr-1">mdi-close-circle</v-icon> Close</v-btn>
+                <v-divider class="mx-2"></v-divider>
+                <v-dialog v-model="dialog" persistent max-width="400" content-class="rounded-xl">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn v-bind="attrs" v-on="on" color="green white--text" rounded class="px-3" small
+                            :disabled="!checkPlate.checked || inputs.plat_no.exist || !inputs.plat_no.model || !inputs.nursery.model || !inputs.type.model || !inputs.status.model"><v-icon
+                                class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title class="text-h5">
+                            <v-spacer></v-spacer>
+                            Are u sure?
+                            <v-spacer></v-spacer>
+                        </v-card-title>
+                        <v-card-text class="text-center">
+                            Are u sure wanna save this data?
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="red" text rounded @click="dialog = false">
+                                <v-icon class="mr-1">mdi-undo</v-icon>
+                                Back
+                            </v-btn>
+                            <v-divider class="mx-2"></v-divider>
+                            <v-btn color="green white--text pr-3" rounded @click="save(id)">
+                                <v-icon class="mr-1">mdi-check-circle</v-icon>
+                                Ok, Save
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-card-actions>
+        </v-card>
     </v-dialog>
 </template>
 <script>
-import Moment  from 'moment'
-import axios  from 'axios'
+import Moment from 'moment'
+import axios from 'axios'
 import { extendMoment } from 'moment-range'
 import trucksJSON from '@/utils/trucks'
 import nurseryJSON from '@/utils/nursery'
@@ -333,8 +239,8 @@ export default {
                 model: '',
                 label: 'Seeds Capacity'
             },
-            min_capacity: {model: 0},
-            max_capacity: {model: 0},
+            min_capacity: { model: 0 },
+            max_capacity: { model: 0 },
             active_date: {
                 datepicker: {
                     show: false,
@@ -346,7 +252,7 @@ export default {
                 dateRange: [],
                 period: []
             },
-            is_active: {model: true},
+            is_active: { model: true },
             nursery: {
                 items: nurseryJSON,
                 label: 'Nursery',
@@ -362,7 +268,7 @@ export default {
                 model: ''
             },
             status: {
-                items: [{text: 'Monthly ( Contract )', value: 'contract'}, {text: 'Daily ( Ritase )', value: 'ritase'}],
+                items: [{ text: 'Monthly ( Contract )', value: 'contract' }, { text: 'Daily ( Ritase )', value: 'ritase' }],
                 label: 'Status',
                 model: '',
                 dateRange: []
@@ -435,12 +341,12 @@ export default {
                     this.getDetailData(this.id)
                     this.checkPlate.checked = true
                 }
-                
+
                 return this.show
             },
-            set: function(newVal) {
+            set: function (newVal) {
                 this.manageData('reset')
-                this.$emit('close', {type: 'truck', val: newVal})
+                this.$emit('close', { type: 'truck', val: newVal })
             }
         }
     },
@@ -448,7 +354,7 @@ export default {
         this.inputs.program_year.model = this.$store.state.programYear.model
 
         // set distribution period JSON
-        this.inputs.status.dateRange = this.JSON.distributionPeriodJSON.find(val => val.program_year === this.inputs.program_year.model).items
+        this.inputs.status.dateRange = this.JSON.distributionPeriodJSON.find(val => val.program_year === this.inputs.program_year.model)?.items || [];
     },
     methods: {
         async getDetailData(id) {
@@ -481,7 +387,7 @@ export default {
                     } else {
                         alert('Licence plate invalid!')
                     }
-                    
+
                     this.forceLogout(err)
                 }).finally(() => {
                     this.checkPlate.loading = false
@@ -490,17 +396,17 @@ export default {
         async save(id = null) {
             try {
                 this.dialog = false
-                this.$emit('close', {type: 'truck', val: false})
+                this.$emit('close', { type: 'truck', val: false })
 
                 this.$store.state.loadingOverlayText = 'Saving data...'
                 this.$store.state.loadingOverlay = true
-                
+
                 let sendData = {}
                 for (const [key, value] of Object.entries(this.inputs)) {
                     if (key != 'capacity') {
                         if (value.model) {
-                            if (key == 'active_date') sendData[key] = await value.model.toString() 
-                            else sendData[key] = await value.model 
+                            if (key == 'active_date') sendData[key] = await value.model.toString()
+                            else sendData[key] = await value.model
                         } else if (key == 'is_active') sendData[key] = await 0
                     }
                 }
@@ -509,11 +415,11 @@ export default {
                 let type = 'AddTruck'
                 if (id) type = 'UpdateTruck'
                 await axios.post(`${this.$store.getters.getApiUrl(type)}`, sendData, this.$store.state.apiConfig)
-                await this.$emit('snackbar', {color: 'green', text: 'Saving truck data success!'})
+                await this.$emit('snackbar', { color: 'green', text: 'Saving truck data success!' })
                 await this.$emit('refreshTable')
                 this.manageData('reset')
             } catch (err) {
-                await this.$emit('snackbar', {color: 'red', text: err})
+                await this.$emit('snackbar', { color: 'red', text: err })
                 if (err.response != undefined) {
                     console.log(err.response.data.data.result)
                     this.forceLogout(err.response)
