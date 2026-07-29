@@ -1,11 +1,6 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideDelete="false"
-    :hideUpdate="false"
-    :hideDeleteSoft="false"
-    :key="'program-soc-detail' + componentKey"
-  >
+  <geko-base-crud :config="config" :hideDelete="false" :hideUpdate="false" :hideDeleteSoft="true"
+    :key="'program-soc-detail' + componentKey">
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column min-w-150px">
         <p class="mb-0 text-link font-weight-500">#{{ item.form_no }}</p>
@@ -35,74 +30,47 @@
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            success: item.is_verified == 1,
-            danger: item.is_verified == 0,
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          success: item.is_verified == 1,
+          danger: item.is_verified == 0,
+        }"></div>
       </div>
     </template>
 
     <template v-slot:detail-pattern="{ item }">
-        {{ item.pattern ? item.pattern.replace(/,/g, ', ') : '-' }}
+      {{ item.pattern ? item.pattern.replace(/,/g, ', ') : '-' }}
     </template>
 
     <template v-slot:detail-pattern_new="{ item }">
-        {{ item.pattern_new ? item.pattern_new.replace(/,/g, ', ') : '-' }}
+      {{ item.pattern_new ? item.pattern_new.replace(/,/g, ', ') : '-' }}
     </template>
 
     <template v-slot:detail-action="{ item }">
       <div>
-        <v-btn
-          v-if="
-            item.is_verified == 0 &&
-            $store.state.User &&
-            $_sys.isAllowed('sosialisasi-program-verification-create')
-          "
-          variant="success"
-          @click="onVerify"
-          >Verifikasi</v-btn
-        >
-        <v-btn
-          v-if="
-            item.is_verified == 1 &&
-            $store.state.User &&
-            $_sys.isAllowed('sosialisasi-program-unverification-create')
-          "
-          variant="danger"
-          @click="onVerify(false)"
-          >Unverifikasi</v-btn
-        >
+        <v-btn v-if="
+          item.is_verified == 0 &&
+          $store.state.User &&
+          $_sys.isAllowed('sosialisasi-program-verification-create')
+        " variant="success" @click="onVerify">Verifikasi</v-btn>
+        <v-btn v-if="
+          item.is_verified == 1 &&
+          $store.state.User &&
+          $_sys.isAllowed('sosialisasi-program-unverification-create')
+        " variant="danger" @click="onVerify(false)">Unverifikasi</v-btn>
       </div>
     </template>
 
     <template v-slot:detail-lahan_legal_status="{ item }">
       <div v-for="(legal, index) in item.lahan_legal_status.split(',')" :key="index">
-          {{ ++index + ". " }} {{ legal | parse('lahan-legal-status') }}
+        {{ ++index + ". " }} {{ legal | parse('lahan-legal-status') }}
       </div>
     </template>
 
     <template v-slot:list-bottom-action="{ item }">
-      <v-btn
-        small
-        @click="onExport(item)"
-        variant="danger"
-        class="mt-1"
-        v-if="item.is_verified"
-      >
-        <v-icon small v-if="!exportIds.includes(item.id)"
-          >mdi-file-pdf-box</v-icon
-        >
+      <v-btn small @click="onExport(item)" variant="danger" class="mt-1" v-if="item.is_verified">
+        <v-icon small v-if="!exportIds.includes(item.id)">mdi-file-pdf-box</v-icon>
 
-        <v-progress-circular
-          v-else
-          color="danger"
-          :size="15"
-          :width="2"
-          indeterminate
-        ></v-progress-circular>
+        <v-progress-circular v-else color="danger" :size="15" :width="2" indeterminate></v-progress-circular>
         <span class="text-09-em ml-1">Export</span>
       </v-btn>
     </template>
@@ -117,16 +85,16 @@
     </template>
 
     <template v-slot:list-before-create>
-        <progsoc-collective-export-modal :dataKey="exportKey" />
+      <progsoc-collective-export-modal :dataKey="exportKey" />
     </template>
 
     <template v-slot:list-after-filter>
-        <div class="d-flex flex-row justify-content-start">
-            <v-btn variant="info" class="mr-2" @click="exportKey += 1">
-                <v-icon>mdi-table-arrow-right</v-icon>
-                <span>Export Excel</span>
-            </v-btn>
-        </div>
+      <div class="d-flex flex-row justify-content-start">
+        <v-btn variant="info" class="mr-2" @click="exportKey += 1">
+          <v-icon>mdi-table-arrow-right</v-icon>
+          <span>Export Excel</span>
+        </v-btn>
+      </div>
     </template>
   </geko-base-crud>
 </template>
@@ -331,7 +299,7 @@ export default {
           },
         },
 
-        delete: "",
+        delete: "DeleteFormMinatCollective_new",
 
         deleteKey: "form_no",
         updateValidationKey: "is_verified",
