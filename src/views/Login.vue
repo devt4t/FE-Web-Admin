@@ -1,6 +1,5 @@
 <template>
-  <v-main
-    style="
+  <v-main style="
       background-image: url('/images/BG_Login.jpg');
       background-repeat: no-repeat;
       background-attachment: fixed;
@@ -9,23 +8,12 @@
       height: 100vh;
       display: grid;
       align-items: center;
-    "
-  >
+    ">
     <v-form ref="form" v-model="valid" lazy-validation class="">
-      <v-card
-        max-width="325"
-        class="mx-auto px-5 pb-2 rounded-xl"
-        elevation="7"
-        data-aos="zoom-in"
-      >
+      <v-card max-width="325" class="mx-auto px-5 pb-2 rounded-xl" elevation="7" data-aos="zoom-in">
         <v-row align="center" justify="center">
-          <v-img
-            data-aos="zoom-in"
-            data-aos-delay="200"
-            max-width="250"
-            src="/images/GEKO_short2.png"
-            class="my-5 mb-10"
-          ></v-img>
+          <v-img data-aos="zoom-in" data-aos-delay="200" max-width="250" src="/images/GEKO_short2.png"
+            class="my-5 mb-10"></v-img>
         </v-row>
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->
         <v-card-text class="pt-1 pb-0 px-3">
@@ -56,93 +44,34 @@
             ></v-select>
           </div> -->
           <span class="d-block text-center mb-1">Tahun Program</span>
-          <div
-            class="d-flex flex-row w-100 mb-3"
-            style="flex-wrap: wrap; justify-content: center"
-          >
-            <v-btn
-              small
-              :variant="tahunProgram == item ? 'success' : 'light'"
-              @click="tahunProgram = item"
-              class="mb-2 mr-2"
-              v-for="(item, i) in $_config.programYear.options"
-              :key="`model-${i}`"
-              >{{ item }}</v-btn
-            >
+          <div class="d-flex flex-row w-100 mb-3" style="flex-wrap: wrap; justify-content: center">
+            <v-btn small :variant="tahunProgram == item ? 'success' : 'light'" @click="tahunProgram = item"
+              class="mb-2 mr-2" v-for="(item, i) in $_config.programYear.options" :key="`model-${i}`">{{ item }}</v-btn>
           </div>
 
-          <div
-            data-aos="fade-right"
-            data-aos-duration="500"
-            data-aos-delay="400"
-          >
-            <v-text-field
-              label="Email"
-              name="email"
-              v-model="email"
-              placeholder="Masukkan Email"
-              prepend-inner-icon="mdi-email"
-              filled
-              required
-              rounded
-              dense
-              v-on:keyup="submitLogin"
-            ></v-text-field>
+          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
+            <v-text-field label="Email" name="email" v-model="email" placeholder="Masukkan Email"
+              prepend-inner-icon="mdi-email" filled required rounded dense v-on:keyup="submitLogin"></v-text-field>
           </div>
-          <div
-            data-aos="fade-right"
-            data-aos-duration="500"
-            data-aos-delay="500"
-          >
-            <v-text-field
-              label="Password"
-              v-model="password"
-              placeholder="Masukkan Password"
-              :type="showPassword ? 'text' : 'password'"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              @click:append="showPassword = !showPassword"
-              prepend-inner-icon="mdi-lock"
-              filled
-              required
-              rounded
-              dense
-              v-on:keyup="submitLogin"
-            ></v-text-field>
+          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="500">
+            <v-text-field label="Password" v-model="password" placeholder="Masukkan Password"
+              :type="showPassword ? 'text' : 'password'" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="showPassword = !showPassword" prepend-inner-icon="mdi-lock" filled required rounded dense
+              v-on:keyup="submitLogin"></v-text-field>
           </div>
         </v-card-text>
 
-        <v-card-actions
-          class="pt-0 pb-2 px-3 mb-4"
-          data-aos="zoom-in"
-          data-aos-delay="700"
-        >
-          <v-btn
-            block
-            large
-            width="200"
-            @click="login()"
-            color="green"
-            class="mx-auto"
-            :disabled="disablevalue"
-            ><v-progress-circular
-              v-if="load == true"
-              :size="25"
-              :width="5"
-              indeterminate
-              color="green"
-            >
+        <v-card-actions class="pt-0 pb-2 px-3 mb-4" data-aos="zoom-in" data-aos-delay="700">
+          <v-btn block large width="200" @click="login()" color="green" class="mx-auto"
+            :disabled="disablevalue"><v-progress-circular v-if="load == true" :size="25" :width="5" indeterminate
+              color="green">
             </v-progress-circular>
             <h2 v-if="load == false">Login</h2>
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
-    <v-snackbar
-      v-model="snackbar"
-      :top="true"
-      :color="colorsnackbar"
-      :timeout="timeout"
-    >
+    <v-snackbar v-model="snackbar" :top="true" :color="colorsnackbar" :timeout="timeout">
       {{ text }}
     </v-snackbar>
   </v-main>
@@ -188,7 +117,7 @@ export default {
       if (authtoken) {
         localStorage.removeItem("token");
       }
-      var User = JSON.parse(localStorage.getItem("User"));
+      var User = localStorage.getItem("User");
       if (User) {
         localStorage.removeItem("User");
       }
