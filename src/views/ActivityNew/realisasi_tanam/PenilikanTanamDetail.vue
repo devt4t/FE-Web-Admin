@@ -3,49 +3,49 @@
     <v-row>
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-1">
-          <v-data-table :headers="headerBibits" :items="data.seed_detail" :search="''" class="rounded-xl elevation- pa-1 px-5"
-            :footer-props="{
+          <v-data-table :headers="headerBibits" :items="data.seed_detail" :search="''"
+            class="rounded-xl elevation- pa-1 px-5" :footer-props="{
               showCurrentPage: false,
               showFirstLastPage: false,
             }">
             <template v-slot:top>
               <div class="list-header py-3 mt-1">
-                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
                   <h4>Detail Bibit
                   </h4>
-                  </div>
-                  <div class="d-flex flex-row geko-list-header-action">
+                </div>
+                <div class="d-flex flex-row geko-list-header-action">
                   <div class="geko-list-header-toolbar"></div>
-                  </div>
+                </div>
               </div>
               <div class="statistics mb-3">
                 <div class="statistic-item success">
                   <v-icon>mdi-seed</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Tertanam Hidup</p>
-                      <p class="mb-0 value">{{ assignStatisticData('planted_life') ?? 0 }}</p>
+                    <p class="mb-0 label">Total Tertanam Hidup</p>
+                    <p class="mb-0 value">{{ assignStatisticData('planted_life') ?? 0 }}</p>
                   </div>
                 </div>
                 <div class="statistic-item danger">
                   <v-icon>mdi-seed</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Tertanam Mati</p>
-                      <p class="mb-0 value">{{ assignStatisticData('planted_dead') ?? 0 }}</p>
+                    <p class="mb-0 label">Total Tertanam Mati</p>
+                    <p class="mb-0 value">{{ assignStatisticData('planted_dead') ?? 0 }}</p>
                   </div>
                 </div>
                 <div class="statistic-item warning">
                   <v-icon>mdi-seed-plus</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Belum Ditanam Hidup</p>
-                      <p class="mb-0 value">{{ assignStatisticData('unplanted_life') ?? 0 }}</p>
+                    <p class="mb-0 label">Total Belum Ditanam Hidup</p>
+                    <p class="mb-0 value">{{ assignStatisticData('unplanted_life') ?? 0 }}</p>
 
                   </div>
                 </div>
                 <div class="statistic-item danger">
                   <v-icon>mdi-seed-plus</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Belum Ditanam Mati</p>
-                      <p class="mb-0 value">{{ assignStatisticData('unplanted_dead') ?? 0 }}</p>
+                    <p class="mb-0 label">Total Belum Ditanam Mati</p>
+                    <p class="mb-0 value">{{ assignStatisticData('unplanted_dead') ?? 0 }}</p>
 
                   </div>
                 </div>
@@ -67,8 +67,8 @@
                 <div class="statistic-item danger">
                   <v-icon>mdi-eye-remove</v-icon>
                   <div class="statistic-data">
-                      <p class="mb-0 label">Total Hilang</p>
-                      <p class="mb-0 value">{{ assignStatisticData('gone') ?? 0 }}</p>
+                    <p class="mb-0 label">Total Hilang</p>
+                    <p class="mb-0 value">{{ assignStatisticData('gone') ?? 0 }}</p>
                   </div>
                 </div>
               </div>
@@ -85,75 +85,78 @@
             <template v-slot:item.planted_status="{ item }">
               <div class="d-flex flex-row min-w-100px mb-3" style="justify-content: space-around">
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-info">
-                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-info">
+                      <v-icon size="small">mdi-sprout</v-icon> {{ item.planted ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Tertanam</span>
+                  <span>Total Tertanam</span>
                 </v-tooltip>
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-success">
-                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_life ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-success">
+                      <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_life ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Tertanam Hidup</span>
+                  <span>Total Tertanam Hidup</span>
                 </v-tooltip>
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-danger">
-                            <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_dead ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-danger">
+                      <v-icon size="small">mdi-sprout</v-icon> {{ item.planted_dead ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Tertanam Mati</span>
+                  <span>Total Tertanam Mati</span>
                 </v-tooltip>
               </div>
               <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
-                <v-btn variant="success" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_life_photo)">
-                      <v-icon>mdi-camera</v-icon>
-                  </v-btn>
-                <v-btn variant="danger" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_death_photo)">
-                    <v-icon>mdi-camera</v-icon>
+                <v-btn variant="success" class="mr-2"
+                  @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_life_photo)">
+                  <v-icon>mdi-camera</v-icon>
+                </v-btn>
+                <v-btn variant="danger" class="mr-2"
+                  @click="showLightbox($_config.baseUrlUpload + '/' + item.planted_death_photo)">
+                  <v-icon>mdi-camera</v-icon>
                 </v-btn>
               </div>
             </template>
             <template v-slot:item.unplanted_status="{ item }">
               <div class="d-flex flex-row min-w-100px max-w-200px" style="justify-content: space-around">
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-info">
-                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-info">
+                      <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Belum Tertanam</span>
+                  <span>Total Belum Tertanam</span>
                 </v-tooltip>
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-success">
-                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_life ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-success">
+                      <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_life ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Belum Tertanam Hidup</span>
+                  <span>Total Belum Tertanam Hidup</span>
                 </v-tooltip>
                 <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <span v-on="on" class="badge bg-danger">
-                            <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_dead ?? 0 }}
-                        </span>
-                    </template>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="badge bg-danger">
+                      <v-icon size="small">mdi-sprout-outline</v-icon> {{ item.unplanted_dead ?? 0 }}
+                    </span>
+                  </template>
 
-                    <span>Total Belum Tertanam Mati</span>
+                  <span>Total Belum Tertanam Mati</span>
                 </v-tooltip>
                 <v-tooltip top>
-                  <v-btn variant="light" class="mr-2" @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_death_photo)">
-                      <v-icon>mdi-table-arrow-right</v-icon>
-                      <span>Belum Tertanam Mati </span>
+                  <v-btn variant="light" class="mr-2"
+                    @click="showLightbox($_config.baseUrlUpload + '/' + item.unplanted_death_photo)">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Belum Tertanam Mati </span>
                   </v-btn>
                 </v-tooltip>
               </div>
@@ -161,29 +164,21 @@
             <template v-slot:item.gone="{ item }">
               <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <span v-on="on" class="badge bg-danger">
-                        <v-icon size="small">mdi-magnify-close</v-icon> {{ item.gone ?? 0 }}
-                    </span>
+                  <span v-on="on" class="badge bg-danger">
+                    <v-icon size="small">mdi-magnify-close</v-icon> {{ item.gone ?? 0 }}
+                  </span>
                 </template>
                 <span>Total Hilang</span>
               </v-tooltip>
             </template>
             <template v-slot:item.life_photo="{ item }">
               <div class="d-flex flex-row lahan-photo" style="max-width: 100px">
-                <v-img
-                  :src="$_config.baseUrlUpload + '/' + item.life_photo"
-                  alt="Foto Pohon Hidup"
-                  :width="100"
+                <v-img :src="$_config.baseUrlUpload + '/' + item.life_photo" alt="Foto Pohon Hidup" :width="100"
                   @click="showLightbox($_config.baseUrlUpload + '/' + item.life_photo)"
-                  class="tree-life-monitoring-img"
-                >
+                  class="tree-life-monitoring-img">
                   <template v-slot:placeholder>
                     <div class="tree-life-monitoring-placeholder">
-                      <v-progress-circular
-                        color="primary"
-                        indeterminate
-                        :size="20"
-                      ></v-progress-circular>
+                      <v-progress-circular color="primary" indeterminate :size="20"></v-progress-circular>
                     </div>
                   </template>
                 </v-img>
@@ -191,20 +186,12 @@
             </template>
             <template v-slot:item.death_photo="{ item }">
               <div class="d-flex flex-row lahan-photo" style="max-width: 100px">
-                <v-img
-                  :src="$_config.baseUrlUpload + '/' + item.death_photo"
-                  alt="Foto Pohon Hidup"
-                  :width="100"
+                <v-img :src="$_config.baseUrlUpload + '/' + item.death_photo" alt="Foto Pohon Hidup" :width="100"
                   @click="showLightbox($_config.baseUrlUpload + '/' + item.death_photo)"
-                  class="tree-life-monitoring-img"
-                >
+                  class="tree-life-monitoring-img">
                   <template v-slot:placeholder>
                     <div class="tree-life-monitoring-placeholder">
-                      <v-progress-circular
-                        color="primary"
-                        indeterminate
-                        :size="20"
-                      ></v-progress-circular>
+                      <v-progress-circular color="primary" indeterminate :size="20"></v-progress-circular>
                     </div>
                   </template>
                 </v-img>
@@ -232,43 +219,92 @@
               style="width: 100%; height: 400px; border-radius: 10px;"></div>
           </div>
 
-
         </v-card>
       </v-col>
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
-
-            <div class="list-header py-3 mt-1">
+          <div class="list-header py-3 mt-1">
             <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                <h4>Foto Dokumentasi Monitoring</h4>
+              <h4>Foto Dokumentasi Monitoring</h4>
             </div>
             <div class="d-flex flex-row geko-list-header-action">
-                <div class="geko-list-header-toolbar"></div>
+              <div class="geko-list-header-toolbar"></div>
             </div>
-            </div>
+          </div>
 
-            <div class="absent-photo-list d-flex flex-row" v-if="true">
-                <div class="absent-photo-item"
-                    @click="showLightbox($_config.baseUrlUpload + '/' + data.result.gambar3 ?? '')"
-                    v-bind:style="{
-                    backgroundImage:
-                        'url(' +
-                        $_config.baseUrlUpload +
-                        '/' +
-                        data.result.gambar3 ?? '' +
-                        ')',
-                    }">
-                    <h6>Foto Bibit Belum Ditanam</h6>
-                </div>
+          <div class="absent-photo-list d-flex flex-row" v-if="true">
+            <div class="absent-photo-item"
+              @click="showLightbox($_config.baseUrlUpload + '/' + data.result.gambar3 ?? '')" v-bind:style="{
+                backgroundImage:
+                  'url(' +
+                  $_config.baseUrlUpload +
+                  '/' +
+                  data.result.gambar3 ?? '' +
+                  ')',
+              }">
+              <h6>Foto Bibit Belum Ditanam</h6>
             </div>
-
+          </div>
         </v-card>
-          
       </v-col>
     </v-row>
 
-  </div>
+    <!-- Foto Batas Lahan (Hanya Tampil untuk Proyek Spesifik) -->
+    <v-row v-if="isSpecificProject()">
+      <v-col cols="12">
+        <v-card class="geko-base-detail-card mb-5 pa-5">
+          <div class="list-header py-3 mt-1">
+            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between;">
+              <h4>Foto Batas Lahan Setelah Penanaman</h4>
+            </div>
+            <div class="geko-list-header-action mb-3">
+              <div class="geko-list-header-toolbar"></div>
+            </div>
+          </div>
 
+          <v-row>
+            <v-col cols="12" sm="6" md="4" lg="3" xl="3"
+              v-for="(photoKey, i) in ['land_photo1', 'land_photo2', 'land_photo3', 'land_photo4']"
+              :key="'boundary-photo-' + i">
+              <v-card outlined class="h-100 d-flex flex-col" hover
+                style="border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
+
+                <!-- Header Foto (Susai Mata Angin) -->
+                <div class="pa-3 bg-light" style="border-bottom: 1px solid #e0e0e0;">
+                  <p class="mb-0 font-weight-bold text-truncate" :title="getBoundaryPhotoLabel(i)"
+                    style="font-size: 14px; color: #424242;">
+                    {{ getBoundaryPhotoLabel(i) }}
+                  </p>
+                </div>
+
+                <!-- Konten Foto -->
+                <div class="pa-3 flex-grow-1 d-flex justify-content-center align-items-center"
+                  style="min-height: 180px;">
+                  <div v-if="data.result && ![null, undefined, '', '-'].includes(data.result[photoKey])"
+                    style="width: 100%;">
+                    <img
+                      style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"
+                      :src="$_config.baseUrlUpload + '/' + data.result[photoKey]"
+                      @click="showLightbox($_config.baseUrlUpload + '/' + data.result[photoKey])"
+                      @mouseover="$event.target.style.opacity = '0.8'"
+                      @mouseleave="$event.target.style.opacity = '1'" />
+                  </div>
+
+                  <!-- Empty State -->
+                  <div v-else class="text-center text-muted d-flex flex-col justify-content-center align-items-center"
+                    style="width: 100%; height: 180px; border: 2px dashed #cbd5e1; border-radius: 8px; background-color: #f8fafc;">
+                    <v-icon color="grey lighten-1"
+                      style="font-size: 36px; margin-bottom: 8px;">mdi-image-off-outline</v-icon>
+                    <span style="font-size: 13px;">Belum ada foto</span>
+                  </div>
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -317,6 +353,26 @@ export default {
     //     this.bibits = res.data
     //   })
     // },
+    isSpecificProject() {
+      try {
+        const lp = this.data?.result?.lahan_projects || this.data?.result?.lahan_project;
+        if (!Array.isArray(lp) || lp.length === 0) return false;
+
+        const specifictProject = ['PJ00021'];
+        const specifictProgramYear = ['2026'];
+
+        return lp.some(p =>
+          specifictProject.includes(p.project_no)
+          // && specifictProgramYear.some(year => String(p.program_year).includes(year))
+        );
+      } catch (err) {
+        return false;
+      }
+    },
+    getBoundaryPhotoLabel(index) {
+      const directions = ['Utara', 'Timur', 'Selatan', 'Barat'];
+      return `Foto Lahan ${directions[index] || index + 1}`;
+    },
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
 
@@ -325,12 +381,12 @@ export default {
 
       this.$store.state.lightbox.show = true;
     },
-    assignStatisticData(type){
-      if(type == 'planted_life') return this.data.seed_detail.reduce((n, {planted_life}) => n + planted_life, 0)
-      if(type == 'planted_dead') return this.data.seed_detail.reduce((n, {planted_dead}) => n + planted_dead, 0)
-      if(type == 'unplanted_life') return this.data.seed_detail.reduce((n, {unplanted_life}) => n + unplanted_life, 0)
-      if(type == 'unplanted_dead') return this.data.seed_detail.reduce((n, {unplanted_dead}) => n + unplanted_dead, 0)
-      if(type == 'gone') return this.data.seed_detail.reduce((n, {gone}) => n + gone, 0)
+    assignStatisticData(type) {
+      if (type == 'planted_life') return this.data?.seed_detail.reduce((n, { planted_life }) => n + planted_life, 0)
+      if (type == 'planted_dead') return this.data?.seed_detail.reduce((n, { planted_dead }) => n + planted_dead, 0)
+      if (type == 'unplanted_life') return this.data?.seed_detail.reduce((n, { unplanted_life }) => n + unplanted_life, 0)
+      if (type == 'unplanted_dead') return this.data?.seed_detail.reduce((n, { unplanted_dead }) => n + unplanted_dead, 0)
+      if (type == 'gone') return this.data.seed_detail.reduce((n, { gone }) => n + gone, 0)
       // if(type == 'alive') return this.data.seed_detail.reduce((n, {alive}) => n + alive, 0)
       // if(type == 'die') return this.data.seed_detail.reduce((n, {die}) => n + die, 0)
     },
