@@ -49,7 +49,8 @@
                 </v-btn>
 
                 <!-- Export Detail -->
-                <v-btn variant="success" small class="mt-2" @click="ExportDetail(item)">
+                <v-btn :disabled="loadingExportId === item.id" :loading="loadingExportId === item.id" variant="success"
+                    small class="mt-2" @click="ExportDetail(item)">
                     <v-icon small>mdi-file-excel</v-icon>
                     <span>Export Detail</span>
                 </v-btn>
@@ -132,6 +133,7 @@ export default {
             exportSummaryKey: 0,
             user: {},
             localPlantingYear: currentYear,
+            loadingExportId: null,
         }
     },
 
@@ -245,28 +247,36 @@ export default {
                 cancelButtonText: 'Batal'
             })
             if (prompt.isConfirmed) {
+                this.loadingExportId = item.id;
+
                 const payload = {
                     id: item.id,
                     current_year: this.localPlantingYear,
                     program_year: item.program_year,
                     token: localStorage.getItem("token")
                 };
-                await axios({
-                    method: "POST",
-                    url: `${this.$_config.baseUrlExport}export/monitoring-v3/details`,
-                    responseType: "arraybuffer",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    data: payload,
-                }).then((res) => {
+
+                try {
+                    const res =
+                        await axios({
+                            method: "POST",
+                            url: `${this.$_config.baseUrlExport}export/monitoring-v3/details`,
+                            responseType: "arraybuffer",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                            data: payload,
+                        });
+
                     this.downloadFile(res);
                     this.$_alert.success("Export success");
-                }).catch(err => {
+                } catch (err) {
                     this.$_alert.error('Gagal Melakukan Export!')
                     console.error('Export Error =>', err)
-                })
+                } finally {
+                    this.loadingExportId = null;
+                }
             }
         },
         downloadFile(response) {
