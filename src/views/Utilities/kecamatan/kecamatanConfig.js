@@ -76,6 +76,8 @@ export default [
         setter: "kabupaten_no",
         option: {
           getterKey: 'data',
+          getter: 'kabupaten_no',
+          default_label: 'kabupatens_name',
           list_pointer: {
             code: 'kabupaten_no',
             label: 'name',

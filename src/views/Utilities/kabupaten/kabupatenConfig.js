@@ -72,20 +72,36 @@ export default [
       list: true,
       detail: true,
       create: {
-        type: "row-slot",
-        setter: "province_code",
-        view_data: "province_code",
-        col_size: 6,
-      },
-      update: {
-        type: "row-slot",
-        base_type: "select",
+        getter: 'new-utilities/provinces',
+        type: "select",
         setter: "province_code",
         view_data: "province_code",
         col_size: 6,
         option: {
-          default_label: "provinces_name"
-        }
+          getterKey: "data",
+          list_pointer: {
+            code: "province_code",
+            label: "name",
+            display: ["name"],
+          },
+        },
+      },
+      update: {
+        getter: "new-utilities/provinces",
+        type: "select",
+        setter: "province_code",
+        view_data: "province_code",
+        col_size: 6,
+        option: {
+          getterKey: "data",
+          getter: "province_code",
+          default_label: "provinces_name",
+          list_pointer: {
+            code: "province_code",
+            label: "name",
+            display: ["name"],
+          },
+        },
       },
       filter: {
         validation: ["required"],

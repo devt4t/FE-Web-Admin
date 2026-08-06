@@ -1,54 +1,5 @@
 <template>
   <geko-base-crud :config="config">
-    <!-- Slot Create: Dropdown Provinsi -->
-    <template v-slot:create-province_code="{ formData }">
-      <v-col lg="6">
-        <geko-input v-model="formData.province_code" :item="{
-          type: 'select',
-          label: 'Nama Provinsi',
-          api: 'new-utilities/provinces',
-          validation: ['required'],
-          param: {
-            page: 1,
-            per_page: 100,
-          },
-          option: {
-            getterKey: 'data',
-            list_pointer: {
-              code: 'province_code',
-              label: 'name',
-              display: ['name'],
-            },
-          },
-        }" />
-      </v-col>
-    </template>
-
-    <!-- Slot Update: Dropdown Provinsi -->
-    <template v-slot:update-province_code="{ formData }">
-      <v-col lg="6">
-        <geko-input v-model="formData.province_code" :item="{
-          type: 'select',
-          label: 'Nama Provinsi',
-          api: 'new-utilities/provinces',
-          validation: ['required'],
-          param: {
-            page: 1,
-            per_page: 100,
-          },
-          option: {
-            getterKey: 'data',
-            list_pointer: {
-              code: 'province_code',
-              label: 'name',
-              display: ['name'],
-            },
-          },
-          default_label: formData.provinces_name,
-        }" />
-      </v-col>
-    </template>
-
     <template v-slot:list-indicator="{ item }">
 
     </template>
