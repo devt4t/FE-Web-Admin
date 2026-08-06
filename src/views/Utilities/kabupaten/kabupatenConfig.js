@@ -74,12 +74,18 @@ export default [
       create: {
         type: "row-slot",
         setter: "province_code",
+        view_data: "province_code",
         col_size: 6,
       },
       update: {
         type: "row-slot",
+        base_type: "select",
         setter: "province_code",
+        view_data: "province_code",
         col_size: 6,
+        option: {
+          default_label: "provinces_name"
+        }
       },
       filter: {
         validation: ["required"],

@@ -37,14 +37,14 @@ export default {
         // },
         update: "UpdateKecamatan",
         update_ext_payload: {},
-        globalFilter: {
-          // project_purpose: {
-          //   setter: "purpose_code",
-          // },
-          program_year: {
-            setter: "program_year",
-          },
-        },
+        // globalFilter: {
+        // project_purpose: {
+        //   setter: "purpose_code",
+        // },
+        //   program_year: {
+        //     setter: "program_year",
+        //   },
+        // },
         delete: "DeleteKecamatan",
         // delete_ext_payload: {
         //     delete_type: "hard_delete",

@@ -1,7 +1,7 @@
 <template>
   <geko-base-crud :config="config">
     <!-- Slot Create: Dropdown Provinsi -->
-    <template v-slot:create-provinces_name="{ formData }">
+    <template v-slot:create-province_code="{ formData }">
       <v-col lg="6">
         <geko-input v-model="formData.province_code" :item="{
           type: 'select',
@@ -25,7 +25,7 @@
     </template>
 
     <!-- Slot Update: Dropdown Provinsi -->
-    <template v-slot:update-provinces_name="{ formData }">
+    <template v-slot:update-province_code="{ formData }">
       <v-col lg="6">
         <geko-input v-model="formData.province_code" :item="{
           type: 'select',
@@ -44,6 +44,7 @@
               display: ['name'],
             },
           },
+          default_label: formData.provinces_name,
         }" />
       </v-col>
     </template>
