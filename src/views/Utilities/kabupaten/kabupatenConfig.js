@@ -72,14 +72,14 @@ export default [
       list: true,
       detail: true,
       create: {
-        type: "text",
+        type: "row-slot",
+        setter: "province_code",
         col_size: 6,
-        validation: ["required"],
       },
       update: {
-        type: "text",
+        type: "row-slot",
+        setter: "province_code",
         col_size: 6,
-        validation: ["required"],
       },
       filter: {
         validation: ["required"],
@@ -90,7 +90,7 @@ export default [
         setter: "province_code",
         param: {
           page: 1,
-          per_page: 10,
+          per_page: 100,
         },
         option: {
           getterKey: "data",
@@ -109,16 +109,8 @@ export default [
     methods: {
       list: true,
       detail: true,
-      create: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
-      update: {
-        type: "text",
-        col_size: 6,
-        validation: ["required"],
-      },
+      create: false,
+      update: false,
     },
   }
 ];

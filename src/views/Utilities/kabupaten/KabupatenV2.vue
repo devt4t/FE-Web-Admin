@@ -1,7 +1,53 @@
 <template>
   <geko-base-crud :config="config">
-    <!-- :hideCreate="!['4', '13'].includes($store.state.User.role)"
-    :hideUpdate="!['4', '13'].includes($store.state.User.role)" -->
+    <!-- Slot Create: Dropdown Provinsi -->
+    <template v-slot:create-provinces_name="{ formData }">
+      <v-col lg="6">
+        <geko-input v-model="formData.province_code" :item="{
+          type: 'select',
+          label: 'Nama Provinsi',
+          api: 'new-utilities/provinces',
+          validation: ['required'],
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: 'data',
+            list_pointer: {
+              code: 'province_code',
+              label: 'name',
+              display: ['name'],
+            },
+          },
+        }" />
+      </v-col>
+    </template>
+
+    <!-- Slot Update: Dropdown Provinsi -->
+    <template v-slot:update-provinces_name="{ formData }">
+      <v-col lg="6">
+        <geko-input v-model="formData.province_code" :item="{
+          type: 'select',
+          label: 'Nama Provinsi',
+          api: 'new-utilities/provinces',
+          validation: ['required'],
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: 'data',
+            list_pointer: {
+              code: 'province_code',
+              label: 'name',
+              display: ['name'],
+            },
+          },
+        }" />
+      </v-col>
+    </template>
+
     <template v-slot:list-indicator="{ item }">
 
     </template>
@@ -35,17 +81,17 @@ export default {
         // setter_ext_payload: {
         //     project_modul: 'environment',
         // },
-        update: "EditEmployee",
+        update: "UpdateKabupaten",
         update_ext_payload: {},
-        globalFilter: {
-          // project_purpose: {
-          //   setter: "purpose_code",
-          // },
-          program_year: {
-            setter: "program_year",
-          },
-        },
-        delete: "DeleteEmployee",
+        // globalFilter: {
+        // project_purpose: {
+        //   setter: "purpose_code",
+        // },
+        //   program_year: {
+        //     setter: "program_year",
+        //   },
+        // },
+        delete: "DeleteKabupaten",
         // delete_ext_payload: {
         //     delete_type: "hard_delete",
         //     project_modul: 'environment',
