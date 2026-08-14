@@ -255,10 +255,15 @@ export default {
                 this.hasCheckedAccess = true;
 
                 if (!this.isAssignedAsFC) {
-                    this.$_alert.error(
-                        null,
-                        "Anda belum terdaftar/di-assign sebagai FC di Monitoring V3. Fitur penambahan FF dinonaktifkan."
-                    );
+                    this.$_alert.custom({
+                        title: "Informasi",
+                        icon: "info",
+                        text: "Anda belum terdaftar/di-assign sebagai FC di Monitoring V3. Fitur penambahan FF dinonaktifkan.",
+                        showCloseButton: true,
+                        showCancel: true,
+                        cancelButtonColor: "#2e7d32",
+                        cancelButtonText: "Tutup",
+                    });
                 }
             }
         }
