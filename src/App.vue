@@ -305,9 +305,8 @@ export default {
     async onInit() {
       if (!this.$store.state.tmpProjectPurpose) {
         this.$store.commit("set", ["tmpProjectPurpose", "non-carbon", true]);
-      } else {
-        this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
       }
+      this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
 
       if (!this.$store.state.tmpProgramYear) {
         this.$store.commit("set", ["tmpProgramYear", this.$_config.programYear.model, true]);

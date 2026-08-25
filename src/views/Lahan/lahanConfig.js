@@ -6,7 +6,7 @@ export default {
   delete: "DeleteDataLahan_new",
   deleteKey: "lahan_no",
   delete_ext_payload: {
-    delete_type: "hard_delete",
+    delete_type: "soft_delete",
   },
 
   statistic: {
