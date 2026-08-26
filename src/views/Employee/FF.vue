@@ -491,10 +491,16 @@ export default {
     // agar tidak harcode, jadi akan langsung ikut dari state management dan config.js
     const programYearField = this.config.fields.find(field => field.id === 'program_year');
     if (programYearField) {
-      programYearField.methods.create.option.default_options = this.$store.state.programYear.options.map((year) => ({
+      const pyOptions = this.$store.state.programYear.options.map((year) => ({
         code: year,
         label: year,
       }));
+      if (programYearField.methods.create) {
+        programYearField.methods.create.option.default_options = pyOptions;
+      }
+      if (programYearField.methods.update) {
+        programYearField.methods.update.option.default_options = pyOptions;
+      }
     }
   },
 
@@ -594,38 +600,22 @@ export default {
                   },
                   // agar tidak hardcode
                   default_options: [],
-
-                  // ini hardcode nya
-                  // default_options: [
-                  //   {
-                  //     code: "2020",
-                  //     label: "2020",
-                  //   },
-                  //   {
-                  //     code: "2021",
-                  //     label: "2021",
-                  //   },
-                  //   {
-                  //     code: "2022",
-                  //     label: "2022",
-                  //   },
-                  //   {
-                  //     code: "2023",
-                  //     label: "2023",
-                  //   },
-                  //   {
-                  //     code: "2024",
-                  //     label: "2024",
-                  //   },
-                  //   {
-                  //     code: "2025",
-                  //     label: "2025",
-                  //   },
-                  //   {
-                  //     code: "2026",
-                  //     label: "2026",
-                  //   },
-                  // ],
+                },
+              },
+              update: {
+                separator: "TAHUN PROGRAM",
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                setter: "program_year",
+                option: {
+                  list_pointer: {
+                    code: "code",
+                    label: "label",
+                    display: ["label"],
+                  },
+                  // agar tidak hardcode
+                  default_options: [],
                 },
               },
               filter: false,
