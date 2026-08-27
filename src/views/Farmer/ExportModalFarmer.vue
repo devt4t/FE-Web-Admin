@@ -236,7 +236,6 @@ export default {
         },
         format: {
             required: true,
-            default: "excel",
         },
     },
 
@@ -318,7 +317,7 @@ export default {
 
             this.muList = result.data.result;
         },
-        
+
         // export data
 
         getExportData(ffCode) {
@@ -339,7 +338,7 @@ export default {
             });
         },
         getExportDataCarbon(value, offset) {
-                console.log({value, offset})
+            console.log({ value, offset })
             return new Promise(async (resolve, reject) => {
 
                 let payload = {
@@ -704,7 +703,7 @@ export default {
             this.loadingExportByFC = true;
             for (const [index, _fc] of this.employee_no_fc.entries()) {
                 if (!_fc) continue;
-                
+
                 let fcName = this.fcList.find((item) => item.nik == _fc)
                     ? this.fcList.find((item) => item.nik == _fc).name
                     : "";
