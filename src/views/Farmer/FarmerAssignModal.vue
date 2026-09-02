@@ -24,6 +24,8 @@
                         type: 'select',
                         param: {
                           program_year: $_config.programYear.model,
+                          limit: 100,
+                          offset: 0,
                         },
                         api: 'GetFFAllWeb_new',
                         validation: ['required'],
@@ -68,6 +70,7 @@
                         type: 'select',
                         setter: 'program_year',
                         option: {
+                          default_label: f.program_year,
                           default_options: $_config.programYear.options.map(
                             (x) => {
                               return {
@@ -183,15 +186,15 @@ export default {
       let failedList = [];
 
       for (const farmer of this.farmers) {
-        if (ffs.includes(farmer.key1)) {
-          this.$_alert.error(
-            "",
-            "Duplicate FF",
-            `Terdapat duplikat FF dengan nama kode FF ${farmer.key1}`
-          );
-          this.loading = false;
-          return;
-        }
+        // if (ffs.includes(farmer.key1)) {
+        //   this.$_alert.error(
+        //     "",
+        //     "Duplicate FF",
+        //     `Terdapat duplikat FF dengan nama kode FF ${farmer.key1}`
+        //   );
+        //   this.loading = false;
+        //   return;
+        // }
 
         if (years.includes(farmer.program_year)) {
           this.$_alert.error(

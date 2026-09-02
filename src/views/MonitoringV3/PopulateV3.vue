@@ -160,9 +160,6 @@ export default {
                     icon: "info",
                     text: "Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.",
                     showCloseButton: true,
-                    showCancel: true,
-                    cancelButtonColor: "#2e7d32",
-                    cancelButtonText: "Tutup",
                 });
                 return;
             }
@@ -174,9 +171,6 @@ export default {
                     icon: "info",
                     text: "Tahun Program tidak valid (melebihi atau sama dengan Tahun Tanam).",
                     showCloseButton: true,
-                    showCancel: true,
-                    cancelButtonColor: "#2e7d32",
-                    cancelButtonText: "Tutup",
                 });
                 return;
             }

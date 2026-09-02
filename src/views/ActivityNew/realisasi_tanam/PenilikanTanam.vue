@@ -634,9 +634,6 @@ export default {
                     icon: "info",
                     text: "Data terlalu lawas! Batas maksimal adalah ruang lingkup Monitoring 6.",
                     showCloseButton: true,
-                    showCancel: true,
-                    cancelButtonColor: "#2e7d32",
-                    cancelButtonText: "Tutup",
                 });
                 this.targetMonitoringStage = 6;
             } else if (step <= 1) {
@@ -647,9 +644,6 @@ export default {
                     icon: "info",
                     text: "Tahun Tanam tidak memvalidasi siklus populate (karena sudah di Monitoring 1 / Penilikan).",
                     showCloseButton: true,
-                    showCancel: true,
-                    cancelButtonColor: "#2e7d32",
-                    cancelButtonText: "Tutup",
                 });
                 this.targetMonitoringStage = 2; // Default limit fallback is 2
             } else {

@@ -9,106 +9,88 @@
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <v-row class="assign-ff-wrapper">
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.mu_no"
-                    :item="{
-                      type: 'select',
-                      label: 'Management Unit',
-                      api: 'GetManagementUnit',
-                      validation: ['required'],
-                      param: {
-                        program_year: 2024,
+                  <geko-input v-model="formData.mu_no" :item="{
+                    type: 'select',
+                    label: 'Management Unit',
+                    api: 'GetManagementUnit',
+                    validation: ['required'],
+                    param: {
+                      program_year: 2024,
+                    },
+                    option: {
+                      getterKey: 'data.result',
+                      list_pointer: {
+                        label: 'name',
+                        code: 'mu_no',
+                        display: ['name'],
                       },
-                      option: {
-                        getterKey: 'data.result',
-                        default_label: formData.managementunits_name,
-                        list_pointer: {
-                          label: 'name',
-                          code: 'mu_no',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
 
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.area_code"
-                    :item="{
-                      type: 'select',
-                      label: 'Target Area',
-                      api: 'GetTargetArea',
-                      validation: ['required'],
-                      param: {
-                        mu_no: formData.mu_no,
+                  <geko-input v-model="formData.area_code" :item="{
+                    type: 'select',
+                    label: 'Target Area',
+                    api: 'GetTargetArea',
+                    validation: ['required'],
+                    param: {
+                      mu_no: formData.mu_no,
+                    },
+                    option: {
+                      getterKey: 'data.result',
+                      list_pointer: {
+                        label: 'name',
+                        code: 'area_code',
+                        display: ['name'],
                       },
-                      option: {
-                        default_label: formData.target_areas_name,
-                        getterKey: 'data.result',
-                        list_pointer: {
-                          label: 'name',
-                          code: 'area_code',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                    :disabled="!formData.mu_no"
-                  />
+                    },
+                  }" :disabled="!formData.mu_no" />
                 </v-col>
 
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.village"
-                    :item="{
-                      type: 'select',
-                      label: 'Working Area / Desa',
-                      api: 'GetDesaByKecamatanTA_new',
-                      validation: ['required'],
-                      param: {
-                        ta_no: formData.area_code,
+                  <geko-input v-model="formData.village" :item="{
+                    type: 'select',
+                    label: 'Working Area / Desa',
+                    api: 'GetDesa',
+                    validation: ['required'],
+                    param: {
+                      kode_ta: formData.area_code,
+                    },
+                    option: {
+                      getterKey: 'data.result',
+                      list_pointer: {
+                        label: 'name',
+                        code: 'kode_desa',
+                        display: ['name'],
                       },
-                      option: {
-                        // getterKey: 'data.result',
-                        default_label: formData.desas_name,
-                        list_pointer: {
-                          label: 'name',
-                          code: 'kode_desa',
-                          display: ['name'],
-                        },
-                      },
-                    }"
-                    :disabled="!formData.area_code"
-                  />
+                    },
+                  }" :disabled="!formData.area_code" />
                 </v-col>
 
                 <v-col lg="6">
-                  <geko-input
-                    v-model="formData.ff_no"
-                    :item="{
-                      type: 'select',
-                      label: 'Field Facilitator',
-                      api: 'GetFFAllWeb_new',
-                      validation: ['required'],
-                      option: {
-                        // getterKey: 'data.result',
-                        default_label: formData.ff_name,
-                        list_pointer: {
-                          label: 'name',
-                          code: 'ff_no',
-                          display: ['name', 'target_areas_name'],
-                        },
+                  <geko-input v-model="formData.ff_no" :item="{
+                    type: 'select',
+                    label: 'Field Facilitator',
+                    api: 'GetFFAllWeb_new',
+                    param: {
+                      limit: 100,
+                      offset: 0
+                    },
+                    validation: ['required'],
+                    option: {
+                      // getterKey: 'data.result',
+                      list_pointer: {
+                        label: 'name',
+                        code: 'ff_no',
+                        display: ['name', 'target_areas_name'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
 
                 <v-col lg="12" class="d-flex flex-row justify-content-center">
-                  <v-btn
-                    variant="info"
-                    class="d-flex flex-row align-items-center"
-                    type="submit"
-                  >
+                  <v-btn variant="info" class="d-flex flex-row align-items-center" type="submit">
                     <v-icon>mdi-account-edit</v-icon>
                     <span>Assign FF</span>
                   </v-btn>
@@ -128,7 +110,7 @@ export default {
   props: {
     data: {
       required: false,
-      default: () => {},
+      default: () => { },
     },
     dataKey: {
       required: true,
@@ -138,7 +120,7 @@ export default {
   },
 
   methods: {
-    onOpen() {},
+    onOpen() { },
 
     onSubmit() {
       let payload = JSON.parse(JSON.stringify(this.formData));

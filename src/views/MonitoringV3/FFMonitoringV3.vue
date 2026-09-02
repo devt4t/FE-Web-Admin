@@ -260,9 +260,6 @@ export default {
                         icon: "info",
                         text: "Anda belum terdaftar/di-assign sebagai FC di Monitoring V3. Fitur penambahan FF dinonaktifkan.",
                         showCloseButton: true,
-                        showCancel: true,
-                        cancelButtonColor: "#2e7d32",
-                        cancelButtonText: "Tutup",
                     });
                 }
             }
