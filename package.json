@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "zip-folder": "rm -rf dist.zip && npm-build-zip --source=./dist --name=dist --info=true && mv admin_system_app_1.1.01.dist.zip dist.zip",
+    "zip-folder": "rm -rf dist.zip && npm-build-zip --source=./dist --name=dist --info=true && mv *.dist.zip dist.zip",
     "upload": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/OldWeb && ssh sysadmin@168.63.242.116 \"cd /var/www/GEKO/OldWeb && rm -rf dist && unzip -o dist.zip\"",
     "upload-dev": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/dev/OldWeb/",
     "upload-staging": "scp dist.zip sysadmin@172.188.34.49:/var/www/geko-staging",
