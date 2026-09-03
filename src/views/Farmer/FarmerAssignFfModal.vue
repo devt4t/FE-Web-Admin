@@ -74,7 +74,7 @@
                     label: 'Field Facilitator',
                     api: 'GetFFAllWeb_new',
                     param: {
-                      limit: 100,
+                      limit: 50,
                       offset: 0
                     },
                     validation: ['required'],

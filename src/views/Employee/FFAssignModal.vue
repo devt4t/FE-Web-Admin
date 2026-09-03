@@ -350,7 +350,7 @@ export default {
         for (const item of this.ffData.ff_main_pivot) {
           if (!item.program_year) item.program_year = [];
           else {
-            item.program_year = item.program_year.replace(/ /g, "").split(",");
+            item.program_year = String(item.program_year).replace(/ /g, "").split(",");
           }
           newFcFf.push(item);
         }
