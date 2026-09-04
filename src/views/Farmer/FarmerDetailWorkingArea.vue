@@ -92,8 +92,9 @@
 
     <template v-slot:item.ff_id="{ item }">
       <div class="d-flex flex-column">
-        <span class="font-weight-500">{{ item.field_facilitators_name }}</span>
-        <div class="d-flex flex-row">
+        <span class="font-weight-500" v-if="item.field_facilitators_name">{{ item.field_facilitators_name }}</span>
+        <span v-else>-</span>
+        <div class="d-flex flex-row" v-if="item.ff_no">
           <span class="badge bg-light">{{ item.ff_no }}</span>
         </div>
       </div>
@@ -101,8 +102,9 @@
     
     <template v-slot:item.target_areas_name="{ item }">
       <div class="d-flex flex-column">
-        <span class="font-weight-500">{{ item.target_areas_name }}</span>
-        <div class="d-flex flex-row">
+        <span class="font-weight-500" v-if="item.target_areas_name">{{ item.target_areas_name }}</span>
+        <span v-else>-</span>
+        <div class="d-flex flex-row" v-if="item.area_code">
           <span class="badge bg-light">{{ item.area_code }}</span>
         </div>
       </div>
@@ -110,8 +112,9 @@
 
     <template v-slot:item.managementunits_name="{ item }">
       <div class="d-flex flex-column">
-        <span class="font-weight-500">{{ item.managementunits_name }}</span>
-        <div class="d-flex flex-row">
+        <span class="font-weight-500" v-if="item.managementunits_name">{{ item.managementunits_name }}</span>
+        <span v-else>-</span>
+        <div class="d-flex flex-row" v-if="item.mu_no">
           <span class="badge bg-light">{{ item.mu_no }}</span>
         </div>
       </div>
@@ -119,15 +122,17 @@
 
     <template v-slot:item.desas_name="{ item }">
       <div class="d-flex flex-column">
-        <span class="font-weight-500">{{ item.desas_name }}</span>
-        <div class="d-flex flex-row">
+        <span class="font-weight-500" v-if="item.desas_name">{{ item.desas_name }}</span>
+        <span v-else>-</span>
+        <div class="d-flex flex-row" v-if="item.kode_desa">
           <span class="badge bg-light">{{ item.kode_desa }}</span>
         </div>
       </div>
     </template>
 
     <template v-slot:item.program_year="{ item }">
-      <span class="badge bg-primary">{{ item.program_year }}</span>
+      <span class="badge bg-primary" v-if="item.program_year">{{ item.program_year }}</span>
+      <span v-else>-</span>
     </template>
   </v-data-table>
 </template>
