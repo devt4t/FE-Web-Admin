@@ -23,41 +23,18 @@
               type: 'select',
               setter: 'program_year',
               option: {
-                default_options: [
-                  {
-                    name: '2020',
-                    value: '2020',
-                  },
-                  {
-                    name: '2021',
-                    value: '2021',
-                  },
-                  {
-                    name: '2022',
-                    value: '2022',
-                  },
-                  {
-                    name: '2023',
-                    value: '2023',
-                  },
-                  {
-                    name: '2024',
-                    value: '2024',
-                  },
-                  {
-                    name: '2025',
-                    value: '2025',
-                  },
-                  {
-                    name: '2026',
-                    value: '2026',
-                  },
-                ],
-
+                default_options: $_config.programYear.options.map(
+                  (x) => {
+                    return {
+                      label: x,
+                      code: x,
+                    };
+                  }
+                ),
                 list_pointer: {
-                  code: 'value',
-                  label: 'name',
-                  display: ['name'],
+                  label: 'label',
+                  code: 'label',
+                  display: ['label'],
                 },
               },
             }" />
@@ -275,33 +252,19 @@
               validation: ['required'],
               type: 'select',
               option: {
+                default_options: $_config.programYear.options.map(
+                  (x) => {
+                    return {
+                      label: x,
+                      code: x,
+                    };
+                  }
+                ),
                 list_pointer: {
                   label: 'label',
                   code: 'code',
                   display: ['label'],
                 },
-                default_options: [
-                  {
-                    label: '2020',
-                    code: '2020',
-                  },
-                  {
-                    label: '2021',
-                    code: '2021',
-                  },
-                  {
-                    label: '2022',
-                    code: '2022',
-                  },
-                  {
-                    label: '2023',
-                    code: '2023',
-                  },
-                  {
-                    label: '2024',
-                    code: '2024',
-                  },
-                ],
               }
             }" />
           </v-col>
@@ -681,6 +644,7 @@
               upload_type: 'image/*',
               setter: 'documentation1',
               view_data: 'documentation1',
+              require_gps: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -698,6 +662,7 @@
               upload_type: 'image/*',
               setter: 'documentation2',
               view_data: 'documentation2',
+              require_gps: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',

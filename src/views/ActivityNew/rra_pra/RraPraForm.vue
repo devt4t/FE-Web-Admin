@@ -682,6 +682,7 @@
                             api: 'rra_pra/upload.php',
                             directory: 'photos',
                             upload_type: 'image/*',
+                            require_gps: true,
                             setter: `dusun_access_photo_${i}`,
                             view_data: `dusun_access_photo_${i}`,
                             option: {

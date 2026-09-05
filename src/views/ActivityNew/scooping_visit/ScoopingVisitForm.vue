@@ -427,6 +427,7 @@
               upload_type: 'image/*',
               setter: 'photo_road_access',
               view_data: 'photo_road_access',
+              require_gps: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -445,6 +446,7 @@
               setter: 'photo_meeting',
               view_data: 'photo_meeting',
               upload_type: 'image/*',
+              require_gps: true,
               api: 'scooping_visits/upload.php',
               directory: 'photos',
               option: {
@@ -467,6 +469,7 @@
               api: 'scooping_visits/upload.php',
               directory: 'photos',
               upload_type: 'image/*',
+              require_gps: true,
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',

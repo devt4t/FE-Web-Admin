@@ -149,6 +149,7 @@
                                         upload_type: 'image/*',
                                         setter: 'photo_documentation1',
                                         view_data: 'photo_documentation1',
+                                        require_gps: true,
                                         option: {
                                             label_hint:
                                                 'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -169,6 +170,7 @@
                                         upload_type: 'image/*',
                                         setter: 'photo_documentation2',
                                         view_data: 'photo_documentation2',
+                                        require_gps: true,
                                         option: {
                                             label_hint:
                                                 'Klik gambar untuk memilih berkas yang akan diunggah',

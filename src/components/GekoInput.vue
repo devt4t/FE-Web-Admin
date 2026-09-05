@@ -138,6 +138,11 @@
               item.option.max_size }}
               Mb
               <span v-if="item.option && item.option.max">( Maksimal {{ item.option.max }} foto)</span></span>
+            <span class="d-block text-danger mt-1 font-weight-bold font-italic" style="font-size: 0.85em;"
+              v-if="item.require_gps">
+              <v-icon color="red" small class="mr-1">mdi-map-marker-alert</v-icon>
+              Memerlukan Data Geotag/GPS
+            </span>
 
             <div class="preview-image-list">
               <div class="preview-image" v-for="(image, i) in tmpImages" :key="item.label + i" :style="{
@@ -179,6 +184,7 @@
 //   }
 
 import _ from "lodash";
+import exifr from "exifr";
 export default {
   name: "geko-input",
   props: {
@@ -276,7 +282,7 @@ export default {
           for (let i = 0; i < _tmpImages.length; i++) {
             _tmpImages[i] = `${this.$_config.baseUrlUpload}/${_tmpImages[i]}`;
           }
-          
+
           console.log("1");
           this.tmpImages = _tmpImages;
           this.tmpValue = this.value;
@@ -335,10 +341,10 @@ export default {
           ? this.getListDataKey(result, this.item.option.getterKey)
           : result.data;
 
-        if (this.item.option.filterBy) {
-          if (this.item.option.filterBy.value != 'all') responseData = responseData
-          .filter((x) => x[this.item.option.filterBy.key] == this.item.option.filterBy.value) 
-        }
+      if (this.item.option.filterBy) {
+        if (this.item.option.filterBy.value != 'all') responseData = responseData
+          .filter((x) => x[this.item.option.filterBy.key] == this.item.option.filterBy.value)
+      }
 
       let processedData = [];
       for (const _data of responseData) {
@@ -382,6 +388,39 @@ export default {
     },
 
     async handleFileUpload(data) {
+      const file = data.target.files && data.target.files[0];
+      if (!file) return;
+
+      if (this.item.require_gps) {
+        try {
+          const gps = await exifr.gps(file);
+          const hasValidGPS = gps && typeof gps.latitude === 'number' && typeof gps.longitude === 'number';
+          if (!hasValidGPS) {
+            this.$_alert.error(
+              "Foto ditolak",
+              "Foto ditolak",
+              "Foto tidak memiliki metadata GPS/Geotag lokasi. Pastikan GPS kamera aktif dan bukan foto dari WhatsApp/Screenshot"
+            );
+            data.target.value = "";
+            return;
+          }
+
+          this.$emit("gps-captured", {
+            field: this.item.setter || this.item.view_data,
+            lat: gps.latitude,
+            lng: gps.longitude,
+          });
+        } catch (err) {
+          console.error("Gagal membaca exif GPS:", err);
+          this.$_alert.error(
+            "Gagal Membaca File",
+            "Format file tidak valid atau rusak."
+          );
+          data.target.value = "";
+          return;
+        }
+      }
+
       let param = {
         nama: Date.now().toString(),
         dir: this.item.directory,
