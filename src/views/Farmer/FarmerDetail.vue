@@ -1,22 +1,12 @@
 <template>
   <v-row class="farmer-detail" :key="'farmer-detail' + componentKey">
     <v-col md="4" xl="3">
-      <farmer-assign-modal
-        :data="ff"
-        :dataKey="farmerAssignModal"
-        @success="getData()"
-        v-if="$_sys.isAllowed('farmer-update')"
-      />
-      <v-card
-        data-aos="fade-up"
-        data-aos-delay="100"
-        data-aos-duration="800"
-        class="scooping-visit-detail-card farmer-card mb-5"
-      >
+      <farmer-assign-modal :data="ff" :dataKey="farmerAssignModal" @success="getData()"
+        v-if="$_sys.isAllowed('farmer-update')" />
+      <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800"
+        class="scooping-visit-detail-card farmer-card mb-5">
         <v-card-title>
-          <v-icon large class="mr-2" @click="$router.go(-1)"
-            >mdi-arrow-left-circle</v-icon
-          >
+          <v-icon large class="mr-2" @click="$router.go(-1)">mdi-arrow-left-circle</v-icon>
           <h5 class="mb-0 pb-0">Detail Petani</h5>
         </v-card-title>
 
@@ -34,12 +24,8 @@
             <div class="farmer-info-text d-flex flex-column">
               <div class="farmer-info-list">
                 <v-icon>mdi-account-badge-outline</v-icon>
-                <span
-                  >{{ mainData.name }}
-                  <span v-if="mainData.nickname"
-                    >({{ mainData.nickname }})</span
-                  ></span
-                >
+                <span>{{ mainData.name }}
+                  <span v-if="mainData.nickname">({{ mainData.nickname }})</span></span>
               </div>
 
               <div class="farmer-info-list">
@@ -49,52 +35,30 @@
 
               <div class="farmer-info-list">
                 <v-icon>mdi-map-marker-radius-outline</v-icon>
-                <span class="d-block"
-                  >{{ mainData.target_areas_name?.replace(/_/g, " ") }}
+                <span class="d-block">{{ mainData.target_areas_name?.replace(/_/g, " ") }}
                 </span>
               </div>
               <div class="d-flex flex-row mt-3">
-                <div
-                  class="action-button d-flex flex-column"
-                  style="flex-wrap: wrap"
-                >
-                  <v-btn
-                    variant="success"
-                    v-if="
-                      $_sys.isAllowed('farmer-verification-create') &&
-                      mainData.approve == 0 &&
-                      this.$store.state.tmpProgramYear ==
-                        this.$_config.programYear.model
-                    "
-                    :disabled="Array.isArray(trees) && trees.length == 0"
-                    small
-                    class="mr-3 mb-2"
-                    @click="onVerification()"
-                  >
+                <div class="action-button d-flex flex-column" style="flex-wrap: wrap">
+                  <v-btn variant="success" v-if="
+                    $_sys.isAllowed('farmer-verification-create') &&
+                    mainData.approve == 0 &&
+                    this.$store.state.tmpProgramYear ==
+                    this.$_config.programYear.model
+                  " :disabled="Array.isArray(trees) && trees.length == 0" small class="mr-3 mb-2"
+                    @click="onVerification()">
                     <v-icon medium>mdi-check-underline</v-icon>
                     <span class="ml-1">Verifikasi</span>
                   </v-btn>
 
-                  <v-btn
-                    variant="danger"
-                    v-else-if="
-                      mainData.approve == 1 &&
-                      $_sys.isAllowed('farmer-unverification-create') &&
-                      this.$store.state.tmpProgramYear ==
-                        this.$_config.programYear.model
-                    "
-                    small
-                    @click="onVerification()"
-                    class="mr-3 mb-2"
-                    ><span>Unverifikasi </span></v-btn
-                  >
-                  <v-btn
-                    variant="info"
-                    v-if="$_sys.isAllowed('farmer-update')"
-                    small
-                    class="mr-3 mb-2 py-2 d-flex flex-row align-items-center"
-                    @click="farmerAssignModal += 1"
-                  >
+                  <v-btn variant="danger" v-else-if="
+                    mainData.approve == 1 &&
+                    $_sys.isAllowed('farmer-unverification-create') &&
+                    this.$store.state.tmpProgramYear ==
+                    this.$_config.programYear.model
+                  " small @click="onVerification()" class="mr-3 mb-2"><span>Unverifikasi </span></v-btn>
+                  <v-btn variant="info" v-if="$_sys.isAllowed('farmer-update')" small
+                    class="mr-3 mb-2 py-2 d-flex flex-row align-items-center" @click="farmerAssignModal += 1">
                     <v-icon medium>mdi-calendar-end</v-icon>
                     <span class="ml-1">Assign Program Year</span>
                   </v-btn>
@@ -105,37 +69,23 @@
               <div class="farmer-info-avatar" v-if="!mainData.farmer_profile">
                 {{ avatarHelper(mainData.name)?.toUpperCase() }}
               </div>
-              <div
-                v-else
-                @click="
-                  showLightbox(
-                    `${$_config.baseUrlUpload}/${mainData.farmer_profile}`
-                  )
-                "
-                v-bind:style="{
+              <div v-else @click="
+                showLightbox(
+                  `${$_config.baseUrlUpload}/${mainData.farmer_profile}`
+                )
+                " v-bind:style="{
                   'background-image':
                     'url(' +
                     `${$_config.baseUrlUpload}/${mainData.farmer_profile}` +
                     ')',
-                }"
-                alt=""
-                class="farmer-profile hover-pointer"
-              ></div>
+                }" alt="" class="farmer-profile hover-pointer"></div>
             </div>
           </div>
 
-          <div
-            class="farmer-side-list-wrapper"
-            v-for="(item, i) in fieldSide"
-            :key="'info-list' + i"
-          >
+          <div class="farmer-side-list-wrapper" v-for="(item, i) in fieldSide" :key="'info-list' + i">
             <h5 class="side-title">{{ item.label }}</h5>
             <div class="farmer-side-list">
-              <div
-                class="farmer-side-item"
-                v-for="(data, j) in item.items"
-                :key="'info-list' + i + j"
-              >
+              <div class="farmer-side-item" v-for="(data, j) in item.items" :key="'info-list' + i + j">
                 <span class="label">{{ data.label }}</span>
                 <div class="value">
                   <span v-if="data.view_data == 'program_year'">
@@ -150,10 +100,7 @@
                     }}</span>
                   </span>
 
-                  <span
-                    v-else-if="data.view_data == 'address'"
-                    class="text-capitalize"
-                  >
+                  <span v-else-if="data.view_data == 'address'" class="text-capitalize">
                     {{ getAddress() }}
                   </span>
 
@@ -167,46 +114,31 @@
                   </span>
 
                   <span v-else-if="data.value == 'photo'">
-                    <div
-                      class="item-photo hover-pointer"
-                      @click="
-                        showLightbox(
-                          `${$_config.baseUrlUpload}/${
-                            mainData[data.view_data]
-                          }`
-                        )
-                      "
-                      v-bind:style="{
+                    <div class="item-photo hover-pointer" @click="
+                      showLightbox(
+                        `${$_config.baseUrlUpload}/${mainData[data.view_data]
+                        }`
+                      )
+                      " v-bind:style="{
                         'background-image':
                           'url(' +
-                          `${$_config.baseUrlUpload}/${
-                            mainData[data.view_data]
+                          `${$_config.baseUrlUpload}/${mainData[data.view_data]
                           }` +
                           ')',
-                      }"
-                    ></div>
+                      }"></div>
                   </span>
-                  <span
-                    v-else-if="data.class && typeof data.class == 'object'"
-                    :class="{
-                      [data.class[mainData[data.view_data]]]: true,
-                    }"
-                  >
-                    <span
-                      v-if="typeof data.view_data == 'string' && !data.value"
-                      >{{ mainData[data.view_data] }}</span
-                    >
+                  <span v-else-if="data.class && typeof data.class == 'object'" :class="{
+                    [data.class[mainData[data.view_data]]]: true,
+                  }">
+                    <span v-if="typeof data.view_data == 'string' && !data.value">{{ mainData[data.view_data] }}</span>
                     <span v-else-if="typeof data.value == 'object'">{{
                       data.value[mainData[data.view_data]]
                     }}</span>
                   </span>
 
-                  <span
-                    v-else
-                    :class="{
-                      [data.class]: true,
-                    }"
-                  >
+                  <span v-else :class="{
+                    [data.class]: true,
+                  }">
                     <span v-if="typeof data.value === 'object'">
                       {{ data.value[mainData[data.view_data]] }}
                     </span>
@@ -221,11 +153,7 @@
     </v-col>
 
     <v-col lg="8">
-      <farmer-detail-working-area
-        :workingAreas="workingAreas"
-        :mainData="mainData"
-        @refresh="getData()"
-      />
+      <farmer-detail-working-area :workingAreas="workingAreas" :mainData="mainData" @refresh="getData()" />
       <farmer-detail-tree :trees="trees" :mainData="mainData" :pivots="ff" />
       <farmer-detail-land :lands="lands" :mainData="mainData" />
     </v-col>
@@ -316,7 +244,39 @@ export default {
         this.mainData = logMainData;
       }
 
-      this.trees = farmer.DetailFarmerTree.concat(farmer.DetailFarmerTreeLog);
+      const validYearsInMaster = new Set();
+      if (Array.isArray(farmer.DetailFarmerTree)) {
+        farmer.DetailFarmerTree.forEach(tree => {
+          if (tree.detail_year) {
+            tree.detail_year.split(',').forEach(year => {
+              validYearsInMaster.add(year.trim());
+            });
+          }
+        });
+      }
+
+      const filteredLogs = [];
+      if (Array.isArray(farmer.DetailFarmerTreeLog)) {
+        farmer.DetailFarmerTreeLog.forEach(log => {
+          if (log.detail_year) {
+            const validLogYears = log.detail_year
+              .split(',')
+              .map(y => y.trim())
+              .filter(year => !validYearsInMaster.has(year));
+
+            if (validLogYears.length > 0) {
+              filteredLogs.push({
+                ...log,
+                detail_year: validLogYears.join(',')
+              });
+            }
+          }
+        });
+      }
+
+      this.trees = (farmer.DetailFarmerTree || []).concat(filteredLogs);
+
+      // this.trees = farmer.DetailFarmerTree.concat(farmer.DetailFarmerTreeLog);
       this.ff = farmer.DetailFarmerPivot;
       this.lands = farmer.DetailFarmerLahanPivot;
       this.workingAreas = farmer.DetailFarmerWorkingArea;

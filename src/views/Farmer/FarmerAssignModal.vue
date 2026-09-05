@@ -23,8 +23,7 @@
                         label: 'Nama FF',
                         type: 'select',
                         param: {
-                          program_year: $_config.programYear.model,
-                          limit: 100,
+                          limit: 50,
                           offset: 0,
                         },
                         api: 'GetFFAllWeb_new',
