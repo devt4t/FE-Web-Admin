@@ -75,8 +75,8 @@
                 <v-row>
                   <v-col lg="12">
                     <geko-input v-if="muList.length > 0" v-model="mu_no" :item="{
-                      label: 'Unit Management',
-                      placeholder: 'Pilih Unit Management',
+                      label: 'Management Unit',
+                      placeholder: 'Pilih Management Unit',
                       type: 'select',
                       validation: ['required'],
                       api: 'GetManagementUnitAdmin',
@@ -462,14 +462,12 @@ export default {
         return;
       }
 
-      this.loading = true; // Aktifkan loading indicator
+      this.loading = true;
       try {
         const token = localStorage.getItem("token");
 
-        // --- KUNCI UTAMA: KITA LOOPING SETIAP ID YANG DIPILIH ---
         for (const selectedId of selectedData) {
 
-          // 1. Cari Nama Spesifik untuk 1 ID ini
           let selectedName = "";
           let dataListToSearch = [];
 
@@ -478,7 +476,6 @@ export default {
           else if (exportType === 'fc') dataListToSearch = this.fcList;
           else if (exportType === 'um') dataListToSearch = this.umList;
 
-          // Ingat: fc dan um propertinya 'nik', selain itu 'ff_no' atau 'mu_no'
           let itemKey = (exportType === 'fc' || exportType === 'um') ? 'nik' : `${exportType}_no`;
 
           const matchedItem = dataListToSearch.find(item => item[itemKey] == selectedId);
@@ -487,7 +484,6 @@ export default {
             if (selectedName.length > 50) selectedName = selectedName.substring(0, 50);
           }
 
-          // 2. Siapkan Payload HANYA UNTUK 1 ID INI (dibungkus array)
           const payload = {
             exportType: exportType,
             filters: {
@@ -497,7 +493,6 @@ export default {
           };
           payload.filters[filterKey] = [selectedId];
 
-          // 3. Tembak API
           const response = await axios({
             method: 'POST',
             url: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
@@ -509,7 +504,6 @@ export default {
             data: payload
           });
 
-          // 4. Download File
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -525,7 +519,7 @@ export default {
           link.remove();
           window.URL.revokeObjectURL(url);
 
-        } // Akhir dari perulangan for...of
+        }
 
         this.$_alert.success("Data berhasil di-export!");
         this.isOpen = false;
