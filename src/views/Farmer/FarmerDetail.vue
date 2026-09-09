@@ -232,16 +232,11 @@ export default {
           x.program_year.includes(this.$route.query.program_year)
         );
 
-        if (!logMainData) {
-          this.$_alert.error(
-            "",
-            "Data Tidak Ditemukan",
-            `Data petani ${this.$route.query.farmer_no} tahun ${this.$route.query.program_year} tidak ditemukan`
-          );
-          return;
+        if (logMainData) {
+          this.mainData = logMainData;
+        } else {
+          this.mainData = farmer.DetailFarmerMain;
         }
-
-        this.mainData = logMainData;
       }
 
       const validYearsInMaster = new Set();

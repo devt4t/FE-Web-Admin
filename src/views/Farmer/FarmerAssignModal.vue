@@ -219,28 +219,49 @@ export default {
         years.push(farmer.program_year);
       }
 
+      let groupedFarmers = {};
+      let newFarmers = [];
+
       for (const farmer of this.farmers) {
         if (farmer.id) {
-          if (this.$_sys.isAllowed("farmer-unassign-it-create")) {
-            await this.editProgramYear({
+          if (!groupedFarmers[farmer.id]) {
+            groupedFarmers[farmer.id] = {
               id: farmer.id,
-              ff_no: farmer.key1,
-              program_year: farmer.program_year,
-            })
-              .then(() => successList.push(farmer.program_year))
-              .catch(() => failedList.push(farmer.program_year));
+              key1: farmer.key1,
+              key2: farmer.key2,
+              program_year: [farmer.program_year]
+            };
+          } else {
+            groupedFarmers[farmer.id].program_year.push(farmer.program_year);
           }
         } else {
-          await this.$_api
-            .post("UpdateFarmerPivot_new", {
-              ff_no: farmer.key1,
-              farmer_no: farmer.key2,
-              program_year: farmer.program_year,
-              origin_year: originYear,
-            })
-            .then(() => successList.push(farmer.program_year))
-            .catch(() => failedList.push(farmer.program_year));
+          newFarmers.push(farmer);
         }
+      }
+
+      for (const id in groupedFarmers) {
+        let f = groupedFarmers[id];
+        if (this.$_sys.isAllowed("farmer-unassign-it-create")) {
+          await this.editProgramYear({
+            id: f.id,
+            ff_no: f.key1,
+            program_year: f.program_year.join(", "),
+          })
+            .then(() => successList.push(f.program_year.join(", ")))
+            .catch(() => failedList.push(f.program_year.join(", ")));
+        }
+      }
+
+      for (const farmer of newFarmers) {
+        await this.$_api
+          .post("UpdateFarmerPivot_new", {
+            ff_no: farmer.key1,
+            farmer_no: farmer.key2,
+            program_year: farmer.program_year,
+            origin_year: originYear,
+          })
+          .then(() => successList.push(farmer.program_year))
+          .catch(() => failedList.push(farmer.program_year));
       }
 
       if (successList.length > 0) {

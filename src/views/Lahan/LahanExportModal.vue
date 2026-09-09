@@ -495,7 +495,9 @@ export default {
 
           const response = await axios({
             method: 'POST',
-            url: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+            url:
+              this.format === "pdf" ? `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf` :
+                `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
             responseType: "arraybuffer",
             headers: {
               'Content-Type': 'application/json',
@@ -511,7 +513,10 @@ export default {
           const timestamp = moment().format("YYYYMMDD_HHmmss");
           let fileName = `Export_Lahan_${exportType.toUpperCase()}`;
           if (selectedName !== "") fileName += `_${selectedName}`;
-          fileName += `_${this.$store.state.tmpProgramYear || 'ALL'}_${timestamp}.xlsx`;
+          let exportFormatFile = this.format === "pdf" ?
+            `_${this.$store.state.tmpProgramYear || 'ALL'}_${timestamp}.pdf` :
+            `_${this.$store.state.tmpProgramYear || 'ALL'}_${timestamp}.xlsx`;
+          fileName += exportFormatFile;
 
           link.setAttribute("download", fileName);
           document.body.appendChild(link);
