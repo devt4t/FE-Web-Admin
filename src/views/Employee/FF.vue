@@ -1,5 +1,5 @@
 <template>
-  <geko-base-crud :config="config" :hideUpdate="!['13', '4', '19', '20'].includes($store.state.User.role)"
+  <geko-base-crud :config="config" :hideUpdate="!['13', '4', '19', '20', '33'].includes($store.state.User.role)"
     :refreshKey="refreshKey" :hideDelete="!['13', '4'].includes($store.state.User.role)"
     @create-success="onCreateSuccess($event)" :hideCreate="['19'].includes($store.state.User.role)">
     <!-- LIST -->

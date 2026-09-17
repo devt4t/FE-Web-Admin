@@ -27,7 +27,7 @@
                                 },
                             },
                         }" @selected="onChangeFf($event)" />
-                     </v-col>
+                    </v-col>
 
                     <v-col md="12">
                         <geko-input v-model="formData.soc_date" :item="{
@@ -41,11 +41,11 @@
                     <v-col md="8">
 
                         <span class="geko-input" style="position: relative;">
-                            <label class="required mb-3"> Tanggal Distribusi</label> 
+                            <label class="required mb-3"> Tanggal Distribusi</label>
                             <date-picker @calendar-change="onCalendarPickerChange" :disabled-date="dateDisabled"
                                 title-format="YYYY-MMMM-DD" class="distribution-calendar"
                                 v-model="formData.distribution_date" format="YYYY-MM-DD" type="date"
-                                placeholder="Select date" :popup-style="{a:5}" inline>
+                                placeholder="Select date" :popup-style="{ a: 5 }" inline>
                             </date-picker>
                             <v-overlay v-if="loading" absolute opacity="0.5">
                                 <v-progress-circular indeterminate size="50"></v-progress-circular>
@@ -128,7 +128,7 @@
                                                     };
                                                     return d.date === selectedDate();
                                                 })?.remaining | parse('ts') ?? '-'
-                                                
+
                                             }}
                                         </div>
                                         <div class="distribution-date-label" v-else>-</div>
@@ -311,6 +311,7 @@
                                     api: 'planting-socs/upload.php',
                                     directory: 'images',
                                     upload_type: 'image/*',
+                                    require_gps: true,
                                     setter: 'absent1',
                                     view_data: 'absent1',
                                     option: {
@@ -332,6 +333,7 @@
                                     api: 'planting-socs/upload.php',
                                     directory: 'images',
                                     upload_type: 'image/*',
+                                    require_gps: true,
                                     setter: 'absent2',
                                     view_data: 'absent2',
                                     option: {
