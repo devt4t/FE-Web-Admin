@@ -1,4 +1,5 @@
 import moment from "moment";
+import axios from "axios";
 export default {
   name: "planting-socialization-form",
   components: {},
@@ -66,22 +67,22 @@ export default {
       this.availableDate = [];
 
       let nursery = {
-          data: [],
-          allocation_periode_days: []
+        data: [],
+        allocation_periode_days: []
       };
 
       nursery.data = await this.$_api.get(
-          "sostam/calendar/daily-distribution-limit/get",
-          {
-              mu_no: data.mu_no,
-              program_year: this.$store.state.tmpProgramYear,
-              // start_date: startDate,
-              // end_date: endDate,
-          }
+        "sostam/calendar/daily-distribution-limit/get",
+        {
+          mu_no: data.mu_no,
+          program_year: this.$store.state.tmpProgramYear,
+          // start_date: startDate,
+          // end_date: endDate,
+        }
       );
 
       nursery.data = nursery.data.data.result || [];
-      
+
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
         program_year: this.$store.state.tmpProgramYear,
@@ -93,18 +94,20 @@ export default {
       for (const data of nursery.data) {
 
         let date = this.getDatesBetween(
-            data.start_distribution_time, 
-            data.end_distribution_time
-          ).map(date => { return {
-                date_allocation: date,
-                qty_allocation: data.seed_limitation
-          }}) // loop
+          data.start_distribution_time,
+          data.end_distribution_time
+        ).map(date => {
+          return {
+            date_allocation: date,
+            qty_allocation: data.seed_limitation
+          }
+        }) // loop
 
         dates = dates.concat(date);
-        
+
       }
       nursery.allocation_periode_days = dates;
-        
+
       let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
         month: moment(this.dateDistributionCurrent).month() + 1,
         year: moment(this.dateDistributionCurrent).year(),
@@ -112,21 +115,21 @@ export default {
         nursery_location_id: nursery.data[0].nursery_locations_id,
         mu_no: data.mu_no
       });
-      
+
       this.nurseryLocation = {
         address_nursery: '',
         name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data[0].nursery_locations_id)?.name || '',
         location_nursery_id: nursery.data[0].nursery_locations_id,
       };
-      
+
       let totalSeedFF = 0;
-      for (const [i,farmer] of ffLahan.data.result.lahans.entries()) {
-          totalSeedFF += parseInt(farmer.total_kayu);
-          totalSeedFF += parseInt(farmer.total_mpts);
+      for (const [i, farmer] of ffLahan.data.result.lahans.entries()) {
+        totalSeedFF += parseInt(farmer.total_kayu);
+        totalSeedFF += parseInt(farmer.total_mpts);
       }
 
       let nurseryAllocationList = nursery.allocation_periode_days;
-      
+
       const off_interval = +nursery.data[0].nursery_days_off_interval;
       const off_amount = +nursery.data[0].nursery_days_off_amount;
 
@@ -136,9 +139,9 @@ export default {
       }
 
       this.allocations = nurseryAllocationList.filter(
-      (nsry) => {
+        (nsry) => {
           let pointerGEKO = allocatedBibitGEKO.data.filter(geko => geko.distribution_date === nsry.date_allocation)
-          
+
           let totalBibitNeeded = totalSeedFF;
           totalBibitNeeded += (pointerGEKO.length ? pointerGEKO[0].total_seed : 0)
 
@@ -147,7 +150,7 @@ export default {
 
 
           return result;
-      });
+        });
 
       for (const allocation of this.allocations) {
         this.availableDate.push(allocation.date_allocation);
@@ -166,9 +169,9 @@ export default {
         ffLahanData = ffLahan.data.result.lahans;
       } catch { }
 
-      
 
-      
+
+
 
       var _lastFarmer = "";
       var _index = 1;
@@ -253,6 +256,55 @@ export default {
       ].includes(this.ffCurrent.mu_no);
     },
 
+    async previewMou(farmer) {
+      if (!this.ffCurrent || !this.formData.distribution_date) {
+        this.$_alert.error("Field Facilitator dan Tanggal Distribusi harus dipilih terlebih dahulu.");
+        return;
+      }
+      this.mouDialog = true;
+      this.mouLoading = true;
+      this.mouHtml = "";
+      this.mouError = "";
+
+      try {
+        const payload = {
+          farmer_no: farmer.farmer_no,
+          lahan_no: farmer.lahan_no,
+          ff_no: this.ffCurrent.ff_no,
+          distribution_date: this.formData.distribution_date,
+          program_year: this.$store.state.tmpProgramYear
+        };
+
+        // 1. Get Data from Laravel Backend
+        const response = await this.$_api.get("sostam/mou/preview", payload);
+
+        if (response && response.data) {
+          const exportData = response.data;
+
+          // 2. Hit Export Microservice (Node.js) with the Template Name
+          const exportUrl = `${this.$_config.baseUrlExport}export/mou/sostam`;
+          const axiosConfig = {
+            method: 'post',
+            url: exportUrl,
+            data: exportData
+          };
+
+          const exportRes = await axios(axiosConfig);
+          if (exportRes.data) {
+            // Assume exportRes.data returns the raw HTML string for preview
+            this.mouHtml = exportRes.data;
+          } else {
+            this.mouError = "Gagal memuat template dari service export.";
+          }
+        }
+      } catch (err) {
+        console.error("Preview MoU error:", err);
+        this.mouError = "Gagal mengambil data MoU. Pastikan data petani dan lahan valid.";
+      } finally {
+        this.mouLoading = false;
+      }
+    },
+
     calculatePlantingDate() {
       this.plantingHoleStart = moment(this.formData.distribution_date)
         .subtract(33, "days")
@@ -312,7 +364,7 @@ export default {
         .addTo(this.maps);
       this.maps.on("click", (data) => {
         this.marker.setLngLat(data.lngLat);
-        this.$set(this.formData,'latlng',data.lngLat.lat + " " + data.lngLat.lng)
+        this.$set(this.formData, 'latlng', data.lngLat.lat + " " + data.lngLat.lng)
       });
     },
     async onSubmit() {
@@ -395,17 +447,17 @@ export default {
     },
     async "formData.latlng"(val) {
       if (val.includes(' ')) {
-        val=val.split(' ');
+        val = val.split(' ');
 
-        if (!this.isValidCoordinate(val[0],val[1])) return;
+        if (!this.isValidCoordinate(val[0], val[1])) return;
         this.marker.setLngLat({
-          lat:val[0],
-          lng:val[1]
+          lat: val[0],
+          lng: val[1]
         });
-        
-        await this.maps.flyTo({ 
-          center: [val[1],val[0]], 
-          zoom: 13 
+
+        await this.maps.flyTo({
+          center: [val[1], val[0]],
+          zoom: 13
         });
       }
     },
@@ -437,6 +489,10 @@ export default {
       plantingRealizationEnd: null,
       nurseryLocation: null,
       remainingSeedAMonth: [],
+      mouDialog: false,
+      mouLoading: false,
+      mouError: "",
+      mouHtml: "",
       formatDate: (date, format = "YYYY-MM-DD") => {
         return moment(date).format(format);
       },

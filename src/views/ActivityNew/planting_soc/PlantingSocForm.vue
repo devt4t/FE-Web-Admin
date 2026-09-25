@@ -191,6 +191,7 @@
                                     <th>Total Kayu</th>
                                     <th>Total MPTS</th>
                                     <th>Total Bibit</th>
+                                    <th>Preview MoU</th>
                                     <th>Kehadiran</th>
                                 </tr>
                             </thead>
@@ -234,6 +235,12 @@
                                             <span class="amount" style="color: #5ab2ff">{{ farmer.total_mpts +
                                                 farmer.total_kayu }}</span>
                                         </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <v-btn icon color="primary" @click="previewMou(farmer)" v-if="farmer.bordered"
+                                            title="Preview MoU">
+                                            <v-icon>mdi-file-document-outline</v-icon>
+                                        </v-btn>
                                     </td>
                                     <td>
 
@@ -374,6 +381,37 @@
                 </v-row>
             </form>
         </ValidationObserver>
+
+        <!-- Modal Preview MoU -->
+        <v-dialog v-model="mouDialog" max-width="800px" scrollable>
+            <v-card>
+                <v-card-title class="headline grey lighten-2">
+                    Preview MoU Petani
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click="mouDialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-card-text class="pt-4" style="height: 600px;">
+                    <div v-if="mouLoading" class="text-center mt-5">
+                        <v-progress-circular indeterminate color="primary" size="50"></v-progress-circular>
+                        <p class="mt-2">Memuat Draft MoU...</p>
+                    </div>
+                    <div v-else-if="mouError" class="text-center mt-5 text-danger">
+                        <v-icon color="error" size="50">mdi-alert-circle-outline</v-icon>
+                        <p class="mt-2">{{ mouError }}</p>
+                    </div>
+                    <!-- Render HTML directly in an iframe for true document preview -->
+                    <iframe v-else-if="mouHtml" :srcdoc="mouHtml"
+                        style="width:100%; height:100%; border:none;"></iframe>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" text @click="mouDialog = false">Tutup</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </div>
 
 </template>

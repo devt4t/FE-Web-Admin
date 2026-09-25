@@ -1,129 +1,142 @@
 <template>
-    <geko-base-crud @onGetListData="onGetListData($event)" :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true">
+   <div>
+        <geko-base-crud @onGetListData="onGetListData($event)" :config="config" :refreshKey="refreshKey"
+            :hideDetail="false" :hideUpdate="true">
 
-        <template v-slot:list-before-create>
-            <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
-            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
-            <planting-soc-export-sostam-mu :dataKey="exportSostamKey" />
-            <planting-soc-import-excel :dataKey="importSostamKey" />
-            <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
+          <template v-slot:list-before-create>
+                <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
+                <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
+                <planting-soc-export-sostam-mu :dataKey="exportSostamKey" />
+                <planting-soc-import-excel :dataKey="importSostamKey" />
+                <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
-            <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
-                :data="sostamDistributionData" @success="refreshKey += 1" />
-            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" @success="refreshKey += 1" />
-        </template>
+              <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
+                    :data="sostamDistributionData" @success="refreshKey += 1" />
+               <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey"
+                    @success="refreshKey += 1" />
+            </template>
 
-        <template v-slot:list-after-filter>
-            <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="info" class="mr-2" @click="exportLahanKey += 1">
-                    <v-icon>mdi-table-arrow-right</v-icon>
-                    <span>Export Excel By MU</span>
-                </v-btn>
+          <template v-slot:list-after-filter>
+                <div class="d-flex flex-row justify-content-start">
+                    <v-btn variant="info" class="mr-2" @click="exportLahanKey += 1">
+                        <v-icon>mdi-table-arrow-right</v-icon>
+                        <span>Export Excel By MU</span>
+                    </v-btn>
 
-                <v-btn variant="primary" class="mr-2" @click="importSostamKey += 1">
-                    <v-icon>mdi-cloud-sync</v-icon>
-                    <span>Import Excel Sostam</span>
-                </v-btn>
+                  <v-btn variant="primary" class="mr-2" @click="importSostamKey += 1">
+                        <v-icon>mdi-cloud-sync</v-icon>
+                        <span>Import Excel Sostam</span>
+                    </v-btn>
 
-                <v-btn variant="success"  @click="exportSostamKey += 1">
-                    <v-icon>mdi-table</v-icon>
-                    <span>Export Excel</span>
-                </v-btn>
-            </div>
-        </template>
+                  <v-btn variant="success" @click="exportSostamKey += 1">
+                        <v-icon>mdi-table</v-icon>
+                        <span>Export Excel</span>
+                    </v-btn>
+                   <!-- konfirmasi distribusi AZ -->
+                    <v-btn color="primary" class="ml-2" @click="openConfirmModal">
+                        <v-icon>mdi-calendar-check</v-icon>
+                        Konfirmasi Distribusi (AZ)
+                    </v-btn>
+               </div>
+            </template>
 
-        <template v-slot:list-indicator="{ item }">
-            <div class="indicator-wrapper pt-1">
-                <div class="indicator" :class="{
-                    info: item.gis_status == 1 && !item.verified,
-                    success: item.gis_status == 1 && item.verified,
-                    danger: item.gis_status == 2,
-                    warning: !item.gis_status,
-                }">
-                </div>
-            </div>
-        </template>
-
-        <template v-slot:list-status="{ item }">
-            <div class="d-flex flex-col min-w-200px">
-                <div class="d-flex flex-row">
-                    <span class="badge" :class="{
-                        'bg-warning': !item.gis_status,
-                        'bg-danger': item.gis_status == 2,
-                        'bg-success': item.gis_status == 1 && item.verified,
-                        'bg-info': item.gis_status == 1 && !item.verified
+          <template v-slot:list-indicator="{ item }">
+                <div class="indicator-wrapper pt-1">
+                    <div class="indicator" :class="{
+                        info: item.gis_status == 1 && !item.verified,
+                        success: item.gis_status == 1 && item.verified,
+                        danger: item.gis_status == 2,
+                        warning: !item.gis_status,
                     }">
-
-                        <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
-                        <span v-else-if="item.gis_status == 2">Koordinat Tidak Sesuai</span>
-                        <span v-else-if="item.gis_status == 1 && !item.verified">Koordinat Terverifikasi</span>
-                        <span v-else-if="item.gis_status == 1 && item.verified">Terverifikasi</span>
-                    </span>
+                    </div>
                 </div>
+            </template>
 
-                <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
-                    <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
-                        item.suggestion_note }}</span>
-                </blockquote>
-            </div>
-        </template>
+          <template v-slot:list-status="{ item }">
+                <div class="d-flex flex-col min-w-200px">
+                    <div class="d-flex flex-row">
+                        <span class="badge" :class="{
+                            'bg-warning': !item.gis_status,
+                            'bg-danger': item.gis_status == 2,
+                            'bg-success': item.gis_status == 1 && item.verified,
+                            'bg-info': item.gis_status == 1 && !item.verified
+                        }">
 
-        <template v-slot:list-countdown_timer="{ item }">
-            <div class="">
-                <v-chip v-if="item.timeleft" small color="red" text-color="white">
-                {{ item.timeleft }}
-                </v-chip>
-            </div>
-        </template>
+                          <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
+                            <span v-else-if="item.gis_status == 2">Koordinat Tidak Sesuai</span>
+                            <span v-else-if="item.gis_status == 1 && !item.verified">Koordinat Terverifikasi</span>
+                            <span v-else-if="item.gis_status == 1 && item.verified">Terverifikasi</span>
+                        </span>
+                    </div>
 
-        <template v-slot:list-bottom-action="{ item }">
+                  <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
+                        <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
+                            item.suggestion_note }}</span>
+                    </blockquote>
+                </div>
+            </template>
+
+          <template v-slot:list-countdown_timer="{ item }">
+                <div class="">
+                    <v-chip v-if="item.timeleft" small color="red" text-color="white">
+                        {{ item.timeleft }}
+                    </v-chip>
+                </div>
+            </template>
+
+          <template v-slot:list-bottom-action="{ item }">
 
 
-            <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
-                <v-icon left small>mdi-calendar</v-icon>
-                <span>Edit Tgl. Distribusi</span>
-            </v-btn>
-            <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
-                <v-icon left small>mdi-map</v-icon>
-                <span>Edit Koordinat</span>
-            </v-btn>
-            <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
-                <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
-                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
+             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
+                    v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
+                    <v-icon left small>mdi-calendar</v-icon>
+                    <span>Edit Tgl. Distribusi</span>
+                </v-btn>
+                <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
+                    v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
+                    <v-icon left small>mdi-map</v-icon>
+                    <span>Edit Koordinat</span>
+                </v-btn>
+                <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
+                    <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
+                    <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
-                <span>Export Excel</span>
-            </v-btn>
-            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft" variant="success"
-                small class="mt-2" @click="onVerif(item)">
-                <v-icon small>mdi-check-bold</v-icon>
-                <span>Verifikasi</span>
-            </v-btn>
-            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                variant="danger" small class="mt-2" @click="onUnverif(item)">
-                <v-icon left small>mdi-undo</v-icon>
-                <span>Unverifikasi</span>
-            </v-btn>
-            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small class="mt-2"
-                @click="onUpdateDistributionLocation(item)">
-                <v-icon left small>mdi-update</v-icon>
-                <span>Edit Alamat Distribusi</span>
-            </v-btn>
+                  <span>Export Excel</span>
+                </v-btn>
+               <v-btn
+                    v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft"
+                    variant="success" small class="mt-2" @click="onVerif(item)">
+                    <v-icon small>mdi-check-bold</v-icon>
+                    <span>Verifikasi</span>
+                </v-btn>
+                <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi</span>
+                </v-btn>
+               <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small
+                    class="mt-2" @click="onUpdateDistributionLocation(item)">
+                    <v-icon left small>mdi-update</v-icon>
+                    <span>Edit Alamat Distribusi</span>
+                </v-btn>
 
-        </template>
-        <template v-slot:list-expanded-item="{ headers, item }">
-            <planting-soc-list-ff :item="item" :headers="headers" @edit="onEditFarmer($event)"></planting-soc-list-ff>
-        </template>
+          </template>
+            <template v-slot:list-expanded-item="{ headers, item }">
+               <planting-soc-list-ff :item="item" :headers="headers"
+                    @edit="onEditFarmer($event)"></planting-soc-list-ff>
+            </template>
 
-        <template v-slot:create-form>
-            <planting-soc-form></planting-soc-form>
-        </template>
+          <template v-slot:create-form>
+                <planting-soc-form></planting-soc-form>
+            </template>
 
-        <template v-slot:detail-row>
-            <planting-soc-detail />
-        </template>
-    </geko-base-crud>
+          <template v-slot:detail-row>
+                <planting-soc-detail />
+            </template>
+        </geko-base-crud>
+       <!-- Konfirmasi Distribusi untuk AZ -->
+        <DistributionConfirmModal ref="confirmModal" @refresh="refreshKey += 1" />
+    </div>
 </template>
 
 <script>
@@ -141,6 +154,8 @@ import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
 import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
 import UpdateDistributionLocation from './UpdateDistributionLocation.vue'
+import DistributionConfirmModal from "./DistributionConfirmModal.vue";
+
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -153,13 +168,17 @@ export default {
         PlantingSocImportExcel,
         PlantingSocCoordinateEdit,
         PlantingSocDistributionDateUpdate,
-        UpdateDistributionLocation
+        UpdateDistributionLocation,
+        DistributionConfirmModal
     },
     watch: {},
     mounted() {
-        console.log({items:this})
+        console.log({ items: this })
     },
     methods: {
+        openConfirmModal() {
+            this.$refs.confirmModal.open();
+        },
         onEditFarmer(item) {
             this.farmerEditKey += 1
             this.farmerEditData = item
@@ -190,7 +209,7 @@ export default {
                 if (ffData.data.length == 0) throw "err"
 
                 //EXPORT DATA
-                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel` 
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/soc-planting/excel`
                 const exportPayload = {
                     data: ffData.data
                 }
@@ -327,8 +346,8 @@ export default {
                     const seconds = Math.floor(totalSeconds % 60);
 
                     const formatted = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-                    this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00':formatted)
-                    
+                    this.$set(item, 'timeleft', totalSeconds <= 0 ? '00:00:00' : formatted)
+
                     // console.log(totalSeconds, item.verified);
                     if (totalSeconds <= 0) {
                         clearInterval(this.intervals[item.soc_no]);

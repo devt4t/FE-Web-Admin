@@ -398,15 +398,47 @@
 
         <lahan-kml-upload :dataKey="uploadKmlModal" />
       </div>
+     <div class="d-flex pb-4" v-if="canImportExcelPolygon">
+        <v-btn variant="success" @click="openModalImportPolygon">
+          <v-icon>mdi-microsoft-excel</v-icon>
+          <span>Import Excel Polygon</span>
+        </v-btn>
+      </div>
+
+      <!-- Modal Import Excel Polygon -->
+      <v-dialog v-model="showModalImportPolygon" max-width="500px">
+        <v-card>
+          <v-card-title class="d-flex justify-content-between align-items-center">
+            <span class="text-h5">Import Excel Polygon</span>
+            <v-btn small outlined color="primary" @click="downloadTemplate">
+              <v-icon small class="mr-1">mdi-download</v-icon> Download Template
+            </v-btn>
+          </v-card-title>
+          <v-card-text>
+            <v-file-input v-model="excelFile" accept=".xlsx, .xls" label="Pilih File Excel"
+              prepend-icon="mdi-file-excel" @change="handleFileUpload"></v-file-input>
+            <div v-if="parsedExcelData.length > 0" class="mt-3 text-success">
+              <v-icon color="success">mdi-check-circle</v-icon>
+              Terdapat {{ parsedExcelData.length }} data siap di-import.
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="showModalImportPolygon = false">Batal</v-btn>
+            <v-btn color="blue darken-1" text @click="submitImportExcel" :loading="isImporting"
+              :disabled="parsedExcelData.length === 0">Import</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </template>
 
-    <template v-slot:toolbar-button>
+  <!-- <template v-slot:toolbar-button>
       <div class="d-flex flex-row">
         <button class="toolbar-button mr-2">
           <v-icon>mdi-microsoft-excel</v-icon>
         </button>
       </div>
-    </template>
+</template> -->
   </geko-base-crud>
 </template>
 
@@ -417,6 +449,7 @@ import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
 import LahanExportModal from "./LahanExportModal.vue";
 import LahanExportSocialImpactModal from "./LahanExportModal_socialImpactOfficer.vue";
+import * as XLSX from "xlsx";
 import config from "./lahanConfig.js";
 export default {
   name: "lahan-v2",
@@ -428,6 +461,101 @@ export default {
     LahanExportSocialImpactModal,
   },
   methods: {
+    downloadTemplate() {
+      // Bikin format header human-readable
+      const templateData = [
+        {
+          "Kode Lahan": "Contoh: 10_0000001123",
+          "Latitude": "-6.12345",
+          "Longitude": "106.12345"
+        }
+      ];
+      const worksheet = XLSX.utils.json_to_sheet(templateData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
+      XLSX.writeFile(workbook, "Template_Import_Lahan.xlsx");
+    },
+    openModalImportPolygon() {
+      this.showModalImportPolygon = true;
+      this.excelFile = null;
+      this.parsedExcelData = [];
+    },
+    handleFileUpload(file) {
+      if (!file) {
+        this.parsedExcelData = [];
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rawJson = XLSX.utils.sheet_to_json(worksheet);
+
+        if (rawJson.length === 0) {
+          this.$_alert.error("File Excel kosong");
+          this.parsedExcelData = [];
+          return;
+        }
+
+        // Fungsi sanitize untuk menghapus titik ganda
+        const sanitizeCoord = (val) => {
+          if (!val) return val;
+          let str = String(val).trim();
+          let parts = str.split('.');
+          if (parts.length > 2) {
+            return parts[0] + '.' + parts.slice(1).join('');
+          }
+          return str;
+        };
+
+        const mappedJson = rawJson.map(row => {
+          return {
+            lahan_no: row['Kode Lahan'] || row['lahan_no'] || null,
+            latitude: sanitizeCoord(row['Latitude'] || row['latitude'] || null),
+            longitude: sanitizeCoord(row['Longitude'] || row['longitude'] || null)
+          };
+        }).filter(item => item.lahan_no !== null);
+
+        if (mappedJson.length === 0) {
+          this.$_alert.error("Format salah! Kolom 'Kode Lahan' atau 'lahan_no' tidak ditemukan.");
+          this.excelFile = null;
+          this.parsedExcelData = [];
+          return;
+        }
+
+        this.parsedExcelData = mappedJson;
+      };
+      reader.readAsArrayBuffer(file);
+    },
+    async submitImportExcel() {
+      this.isImporting = true;
+
+      const chunkSize = 500;
+      const totalChunks = Math.ceil(this.parsedExcelData.length / chunkSize);
+      let successCount = 0;
+
+      try {
+        for (let i = 0; i < totalChunks; i++) {
+          const chunk = this.parsedExcelData.slice(i * chunkSize, (i + 1) * chunkSize);
+
+          await this.$_api.post("lahan/bulk-update/land-coordinates", {
+            data: chunk
+          });
+
+          successCount += chunk.length;
+        }
+
+        this.$_alert.success(`Berhasil import ${successCount} baris data Excel Polygon`);
+        this.showModalImportPolygon = false;
+        this.componentKey += 1; // refresh data
+      } catch (err) {
+        this.$_alert.error("Gagal import sebagian/seluruh data Excel Polygon");
+      } finally {
+        this.isImporting = false;
+      }
+    },
     isSpecificProject(item) {
       try {
         return item.land_project
@@ -559,6 +687,13 @@ export default {
         });
     },
   },
+  computed: {
+    canImportExcelPolygon() {
+      const user = this.$store.state.User || JSON.parse(localStorage.getItem("User") || '{}');
+      const roles = String(user.role || '');
+      return ['13', '14'].includes(roles);
+    },
+  },
   data() {
     return {
       refreshKey: 1,
@@ -575,6 +710,10 @@ export default {
         project_no: ['PJ00021'],
         program_year: ['2026']
       },
+      showModalImportPolygon: false,
+      excelFile: null,
+      parsedExcelData: [],
+      isImporting: false,
     };
   },
 };
