@@ -472,5 +472,29 @@ export default {
         },
       },
     },
+    {
+      id: "irrigation_type",
+      label: "Tipe irigasi",
+      methods: {
+        list: false,
+        detail: true,
+      },
+    },
+    {
+      id: "soil_texture",
+      label: "Tekstur Tanah",
+      methods: {
+        list: false,
+        detail: true,
+      },
+    },
+    {
+      id: "risk_tier",
+      label: "Tingkat Risiko",
+      methods: {
+        list: false,
+        detail: true,
+      },
+    },
   ],
 };

@@ -260,7 +260,22 @@ export default {
           //   project_no: ['PJ00021'],
           //   program_year: ['2026']
           // }
-        }
+        },
+        {
+          label: "Tipe Irigasi",
+          key: "main_lahan.irrigation_type",
+          // type: "custom_mapping_irrigation",
+        },
+        {
+          label: "Tesktur Tanah ",
+          key: "main_lahan.soil_texture",
+          // type: "custom_mapping_soil_texture",
+        },
+        {
+          label: "Tingkat Risiko ",
+          key: "main_lahan.risk_tier",
+          // type: "custom_mapping_rist_tier",
+        },
       ],
     },
   ],
@@ -308,6 +323,7 @@ export default {
     ["Foto Tutupan Bangunan / Lainnya", "tutupan_lain_bangunan_photo", "photo"],
 
     ["Tutupan Tanaman Bawah", "tutupan_tanaman_bawah_percentage", "", "", "%"],
+    ["Kelerengan Lahan", "kelerengan_lahan"],
     ["Foto Tutupan Tanaman Bawah", "tutupan_tanaman_bawah_photo", "photo"],
   ],
   data: {
