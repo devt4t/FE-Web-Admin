@@ -398,18 +398,18 @@
 
         <lahan-kml-upload :dataKey="uploadKmlModal" />
       </div>
-     <div class="d-flex pb-4" v-if="canImportExcelPolygon">
-        <v-btn variant="success" @click="openModalImportPolygon">
+     <div class="d-flex pb-4" v-if="canImportExcelLahanCoordinate">
+        <v-btn variant="success" @click="openModalImportLahanCoordinate">
           <v-icon>mdi-microsoft-excel</v-icon>
          <span>Import Excel Koordinat Lahan</span>
         </v-btn>
       </div>
 
-      <!-- Modal Import Excel Polygon -->
-      <v-dialog v-model="showModalImportPolygon" max-width="500px">
+    <!-- Modal Import Excel Lahan Coordinate -->
+      <v-dialog v-model="showModalImportLahanCoordinate" max-width="500px">
         <v-card>
           <v-card-title class="d-flex justify-content-between align-items-center">
-            <span class="text-h5">Import Excel Polygon</span>
+           <span class="text-h5">Import Excel Koordinat Lahan</span>
             <v-btn small outlined color="primary" @click="downloadTemplate">
               <v-icon small class="mr-1">mdi-download</v-icon> Download Template
             </v-btn>
@@ -424,7 +424,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="showModalImportPolygon = false">Batal</v-btn>
+           <v-btn color="blue darken-1" text @click="showModalImportLahanCoordinate = false">Batal</v-btn>
             <v-btn color="blue darken-1" text @click="submitImportExcel" :loading="isImporting"
               :disabled="parsedExcelData.length === 0">Import</v-btn>
           </v-card-actions>
@@ -475,8 +475,8 @@ export default {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
       XLSX.writeFile(workbook, "Template_Import_Lahan.xlsx");
     },
-    openModalImportPolygon() {
-      this.showModalImportPolygon = true;
+    openModalImportLahanCoordinate() {
+      this.showModalImportLahanCoordinate = true;
       this.excelFile = null;
       this.parsedExcelData = [];
     },
@@ -547,11 +547,11 @@ export default {
           successCount += chunk.length;
         }
 
-        this.$_alert.success(`Berhasil import ${successCount} baris data Excel Polygon`);
-        this.showModalImportPolygon = false;
+        this.$_alert.success(`Berhasil import ${successCount} baris data Excel Koordinat Lahan`);
+        this.showModalImportLahanCoordinate = false;
         this.componentKey += 1; // refresh data
       } catch (err) {
-        this.$_alert.error("Gagal import sebagian/seluruh data Excel Polygon");
+        this.$_alert.error("Gagal import sebagian/seluruh data Excel Koordinat Lahan");
       } finally {
         this.isImporting = false;
       }
@@ -688,7 +688,7 @@ export default {
     },
   },
   computed: {
-    canImportExcelPolygon() {
+    canImportExcelLahanCoordinate() {
       const user = this.$store.state.User || JSON.parse(localStorage.getItem("User") || '{}');
       const roles = String(user.role || '');
       return ['13', '14'].includes(roles);
@@ -710,7 +710,7 @@ export default {
         project_no: ['PJ00021'],
         program_year: ['2026']
       },
-      showModalImportPolygon: false,
+      showModalImportLahanCoordinate: false,
       excelFile: null,
       parsedExcelData: [],
       isImporting: false,
