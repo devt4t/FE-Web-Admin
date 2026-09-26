@@ -401,7 +401,7 @@
      <div class="d-flex pb-4" v-if="canImportExcelPolygon">
         <v-btn variant="success" @click="openModalImportPolygon">
           <v-icon>mdi-microsoft-excel</v-icon>
-          <span>Import Excel Polygon</span>
+         <span>Import Excel Koordinat Lahan</span>
         </v-btn>
       </div>
 
