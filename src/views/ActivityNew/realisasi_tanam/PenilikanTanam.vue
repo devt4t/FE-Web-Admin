@@ -651,7 +651,9 @@ export default {
             }
             this.targetPopulateStage = this.targetMonitoringStage - 1;
 
-            this.refreshKey += 1;
+            if (!this.isInitialMount) {
+                this.refreshKey += 1;
+            }
         },
 
         normalizeIdentity(value) {
@@ -685,7 +687,6 @@ export default {
                 this.canAccessMonitoringV3 = true;
                 this.isExternalFC = false;
                 this.isV3Mode = true;
-                this.recalculateStage();
                 return;
             }
 
@@ -693,7 +694,6 @@ export default {
                 this.canAccessMonitoringV3 = true;
                 this.isExternalFC = true;
                 this.isV3Mode = true;
-                this.recalculateStage();
                 return;
             }
 
@@ -703,7 +703,6 @@ export default {
 
             if (this.isExternalFC) {
                 this.isV3Mode = true;
-                this.recalculateStage();
             }
         },
 
@@ -733,11 +732,19 @@ export default {
             canAccessMonitoringV3: false,
             isCheckingMonitoringV3Access: false,
             isExternalFC: false,
+            isInitialMount: true, // Mencegah race condition fetch awal
         }
     },
     mounted() {
         if (this.isV3Mode) this.recalculateStage();
         this.resolveMonitoringV3Access();
+        
+        // Setelah proses mount awal selesai, biarkan reactivity berjalan normal
+        this.$nextTick(() => {
+            setTimeout(() => {
+                this.isInitialMount = false;
+            }, 500);
+        });
     },
 
 };
