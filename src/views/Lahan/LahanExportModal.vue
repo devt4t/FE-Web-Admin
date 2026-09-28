@@ -3,7 +3,8 @@
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title>
-          <span>Export Pendataan (Petani - Lahan - Polygon)</span>
+         <span v-if="exportTarget === 'lahan-mon2'">Export Custom Lahan & Monitoring 2</span>
+          <span v-else>Export Pendataan (Petani - Lahan - Polygon)</span>
         </v-card-title>
 
         <v-card-text class="farmer-assign-wrapper mt-3">
@@ -318,6 +319,10 @@ export default {
     format: {
       required: true,
     },
+    exportTarget: {
+      type: String,
+      default: 'lahan', // can be 'lahan' or 'lahan-mon2'
+    }
   },
 
   watch: {
@@ -493,11 +498,18 @@ export default {
           };
           payload.filters[filterKey] = [selectedId];
 
+          let urlEndpoint = "";
+          if (this.exportTarget === 'lahan-mon2') {
+            urlEndpoint = `${this.$_config.baseUrlExport}export/lahan-mon2/excel`;
+          } else {
+            urlEndpoint = this.format === "pdf" ?
+              `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf` :
+              `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`;
+          }
+
           const response = await axios({
             method: 'POST',
-            url:
-              this.format === "pdf" ? `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf` :
-                `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+            url: urlEndpoint,
             responseType: "arraybuffer",
             headers: {
               'Content-Type': 'application/json',
@@ -511,7 +523,9 @@ export default {
           link.href = url;
 
           const timestamp = moment().format("YYYYMMDD_HHmmss");
-          let fileName = `Export_Lahan_${exportType.toUpperCase()}`;
+          let fileName = this.exportTarget === 'lahan-mon2'
+            ? `Export_Lahan_Mon2_${exportType.toUpperCase()}`
+            : `Export_Lahan_${exportType.toUpperCase()}`;
           if (selectedName !== "") fileName += `_${selectedName}`;
           let exportFormatFile = this.format === "pdf" ?
             `_${this.$store.state.tmpProgramYear || 'ALL'}_${timestamp}.pdf` :

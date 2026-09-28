@@ -305,7 +305,7 @@
     </template>
 
     <template v-slot:list-before-create>
-      <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
+     <lahan-export-modal :dataKey="exportModal" :format="exportFormat" :exportTarget="exportTarget" />
       <lahan-export-social-impact-modal :dataKey="exportSocialImpactModal" :format="exportFormat" />
     </template>
 
@@ -432,13 +432,14 @@
       </v-dialog>
     </template>
 
-  <!-- <template v-slot:toolbar-button>
-      <div class="d-flex flex-row">
-        <button class="toolbar-button mr-2">
-          <v-icon>mdi-microsoft-excel</v-icon>
+  <template v-slot:toolbar-button>
+      <div class="d-flex flex-row" title="Export Custom Lahan (Mon 2)">
+        <button class="toolbar-button mr-2" @click="onExportExcelMon2()">
+          <v-icon color="success">mdi-microsoft-excel</v-icon>
+          <!-- <span class="ml-1" style="font-size: 14px">Export Custom Lahan (Mon 1)</span> -->
         </button>
       </div>
-</template> -->
+   </template>
   </geko-base-crud>
 </template>
 
@@ -633,12 +634,20 @@ export default {
       if ([16, 1, 3].includes(this.$store.state.User.role)) {
         this.exportSocialImpactModal += 1;
       } else {
+        this.exportTarget = "lahan";
         this.exportModal += 1;
         this.exportFormat = "excel";
       }
     },
 
+    onExportExcelMon2() {
+      this.exportTarget = "lahan-mon2";
+      this.exportModal += 1;
+      this.exportFormat = "excel";
+    },
+
     onExportPdf() {
+      this.exportTarget = "lahan";
       this.exportModal += 1;
       this.exportFormat = "pdf";
     },
@@ -702,6 +711,7 @@ export default {
       exportModal: 0,
       exportSocialImpactModal: 0,
       exportFormat: "",
+      exportTarget: "lahan",
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);
       },
