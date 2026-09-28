@@ -433,7 +433,7 @@
     </template>
 
   <template v-slot:toolbar-button>
-      <div class="d-flex flex-row" title="Export Custom Lahan (Mon 2)">
+     <div class="d-flex flex-row" title="Export Custom Lahan (Mon 2)" v-if="canExportLahanCustomMon2">
         <button class="toolbar-button mr-2" @click="onExportExcelMon2()">
           <v-icon color="success">mdi-microsoft-excel</v-icon>
           <!-- <span class="ml-1" style="font-size: 14px">Export Custom Lahan (Mon 1)</span> -->
@@ -698,10 +698,15 @@ export default {
   },
   computed: {
     canImportExcelLahanCoordinate() {
-      const user = this.$store.state.User || JSON.parse(localStorage.getItem("User") || '{}');
+      const user = this.$store.state.User
       const roles = String(user.role || '');
       return ['13', '14'].includes(roles);
     },
+    canExportLahanCustomMon2() {
+      const user = this.$store.state.User;
+      const roles = String(user.role || '');
+      return ['13', '46'].includes(roles);
+    }
   },
   data() {
     return {
