@@ -1,0 +1,198 @@
+﻿@import "../../assets/scss/variables";
+
+.monitoring-kebakaran-form {
+
+    // Form Container
+    form {
+        padding: 2em;
+    }
+
+    // Dynamic Row Background (Tabel Pohon Terdampak)
+    .bg-grey {
+        background-color: rgba(199, 199, 199, 0.1);
+        border-radius: 12px;
+        padding: 1.5em;
+        margin-top: 10px;
+
+        // Gaya tambahan untuk baris input di dalam bg-grey
+        .border-bottom {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+
+            &:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+        }
+    }
+
+    // Styling khusus jika ada elemen tabel atau grid di dalam form
+    .multiple-row-wrapper {
+        background-color: rgba(199, 199, 199, 0.1);
+        border-radius: 12px;
+        padding-block: 1em;
+        padding-inline: 1.2em;
+    }
+}
+
+.monitoring-kebakaran-detail {
+    padding-inline: 1em;
+
+    .section-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #4caf50;
+        margin-bottom: 0.5em;
+        margin-top: 1.5em;
+        border-bottom: 1px dashed rgba(187, 187, 187, 0.589);
+        padding-bottom: 0.5em;
+    }
+
+    .stat-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        .stat-item {
+            width: 48%;
+            border-left: 7px solid #4caf50;
+            box-shadow: 0 0 20px 0 rgba(56, 71, 109, 0.15);
+            background-color: #fff !important;
+            border-radius: 8px;
+            padding: 1em;
+            margin-bottom: 1.5em;
+
+            &.border-warning {
+                border-left-color: #ffc107;
+            }
+
+            &.border-danger {
+                border-left-color: #f44336;
+            }
+
+            &.border-primary {
+                border-left-color: #2196f3;
+            }
+
+            &.border-info {
+                border-left-color: #00bcd4;
+            }
+
+            h4.stat-title {
+                font-size: 1.1em;
+                font-weight: bold;
+                margin-bottom: 15px;
+                color: #333;
+                display: flex;
+                align-items: center;
+
+                i {
+                    margin-right: 8px;
+                }
+            }
+
+            .data-list {
+                display: flex;
+                flex-direction: column;
+
+                .data-item {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: flex-start;
+                    padding-block: 4px;
+
+                    .label {
+                        width: 45%;
+                        font-size: 0.9em;
+                        color: rgb(159, 159, 159);
+                    }
+
+                    .value {
+                        width: 55%;
+                        font-size: 0.95em;
+                        font-weight: bold;
+                        color: #444;
+                        position: relative;
+
+                        &::before {
+                            content: ":";
+                            left: -10px;
+                            position: absolute;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .checklist-table-wrapper {
+        margin-bottom: 2em;
+
+        h4 {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #3d6a26;
+            margin-bottom: 5px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            .badge {
+                font-size: 0.9em;
+                font-weight: bold;
+                color: #333;
+            }
+        }
+
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #3d6a26;
+
+            thead {
+                background-color: #3d6a26;
+                color: white;
+
+                th {
+                    padding: 8px 12px;
+                    font-weight: bold;
+                    text-align: center;
+                    border: 1px solid #3d6a26;
+                    text-transform: uppercase;
+                }
+            }
+
+            tbody {
+                tr {
+                    td {
+                        padding: 8px 12px;
+                        border: 1px solid #3d6a26;
+                        vertical-align: top;
+                        font-size: 0.95em;
+                        color: #333;
+
+                        .checkbox-wrapper {
+                            display: flex;
+                            gap: 15px;
+                            justify-content: center;
+
+                            .check-box {
+                                display: flex;
+                                align-items: center;
+                                gap: 4px;
+
+                                i {
+                                    font-size: 1.2em;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

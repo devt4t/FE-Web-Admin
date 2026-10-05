@@ -604,6 +604,24 @@ const menu = [
       },
     ]
   },
+
+  // todo: Monitoring Kebakaran
+  {
+    title: "Monitoring Kebakaran",
+    icon: "mdi-pine-tree-fire",
+    items: [
+      {
+        title: "Monitoring Kebakaran",
+        to: "/monitoring-kebakaran",
+        component: "MonitoringKebakaran/MonitoringKebakaran",
+        name: "crud-monitoring-kebakaran",
+        icon: "mdi-pine-tree-fire",
+        permission: "MonitoringKebakaran",
+        type: ["non-carbon"],
+      }
+    ]
+  },
+
   // todo: untuk monitoring AZ (astra zeneca)
   // ? editan ku => monitoring v3
   // * == start ==
