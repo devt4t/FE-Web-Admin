@@ -1,69 +1,54 @@
 <template>
     <div v-if="data" class="pa-4 monitoring-kebakaran-detail">
-        <!-- Action Bar Verifikasi (Dipindah ke atas) -->
-        <div class="d-flex mb-4">
-            <!-- User FC -->
-            <template v-if="isFCRole">
-                <v-btn 
-                    v-if="data.is_verified == 0" 
-                    color="primary" 
-                    @click="handleVerify('verification')"
-                    class="mr-2"
-                >
-                    <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi FC
-                </v-btn>
-
-                <v-btn 
-                    v-else-if="data.is_verified == 1" 
-                    outlined
-                    color="error" 
-                    @click="handleUnverify()"
-                    class="mr-2"
-                >
-                    <v-icon left>mdi-close-circle-outline</v-icon> Batalkan Verifikasi FC
-                </v-btn>
-
-                <v-chip v-else-if="data.is_verified == 2" color="success" class="font-weight-bold">
-                    <v-icon left>mdi-check-decagram</v-icon> Laporan Selesai (Disetujui UM)
-                </v-chip>
-            </template>
-
-            <!-- User UM -->
-            <template v-else-if="isUMCARole">
-                <v-btn 
-                    v-if="data.is_verified == 0" 
-                    disabled 
-                    title="Tunggu pihak FC verifikasi lapangan dulu"
-                    class="mr-2"
-                >
-                    Menunggu Verifikasi FC
-                </v-btn>
-
-                <v-btn 
-                    v-else-if="data.is_verified == 1" 
-                    color="primary" 
-                    @click="handleVerify('verification')"
-                    class="mr-2"
-                >
-                    <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi UM
-                </v-btn>
-
-                <v-btn 
-                    v-else-if="data.is_verified == 2" 
-                    outlined
-                    color="error" 
-                    @click="handleUnverify()"
-                    class="mr-2"
-                >
-                    <v-icon left>mdi-close-circle-outline</v-icon> Batalkan Verifikasi UM
-                </v-btn>
-            </template>
-        </div>
-
         <v-row class="mb-4">
             <!-- Identitas Lahan -->
             <v-col cols="12" md="6">
                 <v-card outlined class="fill-height border-top-primary">
+                    <!-- Action Verifikasi -->
+                    <v-row class="ml-4">
+                        <v-col cols="12">
+                            <div class="my-3 font-weight-500">
+                                Action Verifikasi Laporan
+                            </div>
+                            <!-- User FC -->
+                            <template v-if="isFCRole">
+                                <v-btn v-if="data.is_verified == 0" color="primary"
+                                    @click="handleVerify('verification')">
+                                    <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi FC
+                                </v-btn>
+
+                                <v-btn v-else-if="data.is_verified == 1" outlined color="error"
+                                    @click="handleUnverify()">
+                                    <v-icon left>mdi-close-circle-outline</v-icon> Un-Verifikasi FC
+                                </v-btn>
+
+                                <v-chip v-else-if="data.is_verified == 2" color="success" class="font-weight-bold">
+                                    <v-icon left>mdi-check-decagram</v-icon> Laporan Selesai (Disetujui UM)
+                                </v-chip>
+                            </template>
+
+                            <!-- User UM -->
+                            <template v-if="isUMCARole">
+                                <v-btn v-if="data.is_verified == 0" disabled
+                                    title="Tunggu pihak FC verifikasi lapangan dulu" class="ml-2">
+                                    Menunggu Verifikasi FC
+                                </v-btn>
+
+                                <v-btn v-else-if="data.is_verified == 1" color="primary" class="ml-2"
+                                    @click="handleVerify('verification')">
+                                    <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi UM
+                                </v-btn>
+
+                                <v-btn v-else-if="data.is_verified == 2" outlined color="error" class="ml-2"
+                                    @click="handleUnverify()">
+                                    <v-icon left>mdi-close-circle-outline</v-icon> Un-Verifikasi UM
+                                </v-btn>
+                            </template>
+                        </v-col>
+                    </v-row>
+
+                    <v-divider class="my-5"></v-divider>
+
                     <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
                         <v-icon small left color="primary">mdi-account-outline</v-icon> Identitas Lahan
                     </v-card-title>
@@ -82,7 +67,7 @@
                         </div>
                         <div class="d-flex justify-space-between mb-1">
                             <span class="text-muted small">Tahun Program:</span>
-                            <span class="font-weight-bold">{{ data.program_year || '-' }}</span>
+                            <span class="font-weight-bold">{{ data.report_program_year || '-' }}</span>
                         </div>
                         <v-divider class="my-2"></v-divider>
                         <div class="d-flex justify-space-between mb-1">
@@ -176,7 +161,7 @@
                                 <div class="text-muted small">Dugaan Penyebab:</div>
                                 <div class="font-weight-bold">
                                     <v-chip small color="error" class="mt-1">{{ getFireCause(data.fire_cause)
-                                    }}</v-chip>
+}}</v-chip>
                                 </div>
                             </div>
                             <div class="mb-3" v-if="data.fire_cause_description">
@@ -209,18 +194,18 @@
                             <v-divider class="my-2"></v-divider>
                             <div class="row no-gutters text-center mt-2">
                                 <div class="col-4 border-right px-1">
-                                    <div class="font-weight-bold text-h6 primary--text">{{ data.total_land_area || 0 }}
+                                    <div class="font-weight-bold text-h6">{{ data.total_land_area || 0 }}
                                     </div>
                                     <div class="text-muted extra-small">Total (m²)</div>
                                 </div>
                                 <div class="col-4 border-right px-1">
-                                    <div class="font-weight-bold text-h6 warning--text">{{
+                                    <div class="font-weight-bold text-h6">{{
                                         data.estimated_burned_land_area
                                         || 0 }}</div>
                                     <div class="text-muted extra-small">Estimasi (m²)</div>
                                 </div>
                                 <div class="col-4 px-1">
-                                    <div class="font-weight-bold text-h6 error--text">{{ data.final_burned_land_area ||
+                                    <div class="font-weight-bold text-h6">{{ data.final_burned_land_area ||
                                         0 }}
                                     </div>
                                     <div class="text-muted extra-small">Final (m²)</div>
@@ -247,15 +232,16 @@
 
         <v-divider class="my-5"></v-divider>
 
-        <div>
+
+        <!-- Checklist & Kronologi -->
+        <div class="mb-5">
             <v-row>
-                <!-- Checklist & Kronologi -->
                 <v-col cols="12" md="12">
                     <v-card outlined class="fill-height border-top-info">
                         <v-card-title class="subtitle-2 font-weight-bold pb-2 bg-light">
                             <v-icon small left color="info">mdi-clipboard-check-outline</v-icon> Checklist & Kronologi
                         </v-card-title>
-                        <v-card-text class="pt-3" style="max-height: 500px; overflow-y: auto;">
+                        <v-card-text class="pt-3">
                             <div class="checklist-table-wrapper" style="padding-inline: 0;">
                                 <!-- Kronologi -->
                                 <h4>KRONOLOGI RESPON CEPAT <span class="badge">(FF)</span></h4>
@@ -267,12 +253,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(c, i) in parsedChronology" :key="'chron-'+i">
-                                            <td>{{ c.tahapan }}</td>
-                                            <td class="text-center font-weight-bold">{{ c.waktu || '-' }}</td>
-                                        </tr>
+                                        <template v-for="(c, i) in parsedChronology">
+                                            <tr :key="'chron-' + i">
+                                                <td>{{ c.tahapan }}</td>
+                                                <td class="text-center font-weight-bold">
+                                                    <span v-if="c.is_done" class="text-black">{{ c.waktu }}</span>
+                                                    <span v-else class="text-muted">-</span>
+                                                </td>
+                                            </tr>
+                                            <tr :key="'chron-detail-' + i" v-if="c.is_done && c.notes">
+                                                <td colspan="2" class="bg-light px-4 py-2 border-bottom">
+                                                    <strong>Keterangan:</strong> {{ c.notes }}
+                                                </td>
+                                            </tr>
+                                        </template>
                                         <tr v-if="parsedChronology.length === 0">
-                                            <td colspan="2" class="text-center font-italic text-muted py-3">Tidak ada data kronologi</td>
+                                            <td colspan="2" class="text-center font-italic text-muted py-3">Tidak ada
+                                                data kronologi</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -288,26 +285,54 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(c, i) in parsedFFChecklist" :key="'ff-'+i">
-                                            <td>{{ c.tindakan }}</td>
-                                            <td>
-                                                <div class="checkbox-wrapper">
-                                                    <div class="check-box">
-                                                        <v-icon v-if="c.is_done" color="success">mdi-checkbox-marked</v-icon>
-                                                        <v-icon v-else color="grey">mdi-checkbox-blank-outline</v-icon>
-                                                        <span>Ya</span>
+                                        <template v-for="(c, i) in parsedFFChecklist">
+                                            <tr :key="'ff-' + i">
+                                                <td>{{ c.tindakan }}</td>
+                                                <td>
+                                                    <div class="checkbox-wrapper">
+                                                        <div class="check-box">
+                                                            <v-icon v-if="c.is_done"
+                                                                color="success">mdi-checkbox-marked</v-icon>
+                                                            <v-icon v-else
+                                                                color="grey">mdi-checkbox-blank-outline</v-icon>
+                                                            <span>Ya</span>
+                                                        </div>
+                                                        <div class="check-box">
+                                                            <v-icon v-if="!c.is_done"
+                                                                color="error">mdi-checkbox-marked</v-icon>
+                                                            <v-icon v-else
+                                                                color="grey">mdi-checkbox-blank-outline</v-icon>
+                                                            <span>Tidak</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="check-box">
-                                                        <v-icon v-if="!c.is_done" color="error">mdi-checkbox-marked</v-icon>
-                                                        <v-icon v-else color="grey">mdi-checkbox-blank-outline</v-icon>
-                                                        <span>Tidak</span>
+                                                </td>
+                                                <td class="text-center font-weight-bold">
+                                                    <span v-if="c.is_done" class="text-black">{{ c.waktu }}</span>
+                                                    <span v-else class="text-muted"> - </span>
+                                                </td>
+                                            </tr>
+                                            <tr :key="'ff-detail-' + i"
+                                                v-if="c.is_done && (c.notes || hasValidEvidences(c.evidences))">
+                                                <td colspan="3" class="bg-light px-4 py-3 border-bottom">
+                                                    <div v-if="c.notes" class="mb-2"><strong>Catatan:</strong> {{
+                                                        c.notes }}</div>
+                                                    <div v-if="hasValidEvidences(c.evidences)">
+                                                        <strong>Evidence:</strong>
+                                                        <div class="d-flex mt-2" style="gap: 10px;">
+                                                            <template v-for="(ev, eIdx) in c.evidences">
+                                                                <img v-if="ev.photo" :key="ev.id || eIdx"
+                                                                    :src="$store.state.apiUrlImage + ev.photo"
+                                                                    style="height: 80px; width: 80px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #ccc"
+                                                                    @click="showLightbox(ev.photo)" />
+                                                            </template>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center font-weight-bold">{{ c.waktu || '-' }}</td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                        </template>
                                         <tr v-if="parsedFFChecklist.length === 0">
-                                            <td colspan="3" class="text-center font-italic text-muted py-3">Tidak ada data checklist FF</td>
+                                            <td colspan="3" class="text-center font-italic text-muted py-3">Tidak ada
+                                                data checklist FF</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -317,39 +342,67 @@
                                 <table class="checklist-table">
                                     <thead>
                                         <tr>
-                                            <th width="60%">TINDAKAN KOORDINASI</th>
+                                            <th width="60%">TINDAKAN</th>
                                             <th width="20%">DILAKUKAN</th>
                                             <th width="20%">WAKTU</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(c, i) in parsedFCChecklist" :key="'fc-'+i">
-                                            <td>{{ c.tindakan }}</td>
-                                            <td>
-                                                <div class="checkbox-wrapper">
-                                                    <div class="check-box">
-                                                        <v-icon v-if="c.is_done" color="success">mdi-checkbox-marked</v-icon>
-                                                        <v-icon v-else color="grey">mdi-checkbox-blank-outline</v-icon>
-                                                        <span>Ya</span>
+                                        <template v-for="(c, i) in parsedFCChecklist">
+                                            <tr :key="'fc-' + i">
+                                                <td>{{ c.tindakan }}</td>
+                                                <td>
+                                                    <div class="checkbox-wrapper">
+                                                        <div class="check-box">
+                                                            <v-icon v-if="c.is_done"
+                                                                color="success">mdi-checkbox-marked</v-icon>
+                                                            <v-icon v-else
+                                                                color="grey">mdi-checkbox-blank-outline</v-icon>
+                                                            <span>Ya</span>
+                                                        </div>
+                                                        <div class="check-box">
+                                                            <v-icon v-if="!c.is_done"
+                                                                color="error">mdi-checkbox-marked</v-icon>
+                                                            <v-icon v-else
+                                                                color="grey">mdi-checkbox-blank-outline</v-icon>
+                                                            <span>Tidak</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="check-box">
-                                                        <v-icon v-if="!c.is_done" color="error">mdi-checkbox-marked</v-icon>
-                                                        <v-icon v-else color="grey">mdi-checkbox-blank-outline</v-icon>
-                                                        <span>Tidak</span>
+                                                </td>
+                                                <td class="text-center font-weight-bold">
+                                                    <span v-if="c.is_done" class="text-black">{{ c.waktu }}</span>
+                                                    <span v-else class="text-muted">-</span>
+                                                </td>
+                                            </tr>
+                                            <tr :key="'fc-detail-' + i"
+                                                v-if="c.is_done && (c.notes || hasValidEvidences(c.evidences))">
+                                                <td colspan="3" class="bg-light px-4 py-3 border-bottom">
+                                                    <div v-if="c.notes" class="mb-2"><strong>Catatan:</strong> {{
+                                                        c.notes }}</div>
+                                                    <div v-if="hasValidEvidences(c.evidences)">
+                                                        <strong>Evidence:</strong>
+                                                        <div class="d-flex mt-2" style="gap: 10px;">
+                                                            <template v-for="(ev, eIdx) in c.evidences">
+                                                                <img v-if="ev.photo" :key="ev.id || eIdx"
+                                                                    :src="$store.state.apiUrlImage + ev.photo"
+                                                                    style="height: 80px; width: 80px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #ccc"
+                                                                    @click="showLightbox(ev.photo)" />
+                                                            </template>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center font-weight-bold">{{ c.waktu || '-' }}</td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                        </template>
                                         <tr v-if="parsedFCChecklist.length === 0">
-                                            <td colspan="3" class="text-center font-italic text-muted py-3">Tidak ada data checklist FC</td>
+                                            <td colspan="3" class="text-center font-italic text-muted py-3">Tidak ada
+                                                data checklist FC</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                
+
                                 <!-- Resources Involved -->
-                                <h4 v-if="parsedResources.length > 0">SUMBER DAYA & PIHAK YANG TERLIBAT <span class="badge">(FC)</span></h4>
-                                <table class="checklist-table" v-if="parsedResources.length > 0">
+                                <h4>SUMBER DAYA & PIHAK YANG TERLIBAT <span class="badge">(FC)</span></h4>
+                                <table class="checklist-table">
                                     <thead>
                                         <tr>
                                             <th width="40%">Sumber Daya / Pihak Terlibat</th>
@@ -358,10 +411,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(r, i) in parsedResources" :key="'res-'+i">
-                                            <td class="font-weight-bold">{{ r.sumber_daya }}</td>
-                                            <td class="text-center">{{ r.jumlah }}</td>
-                                            <td>{{ r.keterangan || '-' }}</td>
+                                        <template v-for="(r, i) in parsedResources">
+                                            <tr :key="'res-' + i">
+                                                <td class="font-weight-bold">{{ r.sumber_daya }}</td>
+                                                <td class="text-center">
+                                                    <span v-if="r.is_done" class="font-weight-bold text-primary">{{
+                                                        r.jumlah }}</span>
+                                                    <span v-else class="text-muted">-</span>
+                                                </td>
+                                                <td>
+                                                    <span v-if="r.is_done">{{ r.keterangan || '-' }}</span>
+                                                    <span v-else class="text-muted">-</span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                        <tr v-if="parsedResources.length === 0">
+                                            <td colspan="3" class="text-center font-italic text-muted py-3">Tidak ada
+                                                data sumber daya</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -396,12 +462,27 @@
                 <template v-slot:item.total_dead="{ item }">
                     <span class="font-weight-bold text-danger">{{ item.total_dead }}</span>
                 </template>
+                <template v-slot:item.total_unknown="{ item }">
+                    <span class="font-weight-bold text-warning">{{ Math.max(0, parseInt(item.total_planted || 0) -
+                        (parseInt(item.total_alive || 0) + parseInt(item.total_dead || 0))) }}</span>
+                </template>
                 <template v-slot:body.append v-if="data.trees_impacted && data.trees_impacted.length > 0">
                     <tr class="font-weight-bold">
-                        <td colspan="3" class="text-left" style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">TOTAL</td>
-                        <td class="text-primary text-center" style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{ sumPlanted }}</td>
-                        <td class="text-success text-center" style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{ sumAlive }}</td>
-                        <td class="text-danger text-center" style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{ sumDead }}</td>
+                        <td colspan="4" class="text-left"
+                            style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">TOTAL
+                        </td>
+                        <td class="text-primary text-center"
+                            style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
+                                sumPlanted }}</td>
+                        <td class="text-success text-center"
+                            style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
+                                sumAlive }}</td>
+                        <td class="text-danger text-center"
+                            style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
+                                sumDead }}</td>
+                        <td class="text-warning text-center"
+                            style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
+                                sumUnknown }}</td>
                     </tr>
                 </template>
             </v-data-table>
@@ -457,7 +538,6 @@
                 </v-card>
             </v-col>
         </v-row>
-
     </div>
 </template>
 
@@ -469,14 +549,17 @@ export default {
     data() {
         return {
             isLoading: false,
+            templates: null,
             // mapping header data
             treeDetailHeaders: [
                 { text: 'No', value: 'index', sortable: false, width: '60px' },
                 { text: 'Kode Pohon', value: 'tree_code' },
                 { text: 'Jenis Tanaman', value: 'tree_name' },
-                { text: 'Jumlah Program', value: 'total_planted', align: 'center' },
+                { text: 'Tahun Tanam Pohon', value: 'planting_year' },
+                { text: 'Jumlah Tertanam', value: 'total_planted', align: 'center' },
                 { text: 'Jumlah Hidup', value: 'total_alive', align: 'center' },
                 { text: 'Jumlah Mati', value: 'total_dead', align: 'center' },
+                { text: 'Pohon Tidak Diketahui', value: 'total_unknown', align: 'center' },
             ],
             photoLabels: [
                 'Koordinasi dengan pemilik lahan',
@@ -485,6 +568,14 @@ export default {
                 'Kondisi Tanaman pasca lahan terbakar',
                 'Pengecekan Lahan Terbakar'
             ],
+        }
+    },
+    async mounted() {
+        try {
+            const resTemplate = await this.$_api.get('monitoring-fire-incident/get-template-items');
+            this.templates = resTemplate.data;
+        } catch (e) {
+            console.error("Gagal load templates:", e);
         }
     },
     computed: {
@@ -499,16 +590,66 @@ export default {
             return ['13', '20', '33'].includes(roles);
         },
         parsedChronology() {
-            return this.parseJsonSafely(this.data.chronology);
+            const existArr = this.parseJsonSafely(this.data.chronology);
+            if (!this.templates || !this.templates.chronology) return existArr;
+            const existMap = new Map(existArr.map(i => [i.item_code, i]));
+            return this.templates.chronology.map(tpl => {
+                const existing = existMap.get(tpl.code);
+                return {
+                    item_code: tpl.code,
+                    tahapan: tpl.label,
+                    is_done: !!existing?.occurred_at,
+                    waktu: existing?.occurred_at || null,
+                    notes: existing?.notes || ''
+                };
+            });
         },
         parsedFFChecklist() {
-            return this.parseJsonSafely(this.data.ff_action_checklist);
+            const existArr = this.parseJsonSafely(this.data.ff_action_checklist);
+            if (!this.templates || !this.templates.ff_action) return existArr;
+            const existMap = new Map(existArr.map(i => [i.item_code, i]));
+            return this.templates.ff_action.map(tpl => {
+                const existing = existMap.get(tpl.code);
+                return {
+                    item_code: tpl.code,
+                    tindakan: tpl.label,
+                    is_done: existing?.is_done == 1,
+                    waktu: existing?.done_at || null,
+                    notes: existing?.notes || '',
+                    evidences: existing?.evidences || []
+                };
+            });
         },
         parsedFCChecklist() {
-            return this.parseJsonSafely(this.data.fc_action_checklist);
+            const existArr = this.parseJsonSafely(this.data.fc_action_checklist);
+            if (!this.templates || !this.templates.fc_action) return existArr;
+            const existMap = new Map(existArr.map(i => [i.item_code, i]));
+            return this.templates.fc_action.map(tpl => {
+                const existing = existMap.get(tpl.code);
+                return {
+                    item_code: tpl.code,
+                    tindakan: tpl.label,
+                    is_done: existing?.is_done == 1,
+                    waktu: existing?.done_at || null,
+                    notes: existing?.notes || '',
+                    evidences: existing?.evidences || []
+                };
+            });
         },
         parsedResources() {
-            return this.parseJsonSafely(this.data.resources_involved);
+            const existArr = this.parseJsonSafely(this.data.resources_involved);
+            if (!this.templates || !this.templates.resource) return existArr;
+            const existMap = new Map(existArr.map(i => [i.item_code, i]));
+            return this.templates.resource.map(tpl => {
+                const existing = existMap.get(tpl.code);
+                return {
+                    item_code: tpl.code,
+                    sumber_daya: tpl.label,
+                    is_done: !!existing,
+                    jumlah: existing?.qty || 0,
+                    keterangan: existing?.notes || ''
+                };
+            });
         },
         sumPlanted() {
             if (!this.data.trees_impacted) return 0;
@@ -521,7 +662,17 @@ export default {
         sumDead() {
             if (!this.data.trees_impacted) return 0;
             return this.data.trees_impacted.reduce((sum, item) => sum + (parseInt(item.total_dead) || 0), 0);
-        }
+        },
+        sumUnknown() {
+            if (!this.data.trees_impacted) return 0;
+            return this.data.trees_impacted.reduce((sum, item) => {
+                let planted = parseInt(item.total_planted || 0);
+                let alive = parseInt(item.total_alive || 0);
+                let dead = parseInt(item.total_dead || 0);
+                let diff = planted - (alive + dead);
+                return sum + (diff > 0 ? diff : 0);
+            }, 0);
+        },
     },
     methods: {
         async handleVerify(type) {
@@ -536,27 +687,32 @@ export default {
                 cancelButtonText: 'Batal',
             });
 
-            if(!prompt.isConfirmed) return;
-            const user_id = this.$store.state.User;
+            if (!prompt.isConfirmed) return;
+            const user = this.$store.state.User;
 
             this.isLoading = true;
 
             try {
-                await this.$_api.post('monitoring-fire-incident/verification',{
-                    param:{
-                        current_id: id, // ini seharusnya dari id monitoring nya tapi pengambilan ku salah ini
-                        modul: type,
-                        user_id: user.EmployeeStructure.nik,
-                    },
+                await this.$_api.post('monitoring-fire-incident/verification', {
+                    current_id: this.data.id,
+                    modul: type,
+                    user_id: user.EmployeeStructure?.nik || user.email,
                 });
 
                 this.$_alert.success('Berhasil Verifikasi');
+                
+                // Optimistic UI Update for instant Reactivity
+                if (this.data.is_verified == 0) this.data.is_verified = 1;
+                else if (this.data.is_verified == 1) this.data.is_verified = 2;
+                
                 this.isLoading = false;
+                this.$emit('refresh'); // trigger parent to reload
             } catch (err) {
                 console.error('Gagal verifikasi data:', err);
+                this.$_alert.error(err.response?.data?.message || 'Gagal verifikasi data');
                 this.isLoading = false;
             } finally {
-                this.isLoading= false;
+                this.isLoading = false;
             }
         },
         async handleUnverify() {
@@ -565,23 +721,28 @@ export default {
                 "Yakin ingin membatalkan verifikasi (Unverifikasi)?",
                 "Ya, Unverifikasi",
                 "Tidak"
-            );
+            );  
 
-            if(!prompt.isConfirmed) return;
+            if (!prompt.isConfirmed) return;
 
             this.isLoading = true;
 
             try {
-                await this.$_api.post('monitoring-fire-incident/unverification',{
-                    param: {
-                        current_id: id,// ini juga masih salah sih kelitannya, cemana tuh
-                    },
+                await this.$_api.post('monitoring-fire-incident/unverification', {
+                    current_id: this.data.id
                 });
 
                 this.$_alert.success('Berhasil Unverifikasi Data');
+
+                // Optimistic UI Update for instant Reactivity
+                if (this.data.is_verified == 2) this.data.is_verified = 1;
+                else if (this.data.is_verified == 1) this.data.is_verified = 0;
+
                 this.isLoading = false;
+                this.$emit('refresh');
             } catch (err) {
                 console.error('Gagal men-Unverifikasi data:', err);
+                this.$_alert.error(err.response?.data?.message || 'Gagal un-verifikasi data');
                 this.isLoading = false;
             } finally {
                 this.isLoading = false;
@@ -623,6 +784,10 @@ export default {
             } catch (e) {
                 return [];
             }
+        },
+        hasValidEvidences(evidences) {
+            if (!evidences || !Array.isArray(evidences)) return false;
+            return evidences.some(ev => ev.photo && ev.photo.trim() !== '');
         },
         showLightbox(photoPath) {
             if (!photoPath) return;

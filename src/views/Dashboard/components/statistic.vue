@@ -264,7 +264,7 @@ export default {
           },
           api: {
             // endpoint: "new-dashboard/land-by-purpose",
-            endpoint: "new-dashboard/farmers",
+            endpoint: "new-dashboard/count-lahan",
             params: {
               project_purpose: "non-carbon",
               approve: 2,
@@ -281,7 +281,7 @@ export default {
             suffix: "Lahan",
             api: {
               // endpoint: "new-dashboard/land-by-purpose",
-              endpoint: "new-dashboard/farmers",
+              endpoint: "new-dashboard/count-lahan",
               params: {
                 project_purpose: "non-carbon",
               },
@@ -302,7 +302,7 @@ export default {
           },
           api: {
             // endpoint: "new-dashboard/land-by-purpose",
-            endpoint: "new-dashboard/farmers",
+            endpoint: "new-dashboard/count-lahan",
             params: {
               project_purpose: "carbon",
               approve: 2,
@@ -319,7 +319,7 @@ export default {
             suffix: "Lahan",
             api: {
               // endpoint: "new-dashboard/land-by-purpose",
-              endpoint: "new-dashboard/farmers",
+              endpoint: "new-dashboard/count-lahan",
               params: {
                 project_purpose: "carbon",
               },

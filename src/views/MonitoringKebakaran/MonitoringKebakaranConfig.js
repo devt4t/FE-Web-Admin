@@ -40,7 +40,7 @@ export default {
             },
         },
         {
-            id: 'program_year',
+            id: 'report_program_year',
             label: "Tahun Program",
             methods: {
                 list: true,

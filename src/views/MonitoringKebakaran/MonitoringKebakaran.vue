@@ -1,11 +1,19 @@
 <template>
     <div>
-        <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="false" :hideDelete="true">
-            <!-- karena disini hanya me-report atau archive aja jadi tidak ada hapus -->
+       <geko-base-crud :config="config" :hideCreate="true" :hideDelete="true">
+            <!-- karena disini hanya me-report atau archive aja jadi tidak ada hapus ygy -->
             <template v-slot:create-form>
                 <MonitoringKebakaranUpdate />
             </template>
             
+<!-- hide button kalo udah di verif FC -->
+            <template v-slot:list-action-update="{ item }">
+                <button v-if="item.is_verified == 0" class="geko-list-action-update"
+                    @click="$router.push({ query: { view: 'update', id: item.id, mon_no: item.mon_no } })" title="Update Data">
+                    <v-icon small>mdi-pencil-minus</v-icon>
+                </button>
+                <div v-else></div>
+            </template>
             <template v-slot:list-bottom-action="{ item }">
                 <v-btn variant="danger" small class="mr-2 mt-2" :loading="exportingId === item.id"
                     :disabled="exportingId === item.id" @click="onExportLaporanKebakaranPDF(item)"
