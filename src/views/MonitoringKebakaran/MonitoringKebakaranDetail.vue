@@ -8,7 +8,7 @@
                     <v-row class="ml-4">
                         <v-col cols="12">
                             <div class="my-3 font-weight-500">
-                                Action Verifikasi Laporan
+                                Aksi Verifikasi Laporan
                             </div>
                             <!-- User FC -->
                             <template v-if="isFCRole">

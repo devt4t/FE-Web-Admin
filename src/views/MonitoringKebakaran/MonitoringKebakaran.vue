@@ -4,12 +4,12 @@
             <!-- karena disini hanya me-report atau archive aja jadi tidak ada hapus ygy -->
             <template v-slot:create-form>
                 <MonitoringKebakaranUpdate />
-            </template>
-            
-<!-- hide button kalo udah di verif FC -->
+           </template>
+           <!-- hide button kalo udah di verif FC -->
             <template v-slot:list-action-update="{ item }">
                 <button v-if="item.is_verified == 0" class="geko-list-action-update"
-                    @click="$router.push({ query: { view: 'update', id: item.id, mon_no: item.mon_no } })" title="Update Data">
+                   @click="$router.push({ query: { view: 'update', id: item.id, mon_no: item.mon_no } })"
+                    title="Update Data">
                     <v-icon small>mdi-pencil-minus</v-icon>
                 </button>
                 <div v-else></div>
@@ -34,11 +34,21 @@
 
             <template v-slot:detail-slave-raw="{ data }">
                 <template v-if="data && data.data">
-                    <MonitoringKebakaranDetailMap :long="data.data.longitude" :lat="data.data.latitude" :section="'Monitoring Kebakaran'" :title="'Koordinat Lahan'"/>
+                   <MonitoringKebakaranDetailMap :long="data.data.longitude" :lat="data.data.latitude"
+                        :section="'Monitoring Kebakaran'" :title="'Koordinat Lahan'" />
                     <MonitoringKebakaranDetail :data="data.data" />
                 </template>
             </template>
-            
+
+          <template v-slot:list-is_verified="{ item }">
+                <span class="badge" :class="{
+                    'bg-grey': item.is_verified == 0,
+                    'bg-primary': item.is_verified == 1,
+                    'bg-success': item.is_verified == 2
+                }">{{ item.is_verified == 0 ? 'Belum Diverifikasi' :
+                    item.is_verified == 1 ? 'Diverifikasi FC' :
+                        item.is_verified == 2 ? 'Diverifikasi UM' : 'null' }}</span>
+            </template>
         </geko-base-crud>
     </div>
 </template>

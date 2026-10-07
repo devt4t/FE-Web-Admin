@@ -21,7 +21,7 @@ export default {
             setter: 'program_year'
         }
     },
-    fields:[
+    fields: [
         // list section
         {
             id: 'mon_no',
@@ -108,22 +108,10 @@ export default {
             label: 'Status Verifikasi',
             methods: {
                 list: {
-                    view_data: 'is_verified',
-                    class: {
-                        0: 'badge bg-grey',
-                        1: 'badge bg-primary',
-                        2: 'badge bg-success',
-                    },
-                    transform: 'simple-status'
+                    type: 'row-slot'
                 },
                 detail: {
-                    view_data: 'is_verified',
-                    class: {
-                        0: 'badge bg-grey',
-                        1: 'badge bg-primary',
-                        2: 'badge bg-success',
-                    },
-                    transform: 'simple-status'
+                    type: 'row-slot'
                 },
             },
         },
