@@ -262,8 +262,8 @@ export default {
           // }
         },
         {
-          label: "Tipe Irigasi",
-          key: "main_lahan.irrigation_type",
+          label: "Akses Irigasi",
+          key: "main_lahan.irrigation_access",
           // type: "custom_mapping_irrigation",
         },
         {
