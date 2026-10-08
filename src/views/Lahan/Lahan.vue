@@ -46,11 +46,10 @@
           <span>Kode Lahan</span>
         </v-tooltip>
 
-
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <span v-on="on" class="text-09-em d-block font-weight-300">{{
-              getMaskedValue(item).updated_at | parse('datetime')
+              getMaskedValue(item).updated_at | parse("datetime")
             }}</span>
           </template>
 
@@ -210,10 +209,14 @@
         Array.isArray(getMaskedValue(item).total_from_detail) &&
         getMaskedValue(item).total_from_detail.length > 0
       ">{{
-        (parseFloat(getMaskedValue(item).total_from_detail[0].pohon_kayu_detail) +
-          parseFloat(getMaskedValue(item).total_from_detail[0].pohon_mpts_detail))
+        (parseFloat(
+          getMaskedValue(item).total_from_detail[0].pohon_kayu_detail,
+        ) +
+          parseFloat(
+            getMaskedValue(item).total_from_detail[0].pohon_mpts_detail,
+          ))
         | parse("ts")
-      }}</span>
+        }}</span>
     </template>
 
     <template v-slot:list-status="{ item }">
@@ -300,27 +303,41 @@
     </template>
 
     <template v-slot:list-signal_status="{ item }">
-      <span class="badge" :class="getSignalBadgeClass(item.signal_status)">{{ getSignalStatusLabel(item.signal_status)
+      <span class="badge" :class="getSignalBadgeClass(item.signal_status)">{{
+        getSignalStatusLabel(item.signal_status)
+
       }}</span>
     </template>
 
     <template v-slot:list-before-create>
-     <lahan-export-modal :dataKey="exportModal" :format="exportFormat" :exportTarget="exportTarget" />
+      <lahan-export-modal :dataKey="exportModal" :format="exportFormat" :exportTarget="exportTarget" />
       <lahan-export-social-impact-modal :dataKey="exportSocialImpactModal" :format="exportFormat" />
     </template>
 
     <template v-slot:list-project_id="{ item }">
       <div class="d-flex flex-col min-w-200px">
-        <span class="font-weight-500">{{ item.land_project?.projects_project_name }}</span>
+        <span class="font-weight-500">{{
+          item.land_project?.projects_project_name
+        }}</span>
         <div class="d-flex flex-row">
           <span class="badge" :class="{
-            'bg-info': item.land_project && item.land_project.project_planting_purposes_code === 'carbon',
-            'bg-light': item.land_project && item.land_project.project_planting_purposes_code === 'non-carbon'
+            'bg-info':
+              item.land_project &&
+              item.land_project.project_planting_purposes_code === 'carbon',
+            'bg-light':
+              item.land_project &&
+              item.land_project.project_planting_purposes_code ===
+              'non-carbon',
           }">
-            <span
-              v-if="item.land_project && item.land_project.project_planting_purposes_code === 'carbon'">Carbon</span>
-            <span v-else-if="item.land_project && item.land_project.project_planting_purposes_code === 'non-carbon'">Non
-              Carbon</span>
+            <span v-if="
+              item.land_project &&
+              item.land_project.project_planting_purposes_code === 'carbon'
+            ">Carbon</span>
+            <span v-else-if="
+              item.land_project &&
+              item.land_project.project_planting_purposes_code ===
+              'non-carbon'
+            ">Non Carbon</span>
           </span>
           <span class="badge bg-primary ml-1" v-if="isSpecificProject(item)">Additional Req</span>
         </div>
@@ -398,18 +415,24 @@
 
         <lahan-kml-upload :dataKey="uploadKmlModal" />
       </div>
-     <div class="d-flex pb-4" v-if="canImportExcelLahanCoordinate">
-        <v-btn variant="success" @click="openModalImportLahanCoordinate">
+      <div class="d-flex pb-4" v-if="canImportExcelLahanCoordinate">
+        <v-btn variant="success" @click="openModalImportLahanCoordinate" class="mr-3">
           <v-icon>mdi-microsoft-excel</v-icon>
-         <span>Import Excel Koordinat Lahan</span>
+          <span>Import Excel Koordinat Lahan</span>
+        </v-btn>
+        <!-- lahan mitigasi el nino-->
+        <v-btn variant="warning" @click="importMitigasiModal++" v-if="$_sys.isAllowed('lahan-mitigasi-el-nino-create')">
+          <v-icon>mdi-shield-sun-outline</v-icon>
+          <span>Import Data Mitigasi Lahan</span>
         </v-btn>
       </div>
+      <lahan-mitigasi-import-modal :dataKey="importMitigasiModal" @refresh="componentKey++" />
 
-    <!-- Modal Import Excel Lahan Coordinate -->
+      <!-- Modal Import Excel Lahan Coordinate -->
       <v-dialog v-model="showModalImportLahanCoordinate" max-width="500px">
         <v-card>
           <v-card-title class="d-flex justify-content-between align-items-center">
-           <span class="text-h5">Import Excel Koordinat Lahan</span>
+            <span class="text-h5">Import Excel Koordinat Lahan</span>
             <v-btn small outlined color="primary" @click="downloadTemplate">
               <v-icon small class="mr-1">mdi-download</v-icon> Download Template
             </v-btn>
@@ -424,7 +447,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-           <v-btn color="blue darken-1" text @click="showModalImportLahanCoordinate = false">Batal</v-btn>
+            <v-btn color="blue darken-1" text @click="showModalImportLahanCoordinate = false">Batal</v-btn>
             <v-btn color="blue darken-1" text @click="submitImportExcel" :loading="isImporting"
               :disabled="parsedExcelData.length === 0">Import</v-btn>
           </v-card-actions>
@@ -432,14 +455,14 @@
       </v-dialog>
     </template>
 
-  <template v-slot:toolbar-button>
-     <div class="d-flex flex-row" title="Export Custom Lahan (Mon 2)" v-if="canExportLahanCustomMon2">
+    <template v-slot:toolbar-button>
+      <div class="d-flex flex-row" title="Export Custom Lahan (Mon 2)" v-if="canExportLahanCustomMon2">
         <button class="toolbar-button mr-2" @click="onExportExcelMon2()">
           <v-icon color="success">mdi-microsoft-excel</v-icon>
           <!-- <span class="ml-1" style="font-size: 14px">Export Custom Lahan (Mon 1)</span> -->
         </button>
       </div>
-   </template>
+    </template>
   </geko-base-crud>
 </template>
 
@@ -450,6 +473,7 @@ import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
 import LahanExportModal from "./LahanExportModal.vue";
 import LahanExportSocialImpactModal from "./LahanExportModal_socialImpactOfficer.vue";
+import LahanMitigasiImportModal from "./LahanMitigasiImportModal.vue";
 import * as XLSX from "xlsx";
 import config from "./lahanConfig.js";
 export default {
@@ -460,6 +484,7 @@ export default {
     LahanKmlUpload,
     LahanExportModal,
     LahanExportSocialImpactModal,
+    LahanMitigasiImportModal,
   },
   methods: {
     downloadTemplate() {
@@ -467,9 +492,9 @@ export default {
       const templateData = [
         {
           "Kode Lahan": "Contoh: 10_0000001123",
-          "Latitude": "-6.12345",
-          "Longitude": "106.12345"
-        }
+          Latitude: "-6.12345",
+          Longitude: "106.12345",
+        },
       ];
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       const workbook = XLSX.utils.book_new();
@@ -504,23 +529,31 @@ export default {
         const sanitizeCoord = (val) => {
           if (!val) return val;
           let str = String(val).trim();
-          let parts = str.split('.');
+          let parts = str.split(".");
           if (parts.length > 2) {
-            return parts[0] + '.' + parts.slice(1).join('');
+            return parts[0] + "." + parts.slice(1).join("");
           }
           return str;
         };
 
-        const mappedJson = rawJson.map(row => {
-          return {
-            lahan_no: row['Kode Lahan'] || row['lahan_no'] || null,
-            latitude: sanitizeCoord(row['Latitude'] || row['latitude'] || null),
-            longitude: sanitizeCoord(row['Longitude'] || row['longitude'] || null)
-          };
-        }).filter(item => item.lahan_no !== null);
+        const mappedJson = rawJson
+          .map((row) => {
+            return {
+              lahan_no: row["Kode Lahan"] || row["lahan_no"] || null,
+              latitude: sanitizeCoord(
+                row["Latitude"] || row["latitude"] || null,
+              ),
+              longitude: sanitizeCoord(
+                row["Longitude"] || row["longitude"] || null,
+              ),
+            };
+          })
+          .filter((item) => item.lahan_no !== null);
 
         if (mappedJson.length === 0) {
-          this.$_alert.error("Format salah! Kolom 'Kode Lahan' atau 'lahan_no' tidak ditemukan.");
+          this.$_alert.error(
+            "Format salah! Kolom 'Kode Lahan' atau 'lahan_no' tidak ditemukan.",
+          );
           this.excelFile = null;
           this.parsedExcelData = [];
           return;
@@ -539,58 +572,71 @@ export default {
 
       try {
         for (let i = 0; i < totalChunks; i++) {
-          const chunk = this.parsedExcelData.slice(i * chunkSize, (i + 1) * chunkSize);
+          const chunk = this.parsedExcelData.slice(
+            i * chunkSize,
+            (i + 1) * chunkSize,
+          );
 
           await this.$_api.post("lahan/bulk-update/land-coordinates", {
-            data: chunk
+            data: chunk,
           });
 
           successCount += chunk.length;
         }
 
-        this.$_alert.success(`Berhasil import ${successCount} baris data Excel Koordinat Lahan`);
+        this.$_alert.success(
+          `Berhasil import ${successCount} baris data Excel Koordinat Lahan`,
+        );
         this.showModalImportLahanCoordinate = false;
         this.componentKey += 1; // refresh data
       } catch (err) {
-        this.$_alert.error("Gagal import sebagian/seluruh data Excel Koordinat Lahan");
+        this.$_alert.error(
+          "Gagal import sebagian/seluruh data Excel Koordinat Lahan",
+        );
       } finally {
         this.isImporting = false;
       }
     },
     isSpecificProject(item) {
       try {
-        return item.land_project
-          && this.specificProjectCondition.project_no.includes(item.land_project.project_no)
-          && this.specificProjectCondition.program_year.some(year => String(item.land_project.program_year).includes(year));
+        return (
+          item.land_project &&
+          this.specificProjectCondition.project_no.includes(
+            item.land_project.project_no,
+          ) &&
+          this.specificProjectCondition.program_year.some((year) =>
+            String(item.land_project.program_year).includes(year),
+          )
+        );
       } catch (err) {
         return false;
       }
     },
     getSignalBadgeClass(val) {
       const map = {
-        1: 'badge bg-success', // Hijau (Kuat)
-        2: 'badge bg-info',    // Biru (Normal)
-        3: 'badge bg-warning', // Kuning (Lemah)
-        4: 'badge bg-danger'   // Merah (Tidak ada)
+        1: "badge bg-success", // Hijau (Kuat)
+        2: "badge bg-info", // Biru (Normal)
+        3: "badge bg-warning", // Kuning (Lemah)
+        4: "badge bg-danger", // Merah (Tidak ada)
       };
-      return map[val] || '';
+      return map[val] || "";
     },
     getSignalStatusLabel(val) {
       const map = {
-        1: 'Kuat',
-        2: 'Normal',
-        3: 'Lemah',
-        4: 'Tidak ada'
+        1: "Kuat",
+        2: "Normal",
+        3: "Lemah",
+        4: "Tidak ada",
       };
-      return map[val] || '-';
+      return map[val] || "-";
     },
     getFieldBorder(val) {
       const map = {
-        1: 'Ada, jelas (terlihat)',
-        2: 'Ada, tidak jelas',
-        3: 'Tidak ada/tidak jelas'
+        1: "Ada, jelas (terlihat)",
+        2: "Ada, tidak jelas",
+        3: "Tidak ada/tidak jelas",
       };
-      return map[val] || '-';
+      return map[val] || "-";
     },
     getProject(item) {
       try {
@@ -612,7 +658,7 @@ export default {
 
       if (
         !item.log_lahans.find(
-          (x) => x.program_year === this.$store.state.tmpProgramYear
+          (x) => x.program_year === this.$store.state.tmpProgramYear,
         )
       ) {
         return item;
@@ -622,7 +668,7 @@ export default {
         return {
           ...item,
           ...item.log_lahans.find(
-            (x) => x.program_year === this.$store.state.tmpProgramYear
+            (x) => x.program_year === this.$store.state.tmpProgramYear,
           ),
         };
       } catch {
@@ -676,7 +722,7 @@ export default {
           confirmationText,
           confirmationButton,
           "Batal",
-          isDanger
+          isDanger,
         )
         .then((res) => {
           if (res.isConfirmed) {
@@ -698,15 +744,15 @@ export default {
   },
   computed: {
     canImportExcelLahanCoordinate() {
-      const user = this.$store.state.User
-      const roles = String(user.role || '');
-      return ['13', '14'].includes(roles);
+      const user = this.$store.state.User;
+      const roles = String(user.role || "");
+      return ["13", "14"].includes(roles);
     },
     canExportLahanCustomMon2() {
       const user = this.$store.state.User;
-      const roles = String(user.role || '');
-      return ['13', '46'].includes(roles);
-    }
+      const roles = String(user.role || "");
+      return ["13", "46"].includes(roles);
+    },
   },
   data() {
     return {
@@ -722,13 +768,14 @@ export default {
       },
       config: config,
       specificProjectCondition: {
-        project_no: ['PJ00021'],
-        program_year: ['2026']
+        project_no: ["PJ00021"],
+        program_year: ["2026"],
       },
       showModalImportLahanCoordinate: false,
       excelFile: null,
       parsedExcelData: [],
       isImporting: false,
+      importMitigasiModal: 0,
     };
   },
 };
