@@ -571,7 +571,7 @@ export default {
                     const url = window.URL.createObjectURL(new Blob([exportRes.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', `MoU_Sostam_${item.farmer_name}_${item.lahan_no}.pdf`);
+                    link.setAttribute('download', `MoU_Sostam_${item.farmer_name}_${item.no_lahan}.pdf`);
                     document.body.appendChild(link);
                     link.click();
                     link.parentNode.removeChild(link);
