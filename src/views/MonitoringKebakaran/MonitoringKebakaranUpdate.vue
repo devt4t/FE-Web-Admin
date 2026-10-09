@@ -68,7 +68,7 @@
                                         label: 'Tahun Program',
                                         type: 'text',
                                         api: 'monitoring-fire-incident/list-web',
-    view_data: 'report_program_year',
+                                        view_data: 'report_program_year',
                                         options: {
                                             getterKey: 'data',
                                             list_pointer: {
@@ -320,7 +320,7 @@
                                             <geko-input v-model="item.evidences[e - 1].photo" :item="{
                                                 label: `Bukti Foto ${e}`,
                                                 type: 'upload',
-                                                api: 'monitoring-kebakaran/upload.php',
+                                                api: 'monitoring_kebakaran/upload.php',
                                                 directory: 'evidences',
                                                 upload_type: 'image/*',
                                                 setter: `ff_ev_${i}_${e}`,
@@ -376,7 +376,7 @@
                                             <geko-input v-model="item.evidences[e - 1].photo" :item="{
                                                 label: `Bukti Foto ${e}`,
                                                 type: 'upload',
-                                                api: 'monitoring-kebakaran/upload.php',
+                                                api: 'monitoring_kebakaran/upload.php',
                                                 directory: 'evidences',
                                                 upload_type: 'image/*',
                                                 setter: `fc_ev_${i}_${e}`,
@@ -467,14 +467,14 @@
                                     <geko-input v-model="tree.tree_code" :item="{
                                         label: 'Jenis Pohon',
                                         placeholder: 'Pilih jenis pohon',
-    view_data: 'tree_code',
+                                        view_data: 'tree_code',
                                         type: 'select',
                                         setter: 'tree',
                                         api: 'GetTreesLocation',
                                         param: {
                                             mu_no: form.mu_no
                                         },
-    default_label: tree.tree_name,
+                                        default_label: tree.tree_name,
                                         option: {
                                             getterKey: 'data.result.data',
                                             list_pointer: {
@@ -483,7 +483,7 @@
                                                 display: ['tree_name'],
                                             },
                                         },
-}" @selected="onTreeSelected(i, $event)" />
+                                    }" @selected="onTreeSelected(i, $event)" />
                                 </v-col>
                                 <v-col md="2">
                                     <geko-input v-model="tree.total_planted"
@@ -554,7 +554,7 @@
                             label: `Foto ${i}`,
                             validation: [],
                             type: 'upload',
-                            api: 'monitoring-kebakaran/upload.php',
+                            api: 'monitoring_kebakaran/upload.php',
                             directory: 'photos',
                             upload_type: 'image/*',
                             setter: `photo_${i}`,
