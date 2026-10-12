@@ -561,8 +561,7 @@
                             view_data: `photo_${i}`,
                             option: {
                                 label_hint: 'Klik untuk mengunggah / merubah foto',
-                                max_size: 5,
-                                max: 5
+                                max_size: 5
                             }
                         }" />
                     </v-col>

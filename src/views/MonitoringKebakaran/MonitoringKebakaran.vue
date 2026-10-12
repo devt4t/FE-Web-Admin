@@ -15,13 +15,13 @@
                 <div v-else></div>
             </template>
             <template v-slot:list-bottom-action="{ item }">
-                <v-btn variant="danger" small class="mr-2 mt-2"
+                <v-btn v-if="item.is_verified == 1 || item.is_verified == 2" variant="danger" small class="mr-2 mt-2"
                     :loading="exportingId === item.id && exportType === 'laporan'" :disabled="exportingId === item.id"
                     @click="handleExportPdf(item, 'laporan')" title="Export PDF Laporan Kebakaran">
                     <v-icon small color="danger">mdi-file-pdf-box</v-icon>
                     <span>Export Laporan Kebakaran</span>
                 </v-btn>
-                <v-btn variant="danger" small class="mr-2 mt-2"
+                <v-btn v-if="item.is_verified == 2" variant="danger" small class="mr-2 mt-2"
                     :loading="exportingId === item.id && exportType === 'berita_acara'"
                     :disabled="exportingId === item.id" @click="handleExportPdf(item, 'berita_acara')"
                     title="Export PDF Berita Acara Kebakaran">

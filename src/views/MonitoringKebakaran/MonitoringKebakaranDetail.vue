@@ -161,7 +161,7 @@
                                 <div class="text-muted small">Dugaan Penyebab:</div>
                                 <div class="font-weight-bold">
                                     <v-chip small color="error" class="mt-1">{{ getFireCause(data.fire_cause)
-}}</v-chip>
+                                    }}</v-chip>
                                 </div>
                             </div>
                             <div class="mb-3" v-if="data.fire_cause_description">
@@ -317,7 +317,7 @@
                                                     <div v-if="c.notes" class="mb-2"><strong>Catatan:</strong> {{
                                                         c.notes }}</div>
                                                     <div v-if="hasValidEvidences(c.evidences)">
-                                                        <strong>Evidence:</strong>
+                                                        <strong>Bukti:</strong>
                                                         <div class="d-flex mt-2" style="gap: 10px;">
                                                             <template v-for="(ev, eIdx) in c.evidences">
                                                                 <img v-if="ev.photo" :key="ev.id || eIdx"
@@ -380,7 +380,7 @@
                                                     <div v-if="c.notes" class="mb-2"><strong>Catatan:</strong> {{
                                                         c.notes }}</div>
                                                     <div v-if="hasValidEvidences(c.evidences)">
-                                                        <strong>Evidence:</strong>
+                                                        <strong>Bukti:</strong>
                                                         <div class="d-flex mt-2" style="gap: 10px;">
                                                             <template v-for="(ev, eIdx) in c.evidences">
                                                                 <img v-if="ev.photo" :key="ev.id || eIdx"
@@ -415,7 +415,7 @@
                                             <tr :key="'res-' + i">
                                                 <td class="font-weight-bold">{{ r.sumber_daya }}</td>
                                                 <td class="text-center">
-                                                    <span v-if="r.is_done" class="font-weight-bold text-primary">{{
+                                                    <span v-if="r.is_done" class="font-weight-bold">{{
                                                         r.jumlah }}</span>
                                                     <span v-else class="text-muted">-</span>
                                                 </td>
@@ -454,16 +454,16 @@
                     <span class="font-weight-bold">{{ index + 1 }}</span>
                 </template>
                 <template v-slot:item.total_planted="{ item }">
-                    <span class="font-weight-bold text-primary">{{ item.total_planted }}</span>
+                    <span class="font-weight-bold">{{ item.total_planted }}</span>
                 </template>
                 <template v-slot:item.total_alive="{ item }">
-                    <span class="font-weight-bold text-success">{{ item.total_alive }}</span>
+                    <span class="font-weight-bold">{{ item.total_alive }}</span>
                 </template>
                 <template v-slot:item.total_dead="{ item }">
-                    <span class="font-weight-bold text-danger">{{ item.total_dead }}</span>
+                    <span class="font-weight-bold">{{ item.total_dead }}</span>
                 </template>
                 <template v-slot:item.total_unknown="{ item }">
-                    <span class="font-weight-bold text-warning">{{ Math.max(0, parseInt(item.total_planted || 0) -
+                    <span class="font-weight-bold">{{ Math.max(0, parseInt(item.total_planted || 0) -
                         (parseInt(item.total_alive || 0) + parseInt(item.total_dead || 0))) }}</span>
                 </template>
                 <template v-slot:body.append v-if="data.trees_impacted && data.trees_impacted.length > 0">
@@ -471,16 +471,16 @@
                         <td colspan="4" class="text-left"
                             style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">TOTAL
                         </td>
-                        <td class="text-primary text-center"
+                        <td class="text-center"
                             style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
                                 sumPlanted }}</td>
-                        <td class="text-success text-center"
+                        <td class="text-center"
                             style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
                                 sumAlive }}</td>
-                        <td class="text-danger text-center"
+                        <td class="text-center"
                             style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
                                 sumDead }}</td>
-                        <td class="text-warning text-center"
+                        <td class="text-center"
                             style="background-color: #e8ebe9 !important; border-top: 1px solid #ccc !important;">{{
                                 sumUnknown }}</td>
                     </tr>
@@ -700,11 +700,11 @@ export default {
                 });
 
                 this.$_alert.success('Berhasil Verifikasi');
-                
+
                 // Optimistic UI Update for instant Reactivity
                 if (this.data.is_verified == 0) this.data.is_verified = 1;
                 else if (this.data.is_verified == 1) this.data.is_verified = 2;
-                
+
                 this.isLoading = false;
                 this.$emit('refresh'); // trigger parent to reload
             } catch (err) {
@@ -721,7 +721,7 @@ export default {
                 "Yakin ingin membatalkan verifikasi (Unverifikasi)?",
                 "Ya, Unverifikasi",
                 "Tidak"
-            );  
+            );
 
             if (!prompt.isConfirmed) return;
 
