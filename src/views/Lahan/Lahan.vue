@@ -216,7 +216,7 @@
             getMaskedValue(item).total_from_detail[0].pohon_mpts_detail,
           ))
         | parse("ts")
-        }}</span>
+      }}</span>
     </template>
 
     <template v-slot:list-status="{ item }">
@@ -746,7 +746,7 @@ export default {
     canImportExcelLahanCoordinate() {
       const user = this.$store.state.User;
       const roles = String(user.role || "");
-      return ["13", "14"].includes(roles);
+      return ["13", "4", "14"].includes(roles);
     },
     canExportLahanCustomMon2() {
       const user = this.$store.state.User;
