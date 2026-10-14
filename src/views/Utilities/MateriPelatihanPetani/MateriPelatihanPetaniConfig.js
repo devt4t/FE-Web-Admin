@@ -21,7 +21,7 @@ export default {
             id: 'indicator',
             label: ' ',
             methods: {
-                list: { type: "row-slot" }
+                list: { type: 'row-slot' }
             },
         },
         {
