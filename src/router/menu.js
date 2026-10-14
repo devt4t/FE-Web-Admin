@@ -960,6 +960,14 @@ const menu = [
         icon: "mdi-database-edit",
       },
       {
+        title: "Materi Pelatihan Petani",
+        to: "/materi-pelatihan-petani",
+        component: "Utilities/MateriPelatihanPetani/MateriPelatihanPetani",
+        name: "MateriPelatihanPetani",
+        permission: "MateriPelatihanPetani",
+        icon: "mdi-database-edit",
+      },
+      {
         title: "Task",
         to: "/task",
         component: "MasterData/Tasks",
