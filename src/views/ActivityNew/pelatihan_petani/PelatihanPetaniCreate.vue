@@ -547,9 +547,9 @@
         <v-col md="12">
           <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
             <v-btn variant="light" @click="form--" class="mr-3">Back</v-btn>
-            <v-btn type="submit" variant="success" :disabled="loading">
-              <v-icon>mdi-chevron-right</v-icon>
-              <span>Selanjutnya</span>
+            <v-btn type="submit" variant="success" :disabled="loading" outline>
+              <v-icon>mdi-content-save-all-outline</v-icon>
+              <span>Simpan</span>
             </v-btn>
           </div>
         </v-col>
