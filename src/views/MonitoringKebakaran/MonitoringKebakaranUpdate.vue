@@ -820,18 +820,6 @@ export default {
         removeTreeRow(index) { this.form.trees_impacted.splice(index, 1); },
 
         async onSubmit() {
-            const isValid = await this.$refs.fireForm.validate();
-            if (!isValid) return;
-
-            const promptConfirm = await this.$_alert.confirm(
-                "Konfirmasi Update",
-                "Pastikan data benar sebelum menyimpan data!",
-                "Ya, benar",
-                "Batalkan"
-            );
-
-            if (!promptConfirm) return;
-
             this.isLoading = true;
 
             try {
@@ -861,7 +849,6 @@ export default {
                 this.$router.go(-1);
             } catch (err) {
                 console.error(err);
-                this.isLoading = false;
                 this.$_alert.error('Gagal mengupdate data!');
             } finally {
                 this.isLoading = false;
