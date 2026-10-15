@@ -48,41 +48,19 @@
               type: 'select',
               setter: 'program_year',
               option: {
+                default_options: $_config.programYear.options.map(
+                  (x) => {
+                    return {
+                      code: x,
+                      label: x
+                    }
+                  }
+                ),
                 list_pointer: {
-                  label: 'label',
                   code: 'code',
+                  label: 'label',
                   display: ['label'],
                 },
-                default_options: [
-                  {
-                    label: '2020',
-                    code: '2020',
-                  },
-                  {
-                    label: '2021',
-                    code: '2021',
-                  },
-                  {
-                    label: '2022',
-                    code: '2022',
-                  },
-                  {
-                    label: '2023',
-                    code: '2023',
-                  },
-                  {
-                    label: '2024',
-                    code: '2024',
-                  },
-                  {
-                    label: '2025',
-                    code: '2025',
-                  },
-                  {
-                    label: '2026',
-                    code: '2026',
-                  }
-                ],
               },
             }" />
           </v-col>
@@ -270,7 +248,7 @@
                 type: 'select',
                 api: 'GetEmployeebyPosition',
                 param: {
-                  position_code: '20'
+                  position_code: positionCodeUMCA
                 },
                 setter: 'unit_manager',
                 option: {
@@ -533,6 +511,7 @@
               upload_type: 'image/*',
               setter: 'absent',
               view_data: 'absent',
+              require_gps: true,
               isButtonDeleteHidden: true,
               option: {
                 max: 5,
@@ -555,6 +534,7 @@
               upload_type: 'image/*',
               setter: 'dokumentasi',
               view_data: 'dokumentasi',
+              require_gps: true,
               isButtonDeleteHidden: true,
               option: {
                 label_hint:
@@ -627,9 +607,10 @@ export default {
         peserta_tambahan: [],
         status: 1,
         user_id: this.user.email,
-        program_year: '2025',
+        program_year: '2026',
         farmers: []
-      }
+      },
+      positionCodeUMCA: ['20', '33'],
     }
   },
   watch: {
