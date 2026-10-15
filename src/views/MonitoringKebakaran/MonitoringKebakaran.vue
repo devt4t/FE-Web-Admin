@@ -3,7 +3,7 @@
         <geko-base-crud :config="config" :hideCreate="true" :hideDelete="true" :refreshKey="refreshKey">
             <!-- karena disini hanya me-report atau archive aja jadi tidak ada hapus ygy -->
             <template v-slot:create-form>
-                <MonitoringKebakaranUpdate @refresh="refreshKey++" />
+                <MonitoringKebakaranUpdate />
             </template>
             <!-- hide button kalo udah di verif FC -->
             <template v-slot:list-action-update="{ item }">
@@ -37,7 +37,7 @@
                 <template v-if="data && data.data">
                     <MonitoringKebakaranDetailMap :long="data.data.longitude" :lat="data.data.latitude"
                         :section="'Monitoring Kebakaran'" :title="'Koordinat Lahan'" />
-                    <MonitoringKebakaranDetail :data="data.data" />
+                    <MonitoringKebakaranDetail :data="data.data" @refresh="refreshKey++" />
                 </template>
             </template>
 
