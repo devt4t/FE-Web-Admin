@@ -1,9 +1,9 @@
 <template>
     <div>
-        <geko-base-crud :config="config" :hideCreate="true" :hideDelete="true">
+        <geko-base-crud :config="config" :hideCreate="true" :hideDelete="true" :refreshKey="refreshKey">
             <!-- karena disini hanya me-report atau archive aja jadi tidak ada hapus ygy -->
             <template v-slot:create-form>
-                <MonitoringKebakaranUpdate />
+                <MonitoringKebakaranUpdate @refresh="refreshKey++" />
             </template>
             <!-- hide button kalo udah di verif FC -->
             <template v-slot:list-action-update="{ item }">
@@ -75,6 +75,7 @@ export default {
             config,
             exportingId: null,
             exportType: null,
+            refreshKey: 0,
         }
     },
     methods: {

@@ -13,12 +13,12 @@
                             <!-- User FC -->
                             <template v-if="isFCRole">
                                 <v-btn v-if="data.is_verified == 0" color="primary"
-                                    @click="handleVerify('verification')">
+                                    @click="submitVerification('verify')">
                                     <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi FC
                                 </v-btn>
 
                                 <v-btn v-else-if="data.is_verified == 1" outlined color="error"
-                                    @click="handleUnverify()">
+                                    @click="submitVerification('unverify')">
                                     <v-icon left>mdi-close-circle-outline</v-icon> Un-Verifikasi FC
                                 </v-btn>
 
@@ -35,12 +35,12 @@
                                 </v-btn>
 
                                 <v-btn v-else-if="data.is_verified == 1" color="primary" class="ml-2"
-                                    @click="handleVerify('verification')">
+                                    @click="submitVerification('verify')">
                                     <v-icon left>mdi-check-circle-outline</v-icon> Verifikasi UM
                                 </v-btn>
 
                                 <v-btn v-else-if="data.is_verified == 2" outlined color="error" class="ml-2"
-                                    @click="handleUnverify()">
+                                    @click="submitVerification('unverify')">
                                     <v-icon left>mdi-close-circle-outline</v-icon> Un-Verifikasi UM
                                 </v-btn>
                             </template>
@@ -66,7 +66,7 @@
                             <span class="font-weight-bold">{{ data.mon_no || '-' }}</span>
                         </div>
                         <div class="d-flex justify-space-between mb-1">
-                            <span class="text-muted small">Tahun Program:</span>
+                            <span class="text-muted small">Report Tahun Program:</span>
                             <span class="font-weight-bold">{{ data.report_program_year || '-' }}</span>
                         </div>
                         <v-divider class="my-2"></v-divider>
@@ -161,7 +161,7 @@
                                 <div class="text-muted small">Dugaan Penyebab:</div>
                                 <div class="font-weight-bold">
                                     <v-chip small color="error" class="mt-1">{{ getFireCause(data.fire_cause)
-                                    }}</v-chip>
+                                        }}</v-chip>
                                 </div>
                             </div>
                             <div class="mb-3" v-if="data.fire_cause_description">
@@ -675,75 +675,65 @@ export default {
         },
     },
     methods: {
-        async handleVerify(type) {
+        async submitVerification(action) {
+            const CONFIG = {
+                verify: {
+                    endpoint: 'monitoring-fire-incident/verification',
+                    title: 'Konfirmasi Verifikasi',
+                    text: 'Yakin ingin me-verifikasi data?',
+                    confirmText: 'Ya, Verifikasi',
+                    confirmButtonColor: '#17a2b8',
+                    successMessage: 'Berhasil Verifikasi',
+                    nextState: this.data.is_verified == 0 ? 1 : 2
+                },
+                unverify: {
+                    endpoint: 'monitoring-fire-incident/unverification',
+                    title: 'Konfirmasi Un-Verifikasi',
+                    text: 'Yakin ingin membatalkan verifikasi (Unverifikasi)?',
+                    confirmText: 'Ya, Unverifikasi',
+                    confirmButtonColor: '#dc3545',
+                    successMessage: 'Berhasil Un-Verifikasi',
+                    nextState: this.data.is_verified == 2 ? 1 : 0
+                },
+            };
+
+            const activeConfig = CONFIG[action];
+            if (!activeConfig) return;
+
             const prompt = await this.$_alert.custom({
-                title: "Konfirmasi Verifikasi",
-                text: "Yakin ingin me-verifikasi data?",
-                icon: "info",
+                title: activeConfig.title,
+                text: activeConfig.text,
+                icon: 'info',
                 showCancelButton: true,
-                confirmButtonColor: '#6feefc',
-                confirmButtonText: 'Ya, Verifikasi',
-                cancelButtonColor: '#e1e3e3',
+                confirmButtonColor: activeConfig.confirmButtonColor,
+                confirmButtonText: activeConfig.confirmText,
+                cancelButtonColor: '#868e96',
                 cancelButtonText: 'Batal',
             });
 
             if (!prompt.isConfirmed) return;
+
             const user = this.$store.state.User;
-
             this.isLoading = true;
 
             try {
-                await this.$_api.post('monitoring-fire-incident/verification', {
-                    current_id: this.data.id,
-                    modul: type,
-                    user_id: user.EmployeeStructure?.nik || user.email,
-                });
+                const payload = { current_id: this.data.id };
 
-                this.$_alert.success('Berhasil Verifikasi');
+                if (action === 'verify') {
+                    payload.modul = 'verification'
+                    payload.user_id = user.EmployeeStructure?.nik || user.email;
+                }
 
-                // Optimistic UI Update for instant Reactivity
-                if (this.data.is_verified == 0) this.data.is_verified = 1;
-                else if (this.data.is_verified == 1) this.data.is_verified = 2;
+                const res = await this.$_api.post(activeConfig.endpoint, payload);
+                this.$_alert.success(activeConfig.successMessage);
 
-                this.isLoading = false;
-                this.$emit('refresh'); // trigger parent to reload
-            } catch (err) {
-                console.error('Gagal verifikasi data:', err);
-                this.$_alert.error(err.response?.data?.message || 'Gagal verifikasi data');
-                this.isLoading = false;
-            } finally {
-                this.isLoading = false;
-            }
-        },
-        async handleUnverify() {
-            const prompt = await this.$_alert.confirm(
-                "Konfirmasi Un-Verifikasi",
-                "Yakin ingin membatalkan verifikasi (Unverifikasi)?",
-                "Ya, Unverifikasi",
-                "Tidak"
-            );
+                // Optimistic UI Update verified
+                this.data.is_verified = res.data?.is_verified ?? res.data?.result?.is_verified ?? activeConfig.nextState;
 
-            if (!prompt.isConfirmed) return;
-
-            this.isLoading = true;
-
-            try {
-                await this.$_api.post('monitoring-fire-incident/unverification', {
-                    current_id: this.data.id
-                });
-
-                this.$_alert.success('Berhasil Unverifikasi Data');
-
-                // Optimistic UI Update for instant Reactivity
-                if (this.data.is_verified == 2) this.data.is_verified = 1;
-                else if (this.data.is_verified == 1) this.data.is_verified = 0;
-
-                this.isLoading = false;
                 this.$emit('refresh');
             } catch (err) {
-                console.error('Gagal men-Unverifikasi data:', err);
-                this.$_alert.error(err.response?.data?.message || 'Gagal un-verifikasi data');
-                this.isLoading = false;
+                console.error(`Gagal ${action} data, error:`, err);
+                this.$_alert.error(err.response?.data?.result?.message || err.response?.data?.message || `Gagal ${action} data`);
             } finally {
                 this.isLoading = false;
             }
