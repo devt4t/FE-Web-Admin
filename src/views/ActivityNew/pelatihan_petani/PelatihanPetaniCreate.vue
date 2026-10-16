@@ -631,6 +631,9 @@ export default {
     //   this.formData.ff_additional = null
     // },
     'formData.unit_manager': function () {
+      if (val === '1202_2026') {
+        this.formData.fc_additional = ['1202_2026'];
+      }
       this.formData.fc_additional = null
     },
     'formData.village': function (village) {
