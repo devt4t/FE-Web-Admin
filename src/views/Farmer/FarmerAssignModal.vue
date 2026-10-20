@@ -138,7 +138,8 @@ export default {
 
   methods: {
     onOpen() {
-      this.farmers = this.data;
+      // this.farmers = this.data;
+      this.farmers = [...this.data].sort((a, b) => parseInt(a.program_year) - parseInt(b.program_year));
     },
     editProgramYear(payload) {
       return new Promise(async (resolve, reject) => {

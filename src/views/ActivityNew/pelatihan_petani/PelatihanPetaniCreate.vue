@@ -517,7 +517,7 @@
                 max: 5,
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 2.5,
+                max_size: 5,
                 multiple: true,
               },
             }" />
@@ -539,7 +539,7 @@
               option: {
                 label_hint:
                   'Klik gambar untuk memilih berkas yang akan diunggah',
-                max_size: 0.5,
+                max_size: 5,
               },
             }" />
           </v-col>

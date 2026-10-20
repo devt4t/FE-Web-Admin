@@ -1,38 +1,20 @@
 <template>
-  <v-data-table
-    :headers="header"
-    :items="data.filter((x) => x.detail_year.includes(selected))"
-    :search="''"
-    class="rounded-xl elevation-1 mx-3 pa-1 mb-4"
-    data-aos="fade-up"
-    data-aos-delay="100"
-    data-aos-duration="800"
-    :footer-props="{
+  <v-data-table :headers="header" :items="filteredTrees" :search="''" class="rounded-xl elevation-1 mx-3 pa-1 mb-4"
+    data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" :footer-props="{
       showCurrentPage: false,
       showFirstLastPage: false,
-    }"
-  >
+    }">
     <template v-slot:top>
       <div class="geko-list-header px-5 py-3 mt-1">
-        <div
-          class="pr-0 mb-3 pb-3 bordered-bottom d-flex flex-row align-items-center justify-content-between"
-        >
+        <div class="pr-0 mb-3 pb-3 bordered-bottom d-flex flex-row align-items-center justify-content-between">
           <h4 class="mb-0 pb-0">Pohon</h4>
           <div class="d-flex flex-row align-items-center">
-            <v-btn
-              v-for="(item, i) in pivots"
-              :key="'filter-tree-' + i"
-              :variant="item.program_year === selected ? 'success' : 'light'"
-              class="ml-1"
-              @click="selected = item.program_year"
-              >{{ item.program_year }}</v-btn
-            >
+            <v-btn v-for="year in sortedProgramYears" :key="'filter-tree-' + year"
+              :variant="year === selected ? 'success' : 'light'" class="ml-1" @click="selected = year">{{ year
+              }}</v-btn>
           </div>
         </div>
-        <div
-          v-if="hasEmptyTree"
-          class="d-flex flex-row align-items-center mt-2 bg-warning-light px-4 py-3 br-8"
-        >
+        <div v-if="hasEmptyTree" class="d-flex flex-row align-items-center mt-2 bg-warning-light px-4 py-3 br-8">
           <v-icon class="text-warning" large>mdi-information</v-icon>
           <span class="text-warning pl-3">
             Untuk <strong>Project Carbon</strong>, data jumlah bibit akan
@@ -53,11 +35,7 @@
 
     <template v-slot:item.detail_year="{ item }">
       <div class="d-flex flex-row justify-content-center">
-        <span
-          class="badge bg-primary mr-2"
-          v-for="(year, i) in item.detail_year.split(',')"
-          >{{ year }}</span
-        >
+        <span class="badge bg-primary mr-2" v-for="(year, i) in item.detail_year.split(',')">{{ year }}</span>
       </div>
     </template>
 
@@ -89,7 +67,7 @@ export default {
     },
     mainData: {
       required: false,
-      default: () => {},
+      default: () => { },
     },
     pivots: {
       required: false,
@@ -97,16 +75,24 @@ export default {
     },
   },
   watch: {
-    trees(t) {
-      if (Array.isArray(t)) {
-        for (const item of t) {
-          if (parseInt(item.amount) == 0) {
-            this.hasEmptyTree = true;
-          }
+    // trees(t) {
+    //   if (Array.isArray(t)) {
+    //     for (const item of t) {
+    //       if (parseInt(item.amount) == 0) {
+    //         this.hasEmptyTree = true;
+    //       }
+    //     }
+    //     this.data = t;
+    //   }
+    // },
+    trees: {
+      immediate: true,
+      handler(t) {
+        if (Array.isArray(t)) {
+          this.data = t;
         }
-        this.data = t;
       }
-    },
+    }
   },
   data() {
     return {
@@ -154,6 +140,34 @@ export default {
       ],
       data: [],
     };
+  },
+  computed: {
+    sortedProgramYears() {
+      if (!Array.isArray(this.pivots)) return [];
+      const years = new Set();
+      this.pivots.forEach((p) => {
+        if (p && p.program_year) {
+          String(p.program_year)
+            .split(",")
+            .forEach((y) => {
+              const clean = y.trim();
+              if (clean) years.add(clean);
+            });
+        }
+      });
+      return Array.from(years).sort((a, b) => parseInt(a) - parseInt(b));
+    },
+    filteredTrees() {
+      if (!this.selected) return this.data;
+      return this.data.filter((x) => {
+        if (!x || !x.detail_year) return false;
+        const years = String(x.detail_year).split(",").map((y) => y.trim());
+        return years.includes(String(this.selected));
+      });
+    },
+    hasEmptyTree() {
+      return this.filteredTrees.some((item) => parseInt(item.amount) === 0);
+    },
   },
 };
 </script>
