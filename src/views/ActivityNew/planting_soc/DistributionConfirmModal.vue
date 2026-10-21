@@ -150,15 +150,15 @@ export default {
                     this.previewLahans = res.data.result || [];
                 } else {
                     throw new Error(
-                        res?.data?.status?.description || "Gagal memuat preview lahan"
+                        res?.data?.status?.description || res?.data?.data?.status?.description || "Gagal memuat preview lahan"
                     );
                 }
             } catch (err) {
                 console.error("[fetchPreviewLahan] Error:", err);
                 this.$_alert.error(
-                    err?.response?.data?.data?.status?.description ||
-                    err?.response?.data?.message ||
-                    err.message ||
+                    err?.data?.data?.status?.description ||
+                    err?.data?.message ||
+                    err?.message ||
                     "Gagal memuat preview lahan"
                 );
             } finally {
@@ -189,16 +189,16 @@ export default {
                     this.$emit("refresh");
                 } else {
                     throw new Error(
-                        res?.data?.status?.description ||
+                        res?.data?.status?.description || res?.data?.data?.status?.description ||
                         "Gagal melakukan konfirmasi pelaksanaan distribusi."
                     );
                 }
             } catch (err) {
                 console.error("[submitConfirmation] Error:", err);
                 this.$_alert.error(
-                    err?.response?.data?.data?.status?.description ||
-                    err?.response?.data?.message ||
-                    err.message ||
+                    err?.data?.data?.status?.description ||
+                    err?.data?.message ||
+                    err?.message ||
                     "Terjadi kesalahan saat memproses konfirmasi"
                 );
             } finally {
