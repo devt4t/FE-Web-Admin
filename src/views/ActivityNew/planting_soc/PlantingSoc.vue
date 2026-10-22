@@ -1,46 +1,46 @@
 <template>
-   <div>
+    <div>
         <geko-base-crud @onGetListData="onGetListData($event)" :config="config" :refreshKey="refreshKey"
             :hideDetail="false" :hideUpdate="true">
 
-          <template v-slot:list-before-create>
+            <template v-slot:list-before-create>
                 <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
                 <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
                 <planting-soc-export-sostam-mu :dataKey="exportSostamKey" />
                 <planting-soc-import-excel :dataKey="importSostamKey" />
                 <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
-              <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
+                <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                     :data="sostamDistributionData" @success="refreshKey += 1" />
-               <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey"
+                <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey"
                     @success="refreshKey += 1" />
             </template>
 
-          <template v-slot:list-after-filter>
+            <template v-slot:list-after-filter>
                 <div class="d-flex flex-row justify-content-start">
                     <v-btn variant="info" class="mr-2" @click="exportLahanKey += 1">
                         <v-icon>mdi-table-arrow-right</v-icon>
                         <span>Export Excel By MU</span>
                     </v-btn>
 
-                  <v-btn variant="primary" class="mr-2" @click="importSostamKey += 1">
+                    <v-btn variant="primary" class="mr-2" @click="importSostamKey += 1">
                         <v-icon>mdi-cloud-sync</v-icon>
                         <span>Import Excel Sostam</span>
                     </v-btn>
 
-                  <v-btn variant="success" @click="exportSostamKey += 1">
+                    <v-btn variant="success" @click="exportSostamKey += 1">
                         <v-icon>mdi-table</v-icon>
                         <span>Export Excel</span>
                     </v-btn>
-                   <!-- konfirmasi distribusi AZ -->
+                    <!-- konfirmasi distribusi AZ -->
                     <v-btn color="primary" class="ml-2" @click="openConfirmModal">
                         <v-icon>mdi-calendar-check</v-icon>
                         Konfirmasi Distribusi (AZ)
                     </v-btn>
-               </div>
+                </div>
             </template>
 
-          <template v-slot:list-indicator="{ item }">
+            <template v-slot:list-indicator="{ item }">
                 <div class="indicator-wrapper pt-1">
                     <div class="indicator" :class="{
                         info: item.gis_status == 1 && !item.verified,
@@ -52,7 +52,7 @@
                 </div>
             </template>
 
-          <template v-slot:list-status="{ item }">
+            <template v-slot:list-status="{ item }">
                 <div class="d-flex flex-col min-w-200px">
                     <div class="d-flex flex-row">
                         <span class="badge" :class="{
@@ -62,21 +62,21 @@
                             'bg-info': item.gis_status == 1 && !item.verified
                         }">
 
-                          <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
+                            <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
                             <span v-else-if="item.gis_status == 2">Koordinat Tidak Sesuai</span>
                             <span v-else-if="item.gis_status == 1 && !item.verified">Koordinat Terverifikasi</span>
                             <span v-else-if="item.gis_status == 1 && item.verified">Terverifikasi</span>
                         </span>
                     </div>
 
-                  <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
+                    <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
                         <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
                             item.suggestion_note }}</span>
                     </blockquote>
                 </div>
             </template>
 
-          <template v-slot:list-countdown_timer="{ item }">
+            <template v-slot:list-countdown_timer="{ item }">
                 <div class="">
                     <v-chip v-if="item.timeleft" small color="red" text-color="white">
                         {{ item.timeleft }}
@@ -84,10 +84,10 @@
                 </div>
             </template>
 
-          <template v-slot:list-bottom-action="{ item }">
+            <template v-slot:list-bottom-action="{ item }">
 
 
-             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
+                <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
                     v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update') && !item.timeleft && !item.verified">
                     <v-icon left small>mdi-calendar</v-icon>
                     <span>Edit Tgl. Distribusi</span>
@@ -101,9 +101,9 @@
                     <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
                     <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
-                  <span>Export Excel</span>
+                    <span>Export Excel</span>
                 </v-btn>
-               <v-btn
+                <v-btn
                     v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create') && item.timeleft"
                     variant="success" small class="mt-2" @click="onVerif(item)">
                     <v-icon small>mdi-check-bold</v-icon>
@@ -114,27 +114,50 @@
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
-               <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small
+                <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update') && !item.verified" variant="info" small
                     class="mt-2" @click="onUpdateDistributionLocation(item)">
                     <v-icon left small>mdi-update</v-icon>
                     <span>Edit Alamat Distribusi</span>
                 </v-btn>
 
-          </template>
+            </template>
             <template v-slot:list-expanded-item="{ headers, item }">
-               <planting-soc-list-ff :item="item" :headers="headers"
+                <planting-soc-list-ff :item="item" :headers="headers"
                     @edit="onEditFarmer($event)"></planting-soc-list-ff>
             </template>
 
-          <template v-slot:create-form>
+            <template v-slot:create-form>
                 <planting-soc-form></planting-soc-form>
             </template>
 
-          <template v-slot:detail-row>
+            <template v-slot:detail-row>
                 <planting-soc-detail />
             </template>
+
+            <template v-slot:list-distribution_date="{ item }">
+                <div class="d-flex flex-column">
+                    <span>{{ item.distribution_date }}</span>
+                    <span v-if="item.original_distribution_time"
+                        class="text-09-em text-decoration-line-through text--secondary">
+                        {{ item.original_distribution_time | parse('date') }}
+                    </span>
+                </div>
+            </template>
+
+            <template v-slot:list-distribution_confirmation_status="{ item }">
+                <div>
+                    <span v-if="item.distribution_confirmation_status" class="badge" :class="{
+                        'bg-success': item.distribution_confirmation_status === 'GO',
+                        'bg-primary': item.distribution_confirmation_status === 'DELAY',
+                        'bg-danger': item.distribution_confirmation_status === 'CANCEL'
+                    }">
+                        {{ item.distribution_confirmation_status }}
+                    </span>
+                    <span v-else> - </span>
+                </div>
+            </template>
         </geko-base-crud>
-       <!-- Konfirmasi Distribusi untuk AZ -->
+        <!-- Konfirmasi Distribusi untuk AZ -->
         <DistributionConfirmModal ref="confirmModal" @refresh="refreshKey += 1" />
     </div>
 </template>

@@ -164,7 +164,7 @@ export default {
         label: "Waktu Distribusi",
         methods: {
           list: {
-            transform: "date",
+            type: "row-slot",
           },
           detail: true,
           filter: {
@@ -241,6 +241,15 @@ export default {
                 display: ["name"],
               },
             },
+          },
+        },
+      },
+      {
+        id: 'distribution_confirmation_status',
+        label: 'Status Konfirmasi Distribusi',
+        methods: {
+          list: {
+            type: "row-slot",
           },
         },
       },
