@@ -136,7 +136,7 @@
 
             <template v-slot:list-distribution_date="{ item }">
                 <div class="d-flex flex-column">
-                    <span>{{ item.distribution_date }}</span>
+                    <span>{{ item.distribution_date | parse('date') }}</span>
                     <span v-if="item.original_distribution_time"
                         class="text-09-em text-decoration-line-through text--secondary">
                         {{ item.original_distribution_time | parse('date') }}
