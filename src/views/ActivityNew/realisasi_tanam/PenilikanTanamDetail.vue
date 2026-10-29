@@ -358,7 +358,7 @@ export default {
         const lp = this.data?.result?.lahan_projects || this.data?.result?.lahan_project;
         if (!Array.isArray(lp) || lp.length === 0) return false;
 
-        const specifictProject = ['PJ00021'];
+        const specifictProject = ['PJ00021', 'PJ00036'];
         const specifictProgramYear = ['2026'];
 
         return lp.some(p =>

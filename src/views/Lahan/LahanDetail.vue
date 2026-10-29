@@ -1076,7 +1076,7 @@ export default {
   methods: {
     isSpecificProject(item) {
       try {
-        const projectNo = ['PJ00021'];
+        const projectNo = ['PJ00021', 'PJ00036'];
         const programYear = ['2026'];
         return projectNo.includes(item.project_no)
           && programYear.some(year => String(item.program_year).includes(year));
