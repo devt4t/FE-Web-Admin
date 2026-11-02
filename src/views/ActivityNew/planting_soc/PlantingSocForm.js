@@ -275,13 +275,11 @@ export default {
           program_year: this.$store.state.tmpProgramYear
         };
 
-        // 1. Get Data from Laravel Backend
         const response = await this.$_api.get("sostam/mou/preview", payload);
 
         if (response && response.data) {
           const exportData = response.data;
 
-          // 2. Hit Export Microservice (Node.js) with the Template Name
           const exportUrl = `${this.$_config.baseUrlExport}export/mou/sostam`;
           const axiosConfig = {
             method: 'post',
@@ -291,7 +289,6 @@ export default {
 
           const exportRes = await axios(axiosConfig);
           if (exportRes.data) {
-            // Assume exportRes.data returns the raw HTML string for preview
             this.mouHtml = exportRes.data;
           } else {
             this.mouError = "Gagal memuat template dari service export.";
@@ -467,6 +464,7 @@ export default {
       formData: {
         distribution_date: null,
         soc_date: moment().format("YYYY-MM-DD"),
+        fc_signature: null,
       },
       ready: false,
       loading: true,

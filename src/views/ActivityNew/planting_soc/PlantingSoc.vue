@@ -33,9 +33,9 @@
                         <span>Export Excel</span>
                     </v-btn>
                     <!-- konfirmasi distribusi AZ -->
-                    <v-btn color="primary" class="ml-2" @click="openConfirmModal">
+                    <v-btn variant="primary" class="ml-2" @click="openConfirmModal">
                         <v-icon>mdi-calendar-check</v-icon>
-                        Konfirmasi Distribusi (AZ)
+                        <span>Konfirmasi Distribusi (AZ)</span>
                     </v-btn>
                 </div>
             </template>

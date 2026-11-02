@@ -58,7 +58,7 @@
                                                     <v-icon>mdi-tanker-truck</v-icon>
                                                     <span class="d-block title">Nursery
                                                         <strong>{{ getNurseryLocation(data.nursery_location_id)
-}}</strong></span>
+                                                        }}</strong></span>
                                                     <span class="badge bg-info distribution-seed">
                                                         <strong>{{ data.total_seed | parse('ts') }}</strong> bibit
                                                     </span>
@@ -67,13 +67,13 @@
                                                 <div class="distribution-progress">
                                                     <span class="line"></span>
                                                     <span class="date">{{ dateFormat(data.distribution_date, "D MMMM Y")
-                                                       }}</span>
+                                                        }}</span>
                                                 </div>
 
                                                 <div class="distribution-end">
                                                     <v-icon>mdi-map-marker-radius</v-icon>
                                                     <span class="d-block location">{{ data.distribution_location
-}}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -89,6 +89,17 @@
                                                 <div @click="showLightbox(`${$_config.baseUrlUpload}/${data.absent2}`, 0)"
                                                     class="image-item" v-if="data.absent2"
                                                     v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent2}` + ')' }">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Foto Tanda Tangan FC</td>
+                                        <td>
+                                            <div class="d-flex flex-row image-list">
+                                                <div class="image-item" v-if="data.fc_signature"
+                                                    @click="showLightbox(`${$_config.baseUrlUpload}/${data.fc_signature}`, 0)"
+                                                    v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.fc_signature}` + ')' }">
                                                 </div>
                                             </div>
                                         </td>
@@ -163,11 +174,11 @@
                             <div class="statistic-data">
                                 <p class="mb-0 label">Total Petani</p>
                                 <p class="mb-0 value">
-                                   {{[
+                                    {{[
                                         ...new Map(
                                             farmers.map(item => [item.farmer_no, item])
                                         ).values()
-].length ?? 0}}
+                                    ].length ?? 0}}
                                 </p>
                             </div>
                         </div>
@@ -184,7 +195,7 @@
                             <v-icon>mdi-land-fields</v-icon>
                             <div class="statistic-data">
                                 <p class="mb-0 label">Progress Penlub</p>
-                               <p class="mb-0 value">{{farmers.filter(t => t.planting_hole != null).length}}/{{
+                                <p class="mb-0 value">{{farmers.filter(t => t.planting_hole != null).length}}/{{
                                     farmers.length ?? 0 }}</p>
                             </div>
                         </div>
@@ -193,13 +204,13 @@
                 </template>
 
                 <template v-slot:item.action="{ item, index }">
-                   <div class="d-flex flex-col flex-column">
+                    <div class="d-flex flex-col flex-column">
                         <v-btn v-if="!item.validation && $_sys.isAllowed('sosialisasi-tanam-update')" variant="warning"
                             small @click="openEditModal(item)" class="mb-2">
                             <v-icon small>mdi-pencil</v-icon>
                             <span> Update Kehadiran</span>
                         </v-btn>
-                       <v-btn color="info" small @click="exportMou(item)">
+                        <v-btn v-if="$store.state.tmpProgramYear == '2026'" color="info" small @click="exportMou(item)">
                             <v-icon small>mdi-file-pdf-box</v-icon>
                             <span> Export MoU</span>
                         </v-btn>
@@ -230,20 +241,20 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                   <span @click="openPagePenlub(item.planting_hole)"
+                    <span @click="openPagePenlub(item.planting_hole)"
                         class="d-block min-w-100px badge cursor-pointer bg-primary">
                         {{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}
                         <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
                     </span>
-                   <p class="text-center"> ~ </p>
-                   <span @click="openPagePenlub(item.planting_hole)"
+                    <p class="text-center"> ~ </p>
+                    <span @click="openPagePenlub(item.planting_hole)"
                         class="d-block min-w-150px badge cursor-pointer bg-info">
                         {{ dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}
                         <v-icon v-if="item.planting_hole" size="small" class="text-success">mdi-tree</v-icon>
                     </span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
-                   <span class="d-block min-w-150px badge bg-primary">
+                    <span class="d-block min-w-150px badge bg-primary">
                         {{ dateFormat(item.planting_date_start, "DD MMMMY") }}
                     </span>
                     <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{

@@ -309,6 +309,23 @@
                                 }" />
                             </v-col>
 
+                            <v-col md="12">
+                                <geko-input v-model="formData.fc_signature" :item="{
+                                    label: 'Upload Tanda Tangan FC (pakai remove.bg untuk menghapus background agar bersih)',
+                                    validation: ['required'],
+                                    type: 'upload',
+                                    api: 'planting-socs/upload.php',
+                                    directory: 'images',
+                                    upload_type: 'image/*',
+                                    setter: 'fc_signature',
+                                    view_data: 'fc_signature',
+                                    option: {
+                                        label_hint: 'Klik gambar untuk memilih berkas yang akan diunggah',
+                                        max_size: 5,
+                                        multiple: false,
+                                    },
+                                }" />
+                            </v-col>
 
                             <v-col md="12">
                                 <geko-input v-model="formData.absent1" :item="{
