@@ -70,7 +70,9 @@
               validation: ['required'],
               col_size: 6,
               type: 'select',
-              param: {},
+              param: {
+                limit: 50,
+              },
               api: 'GetTrainingMaterials',
               setter: 'first_material',
               // default_label: '',
@@ -115,7 +117,9 @@
               // validation: ['required'],
               col_size: 6,
               type: 'select',
-              param: {},
+              param: {
+                limit: 50,
+              },
               api: 'GetTrainingMaterials',
               setter: 'second_material',
               // default_label: '',
@@ -165,7 +169,9 @@
                 label: 'Materi Pelatihan 3',
                 col_size: 6,
                 type: 'select',
-                param: {},
+                param: {
+                  limit: 50,
+                },
                 api: 'GetTrainingMaterials',
                 setter: 'third_material',
                 // default_label: '',
