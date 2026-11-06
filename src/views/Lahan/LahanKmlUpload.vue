@@ -48,10 +48,10 @@
                   <span v-if="!files" class="ml-2">Upload file KML yang berisi banyak lahan</span>
                   <span class="ml-2" v-else>{{ files_name }}</span>
                 </p>
-                <input id="kmlFile" type="file" @change="handleFileChange($event)" />
+                <input id="kmlFile" type="file" accept=".kml,.kmz" @change="handleFileChange($event)" />
               </div>
 
-              <geko-input v-model="selectedProject" :item="{
+              <geko-input v-if="kmlType == 'land'" v-model="selectedProject" :item="{
                 label: 'Pilih Projek (Opsional)',
                 placeholder: '-',
                 type: 'select',
@@ -839,7 +839,7 @@ export default {
             this.$_alert.error(
               null,
               "Upload KML Gagal",
-              err.response.data.messsage
+              err.response.data.message
             );
             return false;
           });
@@ -903,8 +903,11 @@ export default {
       let data = new FormData();
       data.append("file", this.files);
       data.append("kml_type", this.kmlType);
-      if (this.selectedProject) {
-        data.append("project_no", this.selectedProject);
+
+      const isValidProject = typeof this.selectedProject === 'string' && this.selectedProject.trim() !== '' && this.selectedProject !== 'null';
+
+      if (isValidProject) {
+        data.append("project_no", this.selectedProject.trim());
         data.append("program_year", this.$store.state.tmpProgramYear);
       }
 
@@ -925,31 +928,113 @@ export default {
       axios
         .request(config)
         .then(async (res) => {
-          let rawData = res.data.data;
+          let rawData = res.data.data || [];
           this.questions = res.data.questions;
 
           if (rawData.length === 0) {
-            this.$_alert.error("Gagal", "Tidak ada lahan di KML ini yang cocok dengan Projek yang dipilih");
             this.loading = false;
+            if (this.selectedProject && this.kmlType === "land") {
+              this.$_alert.error(
+                "Data Tidak Cocok",
+                "Tidak ada lahan di dalam file KML yang terdaftar pada projek yang dipilih."
+              );
+            } else {
+              this.$_alert.error(
+                "Format KML Tidak Valid",
+                "Tidak ditemukan objek polygon/placemark lahan yang valid di dalam file KML."
+              );
+            }
             return;
           }
 
           // Filter data khusus untuk tipe KML Lahan (Polygon)
           if (this.kmlType === 'land') {
-            this.data = rawData.filter(lahan => {
-              const isFCClear = lahan.fc_complete_data == 1;
-              const isNotVerifiedGIS = ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
-              return isFCClear && isNotVerifiedGIS;
-            });
+            let valid = [];
+            let notFound = [];
+            let notFC = [];
+            let alreadyGis = [];
 
-            if (this.data.length === 0) {
-              this.$_alert.error(
-                "Informasi",
-                "Semua lahan di KML ini sudah pernah diverifikasi GIS atau belum lengkap verifikasi FC, sehingga tidak ada data baru yang perlu diupdate."
-              );
+            for (const lahan of rawData) {
+              const no = lahan.lahan_no || (lahan.kml_path ? lahan.kml_path.replace(/\.kml$/i, '') : 'Tanpa No Lahan');
+
+              if (!lahan.id || lahan.error_message) {
+                notFound.push(no);
+              } else if (lahan.fc_complete_data != 1) {
+                notFC.push(no);
+              } else if (!["belum", "Belum", null, "", "-"].includes(lahan.updated_gis)) {
+                alreadyGis.push(no);
+              } else {
+                valid.push(lahan);
+              }
+            }
+
+            if (valid.length === 0) {
+              let details = [];
+              if (notFound.length > 0) {
+                details.push(`<li><strong>Tidak terdaftar di database (${notFound.length}):</strong> ${notFound.join(', ')}</li>`);
+              }
+              if (notFC.length > 0) {
+                details.push(`<li><strong>Belum lengkap verifikasi FC (${notFC.length}):</strong> ${notFC.join(', ')}</li>`);
+              }
+              if (alreadyGis.length > 0) {
+                details.push(`<li><strong>Sudah diverifikasi GIS (${alreadyGis.length}):</strong> ${alreadyGis.join(', ')}</li>`);
+              }
+
+              const htmlContent = `
+                <div style="text-align: left; font-size: 0.9em; margin-top: 10px;">
+                  <p class="mb-2">Tidak ada lahan yang dapat diproses dari total <strong>${rawData.length}</strong> poligon:</p>
+                  <ul style="padding-left: 20px;">
+                    ${details.join('')}
+                  </ul>
+                </div>
+              `;
+
+              await this.$_alert.custom({
+                title: "Data Lahan Tidak Memenuhi Syarat",
+                icon: "error",
+                html: htmlContent,
+                showConfirmButton: true,
+                confirmButtonText: "Tutup",
+                confirmButtonColor: "#a3a3a3",
+              });
               this.loading = false;
               return;
             }
+
+            // Jika ada yang valid tapi ada juga yang dilewati
+            if (valid.length < rawData.length) {
+              const totalSkipped = notFound.length + notFC.length + alreadyGis.length;
+              let skippedDetails = [];
+              if (notFound.length > 0) {
+                skippedDetails.push(`<li><strong>Tidak terdaftar (${notFound.length}):</strong> ${notFound.join(', ')}</li>`);
+              }
+              if (notFC.length > 0) {
+                skippedDetails.push(`<li><strong>Belum verifikasi FC (${notFC.length}):</strong> ${notFC.join(', ')}</li>`);
+              }
+              if (alreadyGis.length > 0) {
+                skippedDetails.push(`<li><strong>Sudah diverifikasi GIS (${alreadyGis.length}):</strong> ${alreadyGis.join(', ')}</li>`);
+              }
+
+              const htmlContent = `
+                <div style="text-align: left; font-size: 0.9em; margin-top: 10px;">
+                  <p class="mb-2"><strong>${valid.length}</strong> lahan siap diverifikasi. <strong>${totalSkipped}</strong> lahan dilewati karena tidak memenuhi syarat:</p>
+                  <ul style="padding-left: 20px;">
+                    ${skippedDetails.join('')}
+                  </ul>
+                </div>
+              `;
+
+              await this.$_alert.custom({
+                title: "Sebagian Lahan Dilewati",
+                icon: "warning",
+                html: htmlContent,
+                showConfirmButton: true,
+                confirmButtonText: "Tutup",
+                confirmButtonColor: "#a3a3a3",
+              });
+            }
+
+            this.data = valid;
           } else {
             this.data = rawData;
           }
@@ -959,7 +1044,7 @@ export default {
           this.step = 2;
         })
         .catch((err) => {
-          this.$_alert.error("Upload KML Gagal", err.response.data.messsage);
+          this.$_alert.error("Upload KML Gagal", err.response?.data?.message || err.message);
           this.ready = true;
           this.loading = false;
           this.step = 1;
@@ -1038,11 +1123,13 @@ export default {
     },
 
     isOpen(t) {
+      if (!t) this.selectedProject = null;
       if (!t) {
         this.loading = false;
         this.data = [];
         this.step = 1;
         this.questions = [];
+        this.selectedProject = null;
       }
     },
     files(t) {
