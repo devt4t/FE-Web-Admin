@@ -58,7 +58,7 @@
                                                     <v-icon>mdi-tanker-truck</v-icon>
                                                     <span class="d-block title">Nursery
                                                         <strong>{{ getNurseryLocation(data.nursery_location_id)
-                                                        }}</strong></span>
+                                                            }}</strong></span>
                                                     <span class="badge bg-info distribution-seed">
                                                         <strong>{{ data.total_seed | parse('ts') }}</strong> bibit
                                                     </span>
@@ -67,13 +67,13 @@
                                                 <div class="distribution-progress">
                                                     <span class="line"></span>
                                                     <span class="date">{{ dateFormat(data.distribution_date, "D MMMM Y")
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
 
                                                 <div class="distribution-end">
                                                     <v-icon>mdi-map-marker-radius</v-icon>
                                                     <span class="d-block location">{{ data.distribution_location
-                                                    }}</span>
+                                                        }}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -210,7 +210,8 @@
                             <v-icon small>mdi-pencil</v-icon>
                             <span> Update Kehadiran</span>
                         </v-btn>
-                        <v-btn v-if="$store.state.tmpProgramYear == '2026'" color="info" small @click="exportMou(item)">
+                        <v-btn v-if="item.validation == 1 && $store.state.tmpProgramYear == '2026'" color="info" small
+                            @click="exportMou(item)">
                             <v-icon small>mdi-file-pdf-box</v-icon>
                             <span> Export MoU</span>
                         </v-btn>
