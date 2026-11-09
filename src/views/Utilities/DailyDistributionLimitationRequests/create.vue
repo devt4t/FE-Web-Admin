@@ -35,13 +35,16 @@
               col_size: 6,
               type: 'select',
               setter: 'id',
+              api: 'new-utilities/nursery-locations',
+              param: {
+                limit: 50,
+              },
               option: {
-                getterKey: 'data',
-                default_options: $store.state.nurseries,
+                getterKey: 'data.data',
                 list_pointer: {
                   code: 'id',
-                  label: 'name',
-                  display: ['name'],
+                  label: 'name_location_nursery',
+                  display: ['name_location_nursery'],
                 },
               },
             }" />
@@ -54,13 +57,17 @@
               col_size: 6,
               type: 'select',
               setter: 'mu_no',
-              api: 'new-utilities/management-units',
+              api: 'new-utilities/management-unit-by-nursery-locations',
+              param: {
+                location_nursery_id: formData.nursery_locations_id,
+                limit: 50,
+              },
               option: {
-                getterKey: 'data',
+                getterKey: 'data.data',
                 list_pointer: {
-                  code: 'mu_no',
-                  label: 'name',
-                  display: ['name'],
+                  code: 'management_unit_code',
+                  label: 'management_unit_name',
+                  display: ['management_unit_name'],
                 },
               },
             }" />
@@ -298,7 +305,7 @@ export default {
       formData: {
         form_date: "",
         mu_no: "",
-        program_year: "2025",
+        program_year: "2026",
         nursery_locations_id: null,
         wood_limitation: 0,
         mpts_limitation: 0,

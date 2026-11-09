@@ -12,6 +12,7 @@ import {
 } from "./scpecialEmails/nurseryTeam";
 import TaskForceEmail from "./scpecialEmails/taskForceTeam";
 import config from "../config";
+import service from "@/utils/service.js";
 
 Vue.use(Vuex);
 
@@ -61,48 +62,7 @@ export default new Vuex.Store({
     User: localStorage.getItem("User")
       ? JSON.parse(localStorage.getItem("User"))
       : "",
-    nurseries: [
-      {
-        id: 4,
-        name:'Kebumen'
-      },
-      {
-        id: 5,
-        name:'Pati'
-      },
-      {
-        id: 6,
-        name:'SMG Testing'
-      },
-      {
-        id: 7,
-        name:'Semarang'
-      },
-      {
-        id: 1,
-        name:'Ciminyak'
-      },
-      {
-        id: 9,
-        name:'Cidaun'
-      },
-      {
-        id: 10,
-        name:'Bali Barat'
-      },
-      {
-        id: 2,
-        name:'Soreang'
-      },
-      {
-        id: 3,
-        name:'Cirasea'
-      },
-      {
-        id: 8,
-        name:'Citanduy'
-      },
-    ],
+    nurseries: [],
   },
   getters: {
     getApiUrl: (state) => (url) => {
@@ -137,8 +97,26 @@ export default new Vuex.Store({
           typeof value == "string" ? value : JSON.stringify(value)
         );
     },
+    SET_NURSERIES(state, payload) {
+      state.nurseries = payload;
+    },
   },
-  actions: {},
+  actions: {
+    async fetchNurseries({ commit, state }) {
+      if (state.nurseries.length > 0) return;
+
+      try {
+        const res = await service.get('new-utilities/nursery-locations');
+        const list = (res.data?.data || res.data || []).map(item => ({
+          ...item,
+          name: item.name_location_nursery
+        }));
+        commit('SET_NURSERIES', list);
+      } catch (err) {
+        console.error('Gagal mengambil data persemaian:', err);
+      }
+    },
+  },
   modules: {},
-  
+
 });

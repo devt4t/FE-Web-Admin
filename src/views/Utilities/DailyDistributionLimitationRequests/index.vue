@@ -1,68 +1,64 @@
 <template>
-  <geko-base-crud 
-    :config="config" 
-    :hideDelete="false"
-    :hideUpdate="false"
-  > 
+  <geko-base-crud :config="config" :hideDelete="false" :hideUpdate="false">
     <template v-slot:create-form>
-        <create />
+      <create />
     </template>
 
     <template v-slot:list-nursery_locations_id="{ item }">
-      {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+      {{$store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-'}}
     </template>
 
     <template v-slot:list-seed_limitation="{ item }">
-        <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
-        </span>
+      <span class="badge bg-primary">
+        <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
+      </span>
     </template>
 
     <template v-slot:list-program_year="{ item }">
-        <span class="badge bg-info">
-            {{ item.program_year }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.program_year }}
+      </span>
     </template>
 
     <template v-slot:list-start_distribution_time="{ item }">
-        <span class="badge bg-info">
-            {{ item.start_distribution_time | parse('date') }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.start_distribution_time | parse('date') }}
+      </span>
     </template>
 
     <template v-slot:list-end_distribution_time="{ item }">
-        <span class="badge bg-info">
-            {{ item.end_distribution_time | parse('date') }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.end_distribution_time | parse('date') }}
+      </span>
     </template>
-    
+
 
     <template v-slot:detail-nursery_locations_id="{ item }">
-      {{ $store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-' }}
+      {{$store.state.nurseries.find(n => n.id === item.nursery_locations_id)?.name || '-'}}
     </template>
 
     <template v-slot:detail-seed_limitation="{ item }">
-        <span class="badge bg-primary">
-            <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
-        </span>
+      <span class="badge bg-primary">
+        <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.seed_limitation }}
+      </span>
     </template>
 
     <template v-slot:detail-program_year="{ item }">
-        <span class="badge bg-info">
-            {{ item.program_year }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.program_year }}
+      </span>
     </template>
 
     <template v-slot:detail-start_distribution_time="{ item }">
-        <span class="badge bg-info">
-            {{ item.start_distribution_time | parse('date') }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.start_distribution_time | parse('date') }}
+      </span>
     </template>
 
     <template v-slot:detail-end_distribution_time="{ item }">
-        <span class="badge bg-info">
-            {{ item.end_distribution_time | parse('date') }}
-        </span>
+      <span class="badge bg-info">
+        {{ item.end_distribution_time | parse('date') }}
+      </span>
     </template>
 
   </geko-base-crud>
@@ -75,6 +71,9 @@ export default {
   name: "crud-daily-distribution-limit",
   components: { Create },
   watch: {},
+  mounted() {
+    this.$store.dispatch('fetchNurseries');
+  },
   data() {
     return {
       config: {
@@ -147,7 +146,7 @@ export default {
             },
           },
 
-          
+
           {
             id: "managementunits_name",
             label: "Management Unit",
@@ -165,10 +164,10 @@ export default {
             label: "Limitasi Bibit",
             methods: {
               list: {
-                type:'row-slot'
+                type: 'row-slot'
               },
               detail: {
-                type:'slot',
+                type: 'slot',
               },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
@@ -181,10 +180,10 @@ export default {
             label: "Lokasi Persemaian",
             methods: {
               list: {
-                type:'row-slot'
+                type: 'row-slot'
               },
               detail: {
-                type:'slot'
+                type: 'slot'
               },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
@@ -226,26 +225,26 @@ export default {
             label: "Tahun Program",
             methods: {
               list: {
-                type:'row-slot'
+                type: 'row-slot'
               },
               detail: {
-                type:'slot',
+                type: 'slot',
               },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
               filter: false,
             },
           },
-          
+
           {
             id: "start_distribution_time",
             label: "Waktu Mulai Distribusi",
             methods: {
               list: {
-                type:'row-slot'
+                type: 'row-slot'
               },
               detail: {
-                type:'slot'
+                type: 'slot'
               },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
@@ -258,10 +257,10 @@ export default {
             label: "Waktu Selesai Distribusi",
             methods: {
               list: {
-                type:'row-slot'
+                type: 'row-slot'
               },
               detail: {
-                type:'slot'
+                type: 'slot'
               },
               create: { validation: ["required"] },
               update: { validation: ["required"] },
@@ -269,7 +268,7 @@ export default {
             },
           },
 
-          
+
 
         ],
       },

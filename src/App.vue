@@ -319,6 +319,7 @@ export default {
         return;
       } else {
         await this.getLatestPermission();
+        this.$store.dispatch('fetchNurseries');
         this.buildConfig();
         if (this.$route.path == "/") {
           this.redirectToDashboard();
