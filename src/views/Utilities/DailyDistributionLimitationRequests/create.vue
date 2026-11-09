@@ -70,7 +70,7 @@
                   display: ['management_unit_name'],
                 },
               },
-            }" />
+            }" :disabled="!formData.nursery_locations_id" />
           </v-col>
 
           <v-col md="12" class="form-separator">
@@ -296,7 +296,11 @@ export default {
   },
 
   watch: {
-
+    'formData.nursery_locations_id'(newVal, oldVal) {
+      if (oldVal !== null && newVal !== oldVal) {
+        this.formData.mu_no = '';
+      }
+    }
   },
 
   data() {
