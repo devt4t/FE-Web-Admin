@@ -55,7 +55,7 @@
                 <v-row v-if="previewLahans.length > 0 && !isLoadingPreview">
                     <v-col cols="12">
                         <v-radio-group v-model="confirmAction" row label="Aksi Eksekusi:">
-                            <v-radio label="GO (Sesuai Jadwal)" value="GO"></v-radio>
+                            <v-radio :label="goRadioLabel" value="GO" :disabled="isGoDisabled"></v-radio>
                             <v-radio label="DELAY (Tunda)" value="DELAY"></v-radio>
                             <v-radio label="CANCEL (Batal)" value="CANCEL"></v-radio>
                         </v-radio-group>
@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
     name: "DistributionConfirmModal",
     data() {
@@ -121,7 +123,12 @@ export default {
             } else {
                 this.previewLahans = [];
             }
-        }
+        },
+        previewLahans() {
+            if (this.isGoDisabled && this.confirmAction === "GO") {
+                this.confirmAction = null;
+            }
+        },
     },
     methods: {
         open() {
@@ -216,6 +223,37 @@ export default {
             )
                 return false;
             return true;
+        },
+
+        earliestDistributionDate() {
+            const validDates = this.previewLahans
+                .map((item) => item.distribution_time)
+                .filter((date) => Boolean(date) && moment(date).isValid());
+
+            if (validDates.length === 0) return null;
+
+            validDates.sort((a, b) => moment(a).diff(moment(b)));
+            return validDates[0];
+        },
+
+        isGoDisabled() {
+            if (!this.earliestDistributionDate) return true;
+
+            const today = moment().startOf("day");
+            const distDate = moment(this.earliestDistributionDate).startOf("day");
+            const diffInDays = distDate.diff(today, "days");
+
+            return diffInDays < 7;
+        },
+
+        goRadioLabel() {
+            if (this.isGoDisabled) {
+                const dateStr = this.earliestDistributionDate
+                    ? moment(this.earliestDistributionDate).format("DD-MM-YYYY")
+                    : "-";
+                return `GO (Sesuai Jadwal) — [Terkunci: Sudah melewati batas H-7 (${dateStr})]`;
+            }
+            return "GO (Sesuai Jadwal)";
         },
     },
 };

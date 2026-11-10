@@ -2,10 +2,30 @@
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true"
         @onExportExcel="onExportExcel($event)" @onExportPdf="onExportPdf($event)">
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn v-if="item.is_validate" variant="danger" small class="mt-2" @click="onUnverif(item)">
+            <!-- <v-btn v-if="item.is_validate" variant="danger" small class="mt-2" @click="onUnverif(item)">
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
-            </v-btn>
+            </v-btn> -->
+            <template v-if="item.is_validate">
+                <!-- Jika didisable, pakai tooltip -->
+                <v-tooltip top v-if="isUnverifDisabled(item)">
+                    <template v-slot:activator="{ on, attrs }">
+                        <span v-bind="attrs" v-on="on" class="d-inline-block">
+                            <v-btn variant="danger" small class="mt-2" disabled>
+                                <v-icon left small>mdi-undo</v-icon>
+                                <span>Unverifikasi</span>
+                            </v-btn>
+                        </span>
+                    </template>
+                    <span>Terkunci: Sudah melewati batas H-7 dari tanggal distribusi ({{ item.distribution_date
+                        }})</span>
+                </v-tooltip>
+                <!-- Tombol normal jika masih >= H-7 -->
+                <v-btn v-else variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi</span>
+                </v-btn>
+            </template>
             <v-btn v-else variant="success" small class="mt-2" @click="onVerif(item)">
                 <v-icon left small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
@@ -19,31 +39,31 @@
 
         <template v-slot:list-ff_id="{ item }">
             <span class="d-block">
-            {{ item.field_facilitators_name }}</span>
+                {{ item.field_facilitators_name }}</span>
 
             <v-tooltip top>
-            <template v-slot:activator="{ on }">
-                <span v-on="on" class="text-08-em badge bg-light mt-1">{{
-                item.user_id
-                }}</span>
-            </template>
+                <template v-slot:activator="{ on }">
+                    <span v-on="on" class="text-08-em badge bg-light mt-1">{{
+                        item.user_id
+                        }}</span>
+                </template>
 
-            <span>Kode FF</span>
+                <span>Kode FF</span>
             </v-tooltip>
         </template>
 
         <template v-slot:list-farmer_id="{ item }">
             <span class="d-block">
-            {{ item.farmers_name }}</span>
+                {{ item.farmers_name }}</span>
 
             <v-tooltip top>
-            <template v-slot:activator="{ on }">
-                <span v-on="on" class="text-08-em badge bg-light mt-1">{{
-                item.lahans_farmer_no
-                }}</span>
-            </template>
+                <template v-slot:activator="{ on }">
+                    <span v-on="on" class="text-08-em badge bg-light mt-1">{{
+                        item.lahans_farmer_no
+                        }}</span>
+                </template>
 
-            <span>Kode Petani</span>
+                <span>Kode Petani</span>
             </v-tooltip>
         </template>
 
@@ -67,6 +87,7 @@
 </template>
 
 <script>
+import moment from "moment";
 import plantingHoleDetail from "./PlantingHoleDetail.vue"
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import plantingHoleConfig from "./PlantingHoleConfig";
@@ -126,6 +147,17 @@ export default {
         this.user = user;
     },
     methods: {
+        isUnverifDisabled(item) {
+            if (!item || !item.distribution_date) return false;
+
+            const today = moment().startOf("day");
+            const distDate = moment(item.distribution_date).startOf("day");
+
+            if (!distDate.isValid()) return false;
+            const diffInDays = distDate.diff(today, "days");
+
+            return diffInDays < 7;
+        },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Penilikan Lubang?', 'Apakah Anda Yakin Untuk Melakukan VERIFIKASI Data Penilikan Lubang?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
