@@ -18,7 +18,7 @@
                         </span>
                     </template>
                     <span>Terkunci: Sudah melewati batas H-7 dari tanggal distribusi ({{ item.distribution_date
-                        }})</span>
+                    }})</span>
                 </v-tooltip>
                 <!-- Tombol normal jika masih >= H-7 -->
                 <v-btn v-else variant="danger" small class="mt-2" @click="onUnverif(item)">
@@ -45,7 +45,7 @@
                 <template v-slot:activator="{ on }">
                     <span v-on="on" class="text-08-em badge bg-light mt-1">{{
                         item.user_id
-                        }}</span>
+                    }}</span>
                 </template>
 
                 <span>Kode FF</span>
@@ -60,7 +60,7 @@
                 <template v-slot:activator="{ on }">
                     <span v-on="on" class="text-08-em badge bg-light mt-1">{{
                         item.lahans_farmer_no
-                        }}</span>
+                    }}</span>
                 </template>
 
                 <span>Kode Petani</span>
@@ -117,6 +117,7 @@ export default {
                 detailKey: "result",
                 delete: "new-planting-hole/delete/main-data",
                 deleteKey: "ph_form_no",
+                deleteValidationKey: "is_validate",
                 pk_field: null,
                 globalFilter: {
                     program_year: {

@@ -42,6 +42,7 @@ export default {
     //     project_modul: "purpose",
     // },
     deleteKey: "soc_no",
+    deleteValidationKey: "verified",
     pk_field: null,
     filter_api: {
       typegetdata: "all",
