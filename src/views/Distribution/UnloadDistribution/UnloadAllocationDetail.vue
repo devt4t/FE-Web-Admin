@@ -783,7 +783,7 @@
       },
       async updateVerifikasiReportNursery(item, type){
         let User = JSON.parse(localStorage.getItem("User"))
-        let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3NjI3NTYyNzAsImV4cCI6MTc5Mzg2MDI3MCwibmJmIjoxNzYyNzU2MjcwLCJqdGkiOiJ4VHF4cUV6VlQwZEkxSkRwIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ZAlixQ8QWw1EjgPH3wBN6vWitt7TijMqoyCRmGCHzp0"
+        let nurseryToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLW51cnNlcnkudDR0LWFwaS5vcmdcL2FwaVwvbG9naW4iLCJpYXQiOjE3OTM3Nzk2NTgsImV4cCI6MTgyNDg4MzY1OCwibmJmIjoxNzkzNzc5NjU4LCJqdGkiOiJibXRUaHR5d1lsVXVENHVWIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.4dJQlIAN95g-nZSv48h8hP5qfK67-C6veBiVeHvWu1Y"
         if(type == 'verification'){
           const prompt = await this.$_alert.confirm('Verifikasi Distribusi Petani?', 'Apakah Anda Yakin Untuk Melakukan VERIFIKASI Data Distribusi Petani?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
