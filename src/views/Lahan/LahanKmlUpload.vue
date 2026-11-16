@@ -166,7 +166,7 @@
 
                           <!-- ALTITUDE -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.elevation" :item="{
+                            <geko-input v-model="item.elevation" :item="{
                               label: 'Altitude (mdpl)',
                               type: 'text',
                               validation:
@@ -179,7 +179,7 @@
 
                           <!-- POLYGON AREA -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.gis_polygon_area" :item="{
+                            <geko-input v-model="item.gis_polygon_area" :item="{
                               label: 'Luas Polygon',
                               validation:
                                 item.fc_complete_data != 1
@@ -192,7 +192,7 @@
 
                           <!-- JENIS TANAH -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.soil_type" :item="{
+                            <geko-input v-model="item.soil_type" :item="{
                               label: 'Jenis Tanah',
                               type: 'select',
                               validation:
@@ -212,7 +212,7 @@
                           </td>
                           <!-- QUESTIONS -->
                           <td v-for="(q, i) in questions" :key="`qt-${i}`">
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item[`question${i + 1}`]" :item="{
+                            <geko-input v-model="item[`question${i + 1}`]" :item="{
                               hide_label: true,
                               type: 'select-radio',
                               validation:
@@ -363,7 +363,7 @@
                           </td>
                           <!-- TUTUPAN AREA -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.tutupan_area" :item="{
+                            <geko-input v-model="item.tutupan_area" :item="{
                               label: 'Luas Tutupan',
                               validation:
                                 item.fc_complete_data != 1
@@ -425,7 +425,7 @@
                           </td>
                           <!-- QUESTIONS -->
                           <td v-for="(q, i) in questions" :key="`qt-${i}`">
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item[`answer${q.id}`]" :item="{
+                            <geko-input v-model="item[`answer${q.id}`]" :item="{
                               hide_label: true,
                               type: 'select-radio',
                               validation:
@@ -737,7 +737,7 @@ export default {
       for (const lahan of this.data) {
         if (!lahan.id) continue;
         const isValid =
-          lahan.fc_complete_data == 1 &&
+          // lahan.fc_complete_data == 1 &&
           ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
         // const isValid = lahan.fc_complete_data == 1;
         if (!isValid) continue;
@@ -959,9 +959,11 @@ export default {
 
               if (!lahan.id || lahan.error_message) {
                 notFound.push(no);
-              } else if (lahan.fc_complete_data != 1) {
-                notFC.push(no);
-              } else if (!["belum", "Belum", null, "", "-"].includes(lahan.updated_gis)) {
+              }
+              // else if (lahan.fc_complete_data != 1) {
+              //   notFC.push(no);
+              // }
+              else if (!["belum", "Belum", null, "", "-"].includes(lahan.updated_gis)) {
                 alreadyGis.push(no);
               } else {
                 valid.push(lahan);
