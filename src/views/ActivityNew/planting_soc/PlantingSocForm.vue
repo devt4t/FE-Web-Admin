@@ -73,10 +73,11 @@
                                     <v-icon>mdi-map-marker-distance</v-icon>
                                     <div class="pl-3">
                                         <label for="">Nursery</label>
-                                        <div class="distribution-date-label" v-if="nurseryLocation">
+                                        <div class="distribution-date-label"
+                                            v-if="nurseryLocation && nurseryLocation.name_location_nursery">
                                             {{ nurseryLocation.name_location_nursery }}
                                         </div>
-                                        <div class="distribution-date-label" v-else>-</div>
+                                        <div class="distribution-date-label" v-else> -</div>
                                     </div>
                                 </div>
                             </v-col>
@@ -201,7 +202,7 @@
                                 }">
                                     <td class="text-center">
                                         <span v-if="farmer.bordered">{{ farmer.index
-                                            }}</span>
+                                        }}</span>
                                     </td>
                                     <td class="text-left">
                                         <div class="d-block" v-if="farmer.bordered">

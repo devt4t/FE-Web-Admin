@@ -107,6 +107,8 @@ export default {
 
       }
       nursery.allocation_periode_days = dates;
+      const nurseryId = nursery.data[0].nursery_locations_id;
+      const foundNursery = this.$store.state.nurseries.find(n => n.id == nurseryId);
 
       let allocatedBibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
         month: moment(this.dateDistributionCurrent).month() + 1,
@@ -116,10 +118,11 @@ export default {
         mu_no: data.mu_no
       });
 
+
       this.nurseryLocation = {
         address_nursery: '',
-        name_location_nursery: this.$store.state.nurseries.find(n => n.id == nursery.data[0].nursery_locations_id)?.name || '',
-        location_nursery_id: nursery.data[0].nursery_locations_id,
+        name_location_nursery: foundNursery?.name || `Persemaian ${nurseryId}`,
+        location_nursery_id: nurseryId,
       };
 
       let totalSeedFF = 0;
@@ -318,6 +321,10 @@ export default {
     },
     getInitialData() {
       return new Promise(async (resolve) => {
+        if (!this.$store.state.nurseries.length) {
+          await this.$store.dispatch('fetchNurseries');
+        }
+
         const result = await this.$_api.get("getFFOptionsSostam", {
           typegetdata: "all",
           program_year: this.$store.state.tmpProgramYear,
