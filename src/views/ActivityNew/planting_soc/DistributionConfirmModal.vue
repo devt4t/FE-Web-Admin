@@ -53,28 +53,44 @@
 
                 <!-- Opsi Konfirmasi -->
                 <v-row v-if="previewLahans.length > 0 && !isLoadingPreview">
+                    <v-col cols="12" v-if="scheduleMeta && scheduleMeta.is_locked">
+                        <v-alert type="warning" dense outlined>
+                            {{ scheduleMeta.lock_reason }}
+                        </v-alert>
+                    </v-col>
+
                     <v-col cols="12">
-                        <v-radio-group v-model="confirmAction" row label="Aksi Eksekusi:">
+                        <v-radio-group v-model="confirmAction" row label="Aksi Eksekusi:" :disabled="isScheduleLocked">
                             <v-radio :label="goRadioLabel" value="GO" :disabled="isGoDisabled"></v-radio>
-                            <v-radio label="DELAY (Tunda)" value="DELAY"></v-radio>
-                            <v-radio label="CANCEL (Batal)" value="CANCEL"></v-radio>
+                            <v-radio label="DELAY (Tunda)" value="DELAY" :disabled="isScheduleLocked"></v-radio>
+                            <v-radio label="CANCEL (Batal)" value="CANCEL" :disabled="isScheduleLocked"></v-radio>
                         </v-radio-group>
                     </v-col>
 
                     <!-- Muncul jika pilih DELAY -->
-                    <v-col cols="12" v-if="confirmAction === 'DELAY'">
+                    <v-col cols="12" v-if="confirmAction === 'DELAY' && !isScheduleLocked">
                         <v-radio-group v-model="delayType" row>
-                            <v-radio label="Auto (+7 Hari dari jadwal)" value="auto"></v-radio>
+                            <v-radio :label="autoRadioLabel" value="auto" :disabled="!isAutoDelayAllowed"></v-radio>
                             <v-radio label="Manual (Pilih Tanggal)" value="manual"></v-radio>
                         </v-radio-group>
+
+                        <v-alert v-if="!isAutoDelayAllowed && scheduleMeta && scheduleMeta.auto_delay" type="info" dense text class="mb-3">
+                            {{ scheduleMeta.auto_delay.reason }}
+                        </v-alert>
 
                         <v-menu v-if="delayType === 'manual'" v-model="dateMenu" :close-on-content-click="false"
                             transition="scale-transition" offset-y min-width="auto">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-text-field v-model="newDate" label="Pilih Tanggal Baru" prepend-icon="mdi-calendar"
-                                    readonly v-bind="attrs" v-on="on" outlined dense></v-text-field>
+                                    readonly v-bind="attrs" v-on="on" outlined dense
+                                    :hint="manualDateHint" persistent-hint></v-text-field>
                             </template>
-                            <v-date-picker v-model="newDate" @input="dateMenu = false"></v-date-picker>
+                            <v-date-picker
+                                v-model="newDate"
+                                :min="minManualDate"
+                                :allowed-dates="isDateAllowed"
+                                @input="dateMenu = false"
+                            ></v-date-picker>
                         </v-menu>
                     </v-col>
                 </v-row>
@@ -101,6 +117,7 @@ export default {
             isOpen: false,
             selectedFF: null,
             previewLahans: [],
+            scheduleMeta: null,
             isLoadingPreview: false,
             confirmAction: null,
             delayType: "auto",
@@ -122,6 +139,7 @@ export default {
                 this.fetchPreviewLahan();
             } else {
                 this.previewLahans = [];
+                this.scheduleMeta = null;
             }
         },
         previewLahans() {
@@ -135,13 +153,27 @@ export default {
             this.isOpen = true;
             this.selectedFF = null;
             this.previewLahans = [];
+            this.scheduleMeta = null;
             this.confirmAction = null;
             this.newDate = null;
             this.delayType = "auto";
         },
+        isDateAllowed(dateStr) {
+            if (!this.scheduleMeta) return false;
+            if (this.minManualDate && dateStr < this.minManualDate) return false;
+
+            const lim = this.scheduleMeta.limitation;
+            // Jika belum ada limitation MU, atau tanggal melebihi end_date -> mode Override (bebas dipilih)
+            if (!lim || !lim.has_limitation || dateStr > lim.end_date) {
+                return true;
+            }
+            // Di dalam/sebelum akhir limitation -> wajib ada di available_dates (sama seperti Add Data Sostam)
+            return Array.isArray(lim.available_dates) && lim.available_dates.includes(dateStr);
+        },
         async fetchPreviewLahan() {
             if (!this.selectedFF) return;
             this.previewLahans = []; // Reset tabel setiap ganti FF
+            this.scheduleMeta = null;
             this.isLoadingPreview = true;
 
             try {
@@ -153,8 +185,13 @@ export default {
                     `distribution-request/preview-lahan-az?ff_no=${this.selectedFF}&program_year=${py}`
                 );
 
-                if (res?.data?.status?.code === 200) {
-                    this.previewLahans = res.data.result || [];
+                const resData = res?.data?.data || res?.data;
+                if (resData?.status?.code === 200 || res?.data?.status?.code === 200 || res?.status === 200) {
+                    this.previewLahans = resData?.result || res?.data?.result || [];
+                    this.scheduleMeta = resData?.schedule_meta || res?.data?.schedule_meta || null;
+                    this.confirmAction = null;
+                    this.newDate = null;
+                    this.delayType = this.isAutoDelayAllowed ? "auto" : "manual";
                 } else {
                     throw new Error(
                         res?.data?.status?.description || res?.data?.data?.status?.description || "Gagal memuat preview lahan"
@@ -214,46 +251,52 @@ export default {
         },
     },
     computed: {
+        isScheduleLocked() {
+            return Boolean(this.scheduleMeta?.is_locked);
+        },
         isSubmitValid() {
+            if (this.isScheduleLocked) return false;
             if (!this.selectedFF || !this.confirmAction) return false;
-            if (
-                this.confirmAction === "DELAY" &&
-                this.delayType === "manual" &&
-                !this.newDate
-            )
-                return false;
+            if (this.confirmAction === "GO" && this.isGoDisabled) return false;
+            if (this.confirmAction === "DELAY") {
+                if (this.delayType === "auto" && !this.isAutoDelayAllowed) return false;
+                if (this.delayType === "manual" && (!this.newDate || !this.isDateAllowed(this.newDate))) return false;
+            }
             return true;
         },
-
-        earliestDistributionDate() {
-            const validDates = this.previewLahans
-                .map((item) => item.distribution_time)
-                .filter((date) => Boolean(date) && moment(date).isValid());
-
-            if (validDates.length === 0) return null;
-
-            validDates.sort((a, b) => moment(a).diff(moment(b)));
-            return validDates[0];
-        },
-
         isGoDisabled() {
-            if (!this.earliestDistributionDate) return true;
-
-            const today = moment().startOf("day");
-            const distDate = moment(this.earliestDistributionDate).startOf("day");
-            const diffInDays = distDate.diff(today, "days");
-
-            return diffInDays < 7;
+            if (this.isScheduleLocked) return true;
+            return !Boolean(this.scheduleMeta?.go?.allowed);
         },
-
         goRadioLabel() {
-            if (this.isGoDisabled) {
-                const dateStr = this.earliestDistributionDate
-                    ? moment(this.earliestDistributionDate).format("DD-MM-YYYY")
-                    : "-";
-                return `GO (Sesuai Jadwal) — [Terkunci: Sudah melewati batas H-7 (${dateStr})]`;
+            if (this.scheduleMeta?.go && !this.scheduleMeta.go.allowed) {
+                return `GO (Sesuai Jadwal) — [${this.scheduleMeta.go.reason}]`;
             }
-            return "GO (Sesuai Jadwal)";
+            const target = this.scheduleMeta?.go?.target_date
+                ? moment(this.scheduleMeta.go.target_date).format("DD-MM-YYYY")
+                : null;
+            return target ? `GO (Sesuai Jadwal Awal: ${target})` : "GO (Sesuai Jadwal)";
+        },
+        isAutoDelayAllowed() {
+            return !this.isScheduleLocked && Boolean(this.scheduleMeta?.auto_delay?.allowed);
+        },
+        autoRadioLabel() {
+            const target = this.scheduleMeta?.auto_delay?.target_date
+                ? moment(this.scheduleMeta.auto_delay.target_date).format("DD-MM-YYYY")
+                : null;
+            return target ? `Auto (+7 Hari: ${target})` : "Auto (+7 Hari dari jadwal)";
+        },
+        minManualDate() {
+            return this.scheduleMeta?.min_manual_date || moment().add(7, "days").format("YYYY-MM-DD");
+        },
+        manualDateHint() {
+            const minStr = moment(this.minManualDate).format("DD-MM-YYYY");
+            const endStr = this.scheduleMeta?.limitation?.end_date
+                ? moment(this.scheduleMeta.limitation.end_date).format("DD-MM-YYYY")
+                : null;
+            return endStr
+                ? `Minimal ${minStr}. Hingga ${endStr} mengikuti kuota & libur Nursery; setelah ${endStr} otomatis Override.`
+                : `Minimal ${minStr} (Mode Override: batas distribusi MU belum diatur).`;
         },
     },
 };
