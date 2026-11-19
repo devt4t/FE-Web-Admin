@@ -66,7 +66,7 @@ export default {
             const ws = XLSX.utils.json_to_sheet([
                 {
                     "Kode Lahan": "10_TESTAZ2026",
-                    "Akses Irigasi": "none",
+                    "Tipe Irigasi": "none",
                     "Tekstur Tanah": "loam",
                     "Risk Tier": "A"
                 }
