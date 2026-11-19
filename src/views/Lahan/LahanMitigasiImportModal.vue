@@ -98,7 +98,7 @@ export default {
                 const mappedJson = rawJson.map(row => {
                     return {
                         lahan_no: row['Kode Lahan'] || row['lahan_no'] || null,
-                        irrigation_access: row['Akses Irigasi'] || row['irrigation_access'] || null,
+                        irrigation_access: row['Akses Irigasi'] || row['irrigation_access'] || row['Tipe Irigasi'],
                         soil_texture: row['Tekstur Tanah'] || row['soil_texture'] || null,
                         risk_tier: String(row['Risk Tier'] || row['risk_tier'] || '').toUpperCase() || null,
                     };
