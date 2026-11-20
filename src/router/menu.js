@@ -460,6 +460,15 @@ const menu = [
       //   type: ["non-carbon"],
       // },
       {
+        title: "Pra Lubang Tanam",
+        to: "/pra-lubang-tanam",
+        component: "ActivityNew/pre_lubang_tanam/PreLubangTanam",
+        name: "PraLubangTanam",
+        permission: "LubangTanam",
+        icon: "mdi-clock-check",
+        type: ["non-carbon"],
+      },
+      {
         title: "Lubang Tanam",
         to: "/LubangTanamV2",
         component: "ActivityNew/planting_hole/PlantingHole",

@@ -1,0 +1,303 @@
+<template>
+    <v-dialog v-model="isOpen" max-width="900px">
+        <v-card>
+            <v-card-title class="headline bg-primary text-white">
+                Konfirmasi Jadwal Distribusi AZ (Per FF)
+            </v-card-title>
+            <v-card-text class="pt-5">
+                <v-row>
+                    <v-col cols="12" v-if="isOpen">
+                        <geko-input :item="{
+                            id: 'ff_no',
+                            type: 'select',
+                            label: 'Pilih Field Facilitator (Khusus Projek AZ)',
+                            placeholder: 'Ketik No FF / Nama FF',
+                            api: 'distribution-request/list-ff-az',
+                            setter: 'ff_no',
+                            param: {
+                                program_year: this.$store.state.tmpProgramYear,
+                            },
+                            option: {
+                                getterKey: 'data.result.data',
+                                list_pointer: {
+                                    code: 'ff_no',
+                                    label: 'name',
+                                    display: ['name', 'ff_no'],
+                                },
+                            },
+                        }" v-model="selectedFF" />
+                    </v-col>
+                </v-row>
+
+                <!-- Tabel Preview Lahan (Muncul jika FF dipilih) -->
+                <v-row v-show="selectedFF">
+                    <v-col cols="12">
+                        <p class="font-weight-bold mb-2">Preview Lahan AZ Milik FF:</p>
+                        <v-data-table :headers="previewHeaders" :items="previewLahans" hide-default-footer
+                            class="elevation-1" :loading="isLoadingPreview" loading-text="Memuat data lahan...">
+                            <template v-slot:item.distribution_confirmation_status="{ item }">
+                                <v-chip color="info" small v-if="item.distribution_confirmation_status">
+                                    {{ item.distribution_confirmation_status }}
+                                </v-chip>
+                                <span v-else>-</span>
+                            </template>
+                            <!-- Badge Sostam -->
+                            <template v-slot:item.sostam_badge="{ item }">
+                                <v-chip :color="item.sostam_color" small>
+                                    {{ item.sostam_badge }}
+                                </v-chip>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+
+                <!-- Opsi Konfirmasi -->
+                <v-row v-if="previewLahans.length > 0 && !isLoadingPreview">
+                    <v-col cols="12" v-if="scheduleMeta && scheduleMeta.is_locked">
+                        <v-alert type="warning" dense outlined>
+                            {{ scheduleMeta.lock_reason }}
+                        </v-alert>
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-radio-group v-model="confirmAction" row label="Aksi Eksekusi:" :disabled="isScheduleLocked">
+                            <v-radio :label="goRadioLabel" value="GO" :disabled="isGoDisabled"></v-radio>
+                            <v-radio label="DELAY (Tunda)" value="DELAY" :disabled="isScheduleLocked"></v-radio>
+                            <v-radio label="CANCEL (Batal)" value="CANCEL" :disabled="isScheduleLocked"></v-radio>
+                        </v-radio-group>
+                    </v-col>
+
+                    <!-- Muncul jika pilih DELAY -->
+                    <v-col cols="12" v-if="confirmAction === 'DELAY' && !isScheduleLocked">
+                        <v-radio-group v-model="delayType" row>
+                            <v-radio :label="autoRadioLabel" value="auto" :disabled="!isAutoDelayAllowed"></v-radio>
+                            <v-radio label="Manual (Pilih Tanggal)" value="manual"></v-radio>
+                        </v-radio-group>
+
+                        <v-alert v-if="!isAutoDelayAllowed && scheduleMeta && scheduleMeta.auto_delay" type="info" dense text class="mb-3">
+                            {{ scheduleMeta.auto_delay.reason }}
+                        </v-alert>
+
+                        <v-menu v-if="delayType === 'manual'" v-model="dateMenu" :close-on-content-click="false"
+                            transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="newDate" label="Pilih Tanggal Baru" prepend-icon="mdi-calendar"
+                                    readonly v-bind="attrs" v-on="on" outlined dense
+                                    :hint="manualDateHint" persistent-hint></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="newDate"
+                                :min="minManualDate"
+                                :allowed-dates="isDateAllowed"
+                                @input="dateMenu = false"
+                            ></v-date-picker>
+                        </v-menu>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="grey" @click="isOpen = false">Batal</v-btn>
+                <v-btn color="primary" @click="submitConfirmation" :disabled="!isSubmitValid" :loading="isSubmitting">
+                    Submit Konfirmasi
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>
+
+<script>
+import moment from "moment";
+
+export default {
+    name: "DistributionConfirmModal",
+    data() {
+        return {
+            isOpen: false,
+            selectedFF: null,
+            previewLahans: [],
+            scheduleMeta: null,
+            isLoadingPreview: false,
+            confirmAction: null,
+            delayType: "auto",
+            newDate: null,
+            dateMenu: false,
+            isSubmitting: false,
+            previewHeaders: [
+                { text: "No Lahan", value: "lahan_no" },
+                { text: "Nama Petani", value: "farmer_name" },
+                { text: "Tgl Distribusi", value: "distribution_time" },
+                { text: "Status Saat Ini", value: "distribution_confirmation_status" },
+                { text: "Status Sostam", value: "sostam_badge" },
+            ],
+        };
+    },
+    watch: {
+        selectedFF(newVal) {
+            if (newVal) {
+                this.fetchPreviewLahan();
+            } else {
+                this.previewLahans = [];
+                this.scheduleMeta = null;
+            }
+        },
+        previewLahans() {
+            if (this.isGoDisabled && this.confirmAction === "GO") {
+                this.confirmAction = null;
+            }
+        },
+    },
+    methods: {
+        open() {
+            this.isOpen = true;
+            this.selectedFF = null;
+            this.previewLahans = [];
+            this.scheduleMeta = null;
+            this.confirmAction = null;
+            this.newDate = null;
+            this.delayType = "auto";
+        },
+        isDateAllowed(dateStr) {
+            if (!this.scheduleMeta) return false;
+            if (this.minManualDate && dateStr < this.minManualDate) return false;
+
+            const lim = this.scheduleMeta.limitation;
+            // Jika belum ada limitation MU, atau tanggal melebihi end_date -> mode Override (bebas dipilih)
+            if (!lim || !lim.has_limitation || dateStr > lim.end_date) {
+                return true;
+            }
+            // Di dalam/sebelum akhir limitation -> wajib ada di available_dates (sama seperti Add Data Sostam)
+            return Array.isArray(lim.available_dates) && lim.available_dates.includes(dateStr);
+        },
+        async fetchPreviewLahan() {
+            if (!this.selectedFF) return;
+            this.previewLahans = []; // Reset tabel setiap ganti FF
+            this.scheduleMeta = null;
+            this.isLoadingPreview = true;
+
+            try {
+                // Memberikan delay kecil agar animasi loading terlihat mulus (UX)
+                await new Promise((r) => setTimeout(r, 400));
+
+                const py = this.$store.state.tmpProgramYear;
+                const res = await this.$_api.get(
+                    `distribution-request/preview-lahan-az?ff_no=${this.selectedFF}&program_year=${py}`
+                );
+
+                const resData = res?.data?.data || res?.data;
+                if (resData?.status?.code === 200 || res?.data?.status?.code === 200 || res?.status === 200) {
+                    this.previewLahans = resData?.result || res?.data?.result || [];
+                    this.scheduleMeta = resData?.schedule_meta || res?.data?.schedule_meta || null;
+                    this.confirmAction = null;
+                    this.newDate = null;
+                    this.delayType = this.isAutoDelayAllowed ? "auto" : "manual";
+                } else {
+                    throw new Error(
+                        res?.data?.status?.description || res?.data?.data?.status?.description || "Gagal memuat preview lahan"
+                    );
+                }
+            } catch (err) {
+                console.error("[fetchPreviewLahan] Error:", err);
+                this.$_alert.error(
+                    err?.data?.data?.status?.description ||
+                    err?.data?.message ||
+                    err?.message ||
+                    "Gagal memuat preview lahan"
+                );
+            } finally {
+                this.isLoadingPreview = false;
+            }
+        },
+        async submitConfirmation() {
+            this.isSubmitting = true;
+            try {
+                const py = this.$store.state.tmpProgramYear;
+                const payload = {
+                    ff_no: this.selectedFF,
+                    program_year: py,
+                    action: this.confirmAction,
+                    new_date: this.delayType === "manual" ? this.newDate : null,
+                };
+
+                const res = await this.$_api.post(
+                    "distribution-request/confirm-by-ff",
+                    payload
+                );
+
+                if (res?.data?.status?.code === 200) {
+                    this.$_alert.success(
+                        res.data.status.description || "Konfirmasi Distribusi Berhasil"
+                    );
+                    this.isOpen = false;
+                    this.$emit("refresh");
+                } else {
+                    throw new Error(
+                        res?.data?.status?.description || res?.data?.data?.status?.description ||
+                        "Gagal melakukan konfirmasi pelaksanaan distribusi."
+                    );
+                }
+            } catch (err) {
+                console.error("[submitConfirmation] Error:", err);
+                this.$_alert.error(
+                    err?.data?.data?.status?.description ||
+                    err?.data?.message ||
+                    err?.message ||
+                    "Terjadi kesalahan saat memproses konfirmasi"
+                );
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+    },
+    computed: {
+        isScheduleLocked() {
+            return Boolean(this.scheduleMeta?.is_locked);
+        },
+        isSubmitValid() {
+            if (this.isScheduleLocked) return false;
+            if (!this.selectedFF || !this.confirmAction) return false;
+            if (this.confirmAction === "GO" && this.isGoDisabled) return false;
+            if (this.confirmAction === "DELAY") {
+                if (this.delayType === "auto" && !this.isAutoDelayAllowed) return false;
+                if (this.delayType === "manual" && (!this.newDate || !this.isDateAllowed(this.newDate))) return false;
+            }
+            return true;
+        },
+        isGoDisabled() {
+            if (this.isScheduleLocked) return true;
+            return !Boolean(this.scheduleMeta?.go?.allowed);
+        },
+        goRadioLabel() {
+            if (this.scheduleMeta?.go && !this.scheduleMeta.go.allowed) {
+                return `GO (Sesuai Jadwal) — [${this.scheduleMeta.go.reason}]`;
+            }
+            const target = this.scheduleMeta?.go?.target_date
+                ? moment(this.scheduleMeta.go.target_date).format("DD-MM-YYYY")
+                : null;
+            return target ? `GO (Sesuai Jadwal Awal: ${target})` : "GO (Sesuai Jadwal)";
+        },
+        isAutoDelayAllowed() {
+            return !this.isScheduleLocked && Boolean(this.scheduleMeta?.auto_delay?.allowed);
+        },
+        autoRadioLabel() {
+            const target = this.scheduleMeta?.auto_delay?.target_date
+                ? moment(this.scheduleMeta.auto_delay.target_date).format("DD-MM-YYYY")
+                : null;
+            return target ? `Auto (+7 Hari: ${target})` : "Auto (+7 Hari dari jadwal)";
+        },
+        minManualDate() {
+            return this.scheduleMeta?.min_manual_date || moment().add(7, "days").format("YYYY-MM-DD");
+        },
+        manualDateHint() {
+            const minStr = moment(this.minManualDate).format("DD-MM-YYYY");
+            const endStr = this.scheduleMeta?.limitation?.end_date
+                ? moment(this.scheduleMeta.limitation.end_date).format("DD-MM-YYYY")
+                : null;
+            return endStr
+                ? `Minimal ${minStr}. Hingga ${endStr} mengikuti kuota & libur Nursery; setelah ${endStr} otomatis Override.`
+                : `Minimal ${minStr} (Mode Override: batas distribusi MU belum diatur).`;
+        },
+    },
+};
+</script>
