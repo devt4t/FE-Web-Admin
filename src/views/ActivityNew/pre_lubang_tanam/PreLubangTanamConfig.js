@@ -1,12 +1,12 @@
 export default {
     title: "Pre Lubang Tanam",
     permission: {
-        create: "sosialisasi-tanam-create",
-        read: "sosialisasi-tanam-list",
-        update: "sosialisasi-tanam-update",
-        detail: "sosialisasi-tanam-detail",
-        lookup: "sosialisasi-tanam-lookup",
-        delete: "sosialisasi-tanam-delete",
+        create: "pre-lubang-tanam-create",
+        read: "pre-lubang-tanam-list",
+        update: "pre-lubang-tanam-update",
+        detail: "pre-lubang-tanam-detail",
+        lookup: "pre-lubang-tanam-lookup",
+        delete: "pre-lubang-tanam-delete",
     },
     globalFilter: {
         program_year: {
