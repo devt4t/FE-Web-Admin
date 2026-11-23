@@ -58,7 +58,7 @@
             </template>
 
             <template v-slot:list-bottom-action="{ item }">
-                <v-btn variant="info" small class="mr-1 mt-1" @click="openSampleAssignModal(item)">
+                <v-btn variant="info" small class="mr-1 mt-1 mb-1" @click="openSampleAssignModal(item)">
                     <v-icon left small>mdi-map-marker-check</v-icon>
                     <span>Assign Sampel</span>
                 </v-btn>

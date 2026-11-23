@@ -1,5 +1,5 @@
 export default {
-    title: "Pre Lubang Tanam",
+    title: "Pra Lubang Tanam",
     permission: {
         create: "pre-lubang-tanam-create",
         read: "pre-lubang-tanam-list",
