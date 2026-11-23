@@ -200,6 +200,27 @@ export default {
             },
         },
         {
+            id: "is_verified",
+            label: "Verifikasi FC",
+            methods: {
+                list: { type: "row-slot" },
+                detail: false,
+                filter: {
+                    main: true,
+                    type: "select",
+                    col_size: 4,
+                    setter: "is_verified",
+                    option: {
+                        default_options: [
+                            { code: "0", name: "Belum Diverifikasi" },
+                            { code: "1", name: "Terverifikasi FC" },
+                        ],
+                        list_pointer: { code: "code", label: "name", display: ["name"] },
+                    },
+                },
+            },
+        },
+        {
             id: "system_recommendation",
             label: "Rekomendasi (FE)",
             methods: {

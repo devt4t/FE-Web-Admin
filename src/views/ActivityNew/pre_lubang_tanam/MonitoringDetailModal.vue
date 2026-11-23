@@ -6,16 +6,25 @@
             </v-card-title>
             <v-card-text class="pt-5">
                 <v-row dense class="mb-3" v-if="targetItem">
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3">
                         <div class="text-caption text--secondary">Field Facilitator</div>
                         <div class="font-weight-bold">{{ targetItem.field_facilitators_name }} ({{ targetItem.ff_no }})
                         </div>
                     </v-col>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3">
                         <div class="text-caption text--secondary">Tanggal Kegiatan Sampel</div>
                         <div class="font-weight-bold">{{ (assessment && assessment.activity_date) || "-" }}</div>
                     </v-col>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3">
+                        <div class="text-caption text--secondary">Status Verifikasi FC</div>
+                        <div v-if="assessment && Number(assessment.is_verified) === 1">
+                            <v-chip small color="success" text-color="white">Terverifikasi FC</v-chip>
+                        </div>
+                        <div v-else>
+                            <v-chip small color="grey" text-color="white">Belum Diverifikasi</v-chip>
+                        </div>
+                    </v-col>
+                    <v-col cols="12" md="3">
                         <div class="text-caption text--secondary">Rekomendasi Sistem (Kalkulasi FE)</div>
                         <div v-if="aggregated.recommendation">
                             <v-chip small :color="aggregated.recommendation === 'GO' ? 'success' : 'warning'"
@@ -48,9 +57,14 @@
                 </v-data-table>
             </v-card-text>
             <v-card-actions>
+                <span v-if="assessment && Number(assessment.assignment_status) < 2"
+                    class="text-caption text--secondary ml-3">
+                    Menunggu seluruh sampel disubmit FF dari Mobile sebelum verifikasi FC.
+                </span>
                 <v-spacer />
                 <v-btn text color="grey" @click="isOpen = false">Tutup</v-btn>
-                <!-- <v-btn color="primary" @click="proceedToConfirm">
+                <!-- <v-btn color="primary" @click="proceedToConfirm"
+                    :disabled="!assessment || Number(assessment.is_verified) !== 1">
                     <v-icon left small>mdi-calendar-check</v-icon>
                     Konfirmasi / Override Distribusi
                 </v-btn> -->

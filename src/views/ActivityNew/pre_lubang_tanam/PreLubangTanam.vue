@@ -26,6 +26,15 @@
                 </span>
             </template>
 
+            <template v-slot:list-is_verified="{ item }">
+                <span v-if="Number(item.is_verified) === 1" class="badge bg-success">
+                    Terverifikasi FC
+                </span>
+                <span v-else class="badge bg-secondary">
+                    Belum Diverifikasi
+                </span>
+            </template>
+
             <template v-slot:list-system_recommendation="{ item }">
                 <span v-if="getFFRecommendation(item)" class="badge"
                     :class="getFFRecommendation(item) === 'GO' ? 'bg-success' : 'bg-warning'">
@@ -62,16 +71,27 @@
                     <v-icon left small>mdi-map-marker-check</v-icon>
                     <span>Assign Sampel</span>
                 </v-btn>
-                <v-btn v-if="(item.total_samples || 0) > 0" variant="primary" small class="mt-1"
+                <v-btn v-if="(item.total_samples || 0) > 0" variant="primary" small class="mr-1 mt-1 mb-1"
                     @click="openMonitoringModal(item)">
                     <v-icon left small>mdi-clipboard-pulse</v-icon>
                     <span>Monitoring & Evaluasi</span>
+                </v-btn>
+                <v-btn v-if="Number(item.assignment_status) === 2 && Number(item.is_verified) === 0"
+                    variant="success" small class="mt-1 mb-1" @click="onToggleVerification(item, 'verify')">
+                    <v-icon left small>mdi-check-bold</v-icon>
+                    <span>Verifikasi</span>
+                </v-btn>
+                <v-btn v-else-if="Number(item.is_verified) === 1"
+                    variant="danger" small class="mt-1 mb-1" @click="onToggleVerification(item, 'unverify')">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi</span>
                 </v-btn>
             </template>
         </geko-base-crud>
 
         <SampleAssignModal ref="sampleAssignModal" @refresh="refreshKey += 1" />
-        <MonitoringDetailModal ref="monitoringModal" @open-confirm="handleOpenConfirmFromMonitoring" />
+        <MonitoringDetailModal ref="monitoringModal" @refresh="refreshKey += 1"
+            @open-confirm="handleOpenConfirmFromMonitoring" />
         <DistributionConfirmModal ref="confirmModal" @refresh="refreshKey += 1" />
     </div>
 </template>
@@ -112,6 +132,33 @@ export default {
         },
         openConfirmModal() {
             this.$refs.confirmModal.open();
+        },
+        async onToggleVerification(item, action) {
+            const isVerify = action === "verify";
+            const prompt = await this.$_alert.confirm(
+                isVerify ? "Verifikasi Data Pra-Penlub?" : "Unverifikasi Data Pra-Penlub?",
+                isVerify
+                    ? `Apakah anda yakin akan memverifikasi data sampel FF ${item.field_facilitators_name}?`
+                    : `Apakah anda yakin akan membatalkan verifikasi data sampel FF ${item.field_facilitators_name}?`,
+                isVerify ? "Ya, Verifikasi" : "Ya, Unverifikasi",
+                "Batal",
+                true
+            );
+
+            if (!prompt.isConfirmed) return;
+
+            try {
+                const res = await this.$_api.post("pre-planting-hole/verify", {
+                    ff_no: item.ff_no,
+                    program_year: String(item.program_year),
+                    action,
+                });
+                const payload = res?.data || res;
+                this.$_alert.success(payload.message || "Berhasil memproses verifikasi.");
+                this.refreshKey += 1;
+            } catch (err) {
+                this.$_alert.error(err?.response?.data?.message || "Gagal memproses verifikasi.");
+            }
         },
         handleOpenConfirmFromMonitoring({ item }) {
             this.$refs.confirmModal.open();
