@@ -82,13 +82,10 @@
                             transition="scale-transition" offset-y min-width="auto">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-text-field v-model="newDate" label="Pilih Tanggal Baru" prepend-icon="mdi-calendar"
-                                    readonly v-bind="attrs" v-on="on" outlined dense
-                                    :hint="manualDateHint" persistent-hint></v-text-field>
+                                    readonly v-bind="attrs" v-on="on" outlined dense></v-text-field>
                             </template>
                             <v-date-picker
                                 v-model="newDate"
-                                :min="minManualDate"
-                                :allowed-dates="isDateAllowed"
                                 @input="dateMenu = false"
                             ></v-date-picker>
                         </v-menu>
@@ -157,18 +154,6 @@ export default {
             this.confirmAction = null;
             this.newDate = null;
             this.delayType = "auto";
-        },
-        isDateAllowed(dateStr) {
-            if (!this.scheduleMeta) return false;
-            if (this.minManualDate && dateStr < this.minManualDate) return false;
-
-            const lim = this.scheduleMeta.limitation;
-            // Jika belum ada limitation MU, atau tanggal melebihi end_date -> mode Override (bebas dipilih)
-            if (!lim || !lim.has_limitation || dateStr > lim.end_date) {
-                return true;
-            }
-            // Di dalam/sebelum akhir limitation -> wajib ada di available_dates (sama seperti Add Data Sostam)
-            return Array.isArray(lim.available_dates) && lim.available_dates.includes(dateStr);
         },
         async fetchPreviewLahan() {
             if (!this.selectedFF) return;
@@ -260,7 +245,7 @@ export default {
             if (this.confirmAction === "GO" && this.isGoDisabled) return false;
             if (this.confirmAction === "DELAY") {
                 if (this.delayType === "auto" && !this.isAutoDelayAllowed) return false;
-                if (this.delayType === "manual" && (!this.newDate || !this.isDateAllowed(this.newDate))) return false;
+                if (this.delayType === "manual" && !this.newDate) return false;
             }
             return true;
         },
@@ -285,18 +270,6 @@ export default {
                 ? moment(this.scheduleMeta.auto_delay.target_date).format("DD-MM-YYYY")
                 : null;
             return target ? `Auto (+7 Hari: ${target})` : "Auto (+7 Hari dari jadwal)";
-        },
-        minManualDate() {
-            return this.scheduleMeta?.min_manual_date || moment().add(7, "days").format("YYYY-MM-DD");
-        },
-        manualDateHint() {
-            const minStr = moment(this.minManualDate).format("DD-MM-YYYY");
-            const endStr = this.scheduleMeta?.limitation?.end_date
-                ? moment(this.scheduleMeta.limitation.end_date).format("DD-MM-YYYY")
-                : null;
-            return endStr
-                ? `Minimal ${minStr}. Hingga ${endStr} mengikuti kuota & libur Nursery; setelah ${endStr} otomatis Override.`
-                : `Minimal ${minStr} (Mode Override: batas distribusi MU belum diatur).`;
         },
     },
 };
