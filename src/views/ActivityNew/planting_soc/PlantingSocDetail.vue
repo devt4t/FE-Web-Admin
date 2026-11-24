@@ -81,15 +81,23 @@
                                     <tr>
                                         <td>Foto Absensi</td>
                                         <td>
-                                            <div class="d-flex flex-row image-list">
-                                                <div class="image-item" v-if="data.absent"
-                                                    @click="showLightbox(`${$_config.baseUrlUpload}/${data.absent}`, 0)"
-                                                    v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent}` + ')' }">
-                                                </div>
-                                                <div @click="showLightbox(`${$_config.baseUrlUpload}/${data.absent2}`, 0)"
-                                                    class="image-item" v-if="data.absent2"
-                                                    v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent2}` + ')' }">
-                                                </div>
+                                            <div class="d-flex flex-row flex-wrap image-list">
+                                                <template v-if="data.absent">
+                                                    <div class="image-item"
+                                                        v-for="(img, idx) in String(data.absent).split(',').filter(Boolean)"
+                                                        :key="'absent1-' + idx"
+                                                        @click="showLightbox(`${$_config.baseUrlUpload}/${img.trim()}`, 0)"
+                                                        v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${img.trim()}` + ')' }">
+                                                    </div>
+                                                </template>
+                                                <template v-if="data.absent2">
+                                                    <div class="image-item"
+                                                        v-for="(img, idx) in String(data.absent2).split(',').filter(Boolean)"
+                                                        :key="'absent2-' + idx"
+                                                        @click="showLightbox(`${$_config.baseUrlUpload}/${img.trim()}`, 0)"
+                                                        v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${img.trim()}` + ')' }">
+                                                    </div>
+                                                </template>
                                             </div>
                                         </td>
                                     </tr>

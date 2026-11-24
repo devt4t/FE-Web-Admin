@@ -202,7 +202,7 @@
                                 }">
                                     <td class="text-center">
                                         <span v-if="farmer.bordered">{{ farmer.index
-                                        }}</span>
+                                            }}</span>
                                     </td>
                                     <td class="text-left">
                                         <div class="d-block" v-if="farmer.bordered">
@@ -344,7 +344,7 @@
                                             'Klik gambar untuk memilih berkas yang akan diunggah',
                                         max_size: 5,
                                         max: 5,
-                                        multiple: false,
+                                        multiple: true,
                                     },
                                 }" />
                             </v-col>
@@ -366,7 +366,7 @@
                                             'Klik gambar untuk memilih berkas yang akan diunggah',
                                         max_size: 5,
                                         max: 5,
-                                        multiple: false,
+                                        multiple: true,
                                     },
                                 }" />
                             </v-col>

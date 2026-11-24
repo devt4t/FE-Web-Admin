@@ -397,8 +397,21 @@ export default {
         start_pembuatan_lubang_tanam: this.plantingHoleStart,
         nursery_location_id: this.nurseryLocation.location_nursery_id,
         nursery_location_name: this.nurseryLocation.name_location_nursery,
-        absent: this.formData.absent1,
+        absent: Array.isArray(this.formData.absent1)
+          ? this.formData.absent1.join(",")
+          : this.formData.absent1,
       };
+
+      if (Array.isArray(payload.absent2)) {
+        if (payload.absent2.length > 0) {
+          payload.absent2 = payload.absent2.join(",");
+        } else {
+          delete payload.absent2;
+        }
+      } else if (!payload.absent2) {
+        delete payload.absent2;
+      }
+
       this.loading = false;
 
       await this.$_api.post("createSostamByFF", payload).then(() => {
@@ -472,6 +485,8 @@ export default {
         distribution_date: null,
         soc_date: moment().format("YYYY-MM-DD"),
         fc_signature: null,
+        absent1: [],
+        absent2: [],
       },
       ready: false,
       loading: true,
