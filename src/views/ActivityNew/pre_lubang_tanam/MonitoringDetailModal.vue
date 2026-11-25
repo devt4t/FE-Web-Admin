@@ -56,7 +56,7 @@ import {
     HUMIDITY_MAP,
     TIME_CHECKING_MAP,
     IS_RAINING_MAP,
-} from "./PreLubangTanamRiskCalculator.js";
+} from "./PreLubangTanamConstant.js";
 
 export default {
     name: "MonitoringDetailModal",

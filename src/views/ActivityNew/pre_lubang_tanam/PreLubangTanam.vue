@@ -68,13 +68,13 @@
                     <v-icon left small>mdi-clipboard-pulse</v-icon>
                     <span>Monitoring & Evaluasi</span>
                 </v-btn>
-                <v-btn v-if="Number(item.assignment_status) === 2 && Number(item.is_verified) === 0"
-                    variant="success" small class="mt-1 mb-1" @click="onToggleVerification(item, 'verify')">
+                <v-btn v-if="Number(item.assignment_status) === 2 && Number(item.is_verified) === 0" variant="success"
+                    small class="mt-1 mb-1" @click="onToggleVerification(item, 'verify')">
                     <v-icon left small>mdi-check-bold</v-icon>
                     <span>Verifikasi</span>
                 </v-btn>
-                <v-btn v-else-if="Number(item.is_verified) === 1"
-                    variant="danger" small class="mt-1 mb-1" @click="onToggleVerification(item, 'unverify')">
+                <v-btn v-else-if="Number(item.is_verified) === 1" variant="danger" small class="mt-1 mb-1"
+                    @click="onToggleVerification(item, 'unverify')">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
@@ -93,7 +93,7 @@ import config from "./PreLubangTanamConfig.js";
 import SampleAssignModal from "./SampleAssignModal";
 import MonitoringDetailModal from "./MonitoringDetailModal";
 import DistributionConfirmModal from "./DistributionConfirmModal";
-import { ASSIGNMENT_STATUS_MAP } from "./PreLubangTanamRiskCalculator";
+import { ASSIGNMENT_STATUS_MAP } from "./PreLubangTanamConstant";
 
 export default {
     name: "pre-lubang-tanam",
