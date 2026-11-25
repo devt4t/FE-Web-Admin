@@ -220,14 +220,5 @@ export default {
                 },
             },
         },
-        {
-            id: "system_recommendation",
-            label: "Rekomendasi (FE)",
-            methods: {
-                list: { type: "row-slot" },
-                detail: false,
-                filter: false,
-            },
-        },
     ],
 }

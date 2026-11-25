@@ -35,14 +35,6 @@
                 </span>
             </template>
 
-            <template v-slot:list-system_recommendation="{ item }">
-                <span v-if="getFFRecommendation(item)" class="badge"
-                    :class="getFFRecommendation(item) === 'GO' ? 'bg-success' : 'bg-warning'">
-                    {{ getFFRecommendation(item) }}
-                </span>
-                <span v-else class="text--secondary">-</span>
-            </template>
-
             <template v-slot:list-distribution_date="{ item }">
                 <div class="d-flex flex-column">
                     <span>{{ item.distribution_date | parse('date') }}</span>
@@ -101,7 +93,7 @@ import config from "./PreLubangTanamConfig.js";
 import SampleAssignModal from "./SampleAssignModal";
 import MonitoringDetailModal from "./MonitoringDetailModal";
 import DistributionConfirmModal from "./DistributionConfirmModal";
-import { ASSIGNMENT_STATUS_MAP, evaluateFFAggregatedRisk } from "./PreLubangTanamRiskCalculator";
+import { ASSIGNMENT_STATUS_MAP } from "./PreLubangTanamRiskCalculator";
 
 export default {
     name: "pre-lubang-tanam",
@@ -119,10 +111,6 @@ export default {
     methods: {
         getStatusMeta(status) {
             return ASSIGNMENT_STATUS_MAP[Number(status)] || ASSIGNMENT_STATUS_MAP[0];
-        },
-        getFFRecommendation(item) {
-            const { recommendation } = evaluateFFAggregatedRisk(item.samples || []);
-            return recommendation;
         },
         openSampleAssignModal(item) {
             this.$refs.sampleAssignModal.open(item);
