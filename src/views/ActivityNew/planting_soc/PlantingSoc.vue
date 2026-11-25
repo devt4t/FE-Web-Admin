@@ -7,7 +7,7 @@
                 <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
                 <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
                 <planting-soc-export-sostam-mu :dataKey="exportSostamKey" />
-                <planting-soc-import-excel :dataKey="importSostamKey" />
+                <planting-soc-import-excel :dataKey="importSostamKey" @refresh="refreshKey += 1" />
                 <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
                 <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
